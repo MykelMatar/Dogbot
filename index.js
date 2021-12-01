@@ -39,6 +39,10 @@ client.on('message', message =>{  // Discord.js v13 renamed 'message' event to '
             });
         break;
     }
+
+    if (message.content == '!mc') {
+        message.delete();
+    }
 })
 
 client.login(config.bot_token);
