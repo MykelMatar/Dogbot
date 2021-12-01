@@ -23,10 +23,10 @@ client.on('message', message =>{  // Discord.js v13 renamed 'message' event to '
                 const Embed = new MessageEmbed()
                 .setTitle('Server Status')
                 .addFields(
-                    {name: 'Server IP',      value: "> " + config.server_ip},               // Discord.js v13 requires manual call of toString on all methods
-                    {name: 'Modpack',        value: "> " + response.motd.clean.toString()},
-                    {name: 'Version',        value: "> " + response.version.name.toString()},
-                    {name: 'Online Players', value: "> " + response.players.online.toString()},
+                    {name: 'Server IP',      value: "> " + response.host},               // Discord.js v13 requires manual call of toString on all methods
+                    {name: 'Modpack',        value: "> " + response.description.toString()},
+                    {name: 'Version',        value: "> " + response.version.toString()},
+                    {name: 'Online Players', value: "> " + response.onlinePlayers.toString()},
                     )
                 .setColor("#8570C1")
                 .setFooter('Server Online')

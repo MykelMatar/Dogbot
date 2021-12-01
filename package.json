@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "discord.js-12": "^1.0.2",
-    "minecraft-server-util": "^5.1.1",
+    "minecraft-server-util": "^3.7.2",
     "node": "^17.1.0"
   },
   "name": "dogbot",
