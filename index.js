@@ -1,7 +1,7 @@
-const {Client, Intents, MessageEmbed, Message} = require('discord.js');
+const {Client, MessageEmbed, Message} = require('discord.js');
 const config = require('./config.json');
 const util = require('minecraft-server-util')
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });   // Discord.js 13 requires user to specify all intents that the bot uses
+const client = new Client() //({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });   // Discord.js 13 requires user to specify all intents that the bot uses
 const PREFIX = '!'
 
 
@@ -9,7 +9,7 @@ client.once('ready', () => {
     console.log('ready');
 });
 
-client.on('messageCreate', message =>{  // Discord.js v13 renamed 'message' event to 'messageCreate'
+client.on('message', message =>{  // Discord.js v13 renamed 'message' event to 'messageCreate'
 
     let args = message.content.substring(PREFIX.length).split(' ')
 
@@ -29,11 +29,11 @@ client.on('messageCreate', message =>{  // Discord.js v13 renamed 'message' even
                     )
                 .setColor("#8570C1")
 
-                message.channel.send({embeds: [Embed]});
+                message.channel.send(Embed);    // v13: send({embeds: [Embed]})
             })
             .catch((error) => {
                 console.error(error);
-                message.channel.send({content: 'Server Offline'});
+                message.channel.send('Server Offline');  // v13: {content: 'Server Offline'}
             });
         break;
     }
