@@ -2,5 +2,23 @@
   "dependencies": {
     "discord.js": "^13.3.1",
     "minecraft-server-util": "^5.1.1"
-  }
+  },
+  "name": "dogbot",
+  "version": "1.1.0",
+  "description": "Discord MC server bot that detects server status",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MykelMatar/Dogbot.git"
+  },
+  "author": "MykelMatar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MykelMatar/Dogbot/issues"
+  },
+  "homepage": "https://github.com/MykelMatar/Dogbot#readme"
 }
