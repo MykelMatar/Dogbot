@@ -13,15 +13,14 @@ client.on('message', message =>{  // Discord.js v13 renamed 'message' event to '
 
     let args = message.content.substring(PREFIX.length).split(' ')
 
-    switch (args[0]){
-        case 'mc' :
+    if(message.content == "!mc"){
         util.status(config.server_ip) // port default is 25565
             .then((response) => {
                 console.log(response);
 
                 // create embed
                 const Embed = new MessageEmbed()
-                .setTitle('Server Status')
+                .setTitle("Dogbert's Server 2.0")
                 .addFields(
                     {name: 'Server IP',      value: "> " + response.host},               // Discord.js v13 requires manual call of toString on all methods
                     {name: 'Modpack',        value: "> " + response.description.toString()},
@@ -37,7 +36,6 @@ client.on('message', message =>{  // Discord.js v13 renamed 'message' event to '
                 console.error(error);
                 message.channel.send('Server Offline');  // v13: {content: 'Server Offline'}
             });
-        break;
     }
 
     if (message.content == '!mc') {
