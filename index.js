@@ -19,15 +19,14 @@ client.on('message', message =>{  // Discord.js v13 renamed 'message' event to '
 
     function refreshStatus(){
         util.status(config.server_ip)
-        console.log(response);
         if(tmpStatus != status){
             if(tmpStatus == 1 && status == 1){ // if server is online
-                const recievedEmbed = await ( message.channel.messages.fetch(embedID)).embeds[0];
+                const recievedEmbed = await (await (message.channel.messages.fetch(embedID))).embeds[0];
                 const newEmbed = new MessageEmbed(recievedEmbed) //creates new embed to edit existing embed
                 newEmbed.Fields[1] = {name: 'Online Players', value: "> " + response.onlinePlayers.toString()}
             }
             else if (tmpStatus == 0 && status == 1){ // if server goes online
-                const recievedEmbed = await ( message.channel.messages.fetch(embedID)).embeds[0];
+                const recievedEmbed = await (await (message.channel.messages.fetch(embedID))).embeds[0];
                 const newEmbed = new MessageEmbed(recievedEmbed) //creates new embed to edit existing embed
                 newEmbed.Fields[1] = {name: 'Server IP',      value: "> " + response.host}
                 newEmbed.Fields[1] = {name: 'Modpack',        value: "> " + response.description.toString()}
@@ -36,7 +35,7 @@ client.on('message', message =>{  // Discord.js v13 renamed 'message' event to '
                 newEmbed.Footer = "Server Online"
             }
             else if(tmpStatus == 1 && status == 0){ // if server goes offline
-                const recievedEmbed = await ( message.channel.messages.fetch(embedID)).embeds[0];
+                const recievedEmbed = await (await (message.channel.messages.fetch(embedID))).embeds[0];
                 const newEmbed = new MessageEmbed(recievedEmbed) 
                 newEmbed.Fields[1] = {name: "Server Offline", value: "all good"};
             }
@@ -44,13 +43,10 @@ client.on('message', message =>{  // Discord.js v13 renamed 'message' event to '
         }
     }
 
-    const intervalObj = setInterval((refreshStatus) => {
-        console.log("refreshed");
-    }, 20000);     // 300000ms = 5m
-
 
     // command
     if(message.content == "!mc"){
+        clearTimeout(setInterval(refreshStatus(), 20000, 'refreshed'));
         util.status(config.server_ip) // port default is 25565
             .then((response) => {
                 console.log(response)
@@ -78,16 +74,12 @@ client.on('message', message =>{  // Discord.js v13 renamed 'message' event to '
     
                 message.channel.send(Embed);    // v13: send({embeds: [Embed]})
             });
-            intervalObj;
+            setInterval(refreshStatus(), 20000, 'refreshed');
     }
 
     // if (message.content === "!mc" || "!stop") {
     //     message.delete(); 
     // }
-
-    if(message.content === "clr"){
-        clearTimeout(intervalObj);
-    }
 })
 
 client.login(config.bot_token);
