@@ -28,16 +28,7 @@ client.on("guildCreate", async function(guild) {
         serverId: guild.id,
       },
       EmbedData: {
-        Title: "test",
-        Fields: {
-          'Server Offline':"", 
-          ServerIP: "N/A",
-          Modpack: "N/A",
-          Version: "N/A",
-          'Online Players': "N/A",
-          Footer: "N/A",
-        },
-        id: "1",
+        id: "1"
       },
     };
     data.Guilds[guildName] = newJson;
@@ -58,13 +49,14 @@ client.on("message", async (message) =>{  // Discord.js v13 renamed 'message' ev
 
     // command
     if(message.content == "!mc"){
-        clearInterval(refresh);
+        clearInterval(refresh);       // clear existing refreshes
         util.status(config.server_ip) // port default is 25565
             .then((response) => {
-                console.log(response)
-                status = 1;
-                tmpStatus = 1;
-                const Embed = new MessageEmbed()
+              console.log(response)
+              status = 1;
+              tmpStatus = 1;
+              
+              const Embed = new MessageEmbed()
                 .setTitle("Dogbert's Server 2.0")
                 .addFields(
                     {name: 'Server IP',      value: "> " + response.host.toString()},               // Discord.js v13 requires manual call of toString on all methods
@@ -74,34 +66,24 @@ client.on("message", async (message) =>{  // Discord.js v13 renamed 'message' ev
                     )
                 .setColor("#8570C1")
                 .setFooter('Server Online')
+
               message.channel.send(Embed); 
-              // Embed.fields[0] = [];
-              // updateEmbedData(Embed, guildname);
-              updateEmbedData(Embed, guildname);
             })
             .catch((error) => {
               console.error(error)
               status = 0;
+
               const Embed = new MessageEmbed()
-              .setTitle("Dogbert's Server 2.0")
-              .addField("Server Offline", "all good")
-              .setColor("#8570C1")
+                .setTitle("Dogbert's Server 2.0")
+                .addField("Server Offline", "all good")
+                .setColor("#8570C1")
               Embed.fields[1] = [];
               Embed.fields[2] = [];
               Embed.fields[3] = [];
               Embed.fields[4] = [];
-              Embed.setFooter = [];
+              Embed.setFooter([]);
+
               message.channel.send(Embed);    // v13: send({embeds: [Embed]})
-              
-              updateEmbedData(Embed, guildname);
-              // data.Guilds[guildname].EmbedData.Title = Embed.title;
-              // data.Guilds[guildname].EmbedData.Fields["Server Offline"] = Embed.fields[0].value; 
-              // data.Guilds[guildname].EmbedData.Fields["ServerIP"] = []; 
-              // data.Guilds[guildname].EmbedData.Fields["Modpack"]  = []; 
-              // data.Guilds[guildname].EmbedData.Fields["Version"]  = [];
-              // data.Guilds[guildname].EmbedData.Fields["Online Players"]  = []; 
-              // data.Guilds[guildname].EmbedData.Fields["Footer"] = [];
-              // writeToJson(data);
             });  
     }
 
@@ -115,18 +97,6 @@ client.on("message", async (message) =>{  // Discord.js v13 renamed 'message' ev
 
 
 
-async function updateEmbedData(Embed, guildname){
-  let embedID = data.Guilds[guildname].EmbedData["id"];
-
-  data.Guilds[guildname].EmbedData.Title                     = Embed.title;
-  data.Guilds[guildname].EmbedData.Fields["Server Offline"]  = Embed.fields[0].value ? Embed.fields[0].value : '[]'; 
-  data.Guilds[guildname].EmbedData.Fields["ServerIP"]        = Embed.fields[1].value ? Embed.fields[1].value : '[]'; 
-  data.Guilds[guildname].EmbedData.Fields["Modpack"]         = Embed.fields[2].value ? Embed.fields[2].value : '[]'; 
-  data.Guilds[guildname].EmbedData.Fields["Version"]         = Embed.fields[3].value ? Embed.fields[3].value : '[]';
-  data.Guilds[guildname].EmbedData.Fields["Online Players"]  = Embed.fields[4].value ? Embed.fields[4].value : '[]'; 
-  writeToJson(data);
-}
-
 
 async function refreshStatus(message, guildname){
   if (message.author.bot) {
@@ -139,14 +109,13 @@ async function refreshStatus(message, guildname){
           const recievedEmbed =  await (await message.channel.messages.fetch(embedID)).embeds[0];
           const newEmbed = new MessageEmbed(recievedEmbed) //creates new embed to edit existing embed
           newEmbed.fields[3] = {name: 'Online Players', value: "> " + response.onlinePlayers.toString()};
+
           message.edit(newEmbed);
           console.log('refreshed player count')
-
-          data.Guilds[guildname].EmbedData.Fields["Online Players"]  = response.onlinePlayers.toString(); 
-          writeToJson(data);
       }
       if(tmpStatus != status) // if server status changed, update embed
         if (tmpStatus == 0 && status == 1){ // if server goes online
+
           const recievedEmbed =  await (await message.channel.messages.fetch(embedID)).embeds[0];
           const newEmbed = new MessageEmbed(recievedEmbed) //creates new embed to edit existing embed
           newEmbed.fields[0] = []
@@ -154,25 +123,16 @@ async function refreshStatus(message, guildname){
           newEmbed.fields[2] = {name: 'Modpack',        value: "> " + response.description.toString()}
           newEmbed.fields[3] = {name: 'Version',        value: "> " + response.version.toString()}
           newEmbed.fields[4] = {name: 'Online Players', value: "> " + response.onlinePlayers.toString()}
-          newEmbed.setFooter = "Server Online";
+          newEmbed.setFooter("Server Online");
+
           message.edit(newEmbed);
           console.log('refreshed server status')
-
-          updateEmbedData(newEmbed, guildname);
-          // data.Guilds[guildname].EmbedData.Title = newEmbed.title;
-          // data.Guilds[guildname].EmbedData.Fields["Server Offline"] = []; 
-          // data.Guilds[guildname].EmbedData.Fields["ServerIP"] = newEmbed.fields[1].value; 
-          // data.Guilds[guildname].EmbedData.Fields["Modpack"]  = newEmbed.fields[2].value; 
-          // data.Guilds[guildname].EmbedData.Fields["Version"]  = newEmbed.fields[3].value;
-          // data.Guilds[guildname].EmbedData.Fields["Online Players"]  = newEmbed.fields[4].value; 
-          // data.Guilds[guildname].EmbedData.Fields["Footer"] = "Server Online";
-          // writeToJson(data);
-
         } 
       })
       .catch(async (error) => {
         console.error(error)
         status = 0;
+
         const recievedEmbed = await (await message.channel.messages.fetch(embedID)).embeds[0];
         const newEmbed = new MessageEmbed(recievedEmbed) 
         newEmbed.fields[0] = {name: "Server Offline", value: "all good"};
@@ -180,23 +140,15 @@ async function refreshStatus(message, guildname){
         newEmbed.fields[2] = [];
         newEmbed.fields[3] = [];
         newEmbed.fields[4] = [];
-        newEmbed.setFooter = [];
+        newEmbed.setFooter([]);
+
         message.edit(newEmbed);
         console.log('refreshed server status')
-
-        updateEmbedData(newEmbed, guildname);
-        // data.Guilds[guildname].EmbedData.Title = newEmbed.title;
-        // data.Guilds[guildname].EmbedData.Fields["Server Offline"] = newEmbed.fields[0].value; 
-        // data.Guilds[guildname].EmbedData.Fields["ServerIP"] = []; 
-        // data.Guilds[guildname].EmbedData.Fields["Modpack"]  = []; 
-        // data.Guilds[guildname].EmbedData.Fields["Version"]  = [];
-        // data.Guilds[guildname].EmbedData.Fields["Online Players"]  = []; 
-        // data.Guilds[guildname].EmbedData.Fields["Footer"] = [];
-        // writeToJson(data);
     });
     tmpStatus = status;
   }
 }
+
 
 
 //writes to data.json
