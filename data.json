@@ -1,0 +1,21 @@
+{
+    "Guilds": {
+        "BotTesting": {
+            "ServerData": {
+                "serverId": "715122900021149776"
+            },
+            "EmbedData": {
+                "Title": "Dogbert's Server 2.0",
+                "Fields": {
+                    "Server Offline": [],
+                    "ServerIP": "> 76.88.229.48",
+                    "Modpack": "> Minecraft Eternal 1.5",
+                    "Version": "> 1.12.2",
+                    "Online Players": "0",
+                    "Footer": "Server Online"
+                },
+                "id": "918379028342259742"
+            }
+        }
+    }
+}
