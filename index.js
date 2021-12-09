@@ -1,4 +1,4 @@
-const {Client, MessageEmbed, Message} = require('discord.js-12');
+const {Client, MessageEmbed, Message} = require('discord.js');
 const util = require('minecraft-server-util');
 const config = require('./config.json');
 const data = require("./data.json");
@@ -55,7 +55,7 @@ client.on("message", async (message) =>{  // Discord.js v13 renamed 'message' ev
               console.log(response)
               status = 1;
               tmpStatus = 1;
-              
+
               const Embed = new MessageEmbed()
                 .setTitle("Dogbert's Server 2.0")
                 .addFields(
@@ -91,7 +91,7 @@ client.on("message", async (message) =>{  // Discord.js v13 renamed 'message' ev
       //push embed id to json
       data.Guilds[guildname].EmbedData["id"] = message.id;
       writeToJson(data);
-      var refresh = setInterval(refreshStatus, 10000 , message, guildname); // 300000
+      var refresh = setInterval(refreshStatus, 300000 , message, guildname); // 300000
   }
 });
 
