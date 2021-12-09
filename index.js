@@ -124,7 +124,6 @@ async function updateEmbedData(Embed, guildname){
   data.Guilds[guildname].EmbedData.Fields["Modpack"]         = Embed.fields[2].value ? Embed.fields[2].value : '[]'; 
   data.Guilds[guildname].EmbedData.Fields["Version"]         = Embed.fields[3].value ? Embed.fields[3].value : '[]';
   data.Guilds[guildname].EmbedData.Fields["Online Players"]  = Embed.fields[4].value ? Embed.fields[4].value : '[]'; 
-  data.Guilds[guildname].EmbedData.Fields["Footer"]          = Embed.fields[5].value ? Embed.fields[5].value : '[]';
   writeToJson(data);
 }
 
