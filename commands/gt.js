@@ -12,7 +12,7 @@ module.exports = {
     name: 'gt',
     description: "Schedules Gamer Time and sends reactions for collection",
     async execute(client, message, args, guildName) {
-        let EmbedID = data.Guilds[guildName].EmbedData["id"];
+        let GTembedID = data.Guilds[guildName].Embeds.GTEmbedData["id"];
         unpinEmbed(message, EmbedID);
 
         //Argument Handling
@@ -56,9 +56,9 @@ module.exports = {
             //setTimeout(() => message.channel.send({content:"gamer time")}, timer);
 
             //Pushing Embed data to json file
-            data.Guilds[guildname].EmbedData.Title = Embed.title;
-            data.Guilds[guildname].EmbedData.Fields["Game"] = Embed.fields[0].value; //field[0] = game
-            data.Guilds[guildname].EmbedData.Fields["Time"] = Embed.fields[1].value; //field[1] = time
+            data.Guilds[guildname].Embed.GTEmbedData.Title = Embed.title;
+            data.Guilds[guildname].Embed.GTEmbedData.Fields["Game"] = Embed.fields[0].value; //field[0] = game
+            data.Guilds[guildname].Embed.GTEmbedData.Fields["Time"] = Embed.fields[1].value; //field[1] = time
            // data.Guilds[guildname].EmbedData.Fields["Timer"] = timer; // timer
             writeToJson(data);
         }
@@ -165,7 +165,7 @@ function runGTReactionCollector(message, guildname) {
         //ends collector
         collector.on('end', (collected) => {
             message.pin();
-            data.Guilds[guildname].EmbedData["id"] = message.id;
+            data.Guilds[guildname].Embed.GTEmbedData["id"] = message.id;
             writeToJson(data);
             //setJsonData(data);
         });

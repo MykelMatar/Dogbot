@@ -14,36 +14,46 @@ module.exports = {
         // if(!args[1]) message.reply('Please input a server IP. ');
         // data.Guilds[guildName].MCData.serverList[name] = IP;
         // writeToJson(data);
-        let filter = m => m.author.id === message.author.id
 
+        let filter = m => m.author.id === message.author.id
         message.reply("Enter your Server IP. Make sure your server is currently online", { fetchReply: true })
         .then(() => {
             message.channel.awaitMessages({ filter, max: 1, time: 30000, errors: ['time'] })
-                .then(collected => {
-                    let IP = collected.first().content;
-                    console.log(IP);
-                    util.status(IP)
-                    .then((response) => {
-                        message.reply("Valid Server Detected", {fetchReply: true})
-                        .then(() => {
-                            message.channel.awaitMessages({ filter, max: 1, time: 30000, errors: ['time'] })
-                            .then(collected => {
-                                    let name = collected.first().content;
-                             })
-                             .catch(collected => {
-                                console.log('Timed Out');
-                            });
+            .then(collected => {
+                let IP = collected.first().content;
+                console.log(IP);
+                util.status(IP)
+                .then((response) => {
+                    message.reply("Valid Server Detected. Please Enter A Name for Your Server", {fetchReply: true})
+                    message.channel.awaitMessages({ filter, max: 1, time: 30000, errors: ['time'] })
+                    .then(collected => {
+                        let name = collected.first().content;
+                        console.log(name);
+                        data.Guilds[guildName].MCData.serverList[name] = IP;
+                        writeToJson(data);
+                        message.reply("Server Sucessfully Added")
                     })
-                    .catch((error) => {
-                        message.reply('Could not retrieve server status. Make sure IP is valid and Server is online.')
-
+                    .catch(collected => {
+                        console.log('Timed Out');
+                        message.reply('Timed Out. Please Try Again.')
                     });
                 })
+                .catch((error) => {
+                    message.reply('Could not retrieve server status. Make sure IP is valid and Server is online.')
+                })
+            })
+            .catch(collected => {
+                console.log('Timed Out');
+                message.reply('Timed Out. Please Try Again.')
+            })
+        })
         .catch(collected => {
-            console.log('Timed Out');
-        });
-        }
+            console.log('Error');
+            message.reply('Timed Out. Please Try Again.')
+        })
     }
+}
+
 
 
 function collectResponse(message, guildname){

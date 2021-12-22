@@ -5,20 +5,21 @@
                 "serverId": "715122900021149776"
             },
             "MCData": {
-                "serverList": {
-                    "test": "76.93.102.226",
-                    "test2": "76.93.102.204",
-                    "test3": "76.93.102.432"
-                }
+                "serverList": {}
             },
-            "EmbedData": {
-                "Title": "peepee",
-                "Fields": {
-                    "Game": "N/A",
-                    "Time": "N/A",
-                    "Timer": "N/A"
+            "Embeds": {
+                "MCEmbedData": {
+                    "id": "123412341234"
                 },
-                "id": "0"
+                "GTEmbedData": {
+                    "Title": "peepee",
+                    "Fields": {
+                        "Game": "N/A",
+                        "Time": "N/A",
+                        "Timer": "N/A"
+                    },
+                    "id": "0"
+                }
             },
             "EmojiData": {
                 "0": "✅",

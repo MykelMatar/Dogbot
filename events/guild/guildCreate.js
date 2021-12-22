@@ -1,4 +1,4 @@
-const data = require('d:/Github/Dogbot/data.json'); // change for your PC path
+const data = require('/Users/Michael/Documents/GitHub/Dogbot/data.json'); // change for your PC path
 const fs = require('fs');  
 
 module.exports = async function(client, guild) {
@@ -17,14 +17,19 @@ module.exports = async function(client, guild) {
         MCData : {
             serverList: {}
         },
-        EmbedData: {
-            Title: "peepee",
-            Fields: {
-                Game: "N/A",
-                Time: "N/A",
-                Timer: "N/A",
+        Embeds: {
+            MCEmbedData:{
+                id: "0"
             },
-            id: "0"
+            GTEmbedData: {
+                Title: "peepee",
+                Fields: {
+                    Game: "N/A",
+                    Time: "N/A",
+                    Timer: "N/A",
+                },
+                id: "0"
+            },
         },
         EmojiData: {
             0: "✅", //default emojis
