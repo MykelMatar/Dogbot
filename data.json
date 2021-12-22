@@ -4,16 +4,26 @@
             "ServerData": {
                 "serverId": "715122900021149776"
             },
-            "EmbedData": {
-                "id": "918604200768847942"
-            }
-        },
-        "CrayonConnoisseurs": {
-            "ServerData": {
-                "serverId": "351618107384528897"
+            "MCData": {
+                "serverList": {
+                    "test": "76.93.102.226",
+                    "test2": "76.93.102.204",
+                    "test3": "76.93.102.432"
+                }
             },
             "EmbedData": {
-                "id": "919102842348929034"
+                "Title": "peepee",
+                "Fields": {
+                    "Game": "N/A",
+                    "Time": "N/A",
+                    "Timer": "N/A"
+                },
+                "id": "0"
+            },
+            "EmojiData": {
+                "0": "✅",
+                "1": "👀",
+                "2": "❌"
             }
         }
     }
