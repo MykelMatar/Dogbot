@@ -9,7 +9,7 @@ const PREFIX = '!'
 let cmdStatus = 0;
 let tmpStatus = 0;
 let status = 0;
-
+//test
 
 client.once('ready', () => {
   console.log('ready');
