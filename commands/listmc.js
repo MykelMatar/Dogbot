@@ -1,6 +1,10 @@
-const { MessageEmbed, MessageActionRow, MessageButton, Message} = require('discord.js');
+const { MessageEmbed, MessageActionRow, MessageButton} = require('discord.js');
 const data = require('../data.json');
 const fs = require('fs');
+
+
+
+
 
 
 
@@ -46,23 +50,25 @@ module.exports = {
 
         await message.reply({ ephemeral: true, embeds: [embed], components: [row]})
 
-        const filter = i => 
-            i.customId === ('Add' || 'Remove') &&
-            i.user.id === message.author.id;
-
+        const filter = i => i.user.id === message.author.id;
         const collector = message.channel.createMessageComponentCollector({ filter, max: 1, time: 15000 });
         const command1 = client.commands.get('addmc');
         const command2 = client.commands.get('delmc');
 
         collector.on('collect', async i => {
             if (i.customId === 'Add') {
+                await i.update({ content: 'Adding Server (If Possible)', components: []});
                 await command1.execute(client, message, args, guildName);
             }
             else if (i.customId === 'Remove') {
+                await i.update({ content: 'Removing Server', components: []});
                 await command2.execute(client, message, args, guildName);
             }
         });
         
-        collector.on('end', collected => console.log(`Collected ${collected.size} items`));
+        collector.on('end', collected => {
+            if (collected.size == 1) console.log('button pressed');
+            else console.log('no button pressed');
+        });
     }
 }

@@ -6,26 +6,29 @@
             },
             "MCData": {
                 "serverList": {
-                    "bert": "76.88.229.44",
-                    "dogbert2": "76.88.229.40",
-                    "bertbus": "76.88.229.48"
+                    "Dogbert": "76.88.229.48",
+                    "bert": "76.88.229.40"
                 },
-                "selectedServer": "76.88.229.48"
+                "selectedServer": {
+                    "title": "Dogbert",
+                    "IP": "76.88.229.48",
+                    "name": "Dogbert"
+                }
             },
             "MenuOptions": {
                 "0": {
-                    "label": "bert",
-                    "description": "76.88.229.44",
+                    "label": "Dogbert",
+                    "description": "76.88.229.48",
                     "value": "selection0"
                 },
                 "1": {
-                    "label": "dogbert2",
+                    "label": "bert",
                     "description": "76.88.229.40",
                     "value": "selection1"
                 },
                 "2": {
-                    "label": "bertbus",
-                    "description": "76.88.229.48",
+                    "label": "dog",
+                    "description": "76.88.229.30",
                     "value": "selection2"
                 }
             },

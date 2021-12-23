@@ -4,6 +4,10 @@ const fs = require('fs');
 
 
 
+
+
+
+
 module.exports = {
     name: 'changemc', 
     description: 'Changes Server that is Being Tracked', 
@@ -63,7 +67,7 @@ module.exports = {
 					.addOptions(option),
 			);
 
-        await message.reply({ content: 'Pong!', ephemeral: true, components: [row] });
+        await message.reply({ content: 'Select a Different Server to Check', ephemeral: true, components: [row] });
 
         const filter = i =>  i.user.id === message.author.id;
         const collector = message.channel.createMessageComponentCollector({max: 1, time: 15000 });
@@ -73,15 +77,17 @@ module.exports = {
             var selection = i.values[0]
             for (let i = 0; i < serverListSize; i++) {
                 if(selection == `selection${i}`){
+                    var newTitle = label[i];
                     var newIP = description[i];
-                    data.Guilds[guildName].MCData["selectedServer"] = newIP;
+                    data.Guilds[guildName].MCData.selectedServer["title"] = newTitle;
+                    data.Guilds[guildName].MCData.selectedServer["IP"] = newIP;
                     writeToJson(data);
                 }  
             }
 
             if (i.customId === "selection") {
-                await i.update({ content: 'Server Updated', components: [] });
-                //await command.execute(client, message, args, guildName);
+                await i.update({ content: 'Server Updated', components: []});
+                await command.execute(client, message, args, guildName);
             }
         });
         

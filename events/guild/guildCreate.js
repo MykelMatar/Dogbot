@@ -17,7 +17,10 @@ module.exports = async function(client, guild) {
         },
         MCData : {
             serverList: {},
-            selectedServer: ""
+            selectedServer: {
+                title: "",
+                IP: "" 
+            }
         },
         MenuOptions : {},
         Embeds: {

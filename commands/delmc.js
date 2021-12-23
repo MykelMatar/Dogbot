@@ -4,6 +4,10 @@ const fs = require('fs');
 
 
 
+
+
+
+
 module.exports = {
     name: 'delmc', 
     description: 'removes server from server list', 
@@ -21,15 +25,15 @@ module.exports = {
                     writeToJson(data);
                     message.reply("Server Sucessfully Removed")
                 }
-                else message.reply("Invalid Server Name. Use !listmc to Check List of Registered Servers")
+                else message.reply("Invalid server name. Use !listmc to check list of registered servers")
             })
-            // .catch((error) => {
-            //     message.reply('Invalid Server Name. Use !listmc to Check List of Registered Servers')
-            // })
+            .catch((error) => {
+                message.reply('Request timed out. Please try again.')
+            })
         })
         .catch(collected => {
             console.log('Error');
-            message.reply('Timed Out. Please Try Again.')
+            message.reply('Request timed out. Please try again.')
         })
     }
 }
