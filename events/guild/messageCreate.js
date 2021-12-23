@@ -9,13 +9,13 @@ module.exports = (client, message) => {
     const cmd = args.shift().toLowerCase();
 
     const command = client.commands.get(cmd);
-
+    
     if (message.embeds[0] && message.embeds[0].title == 'Gamer Time') {
         data.Guilds[guildname].Embeds.GTEmbedData = message.id;
         writeToJson(data);
         runGTReactionCollector(message, guildname); // run reaction collector
     }
-    if (message.embeds[0] && message.embeds[0].title == data.Guilds[guildName].Embeds.MCEmbedData) {
+    if (message.embeds[0] && message.embeds[0].title == data.Guilds[guildName].MCData.selectedServer["title"]) {
         clearInterval(refresh);  
         data.Guilds[guildname].Embeds.MCEmbedData = message.id;
         writeToJson(data);

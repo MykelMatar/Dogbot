@@ -15,15 +15,6 @@ module.exports = {
 
         let serverListSize = Object.values(data.Guilds[guildName].MCData.serverList).length 
 
-        if (serverListSize == 0) {
-            message.reply('No Registered Servers, use !addmc or !listmc to add servers.')
-            return;
-        }
-        else if (serverListSize == 1) {
-            message.reply('Only 1 Registered Server, use !addmc or !listmc to add more servers.')
-            return;
-        }
-
         // refresh dropdown menu options data to JSON
         for (let i = 0; i < 9; i++) {      // max of 10 trackable servers
             delete data.Guilds[guildName].MenuOptions[i];
@@ -39,6 +30,15 @@ module.exports = {
             
             data.Guilds[guildName].MenuOptions[i] = newJson;
             writeToJson(data);
+        }
+
+        if (serverListSize == 0) {
+            message.reply('No Registered Servers, use !addmc or !listmc to add servers.')
+            return;
+        }
+        else if (serverListSize == 1) {
+            message.reply('Only 1 Registered Server, use !addmc or !listmc to add more servers.')
+            return;
         }
 
         let label = [];

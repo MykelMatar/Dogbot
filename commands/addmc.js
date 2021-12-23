@@ -44,7 +44,7 @@ module.exports = {
 
                             if (JSON.stringify(data.Guilds[guildName].MCData.serverList) == '{}') {
                                 data.Guilds[guildName].MCData.selectedServer["IP"] = IP;    // use first input as default
-                                data.Guilds[guildName].MCData.selectedServer["name"] = name;
+                                data.Guilds[guildName].MCData.selectedServer["title"] = name;
                             }
                             data.Guilds[guildName].MCData.serverList[name] = IP;
                             writeToJson(data);

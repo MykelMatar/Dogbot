@@ -27,15 +27,25 @@ module.exports = {
 
         const row = new MessageActionRow()
             .addComponents(
-                new MessageButton()
+                new MessageButton() 
 					.setCustomId('Add')
-					.setLabel('Add Server')
+					.setLabel('Add')
 					.setStyle('SUCCESS'),
                    // .setEmoji('➕'), 
                 new MessageButton()
                     .setCustomId('Remove')
-                    .setLabel('Remove Server')
+                    .setLabel('Remove')
                     .setStyle('DANGER'),
+                   // .setEmoji('➖'),
+                new MessageButton()
+                    .setCustomId('Change')
+                    .setLabel('Change')
+                    .setStyle('PRIMARY'),
+                   // .setEmoji('➖'),
+                new MessageButton()
+                    .setCustomId('Rename')
+                    .setLabel('Rename')
+                    .setStyle('SECONDARY'),
                    // .setEmoji('➖'),
             );
 
@@ -54,6 +64,8 @@ module.exports = {
         const collector = message.channel.createMessageComponentCollector({ filter, max: 1, time: 15000 });
         const command1 = client.commands.get('addmc');
         const command2 = client.commands.get('delmc');
+        const command3 = client.commands.get('changemc');
+        const command4 = client.commands.get('renamemc');
 
         collector.on('collect', async i => {
             if (i.customId === 'Add') {
@@ -64,9 +76,17 @@ module.exports = {
                 await i.update({ content: 'Removing Server', components: []});
                 await command2.execute(client, message, args, guildName);
             }
+            else if (i.customId === 'Change') {
+                await i.update({ content: 'Changing Server', components: []});
+                await command3.execute(client, message, args, guildName);
+            }
+            else if (i.customId === 'Rename') {
+                await i.update({ content: 'Renaming Server', components: []});
+                await command4.execute(client, message, args, guildName);
+            }
         });
         
-        collector.on('end', collected => {
+        collector.on('end', async collected => {
             if (collected.size == 1) console.log('button pressed');
             else console.log('no button pressed');
         });
