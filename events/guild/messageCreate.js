@@ -23,6 +23,5 @@ module.exports = (client, message) => {
     }
 
     if(command) command.execute(client, message, args, guildName);
-    command.execute()
 
 }

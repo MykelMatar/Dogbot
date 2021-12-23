@@ -1,7 +1,6 @@
 const { Client, MessageEmbed, Message } = require('discord.js');
 const client = new Client({ intents: ['GUILDS', 'GUILD_MESSAGES'] });   // Discord.js 13 requires user to specify all intents that the bot uses
 const util = require('minecraft-server-util');
-const config = require('./config.json');
 const data = require("./data.json");
 const { clearInterval } = require('timers');
 const fs = require("fs");
@@ -9,7 +8,7 @@ const PREFIX = '!'
 let cmdStatus = 0;
 let tmpStatus = 0;
 let status = 0;
-//test
+
 
 client.once('ready', () => {
   console.log('ready');
@@ -39,7 +38,7 @@ client.on("guildCreate", async function (guild) {
 
 
 
-client.login(config.bot_token);
+client.login(process.env.bot_token);
 
 
 
@@ -54,7 +53,7 @@ client.on("messageCreate", async (message) => {  // Discord.js v13 renamed 'mess
     clearInterval(refresh);       // clear existing refreshes
     unpinEmbed(message, embedID);
     cmdStatus = 1;
-    util.status(config.server_ip) // port default is 25565
+    util.status(process.env.server_ip) // port default is 25565
       .then((response) => {
         console.log(response)
         status = 1;
@@ -63,7 +62,7 @@ client.on("messageCreate", async (message) => {  // Discord.js v13 renamed 'mess
         const Embed = new MessageEmbed()
           .setTitle("Dogbert's Server 2.0")
           .addFields(
-            { name: 'Server IP',      value: "> " + config.server_ip.toString()},               // Discord.js v13 requires manual call of toString on all methods
+            { name: 'Server IP',      value: "> " + process.env.server_ip.toString()},               // Discord.js v13 requires manual call of toString on all methods
             { name: 'Modpack',        value: "> " + response.motd.clean.toString()},
             { name: 'Version',        value: "> " + response.version.name.toString()},
             { name: 'Online Players', value: "> " + response.players.online.toString()},
@@ -112,7 +111,7 @@ async function refreshStatus(messageCreate, guildname) {
   if (messageCreate.author.bot) {
     let embedID = data.Guilds[guildname].EmbedData["id"];
 
-    util.status(config.server_ip)
+    util.status(process.env.server_ip)
       .then(async response => {
         status = 1
         if (tmpStatus == 1 && status == 1) { // if server status hasnt changed, update player count
@@ -129,7 +128,7 @@ async function refreshStatus(messageCreate, guildname) {
             const recievedEmbed = await (await messageCreate.channel.messages.fetch(embedID)).embeds[0];
             const newEmbed = new MessageEmbed(recievedEmbed) //creates new embed to edit existing embed
             newEmbed.fields[0] = []
-            newEmbed.fields[1] = { name: 'Server IP',      value: "> " + config.server_ip.toString()}
+            newEmbed.fields[1] = { name: 'Server IP',      value: "> " + process.env.server_ip.toString()}
             newEmbed.fields[2] = { name: 'Modpack',        value: "> " + response.motd.clean.toString()}
             newEmbed.fields[3] = { name: 'Version',        value: "> " + response.version.name.toString()}
             newEmbed.fields[4] = { name: 'Online Players', value: "> " + response.players.online.toString()}

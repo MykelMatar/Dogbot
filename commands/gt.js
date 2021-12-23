@@ -13,7 +13,7 @@ module.exports = {
     description: "Schedules Gamer Time and sends reactions for collection",
     async execute(client, message, args, guildName) {
         let GTembedID = data.Guilds[guildName].Embeds.GTEmbedData["id"];
-        unpinEmbed(message, EmbedID);
+       // unpinEmbed(message, EmbedID);
 
         //Argument Handling
         if (!args[0] || !args[1] || !args[2]) return message.reply("Missing Argument. Command Format: !gt {game} {time in 'hours:minutes' format} {am / pm}}")
@@ -31,9 +31,9 @@ module.exports = {
                 .addFields(
                     { name: "Game:", value: game },
                     { name: "Time", value: args[1] + ' ' + ampm },
-                    { name: printEmoji1(message, guildname) + " Forsureforsure", value: '-', inline: true },
-                    { name: printEmoji2(message, guildname) + " mayhaps", value: '-', inline: true },
-                    { name: printEmoji3(message, guildname) + " no", value: '-', inline: true }
+                    { name: printEmoji1(message, guildName) + " Forsureforsure", value: '-', inline: true },
+                    { name: printEmoji2(message, guildName) + " mayhaps", value: '-', inline: true },
+                    { name: printEmoji3(message, guildName) + " no", value: '-', inline: true }
                 )
                 .setColor("#19e2e4")
                 //.setThumbnail('https://i.ytimg.com/vi/ZLZTZSN0AnE/maxresdefault.jpg')
@@ -52,14 +52,14 @@ module.exports = {
             minutes = parseInt(minutes);
 
             //timer for collector
-            //let timer = getTimer(message, guildname, hours, minutes, ampm);
+            //let timer = getTimer(message, guildName, hours, minutes, ampm);
             //setTimeout(() => message.channel.send({content:"gamer time")}, timer);
 
             //Pushing Embed data to json file
-            data.Guilds[guildname].Embed.GTEmbedData.Title = Embed.title;
-            data.Guilds[guildname].Embed.GTEmbedData.Fields["Game"] = Embed.fields[0].value; //field[0] = game
-            data.Guilds[guildname].Embed.GTEmbedData.Fields["Time"] = Embed.fields[1].value; //field[1] = time
-           // data.Guilds[guildname].EmbedData.Fields["Timer"] = timer; // timer
+            data.Guilds[guildName].Embed.GTEmbedData.Title = Embed.title;
+            data.Guilds[guildName].Embed.GTEmbedData.Fields["Game"] = Embed.fields[0].value; //field[0] = game
+            data.Guilds[guildName].Embed.GTEmbedData.Fields["Time"] = Embed.fields[1].value; //field[1] = time
+           // data.Guilds[guildName].EmbedData.Fields["Timer"] = timer; // timer
             writeToJson(data);
         }
     }
@@ -72,18 +72,18 @@ module.exports = {
 
 
 //!gt reaction collector
-function runGTReactionCollector(message, guildname) {
+function runGTReactionCollector(message, guildName) {
     if (message.author.bot && message.embeds[0].title == "Gamer Time") {
        // let timer =
-        //    parseInt(data.Guilds[guildname].EmbedData.Fields["Timer"]); //retrieves timer from json
-        let time = data.Guilds[guildname].EmbedData.Fields["Time"]; //retrieves embed time parameter from json file
-        let game = data.Guilds[guildname].EmbedData.Fields["Game"]; //retrieves embed game parameter from json file
+        //    parseInt(data.Guilds[guildName].EmbedData.Fields["Timer"]); //retrieves timer from json
+        let time = data.Guilds[guildName].EmbedData.Fields["Time"]; //retrieves embed time parameter from json file
+        let game = data.Guilds[guildName].EmbedData.Fields["Game"]; //retrieves embed game parameter from json file
         var gamer = []; //declares gamer array to be used throughout this entire scope
 
         //retrieves emoji data for reaction
-        let emoji1Id = data.Guilds[guildname].EmojiData["0"];
-        let emoji2Id = data.Guilds[guildname].EmojiData["1"];
-        let emoji3Id = data.Guilds[guildname].EmojiData["2"];
+        let emoji1Id = data.Guilds[guildName].EmojiData["0"];
+        let emoji2Id = data.Guilds[guildName].EmojiData["1"];
+        let emoji3Id = data.Guilds[guildName].EmojiData["2"];
         message.react(emoji1Id); //reacts to embed with emoji
         message.react(emoji2Id);
         message.react(emoji3Id);
@@ -120,7 +120,7 @@ function runGTReactionCollector(message, guildname) {
 
 
             //when someone reacts, add them to the corresponding reaction array and remove them from the other two
-            if (reaction.emoji == getEmoji1(message, guildname) || reaction.emoji.name == getEmoji1(message, guildname)) {
+            if (reaction.emoji == getEmoji1(message, guildName) || reaction.emoji.name == getEmoji1(message, guildName)) {
                 if (!gamertags1.includes("> " + user.username)) { gamertags1.push("> " + user.username) } //checks if user is already in array
                 if (gamertags2.includes("> " + user.username)) { gamertags2.splice(gamertags2.indexOf("> " + user.username), 1) } //removes user from other 2 arrays to ensure there are no duplicates
                 if (gamertags3.includes("> " + user.username)) { gamertags3.splice(gamertags3.indexOf("> " + user.username), 1) }
@@ -130,7 +130,7 @@ function runGTReactionCollector(message, guildname) {
                     gamertags1.splice(gamertags1.indexOf('-'), 1)
                 }
             }
-            if (reaction.emoji == getEmoji2(message, guildname) || reaction.emoji.name == getEmoji2(message, guildname)) {
+            if (reaction.emoji == getEmoji2(message, guildName) || reaction.emoji.name == getEmoji2(message, guildName)) {
                 if (!gamertags2.includes("> " + user.username)) { gamertags2.push("> " + user.username) } //checks if user is already in array
                 if (gamertags1.includes("> " + user.username)) { gamertags1.splice(gamertags1.indexOf("> " + user.username), 1) } //removes user from other 2 arrays to ensure there are no duplicates
                 if (gamertags3.includes("> " + user.username)) { gamertags3.splice(gamertags3.indexOf("> " + user.username), 1) }
@@ -140,7 +140,7 @@ function runGTReactionCollector(message, guildname) {
                     gamertags2.splice(gamertags2.indexOf('-'), 1)
                 }
             }
-            if (reaction.emoji == getEmoji3(message, guildname) || reaction.emoji.name == getEmoji3(message, guildname)) {
+            if (reaction.emoji == getEmoji3(message, guildName) || reaction.emoji.name == getEmoji3(message, guildName)) {
                 if (!gamertags3.includes("> " + user.username)) { gamertags3.push("> " + user.username) } //checks if user is already in array
                 if (gamertags2.includes("> " + user.username)) { gamertags2.splice(gamertags2.indexOf("> " + user.username), 1) } //removes user from other 2 arrays to ensure there are no duplicates
                 if (gamertags1.includes("> " + user.username)) { gamertags1.splice(gamertags1.indexOf("> " + user.username), 1) }
@@ -150,9 +150,9 @@ function runGTReactionCollector(message, guildname) {
                     gamertags3.splice(gamertags3.indexOf('-'), 1)
                 }
             }
-            newEmbed.fields[2] = { name: printEmoji1(message, guildname) + " Forsureforsure", value: gamertags1, inline: true };
-            newEmbed.fields[3] = { name: printEmoji2(message, guildname) + " mayhaps", value: gamertags2, inline: true };
-            newEmbed.fields[4] = { name: printEmoji3(message, guildname) + " no", value: gamertags3, inline: true };
+            newEmbed.fields[2] = { name: printEmoji1(message, guildName) + " Forsureforsure", value: gamertags1, inline: true };
+            newEmbed.fields[3] = { name: printEmoji2(message, guildName) + " mayhaps", value: gamertags2, inline: true };
+            newEmbed.fields[4] = { name: printEmoji3(message, guildName) + " no", value: gamertags3, inline: true };
             reaction.users.remove(user);
             message.edit({ embeds: [Embed] });
         });
@@ -165,7 +165,7 @@ function runGTReactionCollector(message, guildname) {
         //ends collector
         collector.on('end', (collected) => {
             message.pin();
-            data.Guilds[guildname].Embed.GTEmbedData["id"] = message.id;
+            data.Guilds[guildName].Embed.GTEmbedData["id"] = message.id;
             writeToJson(data);
             //setJsonData(data);
         });
@@ -173,7 +173,7 @@ function runGTReactionCollector(message, guildname) {
 }
 
 
-// function getTimer(message, guildname, getHours, getMinutes, getAmpm) {
+// function getTimer(message, guildName, getHours, getMinutes, getAmpm) {
 
 //     //retrieve current time and declare hour Left variable for us in if statement
 //     hours = getHours;
@@ -200,8 +200,8 @@ function runGTReactionCollector(message, guildname) {
 
 
 //getEmoji functions
-function getEmoji1(message, guildname) {
-    let emoji1Id = data.Guilds[guildname].EmojiData["0"];
+function getEmoji1(message, guildName) {
+    let emoji1Id = data.Guilds[guildName].EmojiData["0"];
     var emoji1;
     if (Number.isInteger(parseInt(emoji1Id))) {
         let resolveEmoji1 = message.guild.emojis.resolve(emoji1Id);
@@ -211,8 +211,8 @@ function getEmoji1(message, guildname) {
     return emoji1;
 }
 
-function getEmoji2(message, guildname) {
-    let emoji2Id = data.Guilds[guildname].EmojiData["1"];
+function getEmoji2(message, guildName) {
+    let emoji2Id = data.Guilds[guildName].EmojiData["1"];
     var emoji2;
     if (Number.isInteger(parseInt(emoji2Id))) {
         let resolveEmoji2 = message.guild.emojis.resolve(emoji2Id);
@@ -222,8 +222,8 @@ function getEmoji2(message, guildname) {
     return emoji2;
 }
 
-function getEmoji3(message, guildname) {
-    let emoji3Id = data.Guilds[guildname].EmojiData["2"];
+function getEmoji3(message, guildName) {
+    let emoji3Id = data.Guilds[guildName].EmojiData["2"];
     var emoji3;
     if (Number.isInteger(parseInt(emoji3Id))) {
         let resolveEmoji3 = message.guild.emojis.resolve(emoji3Id);
@@ -234,8 +234,8 @@ function getEmoji3(message, guildname) {
 }
 
 //print emoji functions for use in embed
-function printEmoji1(message, guildname) {
-    let emoji1Id = data.Guilds[guildname].EmojiData["0"];
+function printEmoji1(message, guildName) {
+    let emoji1Id = data.Guilds[guildName].EmojiData["0"];
     var emoji1;
     if (Number.isInteger(parseInt(emoji1Id))) {
         let resolveEmoji1 = message.guild.emojis.resolve(emoji1Id);
@@ -245,8 +245,8 @@ function printEmoji1(message, guildname) {
     return emoji1;
 }
 
-function printEmoji2(message, guildname) {
-    let emoji2Id = data.Guilds[guildname].EmojiData["1"];
+function printEmoji2(message, guildName) {
+    let emoji2Id = data.Guilds[guildName].EmojiData["1"];
     var emoji2;
     if (Number.isInteger(parseInt(emoji2Id))) {
         let resolveEmoji2 = message.guild.emojis.resolve(emoji2Id);
@@ -256,8 +256,8 @@ function printEmoji2(message, guildname) {
     return emoji2;
 }
 
-function printEmoji3(message, guildname) {
-    let emoji3Id = data.Guilds[guildname].EmojiData["2"];
+function printEmoji3(message, guildName) {
+    let emoji3Id = data.Guilds[guildName].EmojiData["2"];
     var emoji3;
     if (Number.isInteger(parseInt(emoji3Id))) {
         let resolveEmoji3 = message.guild.emojis.resolve(emoji3Id);

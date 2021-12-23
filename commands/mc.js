@@ -1,6 +1,6 @@
-const {MessageEmbed} = require('discord.js');
-const util = require('minecraft-server-util');
+const { MessageEmbed } = require('discord.js');
 const { clearInterval } = require('timers');
+const util = require('minecraft-server-util');
 const data = require('../data.json');
 let cmdStatus = 0;
 let tmpStatus = 0;
@@ -12,8 +12,7 @@ module.exports = {
     name: 'mc',
     description: "Retrieves MC server status",
     async execute(client, message, args, guildName){
-      let MCEmbedId = data.Guilds[guildName];
-      console.log(MCEmbedId);
+      let MCEmbedId = data.Guilds[guildName].Embeds.MCEmbedData["id"];
       cmdStatus = 1;
       //unpinEmbed(message, embedID);
       util.status(process.env.server_ip) // port default is 25565
@@ -34,7 +33,7 @@ module.exports = {
             .setFooter('Server Online')
 
           message.channel.send({ embeds: [Embed] });
-          message.pin();
+          //message.pin();
         })
         .catch((error) => {
           console.error('Server Offline')
