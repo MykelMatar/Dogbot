@@ -12,6 +12,11 @@ module.exports = {
     name: 'addmc',
     description: 'Adds a new IP to the server list', 
     async execute(client, message, args, guildName) {
+        if (!message.member.permissions.has("ADMINISTRATOR")) {
+            message.reply('Only Admins can use this command')
+            return;
+        }
+        
         let serverListSize = Object.values(data.Guilds[guildName].MCData.serverList).length 
 
         if(serverListSize == 10) {

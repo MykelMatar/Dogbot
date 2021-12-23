@@ -7,16 +7,17 @@ let cmdStatus = 0;
 
 
 
+
 module.exports = {
     name: 'mc',
     description: "Retrieves MC server status",
     async execute(client, message, args, guildName){
-      // if(cmdStatus == 1) {
-      //   message.reply('Command already running. Use !changemc to change server.')
-      //   return;
-      // }
+      if(cmdStatus == 1) {
+        message.reply('Command already running. Use !changemc to change server.')
+        return;
+      }
 
-      let MCEmbedId = data.Guilds[guildName].Embeds.MCEmbedData["id"];
+      let MCEmbedId = data.Guilds[guildName].Embeds.MCEmbedId;
       let MCServerIP = JSON.stringify(data.Guilds[guildName].MCData.selectedServer["IP"]).replace(/[""]/g, '')
       let title = JSON.stringify(data.Guilds[guildName].MCData.selectedServer["title"]).replace(/[""]/g, '')
 
@@ -71,9 +72,6 @@ module.exports = {
           runButtonCollector(client, message, args, guildName)
           
         });
-
-        const refreshMC = client.commands.get('changemc');
-        refreshMC.execute(client, message, args, guildName);
     }
 }
 

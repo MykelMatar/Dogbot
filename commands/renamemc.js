@@ -12,6 +12,11 @@ module.exports = {
     name: 'renamemc', 
     description: 'renames mc server', 
     async execute(client, message, args, guildName){
+        if (!message.member.permissions.has("ADMINISTRATOR")) {
+            message.reply('Only Admins can use this command')
+            return;
+        }
+
         let filter = m => m.author.id === message.author.id
         message.reply("Enter the name of the server you want to change.", { fetchReply: true })
         .then(() => {

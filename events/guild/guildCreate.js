@@ -24,9 +24,7 @@ module.exports = async function(client, guild) {
         },
         MenuOptions : {},
         Embeds: {
-            MCEmbedData:{
-                id: "0"
-            },
+            MCEmbedId: "",
             GTEmbedData: {
                 Title: "peepee",
                 Fields: {

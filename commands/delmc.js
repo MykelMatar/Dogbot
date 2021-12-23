@@ -12,6 +12,11 @@ module.exports = {
     name: 'delmc', 
     description: 'removes server from server list', 
     async execute(client, message, args, guildName){
+        if (!message.member.permissions.has("ADMINISTRATOR")) {
+            message.reply('Only Admins can use this command')
+            return;
+        }
+        
         let filter = m => m.author.id === message.author.id
         message.reply("Enter The Name of the Server You Want To Remove.", { fetchReply: true })
         .then(() => {

@@ -7,13 +7,11 @@
             "MCData": {
                 "serverList": {
                     "Dogbert": "76.88.229.48",
-                    "burt": "76.88.229.40",
-                    "dog": "76.88.229.30",
-                    "cat": "76.88.229.20"
+                    "cat": "76.88.229.30"
                 },
                 "selectedServer": {
-                    "title": "burt",
-                    "IP": "76.88.229.40"
+                    "title": "Dogbert",
+                    "IP": "76.88.229.48"
                 }
             },
             "MenuOptions": {
@@ -23,25 +21,13 @@
                     "value": "selection0"
                 },
                 "1": {
-                    "label": "burt",
-                    "description": "76.88.229.40",
-                    "value": "selection1"
-                },
-                "2": {
-                    "label": "dog",
-                    "description": "76.88.229.30",
-                    "value": "selection2"
-                },
-                "3": {
                     "label": "cat",
-                    "description": "76.88.229.20",
-                    "value": "selection3"
+                    "description": "76.88.229.30",
+                    "value": "selection1"
                 }
             },
             "Embeds": {
-                "MCEmbedData": {
-                    "id": "0"
-                },
+                "MCEmbedId": "923551798936104960",
                 "GTEmbedData": {
                     "Title": "peepee",
                     "Fields": {

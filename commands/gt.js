@@ -13,7 +13,6 @@ module.exports = {
     description: "Schedules Gamer Time and sends reactions for collection",
     async execute(client, message, args, guildName) {
         let GTembedID = data.Guilds[guildName].Embeds.GTEmbedData["id"];
-       // unpinEmbed(message, EmbedID);
 
         //Argument Handling
         if (!args[0] || !args[1] || !args[2]) return message.reply("Missing Argument. Command Format: !gt {game} {time in 'hours:minutes' format} {am / pm}}")
@@ -70,107 +69,6 @@ module.exports = {
 //Collector + Helper Functions
 
 
-
-//!gt reaction collector
-function runGTReactionCollector(message, guildName) {
-    if (message.author.bot && message.embeds[0].title == "Gamer Time") {
-       // let timer =
-        //    parseInt(data.Guilds[guildName].EmbedData.Fields["Timer"]); //retrieves timer from json
-        let time = data.Guilds[guildName].EmbedData.Fields["Time"]; //retrieves embed time parameter from json file
-        let game = data.Guilds[guildName].EmbedData.Fields["Game"]; //retrieves embed game parameter from json file
-        var gamer = []; //declares gamer array to be used throughout this entire scope
-
-        //retrieves emoji data for reaction
-        let emoji1Id = data.Guilds[guildName].EmojiData["0"];
-        let emoji2Id = data.Guilds[guildName].EmojiData["1"];
-        let emoji3Id = data.Guilds[guildName].EmojiData["2"];
-        message.react(emoji1Id); //reacts to embed with emoji
-        message.react(emoji2Id);
-        message.react(emoji3Id);
-
-
-        //filter to ensure no other reactions are counted
-        const filter = (reaction, user) => {
-            if (user.id != client.user.id) {
-                if (reaction.emoji.id == null) {
-                    return reaction.emoji.name;
-                } else {
-                    return reaction.emoji.id;
-                }
-            }
-        };
-
-
-        //collector creation
-        const collector = message.createReactionCollector(filter, { time: 10000, dispose: true });
-        var gamertags1 = ['-'];
-        var gamertags2 = ['-'];
-        var gamertags3 = ['-'];
-
-        //start of collection
-        collector.on('collect', (reaction, user) => {
-            console.log(`Collected ${reaction.emoji.name} from ${user.tag}`);
-            gamer.push(user.id);
-
-
-
-            //edit embed to sort people into respective categories
-            const recievedEmbed = message.embeds[0];
-            const newEmbed = new MessageEmbed(recievedEmbed) //creates new embed to edit existing embed
-
-
-            //when someone reacts, add them to the corresponding reaction array and remove them from the other two
-            if (reaction.emoji == getEmoji1(message, guildName) || reaction.emoji.name == getEmoji1(message, guildName)) {
-                if (!gamertags1.includes("> " + user.username)) { gamertags1.push("> " + user.username) } //checks if user is already in array
-                if (gamertags2.includes("> " + user.username)) { gamertags2.splice(gamertags2.indexOf("> " + user.username), 1) } //removes user from other 2 arrays to ensure there are no duplicates
-                if (gamertags3.includes("> " + user.username)) { gamertags3.splice(gamertags3.indexOf("> " + user.username), 1) }
-                if (!(gamertags2.includes('-')) && gamertags2.length == 0) { gamertags2.push('-') } //makes sure array 2 is never empty
-                if (!(gamertags3.includes('-')) && gamertags3.length == 0) { gamertags3.push('-') } //makes sure array 3 is never empty
-                if (gamertags1.length > 1 && gamertags1.includes('-')) {  //removes extra dash if a user is in the array
-                    gamertags1.splice(gamertags1.indexOf('-'), 1)
-                }
-            }
-            if (reaction.emoji == getEmoji2(message, guildName) || reaction.emoji.name == getEmoji2(message, guildName)) {
-                if (!gamertags2.includes("> " + user.username)) { gamertags2.push("> " + user.username) } //checks if user is already in array
-                if (gamertags1.includes("> " + user.username)) { gamertags1.splice(gamertags1.indexOf("> " + user.username), 1) } //removes user from other 2 arrays to ensure there are no duplicates
-                if (gamertags3.includes("> " + user.username)) { gamertags3.splice(gamertags3.indexOf("> " + user.username), 1) }
-                if (!(gamertags1.includes('-')) && gamertags1.length == 0) { gamertags1.push('-') } //makes sure array 1 is never empty
-                if (!(gamertags3.includes('-')) && gamertags3.length == 0) { gamertags3.push('-') } //makes sure array 3 is never empty
-                if (gamertags2.length > 1 && gamertags2.includes('-')) {  //removes extra dash if a user is in the array
-                    gamertags2.splice(gamertags2.indexOf('-'), 1)
-                }
-            }
-            if (reaction.emoji == getEmoji3(message, guildName) || reaction.emoji.name == getEmoji3(message, guildName)) {
-                if (!gamertags3.includes("> " + user.username)) { gamertags3.push("> " + user.username) } //checks if user is already in array
-                if (gamertags2.includes("> " + user.username)) { gamertags2.splice(gamertags2.indexOf("> " + user.username), 1) } //removes user from other 2 arrays to ensure there are no duplicates
-                if (gamertags1.includes("> " + user.username)) { gamertags1.splice(gamertags1.indexOf("> " + user.username), 1) }
-                if (!(gamertags1.includes('-')) && gamertags1.length == 0) { gamertags1.push('-') } //makes sure array 1 is never empty
-                if (!(gamertags2.includes('-')) && gamertags2.length == 0) { gamertags2.push('-') } //makes sure array 2 is never empty
-                if (gamertags3.length > 1 && gamertags3.includes('-')) { //removes extra dash if a user is in the array
-                    gamertags3.splice(gamertags3.indexOf('-'), 1)
-                }
-            }
-            newEmbed.fields[2] = { name: printEmoji1(message, guildName) + " Forsureforsure", value: gamertags1, inline: true };
-            newEmbed.fields[3] = { name: printEmoji2(message, guildName) + " mayhaps", value: gamertags2, inline: true };
-            newEmbed.fields[4] = { name: printEmoji3(message, guildName) + " no", value: gamertags3, inline: true };
-            reaction.users.remove(user);
-            message.edit({ embeds: [Embed] });
-        });
-
-        //deletes user from collection when reaction is removed
-        collector.on('remove', (reaction, user) => {
-            console.log('removed')
-        });
-
-        //ends collector
-        collector.on('end', (collected) => {
-            message.pin();
-            data.Guilds[guildName].Embed.GTEmbedData["id"] = message.id;
-            writeToJson(data);
-            //setJsonData(data);
-        });
-    }
-}
 
 
 // function getTimer(message, guildName, getHours, getMinutes, getAmpm) {
@@ -265,12 +163,6 @@ function printEmoji3(message, guildName) {
     } else { emoji3 = emoji3Id }
 
     return emoji3;
-}
-
-async function unpinEmbed(message, embedId) {
-    if (embedId != null) {
-        // (await message.channel.messages.fetch(embedId)).unpin();
-    }
 }
 
 //writes to data.json
