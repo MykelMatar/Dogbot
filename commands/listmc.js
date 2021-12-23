@@ -41,11 +41,15 @@ module.exports = {
                 { name: 'Server Name',      value:  serverNameList, inline: true},               // Discord.js v13 requires manual call of toString on all methods
                 { name: 'IP',               value:  serverIPList, inline: true},
               )
-            .setColor("#8570C1");
+            .setColor("#8570C1")
+            .setFooter(JSON.stringify(Object.values(data.Guilds[guildName].MCData.serverList).length) + ' / 10 Servers Registered')
 
         await message.reply({ ephemeral: true, embeds: [embed], components: [row]})
 
-        const filter = i => i.customId === 'Add' || 'Remove'
+        const filter = i => 
+            i.customId === ('Add' || 'Remove') &&
+            i.user.id === message.author.id;
+
         const collector = message.channel.createMessageComponentCollector({ filter, max: 1, time: 15000 });
         const command1 = client.commands.get('addmc');
         const command2 = client.commands.get('delmc');

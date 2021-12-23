@@ -1,5 +1,6 @@
 const data = require('/Users/Michael/Documents/GitHub/Dogbot/data.json'); // change for your PC path
 const fs = require('fs');  
+const { description } = require('../../commands/listmc');
 
 module.exports = async function(client, guild) {
     if (!("Guilds" in data)) {
@@ -15,8 +16,10 @@ module.exports = async function(client, guild) {
             serverId: guild.id
         },
         MCData : {
-            serverList: {}
+            serverList: {},
+            selectedServer: ""
         },
+        MenuOptions : {},
         Embeds: {
             MCEmbedData:{
                 id: "0"

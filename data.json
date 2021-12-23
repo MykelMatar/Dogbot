@@ -5,11 +5,33 @@
                 "serverId": "715122900021149776"
             },
             "MCData": {
-                "serverList": {}
+                "serverList": {
+                    "bert": "76.88.229.44",
+                    "dogbert2": "76.88.229.40",
+                    "bertbus": "76.88.229.48"
+                },
+                "selectedServer": "76.88.229.48"
+            },
+            "MenuOptions": {
+                "0": {
+                    "label": "bert",
+                    "description": "76.88.229.44",
+                    "value": "selection0"
+                },
+                "1": {
+                    "label": "dogbert2",
+                    "description": "76.88.229.40",
+                    "value": "selection1"
+                },
+                "2": {
+                    "label": "bertbus",
+                    "description": "76.88.229.48",
+                    "value": "selection2"
+                }
             },
             "Embeds": {
                 "MCEmbedData": {
-                    "id": "123412341234"
+                    "id": "0"
                 },
                 "GTEmbedData": {
                     "Title": "peepee",

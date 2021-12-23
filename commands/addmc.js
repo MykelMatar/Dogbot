@@ -8,6 +8,9 @@ module.exports = {
     name: 'addmc',
     description: 'Adds a new IP to the server list', 
     async execute(client, message, args, guildName) {
+        let serverListSize = Object.values(data.Guilds[guildName].MCData.serverList).length 
+        if(serverListSize > 10) message.reply('Max number of servers reached. Remove a server to add a new one (Limit of 10).')
+
         let filter = m => m.author.id === message.author.id
 
         message.reply("Enter your Server IP. Make sure your server is currently online", { fetchReply: true })
@@ -29,8 +32,11 @@ module.exports = {
                         .then(collected => {
                             let name = collected.first().content //.replace(/\s+/g, "");
                             console.log(name);
+
+                            if (JSON.stringify(data.Guilds[guildName].MCData.serverList) == '{}') data.Guilds[guildName].MCData.selectedServer = IP;    // use first input as default
                             data.Guilds[guildName].MCData.serverList[name] = IP;
                             writeToJson(data);
+
                             message.reply("Server Sucessfully Added")
                         })
                         .catch(collected => {
