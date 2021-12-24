@@ -2,7 +2,7 @@ const {} = require('discord.js');
 const util = require('minecraft-server-util'); 
 const data = require('../data.json');
 const fs = require('fs');
-
+let cmdStatus = 0;
 
 
 
@@ -10,13 +10,23 @@ const fs = require('fs');
 
 module.exports = {
     name: 'addmc',
-    description: 'Adds a new IP to the server list', 
+    description: "Adds a new IP to the server list in JSON file. Accessible via 'listmc' button or by calling command", 
     async execute(client, message, args, guildName) {
+        console.log('addmc detected');
+        
+        // check for admin perms
         if (!message.member.permissions.has("ADMINISTRATOR")) {
             message.reply('Only Admins can use this command')
             return;
         }
+        // prevent multiple instances from running
+        if (cmdStatus == 1) {
+            message.reply('addmc command already running.')
+            return;
+        }
+        cmdStatus = 1; 
         
+        // set max server size
         let serverListSize = Object.values(data.Guilds[guildName].MCData.serverList).length 
 
         if(serverListSize == 10) {
@@ -24,63 +34,68 @@ module.exports = {
             return;
         }
 
-       
+        // add server interaction
         let filter = m => m.author.id === message.author.id
-
         message.reply("Enter your Server IP. Make sure your server is currently online", { fetchReply: true })
-        .then(() => {
-            message.channel.awaitMessages({ filter, max: 1, time: 30000, errors: ['time'] })
-            .then(collected => {
-                let IP = collected.first().content;
-                console.log(IP);
-                if (Object.values(data.Guilds[guildName].MCData.serverList).includes(IP)) // check if IP already exists before continuing
-                {
-                    message.reply("Server already aegistered, double check the IP or use **!renamemc** to change the name")
-                    console.log("Duplicate IP Detected");
-                    return;
-                } else {
-                    util.status(IP)
-                    .then((response) => {
-                        message.reply("Valid server IP detected. Please enter a name for your server", {fetchReply: true})
-                        message.channel.awaitMessages({ filter, max: 1, time: 30000, errors: ['time'] })
-                        .then(collected => {
-                            let name = collected.first().content //.replace(/\s+/g, "");
-                            console.log(name);
+            .then(() => {
+                message.channel.awaitMessages({ filter, max: 1, time: 30000, errors: ['time'] })    // wait for user input
+                    .then(collected => {
+                        let IP = collected.first().content; // retrieve user input
+                        console.log(IP);
+                        
+                        // input handling
+                        if (Object.values(data.Guilds[guildName].MCData.serverList).includes(IP)) // check if IP already exists before continuing
+                        {
+                            message.reply("Server already registered, double check the IP or use **!renamemc** to change the name")
+                            console.log("Duplicate IP Detected");
+                            return;
 
-                            if (JSON.stringify(data.Guilds[guildName].MCData.serverList) == '{}') {
-                                data.Guilds[guildName].MCData.selectedServer["IP"] = IP;    // use first input as default
-                                data.Guilds[guildName].MCData.selectedServer["title"] = name;
-                            }
-                            data.Guilds[guildName].MCData.serverList[name] = IP;
-                            writeToJson(data);
+                        } else {
+                            util.status(IP)
+                                .then((response) => {
+                                    message.reply("Valid server IP detected. Please enter a name for your server", { fetchReply: true })
+                                    message.channel.awaitMessages({ filter, max: 1, time: 30000, errors: ['time'] })
+                                        .then(collected => {
+                                            let name = collected.first().content //.replace(/\s+/g, "");
+                                            console.log(name);
 
-                            message.reply("Server added sucessfully")
-                        })
-                        .catch(collected => {
-                            message.reply('Error naming server. Please try again.')
-                        });
+                                            if (JSON.stringify(data.Guilds[guildName].MCData.serverList) == '{}') {
+                                                data.Guilds[guildName].MCData.selectedServer["IP"] = IP;    // use first input as default
+                                                data.Guilds[guildName].MCData.selectedServer["title"] = name;
+                                            }
+                                            data.Guilds[guildName].MCData.serverList[name] = IP;
+                                            writeToJson(data);
+
+                                            message.reply("Server added sucessfully")
+                                        })
+                                        .catch(collected => {
+                                            message.reply('Error naming server. Please try again.')
+                                        });
+                                })
+                                .catch((error) => {
+                                    message.reply('Could not retrieve server status. Double check IP and make sure server is online.')
+                                })
+                        }
                     })
-                    .catch((error) => {
-                        message.reply('Could not retrieve server status. Double check IP and make sure server is online.')
+                    .catch(collected => {
+                        message.reply('Request timed out. Please try again.')
                     })
-                }
             })
             .catch(collected => {
+                console.log('Error');
                 message.reply('Request timed out. Please try again.')
             })
-        })
-        .catch(collected => {
-            console.log('Error');
-            message.reply('Request timed out. Please try again.')
-        })
-        
+
+        cmdStatus = 0;
     }
 }
 
 
 
-
-//writes to data.json
+/**
+ * writes data to data.JSON file
+ * @param  {string} data
+ */
 function writeToJson(data) {
     fs.writeFile("./data.json", JSON.stringify(data, null, 4), function (err) {
         if (err) throw err;

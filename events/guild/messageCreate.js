@@ -8,7 +8,6 @@ let tmpStatus = 0;
 let status = 0;
 
 
-
 module.exports = (client, message) => {
     const PREFIX = '!';
     const args = message.content.slice(PREFIX.length).split(/ +/);
@@ -41,6 +40,7 @@ module.exports = (client, message) => {
     }
     
     // command execution
+    // *unless description states otherwise, commands that end with mc require admin perms
     if(!message.content.startsWith(PREFIX))  return; 
 
     if(command) command.execute(client, message, args, guildName);
@@ -49,6 +49,12 @@ module.exports = (client, message) => {
 
 
 
+
+/**
+ * Refreshes mc server embed
+ * @param  {string} message
+ * @param  {string} guildName
+ */
 async function refreshStatus(message, guildName) {
     if (message.author.bot) {
         let MCEmbedId = data.Guilds[guildName].Embeds.MCEmbedId;
@@ -108,7 +114,12 @@ async function refreshStatus(message, guildName) {
 
 
 
-//!gt reaction collector
+
+/**
+ ** Reaction Collector for gt embed
+ * @param  {string} message
+ * @param  {string} guildName
+ */
 function runGTReactionCollector(message, guildName) {
     if (message.author.bot && message.embeds[0].title == "Gamer Time") {
        // let timer =
