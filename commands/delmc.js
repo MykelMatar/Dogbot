@@ -31,6 +31,10 @@ module.exports = {
         if (serverListSize == 0) {
             message.reply('No Registered Servers, use !addmc or !listmc to add servers.')
         }
+        if (serverListSize == 0) {
+            message.reply('Cannot remove server, only 1 server registered, use !addmc or !listmc to add servers.')
+            return;
+        }
 
         var options = [];
         options = await generateOptions(guildName, serverListSize);
@@ -57,30 +61,40 @@ module.exports = {
         const collector = message.channel.createMessageComponentCollector({filter, componentType: 'SELECT_MENU', max: 1, time: 15000 });
         const command = client.commands.get('mc');
 
-        collector.on('collect', async i => {
-            var selection = i.values[0]
-            for (let i = 0; i < serverListSize; i++) {
-                if(selection == `selection${i}`){
-                    let serverName = Object.keys(data.Guilds[guildName].MCData.serverList)[i]
-                    delete data.Guilds[guildName].MCData.serverList[serverName];
-                    writeToJson(data);
-                }  
-            }
+        try {
+            collector.on('collect', async i => {
+                var selection = i.values[0]
+                for (let i = 0; i < serverListSize; i++) {
+                    if(selection == `selection${i}`){
+                        let selectedServer = data.Guilds[guildName].MCData.selectedServer
+                        let selectedServerIP = Object.values(data.Guilds[guildName].MCData.selectedServer)[1]
+                        let serverName = Object.keys(data.Guilds[guildName].MCData.serverList)[i]
+                        let serverIP = Object.values(data.Guilds[guildName].MCData.serverList)[i]
+                        delete data.Guilds[guildName].MCData.serverList[serverName];
+                        if (selectedServerIP == serverIP) {
+                            selectedServer['title'] = Object.keys(data.Guilds[guildName].MCData.serverList)[0]
+                            selectedServer["IP"] = Object.values(data.Guilds[guildName].MCData.serverList)[0]
+                        }
+                        writeToJson(data);
+                    }  
+                }
+    
+                if (i.customId === "selection") {
+                    let MCEmbedId = data.Guilds[guildName].Embeds.MCEmbedId;
+                    
+                    await i.update({ content: 'Server Deleted', components: []});
+                }
+            });
+            
+            collector.on('end', async collected => {
+                console.log(`Collected ${collected.size} items`)
+                if (collected.size == 1) await sent.edit({ content: 'Server Deleted', ephemeral: true, components: [] })
+                else await sent.edit({ content: 'Request Timeout', ephemeral: true, components: [] })
+            });
 
-            if (i.customId === "selection") {
-                let MCEmbedId = data.Guilds[guildName].Embeds.MCEmbedId;
-                
-                await i.update({ content: 'Server Deleted', components: []});
-            }
-        });
-        
-        collector.on('end', async collected => {
-            console.log(`Collected ${collected.size} items`)
-            if (collected.size == 1) await sent.edit({ content: 'Server Deleted', ephemeral: true, components: [] })
-            else await sent.edit({ content: 'Request Timeout', ephemeral: true, components: [] })
-            cmdStatus = 0;
-        });
-
+        } catch (error) {
+            message.reply('Interaction Error, please try again')
+        }
 
         cmdStatus = 0;
     }

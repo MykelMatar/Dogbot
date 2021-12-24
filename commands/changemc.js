@@ -55,34 +55,38 @@ module.exports = {
         const collector = message.channel.createMessageComponentCollector({filter, componentType: 'SELECT_MENU', max: 1, time: 15000 });
         const command = client.commands.get('mc');
 
-        collector.on('collect', async i => {
-            var selection = i.values[0]
-            for (let i = 0; i < serverListSize; i++) {
-                if(selection == `selection${i}`){
-                    var newTitle = label[i];
-                    var newIP = description[i];
-                    data.Guilds[guildName].MCData.selectedServer["title"] = newTitle;
-                    data.Guilds[guildName].MCData.selectedServer["IP"] = newIP;
-                    writeToJson(data);
-                }  
-            }
+        try {
+            collector.on('collect', async i => {
+                var selection = i.values[0]
+                for (let i = 0; i < serverListSize; i++) {
+                    if (selection == `selection${i}`) {
+                        var newTitle = label[i];
+                        var newIP = description[i];
+                        data.Guilds[guildName].MCData.selectedServer["title"] = newTitle;
+                        data.Guilds[guildName].MCData.selectedServer["IP"] = newIP;
+                        writeToJson(data);
+                    }
+                }
 
-            if (i.customId === "selection") {
-                let MCEmbedId = data.Guilds[guildName].Embeds.MCEmbedId;
-                const msg = await (await message.channel.messages.fetch(MCEmbedId));
-                refreshStatus(msg, guildName);  // refresh embed immediately
-                
-                await i.update({ content: 'Server Updated', components: []});
-            }
-        });
-        
-        collector.on('end', async collected => {
-            console.log(`Collected ${collected.size} items`)
-            if (collected.size == 1) await sent.edit({ content: 'Server Updated', ephemeral: true, components: [] })
-            else await sent.edit({ content: 'Request Timeout', ephemeral: true, components: [] })
-        });
+                if (i.customId === "selection") {
+                    let MCEmbedId = data.Guilds[guildName].Embeds.MCEmbedId;
+                    const msg = await (await message.channel.messages.fetch(MCEmbedId));
+                    refreshStatus(msg, guildName);  // refresh embed immediately
 
-    cmdStatus = 0;
+                    await i.update({ content: 'Server Updated', components: [] });
+                }
+            });
+
+            collector.on('end', async collected => {
+                console.log(`Collected ${collected.size} items`)
+                if (collected.size == 1) await sent.edit({ content: 'Server Updated', ephemeral: true, components: [] })
+                else await sent.edit({ content: 'Request Timeout', ephemeral: true, components: [] })
+                cmdStatus = 0;
+            });
+        } catch (error) {
+            message.reply('Interaction Error, please try again')
+            cmdStatus = 0;
+        }
     }
 }
 
