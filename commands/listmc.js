@@ -1,11 +1,11 @@
 const { MessageEmbed, MessageActionRow, MessageButton} = require('discord.js');
 const data = require('../data.json');
-const fs = require('fs');
 let cmdStatus = 0;
 
 
 
 
+// TODO: add modpack to server list information
 
 
 module.exports = {

@@ -1,12 +1,12 @@
 const { MessageActionRow, MessageSelectMenu } = require('discord.js');
 const data = require('../data.json');
-const fs = require('fs');
+const writeToJson = require('../helperFunctions/writeToJson');
 let cmdStatus = 0;
 
 
 
 
-// TODO: Change interaction to dropdown menu instead of message interaction
+
 
 module.exports = {
     name: 'renamemc', 
@@ -157,16 +157,6 @@ module.exports = {
 }
 
 
-
-/**
- * writes data to data.JSON file
- * @param  {string} data
- */
-function writeToJson(data) {
-    fs.writeFile('./data.json', JSON.stringify(data, null, 4), function (err) {
-        if (err) throw err;
-    });
-}
 
 
 

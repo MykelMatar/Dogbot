@@ -1,12 +1,12 @@
 const {MessageActionRow, MessageSelectMenu} = require('discord.js');
 const data = require('../data.json');
-const fs = require('fs');
+const writeToJson = require('../helperFunctions/writeToJson');
 let cmdStatus = 0;
 
 
 
 
-// TODO: Change interaction to dropdown menu instead of message interaction, make sure new server gets selected for tracking (can default to item 0)
+
 
 module.exports = {
     name: 'delmc', 
@@ -28,11 +28,12 @@ module.exports = {
         
         let serverListSize = Object.values(data.Guilds[guildName].MCData.serverList).length 
 
+        // ensures command does not execute if 0 or 1 server exists
         if (serverListSize == 0) {
             message.reply('No Registered Servers, use !addmc or !listmc to add servers.')
         }
-        if (serverListSize == 0) {
-            message.reply('Cannot remove server, only 1 server registered, use !addmc or !listmc to add servers.')
+        if (serverListSize == 1) {
+            message.reply('Cannot remove the only existing server, use !addmc or !listmc to add servers, or change server information with !renamemc and !changemcip.')
             return;
         }
 
@@ -145,17 +146,6 @@ module.exports = {
     return [option, label, value, description];
 }
 
-
-
-/**
- * writes data to data.JSON file
- * @param  {string} data
- */
-function writeToJson(data) {
-    fs.writeFile("./data.json", JSON.stringify(data, null, 4), function (err) {
-      if (err) throw err;
-    });
-  }
 
 
 // deprecated delmc code

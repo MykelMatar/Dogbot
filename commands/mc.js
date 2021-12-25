@@ -1,8 +1,8 @@
 const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
 const util = require('minecraft-server-util');
+const runMcButtonCollector = require('../helperFunctions/runMcButtonCollector');
 const data = require('../data.json');
 let cmdStatus = 0;
-var sent;
 
 
 
@@ -25,6 +25,7 @@ module.exports = {
         let MCEmbedId = data.Guilds[guildName].Embeds.MCEmbedId;
         let MCServerIP = JSON.stringify(data.Guilds[guildName].MCData.selectedServer["IP"]).replace(/[""]/g, '')
         let title = JSON.stringify(data.Guilds[guildName].MCData.selectedServer["title"]).replace(/[""]/g, '')
+        var sent;
   
 
         // Generate buttons
@@ -58,8 +59,9 @@ module.exports = {
               .setFooter('Server Online')
 
             sent = await message.reply({ ephemeral: true, embeds: [Embed], components: [row]})
-            runButtonCollector(client, message, args, guildName)
+            runMcButtonCollector(client, message, args, guildName, sent)
           })
+
           .catch(async (error) => {
             console.error('Server Offline')
 
@@ -78,54 +80,9 @@ module.exports = {
 
             // send embed at collect response
             sent = await message.reply({ ephemeral: true, embeds: [Embed], components: [row]})
-            runButtonCollector(client, message, args, guildName)
+            runMcButtonCollector(client, message, args, guildName, sent)
           });
     } 
 }
 
 
-/**
- * collection and interaction handling
- * @param  {string} client
- * @param  {string} message
- * @param  {string} args
- * @param  {string} guildName
- */
-function runButtonCollector(client, message, args, guildName) {
-  const filter = i => i.user.id === message.author.id;
-  const collector = message.channel.createMessageComponentCollector({ filter, componentType: 'BUTTON', max: 1, time: 10000 }); // only message author can interact, 1 response, 10s timer 
-  const command1 = client.commands.get('changemc');
-  const command2 = client.commands.get('listmc');
-
-  
-  collector.on('collect', async i => {
-    if (i.customId === 'Change') {
-      await i.update({ content: 'Server Change Requested', components: []});
-      await command1.execute(client, message, args, guildName);
-    }
-    else if (i.customId === 'List') {
-      await i.update({ content: 'Server List Requested', components: []});
-      await command2.execute(client, message, args, guildName);
-    }
-  });
-
-  collector.on('end', async collected => {
-      if (collected.size == 1) console.log('button pressed');
-      else {
-          console.log('no button pressed')
-          await sent.edit({ ephemeral: true, embeds: [sent.embeds[0]], components: [] })  // remove buttons
-      };
-  });
-}
-  
-
-
-/**
- * writes data to data.JSON file
- * @param  {string} data
- */
-function writeToJson(data) {
-  fs.writeFile("./data.json", JSON.stringify(data, null, 4), function (err) {
-    if (err) throw err;
-  });
-}

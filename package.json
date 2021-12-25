@@ -6,7 +6,8 @@
     "dotenv": "^10.0.0",
     "fs": "^0.0.1-security",
     "minecraft-server-util": "^5.2.5",
-    "node": "^17.1.0"
+    "node": "^17.1.0",
+    "xstate": "^4.26.1"
   },
   "name": "dogbot",
   "version": "1.1.0",

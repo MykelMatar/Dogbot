@@ -1,12 +1,11 @@
-const {} = require('discord.js');
 const util = require('minecraft-server-util'); 
+const writeToJson = require('../helperFunctions/writeToJson');
 const data = require('../data.json');
-const fs = require('fs');
 let cmdStatus = 0;
 
 
 
-
+// TODO : check for duplicate names, dont allow
 
 module.exports = {
     name: 'addmc',
@@ -88,16 +87,4 @@ module.exports = {
 
         cmdStatus = 0;
     }
-}
-
-
-
-/**
- * writes data to data.JSON file
- * @param  {string} data
- */
-function writeToJson(data) {
-    fs.writeFile("./data.json", JSON.stringify(data, null, 4), function (err) {
-        if (err) throw err;
-    });
 }
