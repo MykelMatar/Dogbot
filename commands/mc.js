@@ -8,6 +8,8 @@ let cmdStatus = 0;
 
 
 
+
+
 module.exports = {
     name: 'mc',
     description: "Retrieves MC server status from selectedServer in JSON and displays information in embed. 2 buttons: 'changemc', 'listmc'. DOES NOT REQUIRE ADMIN PERMS",
@@ -15,11 +17,8 @@ module.exports = {
         console.log('mc detected');
         
         // prevent multiple instances from running
-        if(cmdStatus == 1) {
-            message.reply('Command already running. Use !changemc to change server.')
-            return;
-        }
-        cmdStatus = 1;  
+        if (cmdStatus == 1) { return message.reply('mc command already running.') } // prevent multiple instances from running
+        cmdStatus = 1; 
 
         // retrieve required JSON data
         let MCEmbedId = data.Guilds[guildName].Embeds.MCEmbedId;
@@ -80,6 +79,7 @@ module.exports = {
 
             // send embed at collect response
             sent = await message.reply({ ephemeral: true, embeds: [Embed], components: [row]})
+            const msgCollector = message.channel.createMessageCollector({ time: 15000 })
             runMcButtonCollector(client, message, args, guildName, sent)
           });
     } 

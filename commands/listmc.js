@@ -1,11 +1,13 @@
-const { MessageEmbed, MessageActionRow, MessageButton} = require('discord.js');
+const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
 const data = require('../data.json');
 let cmdStatus = 0;
 
 
 
 
-// TODO: add modpack to server list information
+
+
+
 
 
 module.exports = {
@@ -15,11 +17,8 @@ module.exports = {
         console.log('listmc detected');
 
         // prevent multiple instances from running
-        if(cmdStatus == 1) {
-            message.reply('listmc command already running.')
-            return;
-        }
-        cmdStatus = 1;  
+        if (cmdStatus == 1) { return message.reply('listmc command already running.') } // prevent multiple instances from running
+        cmdStatus = 1;
 
         let serverList = data.Guilds[guildName].MCData.serverList;
 
@@ -27,12 +26,12 @@ module.exports = {
         let serverNameList = JSON.stringify(Object.keys(serverList), null, 1)
             .replace(/[[\]]/g, '')
             .replace(/[""]/g, '')
-            .replace(/[,]/g,  '');
+            .replace(/[,]/g, '');
         let serverIPList = JSON.stringify(Object.values(serverList), null, 1)
             .replace(/[[\]]/g, '')
             .replace(/[""]/g, '')
-            .replace(/[,]/g,  '');
-        
+            .replace(/[,]/g, '');
+
         // ensure list is never empty; embeds cannot receive empty values
         if (serverIPList == '') {   // using server IP List ensures a nameless IP is not overwritten
             serverNameList = "N/A"
@@ -65,7 +64,7 @@ module.exports = {
             .setTitle("Registered MC Servers")
             .addFields(
                 { name: 'Server Name', value: serverNameList, inline: true },               // Discord.js v13 requires manual call of toString on all methods
-                { name: 'IP'         , value: serverIPList,   inline: true },
+                { name: 'IP', value: serverIPList, inline: true },
             )
             .setColor("#8570C1")
             .setFooter(JSON.stringify(Object.values(serverList).length) + ' / 10 Servers Registered')
@@ -75,7 +74,8 @@ module.exports = {
 
         // create collector
         const filter = i => i.user.id === message.author.id;
-        const collector = message.channel.createMessageComponentCollector({ filter, componentType: 'BUTTON',max: 1, time: 10000 }); // only message author can interact, 1 response, 10s timer 
+        const collector = message.channel.createMessageComponentCollector({ filter, componentType: 'BUTTON', max: 1, time: 10000 }); // only message author can interact, 1 response, 10s timer 
+        const msgCollector = message.channel.createMessageCollector({ time: 10000 })
 
         // retrieve commands for buttons
         const command1 = client.commands.get('addmc');
@@ -83,41 +83,46 @@ module.exports = {
         const command3 = client.commands.get('changemc');
         const command4 = client.commands.get('renamemc');
 
-        try {
-            // collect response
-            collector.on('collect', async i => {
-                var update, execute;
-                // interaction handling
-                if (i.customId === 'Add') {
-                    update = i.update({ content: 'Adding Server (If Possible)', components: [] });
-                    execute = command1.execute(client, message, args, guildName);
-                }
-                else if (i.customId === 'Remove') {
-                    update = i.update({ content: 'Removing Server', components: [] });
-                    execute = command2.execute(client, message, args, guildName);
-                }
-                else if (i.customId === 'Change') {
-                    update = i.update({ content: 'Changing Server', components: [] });
-                    execute = command3.execute(client, message, args, guildName);
-                }
-                else if (i.customId === 'Rename') {
-                    update = i.update({ content: 'Renaming Server', components: [] });
-                    execute = command4.execute(client, message, args, guildName);
-                }
-                Promise.all([update, execute])
-            });
+        /** 
+         * prevent other button interactions occuring simultaneously 
+         * not using preventInteractionCollision because that function rewrites the last sent message to indicate an aborted command.
+         * this is not a behavior we want for !mc or !listmc since they display pertinent information
+         */
+        msgCollector.on('collect', async m => {
+            if (m.content == '!mc') {
+                msgCollector.stop();
+                collector.stop();
+                await sent.edit({ ephemeral: true, components: [] })
+            }
+        });
 
-            collector.on('end', async collected => {
-                // check if button was presses when collector ends
-                if (collected.size == 1) console.log('button pressed');
-                else {
-                    console.log('no button pressed')
-                    await sent.edit({ ephemeral: true, embeds: [embed], components: [] })   // remove buttons
-                };
-            });
-        } catch (error) {
-            message.reply('Interaction Error, please try again')
-        }
+        // collect response
+        collector.on('collect', async i => {
+            var update, execute;
+            // interaction handling
+            if (i.customId === 'Add') {
+                update = i.update({ content: 'Adding Server (If Possible)', components: [] });
+                execute = command1.execute(client, message, args, guildName);
+            }
+            else if (i.customId === 'Remove') {
+                update = i.update({ content: 'Removing Server', components: [] });
+                execute = command2.execute(client, message, args, guildName);
+            }
+            else if (i.customId === 'Change') {
+                update = i.update({ content: 'Changing Server', components: [] });
+                execute = command3.execute(client, message, args, guildName);
+            }
+            else if (i.customId === 'Rename') {
+                update = i.update({ content: 'Renaming Server', components: [] });
+                execute = command4.execute(client, message, args, guildName);
+            }
+            Promise.all([update, execute])
+        });
+
+        collector.on('end', async collected => {
+            console.log(`listmc collected ${collected.size} button presses`)
+            await sent.edit({ ephemeral: true, embeds: [embed], components: [] })   // remove buttons
+        });
 
         cmdStatus = 0;
     }

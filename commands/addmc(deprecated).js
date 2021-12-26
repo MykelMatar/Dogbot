@@ -11,6 +11,7 @@ module.exports = {
     name: 'addmc',
     description: "Adds a new IP to the server list in JSON file. Accessible via 'listmc' button or by calling command", 
     async execute(client, message, args, guildName) {
+        return; // deprecated command
         console.log('addmc detected');
         
         // check for admin perms
