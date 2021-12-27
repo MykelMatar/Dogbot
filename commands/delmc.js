@@ -21,7 +21,8 @@ module.exports = {
         if (cmdStatus == 1) { return message.reply('delmc command already running.') } // prevent multiple instances from running
         cmdStatus = 1;
 
-        let serverListSize = Object.values(data.Guilds[guildName].MCData.serverList).length
+        let serverList = data.Guilds[guildName].MCData.serverList;
+        let serverListSize = Object.values(serverList).length
 
         // ensures command does not execute if 0 or 1 server exists
         if (serverListSize == 0) {
@@ -54,23 +55,24 @@ module.exports = {
         let sent = await message.reply({ content: 'Select a Different Server to Check', ephemeral: true, components: [row] });
 
         const filter = i => i.user.id === message.author.id;
-        const collector = message.channel.createMessageComponentCollector({ filter, max: 1, time: 15000 }); // componentType: 'SELECT_MENU',
+        const collector = message.channel.createMessageComponentCollector({ filter, componentType: 'SELECT_MENU', max: 1, time: 15000 });
+        var serverName;
    
         await preventInteractionCollision(message, collector, sent)
 
         collector.on('collect', async i => {
 
-            var selection = i.values[0]
+            var selection = i.values[0];
             for (let i = 0; i < serverListSize; i++) {
                 if (selection == `selection${i}`) {
                     let selectedServer = data.Guilds[guildName].MCData.selectedServer
                     let selectedServerIP = Object.values(data.Guilds[guildName].MCData.selectedServer)[1]
-                    let serverName = Object.keys(data.Guilds[guildName].MCData.serverList)[i]
-                    let serverIP = Object.values(data.Guilds[guildName].MCData.serverList)[i]
-                    delete data.Guilds[guildName].MCData.serverList[serverName];
+                    serverName = Object.keys(serverList)[i]
+                    let serverIP = Object.values(serverList)[i]
+                    delete serverList[serverName];
                     if (selectedServerIP == serverIP) {
-                        selectedServer['title'] = Object.keys(data.Guilds[guildName].MCData.serverList)[0]
-                        selectedServer["IP"] = Object.values(data.Guilds[guildName].MCData.serverList)[0]
+                        selectedServer['title'] = Object.keys(serverList)[0]
+                        selectedServer["IP"] = Object.values(serverList)[0]
                     }
                     writeToJson(data);
                 }
@@ -85,7 +87,7 @@ module.exports = {
 
         collector.on('end', async collected => {
             console.log(`del collected ${collected.size} menu selections`)
-            if (collected.size == 1) await sent.edit({ content: 'Server Deleted', ephemeral: true, components: [] })
+            if (collected.size == 1) await sent.edit({ content: serverName + ' Deleted', ephemeral: true, components: [] })
             else await sent.edit({ content: 'Request Timeout', ephemeral: true, components: [] })
         });
 

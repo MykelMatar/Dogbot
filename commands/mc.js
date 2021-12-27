@@ -49,10 +49,10 @@ module.exports = {
             const Embed = new MessageEmbed()
               .setTitle(title)
               .addFields(
-                { name: 'Server IP',      value: "> " + MCServerIP.toString()},
-                { name: 'Modpack',        value: "> " + response.motd.clean.toString()},
-                { name: 'Version',        value: "> " + response.version.name.toString()},
-                { name: 'Online Players', value: "> " + response.players.online.toString()},
+                { name: 'Server IP',      value: `>  ${MCServerIP.toString()}` },
+                { name: 'Modpack',        value: `> [${response.motd.clean.toString()}](https://www.curseforge.com/minecraft/modpacks)` },
+                { name: 'Version',        value: `>  ${response.version.name.toString()}` },
+                { name: 'Online Players', value: `>  ${response.players.online.toString()}` },
               )
               .setColor("#8570C1")
               .setFooter('Server Online')

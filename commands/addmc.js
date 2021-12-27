@@ -53,7 +53,7 @@ module.exports = {
 
                 // verify that name is not already registered under a different IP
                 if (Object.keys(serverList).includes(name)) {
-                    message.reply('Cannot have duplicate server names, please choose a different name or use !changemcip')
+                    message.reply('Cannot have duplicate server names, please choose a different name or use !changemcip to change the IP of the existing server')
                     return cmdStatus = 0;
                 }
                 

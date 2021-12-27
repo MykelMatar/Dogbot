@@ -1,10 +1,11 @@
 /**
+ * prevents multiple collectors from running at once to avoid invalid collections
  * @param  {} message
  * @param  {} collector
  * @param  {} sent
  */
 async function preventInteractionCollision(message, collector, sent) {
-    cmdList = ['!renamemc', '!delmc', '!changemc', '!elp']  // commands who's collectors collide with each other if executed simultaneously 
+    cmdList = ['!renamemc', '!delmc', '!changemc', '!changempic', '!elp']  // commands who's collectors collide with each other if executed simultaneously 
 
     const msgCollector = message.channel.createMessageCollector({ time: 15000 })
     return msgCollector.on('collect', async m => {
