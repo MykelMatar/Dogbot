@@ -1,13 +1,10 @@
 {
   "dependencies": {
-    "@supercharge/strings": "^1.24.0",
-    "dayjs": "^1.10.7",
     "discord.js": "^13.3.1",
     "dotenv": "^10.0.0",
     "fs": "^0.0.1-security",
     "minecraft-server-util": "^5.2.5",
-    "node": "^17.1.0",
-    "xstate": "^4.26.1"
+    "node": "^17.1.0"
   },
   "name": "dogbot",
   "version": "1.1.0",
