@@ -2,7 +2,6 @@
   "dependencies": {
     "discord.js": "^13.3.1",
     "dotenv": "^10.0.0",
-    "fs": "^0.0.1-security",
     "minecraft-server-util": "^5.2.5",
     "node": "^17.1.0"
   },

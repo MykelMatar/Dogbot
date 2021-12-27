@@ -16,6 +16,14 @@ module.exports = {
     async execute(client, message, args, guildName){
         console.log('mc detected');
         
+        let serverList = data.Guilds[guildName].MCData.serverList;
+        let serverListSize = Object.values(serverList).length
+
+        // ensures command does not execute if 0 or 1 server exists
+        if (serverListSize == 0) {
+            return message.reply('No Registered Servers, use !addmc or !listmc to add servers.')
+        }
+
         // prevent multiple instances from running
         if (cmdStatus == 1) { return message.reply('mc command already running.') } // prevent multiple instances from running
         cmdStatus = 1; 

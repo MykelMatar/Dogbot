@@ -25,12 +25,13 @@ module.exports = {
         let serverListSize = Object.values(serverList).length
 
         // ensures command does not execute if 0 or 1 server exists
-        if (serverListSize == 0) {
+        if (serverListSize == 0) { 
             message.reply('No Registered Servers, use !addmc or !listmc to add servers.')
+            return cmdStatus = 0;
         }
-        if (serverListSize == 1) {
-            message.reply('Cannot remove the only existing server, use !addmc or !listmc to add servers, or change server information with !renamemc and !changemcip.')
-            return;
+        if (serverListSize == 1) { 
+            message.reply('Cannot remove the only existing server, use !addmc or !listmc to add servers, or change server information with !renamemc and !changemcip.') 
+            return cmdStatus = 0;
         }
 
         var options = [];

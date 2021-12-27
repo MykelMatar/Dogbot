@@ -27,7 +27,7 @@ module.exports = {
         // make sure there is at least 1 server
         if (serverListSize == 0) {
             message.reply('No Registered Servers, use !addmc or !listmc to add servers.')
-            return;
+            return cmdStatus = 0;
         }
 
         // create variables and generate options for select menu

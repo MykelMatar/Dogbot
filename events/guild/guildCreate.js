@@ -1,4 +1,4 @@
-const data = require('/Users/Michael/Documents/GitHub/Dogbot/data.json'); // change for your PC path
+const data = require('../../data.json');
 const fs = require('fs');  
 const { description } = require('../../commands/listmc');
 
