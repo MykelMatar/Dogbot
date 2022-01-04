@@ -16,6 +16,7 @@ module.exports = (client, message) => {
     const command = client.commands.get(cmd);
     let guildName = message.guild.name.replace(/\s+/g, "");
     
+    
     // MC Embed Handling
     if (message.embeds[0] && message.embeds[0].title == data.Guilds[guildName].MCData.selectedServer["title"]) {
         unpinEmbed(message, data.Guilds[guildName].Embeds.MCEmbedId);   // unpin old embed
