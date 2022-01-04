@@ -25,21 +25,7 @@ module.exports = async function(client, guild) {
         MenuOptions : {},
         Embeds: {
             MCEmbedId: "",
-            GTEmbedData: {
-                Title: "peepee",
-                Fields: {
-                    Game: "N/A",
-                    Time: "N/A",
-                    Timer: "N/A",
-                },
-                id: "0"
-            },
         },
-        EmojiData: {
-            0: "✅", //default emojis
-            1: "👀",
-            2: "❌"
-        }
     };
 
     data.Guilds[guildName] = newJson;

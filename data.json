@@ -1,3 +1,51 @@
 {
-    "Guilds": {}
+    "Guilds": {
+        "BotTesting": {
+            "ServerData": {
+                "serverId": "715122900021149776"
+            },
+            "MCData": {
+                "serverList": {
+                    "Dogbert's Domain": "76.88.229.48"
+                },
+                "selectedServer": {
+                    "title": "Dogbert's Domain",
+                    "IP": "76.88.229.48"
+                }
+            },
+            "MenuOptions": {},
+            "Embeds": {
+                "MCEmbedId": ""
+            }
+        },
+        "CrayonConnoisseurs": {
+            "ServerData": {
+                "serverId": "351618107384528897"
+            },
+            "MCData": {
+                "serverList": {
+                    "Dogbert's Domain": "76.88.229.43"
+                },
+                "selectedServer": {
+                    "title": "Dogbert's Domain",
+                    "IP": "76.88.229.43"
+                }
+            },
+            "MenuOptions": {
+                "0": {
+                    "label": "Dogbert's Domain",
+                    "description": "76.88.229.43",
+                    "value": "selection0"
+                },
+                "1": {
+                    "label": "Dogbert",
+                    "description": "76.88.229.48",
+                    "value": "selection1"
+                }
+            },
+            "Embeds": {
+                "MCEmbedId": ""
+            }
+        }
+    }
 }
