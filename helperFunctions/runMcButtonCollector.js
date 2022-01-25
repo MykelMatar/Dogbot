@@ -16,7 +16,7 @@ function runMcButtonCollector(client, message, args, guildName, sent) {
    * prevent other button interactions occuring simultaneously 
    * not using preventInteractionCollision because that function rewrites the last sent message to indicate an aborted command.
    * this is not a behavior we want for !mc or !listmc since they display pertinent information
-   */ 
+   */
   msgCollector.on('collect', async m => {
     if (m.content == '!listmc') {
       msgCollector.stop();
