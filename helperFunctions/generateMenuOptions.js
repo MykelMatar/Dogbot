@@ -2,7 +2,7 @@ const writeToJson = require('./writeToJson');
 const data = require('../data.json');
 
 /**
- * refreshes the "Menu Options" in data.JSON and creates a variable size discord drowpdown menu
+ * refreshes the "Menu Options" in data.JSON and creates a variable-size discord drowpdown menu
  * @param  {string} guildName
  * @param  {int} listSize
  */
