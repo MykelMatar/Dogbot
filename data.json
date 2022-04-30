@@ -2,15 +2,14 @@
     "Guilds": {
         "BotTesting": {
             "ServerData": {
-                "serverId": "715122900021149776"
+                "serverId": "715122900021149776",
+                "selectedRole": null
             },
             "MCData": {
-                "serverList": {
-                    "Dogbert's Domain": "76.88.229.48"
-                },
+                "serverList": {},
                 "selectedServer": {
-                    "title": "Dogbert's Domain",
-                    "IP": "76.88.229.48"
+                    "title": "",
+                    "IP": ""
                 }
             },
             "MenuOptions": {},
@@ -20,7 +19,8 @@
         },
         "CrayonConnoisseurs": {
             "ServerData": {
-                "serverId": "351618107384528897"
+                "serverId": "351618107384528897",
+                "selectedRole": "<@&969032914882945154>"
             },
             "MCData": {
                 "serverList": {
