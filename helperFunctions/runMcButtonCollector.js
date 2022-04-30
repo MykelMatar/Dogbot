@@ -5,10 +5,10 @@
  * @param  {string} args
  * @param  {string} guildName
  */
-function runMcButtonCollector(client, message, args, guildName, sent) {
-  const filter = i => i.user.id === message.author.id;
-  const collector = message.channel.createMessageComponentCollector({ filter, componentType: 'BUTTON', max: 1, time: 10000 }); // only message author can interact, 1 response, 10s timer 
-  const msgCollector = message.channel.createMessageCollector({ time: 10000 })
+function runMcButtonCollector(client, interaction, args, guildName, sent) {
+  const filter = i => i.user.id === interaction.member.user.id;
+  const collector = interaction.channel.createMessageComponentCollector({ filter, componentType: 'BUTTON', max: 1, time: 10000 }); // only message author can interact, 1 response, 10s timer 
+  const msgCollector = interaction.channel.createMessageCollector({ time: 10000 })
   const command1 = client.commands.get('changemc');
   const command2 = client.commands.get('listmc');
 
@@ -29,11 +29,11 @@ function runMcButtonCollector(client, message, args, guildName, sent) {
     var update, execute;
     if (i.customId === 'Change') {
       update = i.update({ content: 'Server Change Requested', components: [] });
-      execute = command1.execute(client, message, args, guildName);
+      execute = command1.execute(client, interaction, args, guildName);
     }
     else if (i.customId === 'List') {
       update = i.update({ content: 'Server List Requested', components: [] });
-      execute = command2.execute(client, message, args, guildName);
+      execute = command2.execute(client, interaction, args, guildName);
     }
     Promise.all([update, execute])
   });

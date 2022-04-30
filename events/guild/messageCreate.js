@@ -1,4 +1,4 @@
-//const { clearInterval } = require('timers');
+const { clearInterval } = require('timers');
 const { MessageActionRow, MessageButton } = require('discord.js');
 const data = require('../../data.json');
 const refreshServerStatus = require('../../helperFunctions/refreshServerStatus');
@@ -55,7 +55,6 @@ module.exports = async (client, message,) => {
         // create collector
         const filter = i => i.user.id === message.author.id;
         const collector = message.channel.createMessageComponentCollector({ filter, componentType: 'BUTTON', max: 1, time: 10000 }); // only message author can interact, 1 response, 10s timer 
-        const msgCollector = message.channel.createMessageCollector({ time: 10000 })
         const command = client.commands.get('enlist'); // retrieve command for button
 
         preventInteractionCollision(message, collector, sent)

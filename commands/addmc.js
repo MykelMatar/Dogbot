@@ -4,8 +4,6 @@ const writeToJson = require('../helperFunctions/writeToJson');
 const createInteraction = require('../helperFunctions/createInteraction');
 let cmdStatus = 0;
 
-//TODO look into slash commands, add button when someone @s gamers, "Would you like to schedule a gamer time event?" IF yes, create new message, if not, delete message
-
 
 
 
