@@ -11,7 +11,7 @@ let cmdStatus = 0;
 module.exports = {
     name: 'enlist',
     description: 'creates interaction to enlist other users for event/group',
-    async execute(client, message, args, guildName) {
+    async execute(client, interaction, args, guildName) {
 
         // generate buttons
         const row = new MessageActionRow()
@@ -36,12 +36,13 @@ module.exports = {
             )
             .setColor("#8570C1")
 
-        let sent = await message.reply({ embeds: [embed], components: [row] })
+        let sent = await interaction.reply({ embeds: [embed], components: [row] })
+        console.log(sent);
 
         // create collector
         // const filter = i => i.user.id === message.author.id;
-        const collector = message.channel.createMessageComponentCollector({ componentType: 'BUTTON'}); // only message author can interact, 1 response, 10s timer 
-        const msgCollector = message.channel.createMessageCollector()
+        const collector = interaction.channel.createMessageComponentCollector({ componentType: 'BUTTON'}); // only message author can interact, 1 response, 10s timer 
+        const msgCollector = interaction.channel.createMessageCollector()
         let selectedRole = data.Guilds[guildName].ServerData['selectedRole']
 
         /** 
@@ -85,12 +86,12 @@ module.exports = {
 
             embed.fields[0].value = enlistedUsers.join(''); // convert array into string seperated by spaces bc discord js 13 requires strings
             embed.fields[1].value = rejectedUsers.join('');
-            await sent.edit({ embeds: [embed], components: [row] });
+            await interaction.editReply({ embeds: [embed], components: [row] });
         });
 
         collector.on('end', async collected => {
             console.log(`enlist collected ${collected.size} button presses`)
-            await sent.edit({ embeds: [embed]})   // remove buttons
+            await interaction.editReply({ embeds: [embed]})   // remove buttons
         });
     }
 }
