@@ -10,11 +10,11 @@ function createInteraction(message, request, reject){
     message.reply(request, { fetchReply: true })
     let filter = m => m.author.id === message.author.id
 
-    return message.channel.awaitMessages({ filter, max: 1, time: 30000, errors: ['time'] })
+    return message.channel.awaitMessages({ filter, max: 1, time: 20000, errors: ['time'] })
             .then(collected => {
                 let response = collected.first().content;
                 if (response !== null) { 
-                    console.log(response);
+                    console.log('user interaction response:' + response);
                     return response;
                 }
             })

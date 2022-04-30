@@ -89,7 +89,7 @@ module.exports = {
          * this is not a behavior we want for !mc or !listmc since they display pertinent information
          */
         msgCollector.on('collect', async m => {
-            if (m.content == '!mc') {
+            if (m.content == '!mc' || m.content =='!enlist') {
                 msgCollector.stop();
                 collector.stop();
                 await sent.edit({ ephemeral: true, components: [] })

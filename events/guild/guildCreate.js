@@ -2,6 +2,12 @@ const data = require('../../data.json');
 const fs = require('fs');  
 const { description } = require('../../commands/listmc');
 
+
+
+
+
+
+
 module.exports = async function(client, guild) {
     if (!("Guilds" in data)) {
         var gData = {
@@ -13,7 +19,8 @@ module.exports = async function(client, guild) {
     let guildName = guild.name.replace(/\s+/g, ""); //removes whitespace from string
     let newJson = {
         ServerData: {
-            serverId: guild.id
+            serverId: guild.id,
+            selectedRole: null
         },
         MCData : {
             serverList: {},

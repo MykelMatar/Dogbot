@@ -54,7 +54,7 @@ module.exports = {
             console.error('Server Online')
 
             // create Embed w/ server info (use console.log(response) for extra information about server)
-            const Embed = new MessageEmbed()
+            const embed = new MessageEmbed()
               .setTitle(title)
               .addFields(
                 { name: 'Server IP',      value: `>  ${MCServerIP.toString()}` },
@@ -65,28 +65,28 @@ module.exports = {
               .setColor("#8570C1")
               .setFooter('Server Online')
 
-            sent = await message.reply({ ephemeral: true, embeds: [Embed], components: [row]})
+            sent = await message.reply({ ephemeral: true, embeds: [embed], components: [row]})
             runMcButtonCollector(client, message, args, guildName, sent)
           })
 
           .catch(async (error) => {
             console.error('Server Offline')
 
-            // create Embed to display server offline (its an embed to allow for editing during server info refresh)
-            const Embed = new MessageEmbed()
+            // create embed to display server offline (its an embed to allow for editing during server info refresh)
+            const embed = new MessageEmbed()
               .setTitle(title)
               .addField("Server Offline", "all good")   // ? add cmd to change server offline message ?
               .setColor("#8570C1");
 
             // generate empty fields to edit later if server goes online
-            Embed.fields[1] = []  
-            Embed.fields[2] = []
-            Embed.fields[3] = []
-            Embed.fields[4] = [];
-            Embed.setFooter('');
+            embed.fields[1] = []  
+            embed.fields[2] = []
+            embed.fields[3] = []
+            embed.fields[4] = []
+            embed.setFooter('')
 
             // send embed at collect response
-            sent = await message.reply({ ephemeral: true, embeds: [Embed], components: [row]})
+            sent = await message.reply({ ephemeral: true, embeds: [embed], components: [row]})
             const msgCollector = message.channel.createMessageCollector({ time: 15000 })
             runMcButtonCollector(client, message, args, guildName, sent)
           });
