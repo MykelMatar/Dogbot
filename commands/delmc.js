@@ -13,12 +13,12 @@ let cmdStatus = 0;
 module.exports = {
     name: 'delmc',
     description: "Removes server from server list in JSON file. Accessible via 'listmc' button or by calling command",
-    async execute(client, message, args, guildName) {
-        console.log('delmc detected');
+    async execute(client, interaction, guildName) {
+        console.log(`del requested by ${interaction.member.user.username}`);
 
         // check for admin perms & prevent multiple instances from running
-        if (!message.member.permissions.has("ADMINISTRATOR")) { return message.reply('Only Admins can use this command') }  // check for admin perms
-        if (cmdStatus == 1) { return message.reply('delmc command already running.') } // prevent multiple instances from running
+        if (!interaction.member.permissions.has("ADMINISTRATOR")) { return interaction.editReply('Only Admins can use this command') }  // check for admin perms
+        if (cmdStatus == 1) { return interaction.reply('delmc command already running.') } // prevent multiple instances from running
         cmdStatus = 1;
 
         let serverList = data.Guilds[guildName].MCData.serverList;
@@ -26,11 +26,11 @@ module.exports = {
 
         // ensures command does not execute if 0 or 1 server exists
         if (serverListSize == 0) { 
-            message.reply('No Registered Servers, use !addmc or !listmc to add servers.')
+            interaction.editReply('No Registered Servers, use !addmc or !listmc to add servers.')
             return cmdStatus = 0;
         }
         if (serverListSize == 1) { 
-            message.reply('Cannot remove the only existing server, use !addmc or !listmc to add servers, or change server information with !renamemc and !changemcip.') 
+            interaction.editReply('Cannot remove the only existing server, use !addmc or !listmc to add servers, or change server information with !renamemc and !changemcip.') 
             return cmdStatus = 0;
         }
 
@@ -53,13 +53,13 @@ module.exports = {
                     .addOptions(option),
             );
 
-        let sent = await message.reply({ content: 'Select a Different Server to Check', ephemeral: true, components: [row] });
+        await interaction.editReply({ content: 'Select a Server to Delete', components: [row] });
 
-        const filter = i => i.user.id === message.author.id;
-        const collector = message.channel.createMessageComponentCollector({ filter, componentType: 'SELECT_MENU', max: 1, time: 15000 });
+        const filter = i => i.user.id === interaction.member.user.id;
+        const collector = interaction.channel.createMessageComponentCollector({ filter, componentType: 'SELECT_MENU', max: 1, time: 15000 });
         var serverName;
    
-        await preventInteractionCollision(message, collector, sent)
+        //await preventInteractionCollision(message, collector, sent)
 
         collector.on('collect', async i => {
 
@@ -87,9 +87,9 @@ module.exports = {
         });
 
         collector.on('end', async collected => {
-            console.log(`del collected ${collected.size} menu selections`)
-            if (collected.size == 1) await sent.edit({ content: serverName + ' Deleted', ephemeral: true, components: [] })
-            else await sent.edit({ content: 'Request Timeout', ephemeral: true, components: [] })
+            console.log(`delmc collected ${collected.size} menu selections`)
+            if (collected.size == 1) await interaction.editReply({ content: serverName + ' Deleted', components: [] })
+            else await interaction.editReply({ content: 'Request Timeout', components: [] })
         });
 
         cmdStatus = 0;

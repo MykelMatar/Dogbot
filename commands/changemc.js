@@ -13,11 +13,11 @@ let cmdStatus = 0;
 module.exports = {
     name: 'changemc',
     description: "Changes Server that is Being Tracked. Accessible via 'mc' or 'listmc' buttons, or by calling command.",
-    async execute(client, message, args, guildName) {
-        console.log('changemc detected');
+    async execute(client, interaction, guildName) {
+        console.log(`changemc requested by ${interaction.member.user.username}`);
 
         // prevent multiple instances from running
-        if (cmdStatus == 1) { return message.reply('changemc command already running.') } 
+        if (cmdStatus == 1) { return interaction.reply('changemc command already running.') } 
         cmdStatus = 1;
 
         // retrieve length of serverList in JSON to use as menu length
@@ -25,11 +25,11 @@ module.exports = {
 
         // make sure there are at least 2 servers
         if (serverListSize == 0) {
-            message.reply('No Registered Servers, use !addmc or !listmc to add servers.')
+            interaction.reply('No Registered Servers, use !addmc or !listmc to add servers.')
             return cmdStatus = 0;
         }
         else if (serverListSize == 1) {
-            message.reply('Only 1 Registered Server, use !addmc or !listmc to add more servers.')
+            interaction.reply('Only 1 Registered Server, use !addmc or !listmc to add more servers.')
             return cmdStatus = 0;
         }
 
@@ -53,14 +53,14 @@ module.exports = {
             );
 
         // send embed and store in variable to edit later
-        let sent = await message.reply({ content: 'Select a Different Server to Check', ephemeral: true, components: [row] });
+        let sent = await interaction.reply({ content: 'Select a Different Server to Check', components: [row] });
 
         // Response collection and handling
-        const filter = i => i.user.id === message.author.id;
-        const collector = message.channel.createMessageComponentCollector({ filter, max: 1, componentType: 'SELECT_MENU', time: 15000 }); //componentType: 'SELECT_MENU',
+        const filter = i => i.user.id === interaction.member.user.id;
+        const collector = interaction.channel.createMessageComponentCollector({ filter, max: 1, componentType: 'SELECT_MENU', time: 15000 }); //componentType: 'SELECT_MENU',
         const command = client.commands.get('mc');
 
-        await preventInteractionCollision(message, collector, sent);
+        await preventInteractionCollision(interaction, collector, sent);
 
         collector.on('collect', async i => {
             var selection = i.values[0]
@@ -75,22 +75,14 @@ module.exports = {
                 }
             }
 
-            // edit embed to confirm user selection and remove menu
-            if (i.customId === "selection") {
-                let MCEmbedId = data.Guilds[guildName].Embeds.MCEmbedId;
-                const msg = await (await message.channel.messages.fetch(MCEmbedId));
-                refreshServerStatus(msg, guildName);  // refresh embed immediately
-
-                await i.update({ content: 'Server Updated: Now tracking ' + newTitle, components: [] });
-                console.log('Now tracking ' + newTitle);
-            }
         });
 
         // check whether a user responded or not, and edit embed accordingly
         collector.on('end', async collected => {
+            let serverName = data.Guilds[guildName].MCData.selectedServer["title"]
             console.log(`changemc collected ${collected.size} selections`)
-            if (collected.size == 1) await sent.edit({ content: 'Server Updated', ephemeral: true, components: [] })
-            else await sent.edit({ content: 'Request Timeout', ephemeral: true, components: [] })
+            if (collected.size == 1) await interaction.editReply({ ephemeral: true, content: `Server Updated. Now Tracking: ${serverName}`, components: [] })
+            else await interaction.editReply({ephemeral: true, content: 'Request Timeout', components: [] })
             cmdStatus = 0;
         });
     }

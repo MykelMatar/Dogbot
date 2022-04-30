@@ -24,7 +24,8 @@
             },
             "MCData": {
                 "serverList": {
-                    "Dogbert's Domain": "76.88.229.43"
+                    "Dogbert's Domain": "76.88.229.43",
+                    "bigbertha": "172.89.51.124"
                 },
                 "selectedServer": {
                     "title": "Dogbert's Domain",
@@ -38,8 +39,8 @@
                     "value": "selection0"
                 },
                 "1": {
-                    "label": "Dogbert",
-                    "description": "76.88.229.48",
+                    "label": "bigbertha",
+                    "description": "172.89.51.124",
                     "value": "selection1"
                 }
             },

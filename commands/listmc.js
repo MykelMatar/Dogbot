@@ -13,11 +13,11 @@ let cmdStatus = 0;
 module.exports = {
     name: 'listmc',
     description: "Lists registered mc servers from JSON in an embed. 4 buttons: 'addmc', 'delmc', 'changemc', 'listmc'. DOES NOT REQUIRE ADMIN PERMS",
-    async execute(client, message, args, guildName) {
-        console.log('listmc detected');
+    async execute(client, interaction, guildName) {
+        console.log(`listmc requested by ${interaction.member.user.username}`);
 
         // prevent multiple instances from running
-        if (cmdStatus == 1) { return message.reply('listmc command already running.') } // prevent multiple instances from running
+        if (cmdStatus == 1) { return interaction.editReply('listmc command already running.') } // prevent multiple instances from running
         cmdStatus = 1;
 
         let serverList = data.Guilds[guildName].MCData.serverList;
@@ -69,13 +69,12 @@ module.exports = {
             .setColor("#8570C1")
             .setFooter(JSON.stringify(Object.values(serverList).length) + ' / 10 Servers Registered')
 
-        let sent = await message.reply({ ephemeral: true, embeds: [embed], components: [row] })
-        console.log(sent);
+        await interaction.editReply({ ephemeral: true, embeds: [embed], components: [row] })
 
         // create collector
-        const filter = i => i.user.id === message.author.id;
-        const collector = message.channel.createMessageComponentCollector({ filter, componentType: 'BUTTON', max: 1, time: 10000 }); // only message author can interact, 1 response, 10s timer 
-        const msgCollector = message.channel.createMessageCollector({ time: 10000 })
+        const filter = i => i.user.id === interaction.member.user.id;
+        const collector = interaction.channel.createMessageComponentCollector({ filter, componentType: 'BUTTON', max: 1, time: 10000 }); // only message author can interact, 1 response, 10s timer 
+        const msgCollector = interaction.channel.createMessageCollector({ time: 10000 })
 
         // retrieve commands for buttons
         const command1 = client.commands.get('addmc');
@@ -88,13 +87,13 @@ module.exports = {
          * not using preventInteractionCollision because that function rewrites the last sent message to indicate an aborted command.
          * this is not a behavior we want for !mc or !listmc since they display pertinent information
          */
-        msgCollector.on('collect', async m => {
-            if (m.content == '!mc' || m.content =='!enlist') {
-                msgCollector.stop();
-                collector.stop();
-                await sent.edit({ ephemeral: true, components: [] })
-            }
-        });
+        // msgCollector.on('collect', async m => {
+        //     if (m.content == '!mc' || m.content =='!enlist') {
+        //         msgCollector.stop();
+        //         collector.stop();
+        //         await sent.edit({ ephemeral: true, components: [] })
+        //     }
+        // });
 
         // collect response
         collector.on('collect', async i => {
@@ -102,26 +101,28 @@ module.exports = {
             // interaction handling
             if (i.customId === 'Add') {
                 update = i.update({ content: 'Adding Server (If Possible)', components: [] });
-                execute = command1.execute(client, message, args, guildName);
+                execute = command1.execute(client, interaction, guildName);
             }
             else if (i.customId === 'Remove') {
+                interaction.editReply({ ephemeral: true, embeds: [] })
                 update = i.update({ content: 'Removing Server', components: [] });
-                execute = command2.execute(client, message, args, guildName);
+                execute = command2.execute(client, interaction, guildName);
             }
             else if (i.customId === 'Change') {
                 update = i.update({ content: 'Changing Server', components: [] });
-                execute = command3.execute(client, message, args, guildName);
+                execute = command3.execute(client, interaction, guildName);
             }
             else if (i.customId === 'Rename') {
                 update = i.update({ content: 'Renaming Server', components: [] });
-                execute = command4.execute(client, message, args, guildName);
+                execute = command4.execute(client, interaction, guildName);
             }
             Promise.all([update, execute])
         });
 
         collector.on('end', async collected => {
             console.log(`listmc collected ${collected.size} button presses`)
-            await sent.edit({ ephemeral: true, embeds: [embed], components: [] })   // remove buttons
+            if (collected.size == 0) await interaction.editReply({ ephemeral: true, embeds: [embed], components: [] }) // remove buttons & embed
+            if (collected.size == 1) await interaction.editReply({ ephemeral: true, content: 'button selected',embeds: [], components: [] })   // remove buttons & embed
         });
 
         cmdStatus = 0;

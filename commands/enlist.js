@@ -11,7 +11,8 @@ let cmdStatus = 0;
 module.exports = {
     name: 'enlist',
     description: 'creates interaction to enlist other users for event/group',
-    async execute(client, message, args, guildName) {
+    async execute(client, interaction, guildName) {
+        console.log(`recruitment started by ${interaction.member.user.username}`);
 
         // generate buttons
         const row = new MessageActionRow()
@@ -36,12 +37,11 @@ module.exports = {
             )
             .setColor("#8570C1")
 
-        let sent = await message.reply({ embeds: [embed], components: [row] })
+        await interaction.reply({ embeds: [embed], components: [row] })
 
         // create collector
-        // const filter = i => i.user.id === message.author.id;
-        const collector = message.channel.createMessageComponentCollector({ componentType: 'BUTTON'}); // only message author can interact, 1 response, 10s timer 
-        const msgCollector = message.channel.createMessageCollector()
+        const collector = interaction.channel.createMessageComponentCollector({ componentType: 'BUTTON'}); // only message author can interact, 1 response, 10s timer 
+        const msgCollector = interaction.channel.createMessageCollector()
         let selectedRole = data.Guilds[guildName].ServerData['selectedRole']
 
         /** 
@@ -49,13 +49,13 @@ module.exports = {
          * not using preventInteractionCollision because that function rewrites the last sent message to indicate an aborted command.
          * this is not a behavior we want for !mc or !listmc since they display pertinent information
          */
-        msgCollector.on('collect', async m => {
-            if (m.content == '!mc' || m.content == '!listmc' || m.content == '!enlist' || m.content.includes(`${selectedRole}`)) {
-                msgCollector.stop();
-                collector.stop();
-                await sent.edit({ components: [] })
-            }
-        });
+        // msgCollector.on('collect', async m => {
+        //     if (m.content == '!mc' || m.content == '!listmc' || m.content == '!enlist' || m.content.includes(`${selectedRole}`)) {
+        //         msgCollector.stop();
+        //         collector.stop();
+        //         await sent.edit({ components: [] })
+        //     }
+        // });
 
         // collect response
         var enlistedUsers = ['-'];
@@ -85,12 +85,12 @@ module.exports = {
 
             embed.fields[0].value = enlistedUsers.join(''); // convert array into string seperated by spaces bc discord js 13 requires strings
             embed.fields[1].value = rejectedUsers.join('');
-            await sent.edit({ embeds: [embed], components: [row] });
+            await interaction.editReply({ embeds: [embed], components: [row] });
         });
 
         collector.on('end', async collected => {
             console.log(`enlist collected ${collected.size} button presses`)
-            await sent.edit({ embeds: [embed]})   // remove buttons
+            await interaction.editReply({ embeds: [embed]})   // remove buttons
         });
     }
 }

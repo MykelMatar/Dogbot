@@ -7,7 +7,7 @@ const data = require('../data.json');
  * @param  {int} listSize
  */
  async function generateMenuOptions(guildName, listSize) {
-    console.log('creating menu');
+    console.log('creating menu:');
     const menuOptions = data.Guilds[guildName].MenuOptions;
     var option = [], label = [], value = [], description = [];  // arrays to store options and their information
     
@@ -46,7 +46,7 @@ function refreshJsonMenuOptions(guildName, menuOptions, listSize){
  * @param  {string} menuOptions
  */
 function deleteJsonMenuOptions(guildName, menuOptions){
-    console.log('deleting entries');
+    console.log('deleting existing entries');
     for (let i = 0; i < 9; i++) {      
         delete menuOptions[i];
         writeToJson(data);

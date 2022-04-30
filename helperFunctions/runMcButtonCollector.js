@@ -5,7 +5,7 @@
  * @param  {string} args
  * @param  {string} guildName
  */
-function runMcButtonCollector(client, interaction, args, guildName, sent) {
+function runMcButtonCollector(client, interaction, guildName, sent) {
   const filter = i => i.user.id === interaction.member.user.id;
   const collector = interaction.channel.createMessageComponentCollector({ filter, componentType: 'BUTTON', max: 1, time: 10000 }); // only message author can interact, 1 response, 10s timer 
   const msgCollector = interaction.channel.createMessageCollector({ time: 10000 })
@@ -42,7 +42,7 @@ function runMcButtonCollector(client, interaction, args, guildName, sent) {
     if (collected.size == 1) console.log('button pressed');
     else {
       console.log('no button pressed')
-      await sent.edit({ ephemeral: true, embeds: [sent.embeds[0]], components: [] })  // remove buttons
+      await interaction.editReply({ ephemeral: true, embeds: [sent.embeds[0]], components: [] })  // remove buttons
     };
   });
 
