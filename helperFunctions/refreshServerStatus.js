@@ -60,8 +60,8 @@ let status = 0;
             message.edit({ embeds: [newEmbed] });
             console.log('refreshed server status')
         });
+
         tmpStatus = status;
-  
     }
 }
 

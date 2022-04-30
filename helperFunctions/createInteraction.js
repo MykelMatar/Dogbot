@@ -6,8 +6,8 @@ const util = require('minecraft-server-util');
  * @param  {string} message
  * @param  {string} request
  */
-function createInteraction(message, request, reject){
-    message.reply(request, { fetchReply: true })
+function createInteraction(interaction, request, reject){
+    interaction.editReply(request, { fetchReply: true })
     let filter = m => m.author.id === message.author.id
 
     return message.channel.awaitMessages({ filter, max: 1, time: 20000, errors: ['time'] })

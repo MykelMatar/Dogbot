@@ -8,8 +8,8 @@ let cmdStatus = 0;
 module.exports = {
     name: 'setrole',
     description: 'changes the role used to enlist',
-    async execute(client, message, args, guildName) {
-        console.log('setrole detected')
+    async execute(client, message, guildName) {
+        console.log(`setrole requested by ${interaction.member.user.username}`)
 
         if (!message.member.permissions.has("ADMINISTRATOR")) { return message.reply('Only Admins can use this command') }
         if (cmdStatus == 1) { return message.reply('setrole command already running.') }
