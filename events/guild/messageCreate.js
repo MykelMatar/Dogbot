@@ -36,21 +36,22 @@ module.exports = async (client, message,) => {
                     .setStyle('DANGER'),
             );
 
-        let sent = await message.reply({ content: 'Would you like to enlist members for your event?', ephemeral: true, components: [row] })
+        let sent = await message.reply({ content: 'Would you like to enlist members for your event?', components: [row] })
 
         // create collector
         const filter = i => i.user.id === message.author.id;
         const collector = message.channel.createMessageComponentCollector({ filter, componentType: 'BUTTON', max: 1, time: 10000 }); // only message author can interact, 1 response, 10s timer 
-        const command = client.commands.get('enlist'); // retrieve command for button
+        const command = client.commands.get('autoenlist'); // retrieve command for button
 
-        preventInteractionCollision(message, collector, sent)
+        // preventInteractionCollision(message, collector, sent)
 
         // collect response
         collector.on('collect', async i => {
+            i.deferUpdate();
             var execute;
             // interaction handling
             if (i.customId === 'Yes') 
-                execute = await command.execute(client, message, args, guildName);
+                execute = await command.execute(client, message, guildName);
             
         });
 
@@ -60,7 +61,7 @@ module.exports = async (client, message,) => {
         });
     }
     
-    // command execution
+    // command execution (deprecated)
     // *unless description states otherwise, commands that end with mc require admin perms
     // if (!message.content.startsWith(PREFIX)) return;
 

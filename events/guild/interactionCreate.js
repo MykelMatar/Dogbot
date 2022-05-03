@@ -8,7 +8,8 @@ module.exports = async (client, interaction) => {
 
     let guildName = interaction.guild.name.replace(/\s+/g, "");
 
-    const { commandName, options } = interaction
+    const commandName = interaction.commandName
+    console.log(commandName);
 
     // Begin Slash Command List
 
@@ -27,12 +28,17 @@ module.exports = async (client, interaction) => {
         await dir.changemcip.execute(client, interaction, guildName)
     }
 
+    if (commandName === 'clearrole'){
+        await dir.clearrole.execute(client, interaction, guildName)
+    }
+
     if (commandName === 'delmc') {
         await interaction.deferReply({ ephemeral: true })
         await dir.delmc.execute(client, interaction,  guildName)
     }
 
     if (commandName === 'elp') {
+        console.log('elp');
         await dir.elp.execute(client, interaction)
     }
 

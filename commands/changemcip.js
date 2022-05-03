@@ -17,8 +17,8 @@ module.exports = {
         console.log(`changemcip requested by ${interaction.member.user.username}`);
 
         // check for admin perms & prevent multiple instances from running
-        if (!interaction.member.permissions.has("ADMINISTRATOR")) { return interaction.reply('Only Admins can use this command') }  // check for admin perms
-        if (cmdStatus == 1) { return interaction.reply('renamemc command already running.') } // prevent multiple instances from running
+        if (!interaction.member.permissions.has("ADMINISTRATOR")) { return interaction.editReply('Only Admins can use this command') }  // check for admin perms
+        if (cmdStatus == 1) { return interaction.editReply('renamemc command already running.') } // prevent multiple instances from running
         cmdStatus = 1;
 
         let serverList = data.Guilds[guildName].MCData.serverList;
@@ -26,7 +26,7 @@ module.exports = {
 
         // make sure there is at least 1 server
         if (serverListSize == 0) {
-            interaction.reply('No Registered Servers, use !addmc or !listmc to add servers.')
+            interaction.editReply('No Registered Servers, use !addmc or !listmc to add servers.')
             return cmdStatus = 0;
         }
 
@@ -46,11 +46,11 @@ module.exports = {
             let response = await util.status(ip)
             console.log(response);
 
-            await interaction.reply('Valid server IP detected')
+            await interaction.editReply('Valid server IP detected')
             cmdStatus = 0;
 
         } catch (error) {
-            interaction.reply('Could not retrieve server status. Double check IP and make sure server is online.')
+            interaction.editReply('Could not retrieve server status. Double check IP and make sure server is online.')
             console.log('Invalid Server IP / Server Offline');
             cmdStatus = 0;
         }
@@ -75,7 +75,7 @@ module.exports = {
             );
 
         // send embed and store in variable to edit later
-        let sent = await interaction.editReply({ ephemeral: true, content: 'Select the server you want to change the IP of', components: [row] });
+        await interaction.editReply({ ephemeral: true, content: 'Select the server you want to change the IP of', components: [row] });
 
         // Response collection and handling
         let filter = i => i.user.id === interaction.member.user.id;
@@ -83,7 +83,7 @@ module.exports = {
         const command = client.commands.get('mc');
         var serverName;
 
-        // preventInteractionCollision(message, collector, sent)
+        await preventInteractionCollision(interaction, collector)
 
         collector.on('collect', async i => {
             var selection = i.values[0]

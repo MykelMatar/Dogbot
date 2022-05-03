@@ -32,7 +32,6 @@ module.exports = {
         let MCEmbedId = data.Guilds[guildName].Embeds.MCEmbedId;
         let MCServerIP = JSON.stringify(data.Guilds[guildName].MCData.selectedServer["IP"]).replace(/[""]/g, '')
         let title = JSON.stringify(data.Guilds[guildName].MCData.selectedServer["title"]).replace(/[""]/g, '')
-        var sent;
   
 
         // Generate buttons
@@ -65,10 +64,10 @@ module.exports = {
               .setColor("#8570C1")
               .setFooter('Server Online')
 
-            sent = await interaction.editReply({ ephemeral: true, embeds: [embed], components: [row]})
+            await interaction.editReply({ ephemeral: true, embeds: [embed], components: [row]})
             runMcButtonCollector(client, interaction, guildName, sent)
+            cmdStatus = 0; 
           })
-
           .catch(async (error) => {
             console.error('Server Offline')
 
@@ -86,11 +85,9 @@ module.exports = {
             embed.setFooter('')
 
             // send embed at collect response
-            sent = await interaction.editReply({ephemeral: true, embeds: [embed], components: [row]})
-            const msgCollector = interaction.channel.createMessageCollector({ time: 15000 })
-            runMcButtonCollector(client, interaction, guildName, sent)
+            await interaction.editReply({ephemeral: true, embeds: [embed], components: [row]})
+            runMcButtonCollector(client, interaction, guildName)
+            cmdStatus = 0; 
           });
     } 
 }
-
-

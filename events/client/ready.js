@@ -53,6 +53,11 @@ module.exports = (client) => {
     });
 
     commands?.create({
+        name: 'clearrole',
+        description: 'Clears role used to automate /enlist'
+    });
+
+    commands?.create({
         name: 'delmc',
         description: 'Removes server from server list'
     });
@@ -92,7 +97,15 @@ module.exports = (client) => {
 
     commands?.create({
         name: 'setrole',
-        description: 'changes the role used to enlist (for automated enlisting)'
+        description: 'changes the role used to enlist (for automated enlisting)',
+        options: [
+            {
+                name: 'role',
+                description: 'role to be auto-detected',
+                required: true,
+                type: DiscordJS.Constants.ApplicationCommandOptionTypes.ROLE
+            },
+        ]
     });
 
 }
