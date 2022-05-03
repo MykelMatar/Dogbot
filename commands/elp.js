@@ -33,7 +33,7 @@ module.exports = {
                 {
                     name: 'function',
                     value:
-                        ` - tracks mc server status
+                    ` - tracks mc server status
                       - lists all mc servers and their respective IPs
                       - adds server to registered server list
                       - deletes server from registered server list

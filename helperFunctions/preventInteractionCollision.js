@@ -4,15 +4,15 @@
  * @param  {} collector
  * @param  {} sent
  */
-async function preventInteractionCollision(message, collector, sent) {
-    cmdList = ['!renamemc', '!delmc', '!changemc', '!changempic', '!elp']  // commands who's collectors collide with each other if executed simultaneously 
+async function preventInteractionCollision(interaction, collector) {
 
-    const msgCollector = message.channel.createMessageCollector({ time: 15000 })
-    return msgCollector.on('collect', async m => {
-        if (cmdList.includes(m.content)) { 
-            msgCollector.stop();
+    const interactionCollector = message.channel.createMessageComponentCollector({time: 15000 })
+
+    return interactionCollector.on('collect', async i => {
+        if (i.isCommand()) { 
+            interactionCollector.stop();
             collector.stop();
-            await sent.edit({ content: 'command aborted', ephemeral: true, components: [] })
+            await interaction.editReply({ephemeral: true, content: 'command aborted', components: [] })
         }
     });
 }

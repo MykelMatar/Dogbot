@@ -50,7 +50,7 @@ module.exports = {
             );
 
         // send embed and store in variable to edit later
-        let sent = await interaction.reply({ content: 'Select the server you want to rename', ephemeral: true, components: [row] });
+        await interaction.reply({ content: 'Select the server you want to rename', ephemeral: true, components: [row] });
 
         // Response collection and handling
         let filter = i => i.user.id === interaction.member.user.id;
@@ -58,7 +58,7 @@ module.exports = {
         const command = client.commands.get('mc');
         var serverName, newName;
 
-        // preventInteractionCollision(message, collector, sent)
+        await preventInteractionCollision(interaction, collector)
 
         collector.on('collect', async i => {
             var selection = i.values[0]

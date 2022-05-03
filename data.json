@@ -20,30 +20,16 @@
         "CrayonConnoisseurs": {
             "ServerData": {
                 "serverId": "351618107384528897",
-                "selectedRole": "<@&969032914882945154>"
+                "selectedRole": "969032914882945154"
             },
             "MCData": {
-                "serverList": {
-                    "Dogbert's Domain": "76.88.229.43",
-                    "bigbertha": "172.89.51.124"
-                },
+                "serverList": {},
                 "selectedServer": {
-                    "title": "Dogbert's Domain",
-                    "IP": "76.88.229.43"
+                    "title": "",
+                    "IP": ""
                 }
             },
-            "MenuOptions": {
-                "0": {
-                    "label": "Dogbert's Domain",
-                    "description": "76.88.229.43",
-                    "value": "selection0"
-                },
-                "1": {
-                    "label": "bigbertha",
-                    "description": "172.89.51.124",
-                    "value": "selection1"
-                }
-            },
+            "MenuOptions": {},
             "Embeds": {
                 "MCEmbedId": ""
             }

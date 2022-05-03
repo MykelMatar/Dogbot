@@ -59,7 +59,7 @@ module.exports = {
         const collector = interaction.channel.createMessageComponentCollector({ filter, componentType: 'SELECT_MENU', max: 1, time: 15000 });
         var serverName;
    
-        //await preventInteractionCollision(message, collector, sent)
+        await preventInteractionCollision(interaction, collector)
 
         collector.on('collect', async i => {
 

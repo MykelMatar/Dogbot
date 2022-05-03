@@ -17,7 +17,7 @@ module.exports = {
         console.log(`changemc requested by ${interaction.member.user.username}`);
 
         // prevent multiple instances from running
-        if (cmdStatus == 1) { return interaction.reply('changemc command already running.') } 
+        if (cmdStatus == 1) { return interaction.editReply('changemc command already running.') } 
         cmdStatus = 1;
 
         // retrieve length of serverList in JSON to use as menu length
@@ -25,11 +25,11 @@ module.exports = {
 
         // make sure there are at least 2 servers
         if (serverListSize == 0) {
-            interaction.reply('No Registered Servers, use !addmc or !listmc to add servers.')
+            interaction.editReply('No Registered Servers, use !addmc or !listmc to add servers.')
             return cmdStatus = 0;
         }
         else if (serverListSize == 1) {
-            interaction.reply('Only 1 Registered Server, use !addmc or !listmc to add more servers.')
+            interaction.editReply('Only 1 Registered Server, use !addmc or !listmc to add more servers.')
             return cmdStatus = 0;
         }
 
@@ -53,14 +53,14 @@ module.exports = {
             );
 
         // send embed and store in variable to edit later
-        let sent = await interaction.reply({ content: 'Select a Different Server to Check', components: [row] });
+        await interaction.editReply({ content: 'Select a Different Server to Check', components: [row] });
 
         // Response collection and handling
         const filter = i => i.user.id === interaction.member.user.id;
         const collector = interaction.channel.createMessageComponentCollector({ filter, max: 1, componentType: 'SELECT_MENU', time: 15000 }); //componentType: 'SELECT_MENU',
         const command = client.commands.get('mc');
 
-        await preventInteractionCollision(interaction, collector, sent);
+        await preventInteractionCollision(interaction, collector);
 
         collector.on('collect', async i => {
             var selection = i.values[0]
