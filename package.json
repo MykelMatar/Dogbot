@@ -1,15 +1,18 @@
 {
   "dependencies": {
     "@discordjs/rest": "^0.4.1",
+    "axios": "^0.27.2",
+    "cheerio": "^1.0.0-rc.10",
     "discord-api-types": "^0.32.0",
     "discord.js": "^13.3.1",
     "dotenv": "^10.0.0",
     "minecraft-server-util": "^5.2.5",
     "node": "^17.1.0",
+    "pretty": "^2.0.0",
     "require-dir": "^1.2.0"
   },
   "name": "dogbot",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "Discord MC server bot that detects server status",
   "main": "index.js",
   "scripts": {
@@ -24,5 +27,6 @@
   "bugs": {
     "url": "https://github.com/MykelMatar/Dogbot/issues"
   },
-  "homepage": "https://github.com/MykelMatar/Dogbot#readme"
+  "homepage": "https://github.com/MykelMatar/Dogbot#readme",
+  "keywords": []
 }

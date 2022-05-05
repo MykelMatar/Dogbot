@@ -108,5 +108,30 @@ module.exports = (client) => {
         ]
     });
 
+    commands?.create({
+        name: 'valstats',
+        description: 'retrieves valorant stats from tracker.gg',
+        options: [
+            {
+                name: 'username',
+                description: 'username, CASE-SENSITIVE',
+                required: true,
+                type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING
+            },
+            {
+                name: 'tag',
+                description: 'string after #, CASE-SENSITIVE',
+                required: true,
+                type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING
+            },
+            {
+                name: 'hide',
+                description: 'display for yourself only',
+                required: true,
+                type: DiscordJS.Constants.ApplicationCommandOptionTypes.BOOLEAN
+            }
+        ]
+    });
+
 }
 
