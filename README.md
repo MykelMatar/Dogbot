@@ -11,6 +11,7 @@
   * Retrieves Valorant Account Stats from tracker.gg with /valstats
 
 ## TODO: 
+  - [ ] Prevent collisions for /mc, /listmc, and /autoenlist
   - [ ] Add moderation tools
   - [ ] Think of more features to add
   - [ ] Register Slash commands globally

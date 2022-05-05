@@ -40,7 +40,7 @@ module.exports = {
         let sent = await message.reply({ embeds: [embed], components: [row] })
 
         // create collector
-        const collector = message.channel.createMessageComponentCollector({componentType: 'BUTTON', time: 2.16e7}); // only message author can interact, 1 response, 10s timer 
+        const collector = message.channel.createMessageComponentCollector({componentType: 'BUTTON', time: 7.2e+6}); // only message author can interact, 1 response, 2 hour timer 
         const msgCollector = message.channel.createMessageCollector()
         let selectedRole = data.Guilds[guildName].ServerData['selectedRole']
         
