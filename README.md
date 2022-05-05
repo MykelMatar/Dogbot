@@ -10,3 +10,8 @@
       - other commands for easy of use and editing existing server information
       - add Dogbot and use /elp for more details
     Retrieves Valorant Account Stats from tracker.gg with /valstats
+
+## TODO: 
+    1) Add moderation tools
+    2) Think of more features to add
+    3) Register Slash commands globally
