@@ -126,8 +126,8 @@ module.exports = (client) => {
             },
             {
                 name: 'hide',
-                description: 'display for yourself only',
-                required: true,
+                description: 'optional setting: stats are only displayed for you. Leave blank to make it public',
+                required: false,
                 type: DiscordJS.Constants.ApplicationCommandOptionTypes.BOOLEAN
             }
         ]
