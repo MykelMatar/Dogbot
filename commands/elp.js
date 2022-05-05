@@ -27,7 +27,8 @@ module.exports = {
                         **/delmc**      
                         **/changemc**   
                         **/renamemc**   
-                        **/changemcip** `,
+                        **/changemcip** 
+                        **/valstats** `,
                     inline: true
                 },
                 {
@@ -39,7 +40,8 @@ module.exports = {
                       - deletes server from registered server list
                       - changes the server being tracked by !mc
                       - changes an existing server's name
-                      - changes an existing server's IP address`,
+                      - changes an existing server's IP address
+                      - retrieves account stats from Tracker.gg`,
                     inline: true
                 },
             )
