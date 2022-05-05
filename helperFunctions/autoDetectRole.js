@@ -1,6 +1,13 @@
 const { MessageActionRow, MessageButton } = require('discord.js');
 const data = require('../data.json');
 
+/**
+ * sends a message and collects the response
+ * @param  {string} client
+ * @param  {string} message
+ * @param  {string} guildName
+ */
+
 async function autoDetectRole(client, message, guildName) {
     // Create button interaction to enlist members of a specific role (role can be set with !setrole)
     let selectedRole = data.Guilds[guildName].ServerData['selectedRole']

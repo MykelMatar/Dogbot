@@ -18,6 +18,7 @@ module.exports = {
         if (cmdStatus == 1) { return interaction.reply('addmc command already running.') }
         cmdStatus = 1;
 
+
         // set max server size
         let serverList = data.Guilds[guildName].MCData.serverList
         let serverListSize = Object.values(serverList).length

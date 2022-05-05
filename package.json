@@ -8,6 +8,7 @@
     "dotenv": "^10.0.0",
     "minecraft-server-util": "^5.2.5",
     "node": "^17.1.0",
+    "nodemon": "^2.0.16",
     "pretty": "^2.0.0",
     "require-dir": "^1.2.0"
   },
@@ -16,7 +17,7 @@
   "description": "Discord MC server bot that detects server status",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "bot": "nodemon index.js"
   },
   "repository": {
     "type": "git",

@@ -9,6 +9,7 @@ const { description } = require('../../commands/listmc');
 
 
 module.exports = async function(client, guild) {
+    console.log(`Dogbot added to ${guild.name}`);
     if (!("Guilds" in data)) {
         var gData = {
             Guilds: {}

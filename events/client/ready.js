@@ -109,6 +109,19 @@ module.exports = (client) => {
     });
 
     commands?.create({
+        name: 'suggestion',
+        description: 'allows users to make suggestions for the bot',
+        options: [
+            {
+                name: 'suggestion',
+                description: 'what would you like to see dogbot do?',
+                required: true,
+                type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING
+            },
+        ]
+    });
+
+    commands?.create({
         name: 'valstats',
         description: 'retrieves valorant stats from tracker.gg',
         options: [
