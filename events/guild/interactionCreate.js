@@ -64,6 +64,11 @@ module.exports = async (client, interaction) => {
         await dir.setrole.execute(client, interaction, guildName)
     }
 
+    if (commandName === 'suggestion') {
+        await interaction.deferReply({ ephemeral: true })
+        await dir.suggestion.execute(client, interaction, guildName)
+    }
+
     if (commandName === 'valstats') {
         if (options._hoistedOptions[2] == undefined) ephemeralSetting = false
         else ephemeralSetting = options._hoistedOptions[2].value
