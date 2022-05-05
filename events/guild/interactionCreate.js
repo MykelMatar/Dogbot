@@ -65,8 +65,9 @@ module.exports = async (client, interaction) => {
     }
 
     if (commandName === 'valstats') {
-        await interaction.deferReply({ ephemeral: options._hoistedOptions[2].value })
+        if (options._hoistedOptions[2] == undefined) ephemeralSetting = false
+        else ephemeralSetting = options._hoistedOptions[2].value
+        await interaction.deferReply({ ephemeral: ephemeralSetting })
         await dir.valstats.execute(client, interaction, guildName)
     }
-
 }
