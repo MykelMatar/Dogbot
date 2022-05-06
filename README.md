@@ -11,7 +11,17 @@
   * Retrieves Valorant Account Stats from tracker.gg with /valstats
 
 ## TODO: 
+  - [ ] fix /elp
   - [ ] Prevent collisions for /mc, /listmc, and /autoenlist
+  - [ ] log users who enlist/dont enilst and tally it up then do something fun with it
   - [ ] Add moderation tools
   - [ ] Think of more features to add
+  - [ ] /nowwhat command that picks a game to play (use buttons with /next idea or /this one or something)
   - [ ] Register Slash commands globally
+  - [ ] tic tac toe command
+  - [ ] Poll creation
+  - [ ] Magic 8 ball
+  - [ ] more game stats (apex, fortnite, csgo, destiny?)
+  - [ ] server stats
+  - [ ] custom commands
+

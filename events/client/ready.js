@@ -1,5 +1,6 @@
 const DiscordJS = require('discord.js');
 
+
 module.exports = (client) => {
     client.user.setActivity('try /elp');
     console.log('Dogbot ready');
@@ -15,88 +16,20 @@ module.exports = (client) => {
         commands = client.application?.commands
     }
 
+    // slash command creation
+    // enlist_user 
     commands?.create({
-        name: 'addmc',
-        description: 'Adds a new IP to the server list',
-        options: [
-            {
-                name: 'ip',
-                description: 'IP of your server. MAKE SURE THE SERVER IS ONLINE',
-                required: true,
-                type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING
-            },
-            {
-                name: 'name',
-                description: 'name of your server. Can be changed later using changemc',
-                required: true,
-                type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING
-            }
-        ]
-    });
-
-    commands?.create({
-        name: 'changemc',
-        description: 'Changes Server that is being tracked by mc'
-    });
-
-    commands?.create({
-        name: 'changemcip',
-        description: 'Changes IP of existing server',
-        options: [
-            {
-                name: 'ip',
-                description: 'IP of your server. MAKE SURE THE SERVER IS ONLINE',
-                required: true,
-                type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING
-            }
-        ]
-    });
-
-    commands?.create({
-        name: 'clearrole',
+        name: 'clearrole-autoenlist',
         description: 'Clears role used to automate /enlist'
     });
 
     commands?.create({
-        name: 'delmc',
-        description: 'Removes server from server list'
-    });
-
-    commands?.create({
-        name: 'elp',
-        description: 'lists all commands and relevant information'
-    });
-
-    commands?.create({
-        name: 'enlist',
+        name: 'enlist-users',
         description: 'creates interaction to enlist other users for event/group'
     });
 
     commands?.create({
-        name: 'listmc',
-        description: 'Lists registered mc servers'
-    });
-
-    commands?.create({
-        name: 'mc',
-        description: 'Renames existing mc server'
-    });
-
-    commands?.create({
-        name: 'renamemc',
-        description: 'Retrieves MC server status',
-        options: [
-            {
-                name: 'newname',
-                description: 'New name of your server.',
-                required: true,
-                type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING
-            }
-        ]
-    });
-
-    commands?.create({
-        name: 'setrole',
+        name: 'setrole-autoenlist',
         description: 'changes the role used to enlist (for automated enlisting)',
         options: [
             {
@@ -108,21 +41,10 @@ module.exports = (client) => {
         ]
     });
 
-    commands?.create({
-        name: 'suggestion',
-        description: 'allows users to make suggestions for the bot',
-        options: [
-            {
-                name: 'suggestion',
-                description: 'what would you like to see dogbot do?',
-                required: true,
-                type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING
-            },
-        ]
-    });
 
+    // get_stats
     commands?.create({
-        name: 'valstats',
+        name: 'get-stats-valorant',
         description: 'retrieves valorant stats from tracker.gg',
         options: [
             {
@@ -145,5 +67,112 @@ module.exports = (client) => {
             }
         ]
     });
-}
 
+
+    //help
+    commands?.create({
+        name: 'elp',
+        description: 'lists all commands and relevant information'
+    });
+
+    commands?.create({
+        name: 'suggestion',
+        description: 'allows users to make suggestions for the bot',
+        options: [
+            {
+                name: 'suggestion',
+                description: 'what would you like to see dogbot do?',
+                required: true,
+                type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING
+            },
+        ]
+    });
+
+
+    // mc
+    commands?.create({
+        name: 'mc-add-server',
+        description: 'Adds a new IP to the server list',
+        options: [
+            {
+                name: 'ip',
+                description: 'IP of your server. MAKE SURE THE SERVER IS ONLINE',
+                required: true,
+                type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING
+            },
+            {
+                name: 'name',
+                description: 'name of your server. Can be changed later using changemc',
+                required: true,
+                type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING
+            }
+        ]
+    });
+
+    commands?.create({
+        name: 'mc-change-server-ip',
+        description: 'Changes IP of existing server',
+        options: [
+            {
+                name: 'ip',
+                description: 'IP of your server. MAKE SURE THE SERVER IS ONLINE',
+                required: true,
+                type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING
+            }
+        ]
+    });
+
+    commands?.create({
+        name: 'mc-change-server-name',
+        description: 'Retrieves MC server status',
+        options: [
+            {
+                name: 'newname',
+                description: 'New name of your server.',
+                required: true,
+                type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING
+            }
+        ]
+    });
+
+    commands?.create({
+        name: 'mc-change-server',
+        description: 'Changes Server that is being tracked by mc'
+    });
+
+    commands?.create({
+        name: 'mc-delete-server',
+        description: 'Removes server from server list'
+    });
+
+    commands?.create({
+        name: 'mc-list-servers',
+        description: 'Lists registered mc servers'
+    });
+
+    commands?.create({
+        name: 'mc-server-status',
+        description: 'Renames existing mc server'
+    });
+
+
+    //role_selection
+    commands?.create({
+        name: 'clearrole-default',
+        description: 'removes default role given to new users'
+    });
+
+    commands?.create({
+        name: 'setrole-default',
+        description: 'changes the role given to new users',
+        options: [
+            {
+                name: 'role',
+                description: 'role to be auto-detected',
+                required: true,
+                type: DiscordJS.Constants.ApplicationCommandOptionTypes.ROLE
+            },
+        ]
+    });
+
+}

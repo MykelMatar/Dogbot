@@ -1,7 +1,7 @@
 const { MessageEmbed } = require('discord.js');
 const cheerio = require('cheerio');
 const pretty = require('pretty');
-const fetchHTML = require('../helperFunctions/fetchHTML');
+const fetchHTML = require('../../helperFunctions/fetchHTML');
 const { map } = require('cheerio/lib/api/traversing');
 const { text } = require('stream/consumers');
 

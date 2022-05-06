@@ -1,5 +1,5 @@
 const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
-const data = require('../data.json');
+const data = require('../../data.json');
 let cmdStatus = 0;
 
 

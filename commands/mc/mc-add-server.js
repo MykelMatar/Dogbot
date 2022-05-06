@@ -1,7 +1,7 @@
 const util = require('minecraft-server-util');
-const data = require('../data.json');
-const writeToJson = require('../helperFunctions/writeToJson');
-const createInteraction = require('../helperFunctions/createInteraction');
+const data = require('../../data.json');
+const writeToJson = require('../../helperFunctions/writeToJson');
+const createInteraction = require('../../helperFunctions/createInteraction');
 let cmdStatus = 0;
 
 

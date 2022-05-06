@@ -1,8 +1,8 @@
 const { MessageActionRow, MessageSelectMenu} = require('discord.js');
-const data = require('../data.json');
-const writeToJson = require('../helperFunctions/writeToJson');
-const generateMenuOptions = require('../helperFunctions/generateMenuOptions');
-const preventInteractionCollision = require('../helperFunctions/preventInteractionCollision');
+const data = require('../../data.json');
+const writeToJson = require('../../helperFunctions/writeToJson');
+const generateMenuOptions = require('../../helperFunctions/generateMenuOptions');
+const preventInteractionCollision = require('../../helperFunctions/preventInteractionCollision');
 let cmdStatus = 0;
 
 
