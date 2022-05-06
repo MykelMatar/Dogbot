@@ -1,5 +1,5 @@
 const { MessageEmbed, MessageActionRow, MessageSelectMenu } = require('discord.js');
-const preventInteractionCollision = require('../helperFunctions/preventInteractionCollision');
+const preventInteractionCollision = require('../../helperFunctions/preventInteractionCollision');
 cmdStatus = 0;
 
 
@@ -27,7 +27,8 @@ module.exports = {
                         **/delmc**      
                         **/changemc**   
                         **/renamemc**   
-                        **/changemcip** 
+                        **/changemcip**
+                        **/suggestion** 
                         **/valstats** `,
                     inline: true
                 },
@@ -41,6 +42,7 @@ module.exports = {
                       - changes the server being tracked by !mc
                       - changes an existing server's name
                       - changes an existing server's IP address
+                      - allows users to make suggestions about dogbot
                       - retrieves account stats from Tracker.gg`,
                     inline: true
                 },

@@ -1,7 +1,7 @@
 const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
 const util = require('minecraft-server-util');
-const runMcButtonCollector = require('../helperFunctions/runMcButtonCollector');
-const data = require('../data.json');
+const runMcButtonCollector = require('../../helperFunctions/runMcButtonCollector');
+const data = require('../../data.json');
 let cmdStatus = 0;
 
 

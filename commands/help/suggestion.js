@@ -4,7 +4,7 @@ const fs = require('fs')
 
 module.exports = {
     name: 'suggestion',
-    description: 'allows users to make suggestions',
+    description: 'allows users to make suggestions about dogbot',
     async execute(client, interaction, args, guildName) {
         console.log(`suggestion created by ${interaction.member.user.username}`);
 
