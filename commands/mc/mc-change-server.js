@@ -3,7 +3,7 @@ const util = require('minecraft-server-util');
 const data = require('../../data.json');
 const writeToJson = require('../../helperFunctions/writeToJson');
 const refreshServerStatus = require('../../helperFunctions/refreshServerStatus');
-const generateMenuOptions = require('../../helperFunctions/generateMenuOptions');
+const generateMcMenuOptions = require('../../helperFunctions/generateMcMenuOptions');
 const preventInteractionCollision = require('../../helperFunctions/preventInteractionCollision');
 let cmdStatus = 0;
 
@@ -11,7 +11,7 @@ let cmdStatus = 0;
 
 
 module.exports = {
-    name: 'changemc',
+    name: 'mc-change-server',
     description: "Changes Server that is Being Tracked. Accessible via 'mc' or 'listmc' buttons, or by calling command.",
     async execute(client, interaction, guildName) {
         console.log(`changemc requested by ${interaction.member.user.username}`);
@@ -35,7 +35,7 @@ module.exports = {
 
         // create variables and generate options for select menu
         var options = [];
-        options = await generateMenuOptions(guildName, serverListSize);
+        options = await generateMcMenuOptions(guildName, serverListSize);
         let option = options[0];
         let label = options[1];
         let value = options[2];

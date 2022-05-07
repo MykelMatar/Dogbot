@@ -1,15 +1,12 @@
 const { MessageActionRow, MessageEmbed, MessageButton, Buttonmessage } = require('discord.js');
 const data = require('../../data.json');
-const writeToJson = require('../../helperFunctions/writeToJson');
-const generateMenuOptions = require('../../helperFunctions/generateMenuOptions');
-const { userInfo } = require('os');
 let cmdStatus = 0;
 
 
 
 
 module.exports = {
-    name: 'autoenlist',
+    name: 'autoenlist-users',
     description: 'creates message to enlist other users for event/group',
     async execute(client, message, guildName) {
         console.log(`auto-recruitment started by ${message.member.user.username}`);
@@ -63,7 +60,6 @@ module.exports = {
                 
                 collector.on('collect', async i => {
                     i.deferUpdate(); // prevents "this message failed" message from appearing
-                    console.time(); 
                     // message handling
                     if (i.customId === 'Enlist') {
                         if (!enlistedUsers.includes('> ' + i.user.username + '\n')) enlistedUsers.push('> ' + i.user.username + '\n') // checks if user is in array 1 before adding them

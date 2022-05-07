@@ -12,6 +12,9 @@
 
 ## TODO: 
   - [ ] fix /elp
+  - [ ] add 'hide' option to all commands
+  - [ ] /say to send a message from dogbot
+  - [ ] /createembed
   - [ ] Prevent collisions for /mc, /listmc, and /autoenlist
   - [ ] log users who enlist/dont enilst and tally it up then do something fun with it
   - [ ] Add moderation tools

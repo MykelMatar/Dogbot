@@ -14,6 +14,7 @@ module.exports = async function(client, guild) {
     let newJson = {
         ServerData: {
             serverId: guild.id,
+            welcomeChannel: null,
             roles: {
                 autoenlist: null,
                 default: null
@@ -27,9 +28,6 @@ module.exports = async function(client, guild) {
             }
         },
         MenuOptions : {},
-        Embeds: {
-            MCEmbedId: "",
-        },
     };
 
     data.Guilds[guildName] = newJson;

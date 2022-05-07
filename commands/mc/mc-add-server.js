@@ -9,13 +9,13 @@ let cmdStatus = 0;
 
 
 module.exports = {
-    name: 'addmc',
+    name: 'mc-add-server',
     description: "Adds a new IP to the server list in JSON file. Accessible via 'listmc' button or by calling command",
     async execute(client, interaction, guildName) {
         console.log(`addmc requested by ${interaction.member.user.username}`);
 
-        if (!interaction.member.permissions.has("ADMINISTRATOR")) { return interaction.reply('Only Admins can use this command') }
-        if (cmdStatus == 1) { return interaction.reply('addmc command already running.') }
+        if (!interaction.member.permissions.has("ADMINISTRATOR")) { return interaction.editReply('Only Admins can use this command') }
+        if (cmdStatus == 1) { return interaction.editReply('addmc command already running.') }
         cmdStatus = 1;
 
 
@@ -24,7 +24,7 @@ module.exports = {
         let serverListSize = Object.values(serverList).length
 
         if (serverListSize == 10) {
-            interaction.reply('Max number of servers reached. Remove a server to add a new one (Limit of 10).')
+            interaction.editReply('Max number of servers reached. Remove a server to add a new one (Limit of 10).')
             return cmdStatus = 0;
         }
 
@@ -34,7 +34,7 @@ module.exports = {
 
         // verify that IP is not already registered
         if (Object.values(serverList).includes(ip)) {
-            interaction.reply("Server already registered, double check the IP or use **!renamemc** to change the name")
+            interaction.editReply("Server already registered, double check the IP or use **!renamemc** to change the name")
             console.log("Duplicate IP Detected");
             return cmdStatus = 0;
 
@@ -42,7 +42,7 @@ module.exports = {
 
         // verify that name is not already registered under a different IP
         if (Object.keys(serverList).includes(name)) {
-            interaction.reply('Cannot have duplicate server names, please choose a different name or use !changemcip to change the IP of the existing server')
+            interaction.editReply('Cannot have duplicate server names, please choose a different name or use !changemcip to change the IP of the existing server')
             return cmdStatus = 0;
         }
 
@@ -59,7 +59,7 @@ module.exports = {
             serverList[name] = ip;
             writeToJson(data);
 
-            interaction.reply("Server added sucessfully")
+            interaction.editReply("Server added sucessfully")
             cmdStatus = 0;
 
         } catch (error) {

@@ -11,5 +11,5 @@ module.exports = (client) => {
         }
     }
 
-    ['client', 'guild'].forEach(e => loadDir(e));
+    ['client', 'guild', 'interaction'].forEach(e => loadDir(e));
 }

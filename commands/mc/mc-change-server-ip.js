@@ -2,7 +2,7 @@ const { MessageActionRow, MessageSelectMenu } = require('discord.js');
 const util = require('minecraft-server-util');
 const data = require('../../data.json')
 const writeToJson = require('../../helperFunctions/writeToJson');
-const generateMenuOptions = require('../../helperFunctions/generateMenuOptions');
+const generateMcMenuOptions = require('../../helperFunctions/generateMcMenuOptions');
 const preventInteractionCollision = require('../../helperFunctions/preventInteractionCollision');
 const createInteraction = require('../../helperFunctions/createInteraction');
 let cmdStatus = 0;
@@ -11,7 +11,7 @@ let cmdStatus = 0;
 
 
 module.exports = {
-    name: 'changemcip',
+    name: 'mc-change-server-ip',
     description: "changes IP of existing server. Accessible via 'listmc' button or by calling command.",
     async execute(client, interaction, guildName) {
         console.log(`changemcip requested by ${interaction.member.user.username}`);
@@ -23,6 +23,7 @@ module.exports = {
 
         let serverList = data.Guilds[guildName].MCData.serverList;
         let serverListSize = Object.values(serverList).length
+        let selectedServerName = data.Guilds[guildName].MCData.selectedServer["title"]
 
         // make sure there is at least 1 server
         if (serverListSize == 0) {
@@ -35,7 +36,7 @@ module.exports = {
 
         // verify that IP is not already registered
         if (Object.values(serverList).includes(ip)) {
-            interaction.reply("Server already registered, double check the IP or use **!renamemc** to change the name")
+            interaction.editReply("Server already registered, double check the IP or use **!renamemc** to change the name")
             console.log("Duplicate IP Detected");
             return cmdStatus = 0;
 
@@ -45,10 +46,7 @@ module.exports = {
         try {
             let response = await util.status(ip)
             console.log(response);
-
             await interaction.editReply('Valid server IP detected')
-            cmdStatus = 0;
-
         } catch (error) {
             interaction.editReply('Could not retrieve server status. Double check IP and make sure server is online.')
             console.log('Invalid Server IP / Server Offline');
@@ -57,7 +55,7 @@ module.exports = {
 
         // create variables and generate options for select menu
         var options = [];
-        options = await generateMenuOptions(guildName, serverListSize);
+        options = await generateMcMenuOptions(guildName, serverListSize);
         let option = options[0];
         let label = options[1];
         let value = options[2];
@@ -92,14 +90,13 @@ module.exports = {
                     serverName = Object.keys(serverList)[i]
                 }
             }
-
-            console.log(serverName);
         });
 
         collector.on('end', async collected => {
-            console.log(`renamemc collected ${collected.size} menu selections`)
+            console.log(`mc-change-server-ip collected ${collected.size} menu selections`)
             if (collected.size == 1) await interaction.editReply({ content: serverName + ' IP changed successfully', ephemeral: true, components: [] })
             else await interaction.editReply({ content: 'Request Timeout', ephemeral: true, components: [] })
+            if (serverName == selectedServerName) data.Guilds[guildName].MCData.selectedServer["IP"] = ip; // if selected server ip (if applicable)
             serverList[serverName] = ip;
             writeToJson(data);
             cmdStatus = 0;

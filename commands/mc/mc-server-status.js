@@ -2,19 +2,15 @@ const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
 const util = require('minecraft-server-util');
 const runMcButtonCollector = require('../../helperFunctions/runMcButtonCollector');
 const data = require('../../data.json');
-let cmdStatus = 0;
-
-
-
 
 
 
 
 module.exports = {
-    name: 'mcInteraction',
+    name: 'mc-server-status',
     description: "Retrieves MC server status from selectedServer in JSON and displays information in embed. 2 buttons: 'changemc', 'listmc'. DOES NOT REQUIRE ADMIN PERMS",
     async execute(client, interaction, guildName){
-        console.log(`mc requested by ${interaction.member.user.username}`);
+        console.log(`mc-server-status requested by ${interaction.member.user.username}`);
         
         let serverList = data.Guilds[guildName].MCData.serverList;
         let serverListSize = Object.values(serverList).length
@@ -24,12 +20,7 @@ module.exports = {
             return interaction.editReply('No Registered Servers, use !addmc or !listmc to add servers.')
         }
 
-        // prevent multiple instances from running
-        if (cmdStatus == 1) { return interaction.editReply('mc command already running.') } // prevent multiple instances from running
-        cmdStatus = 1; 
-
         // retrieve required JSON data
-        let MCEmbedId = data.Guilds[guildName].Embeds.MCEmbedId;
         let MCServerIP = JSON.stringify(data.Guilds[guildName].MCData.selectedServer["IP"]).replace(/[""]/g, '')
         let title = JSON.stringify(data.Guilds[guildName].MCData.selectedServer["title"]).replace(/[""]/g, '')
   
@@ -65,8 +56,7 @@ module.exports = {
               .setFooter('Server Online')
 
             await interaction.editReply({ ephemeral: true, embeds: [embed], components: [row]})
-            runMcButtonCollector(client, interaction, guildName, sent)
-            cmdStatus = 0; 
+            runMcButtonCollector(client, interaction, guildName, sent) 
           })
           .catch(async (error) => {
             console.error('Server Offline')
@@ -87,7 +77,6 @@ module.exports = {
             // send embed at collect response
             await interaction.editReply({ephemeral: true, embeds: [embed], components: [row]})
             runMcButtonCollector(client, interaction, guildName)
-            cmdStatus = 0; 
           });
     } 
 }

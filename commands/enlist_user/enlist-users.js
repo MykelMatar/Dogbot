@@ -1,15 +1,12 @@
 const { MessageActionRow, MessageEmbed, MessageButton, ButtonInteraction } = require('discord.js');
 const data = require('../../data.json');
-const writeToJson = require('../../helperFunctions/writeToJson');
-const generateMenuOptions = require('../../helperFunctions/generateMenuOptions');
-const { userInfo } = require('os');
 let cmdStatus = 0;
 
 
 
 
 module.exports = {
-    name: 'enlist',
+    name: 'enlist-users',
     description: 'creates interaction to enlist other users for event/group',
     async execute(client, interaction, guildName) {
         console.log(`recruitment started by ${interaction.member.user.username}`);

@@ -1,4 +1,3 @@
-const util = require('minecraft-server-util'); 
 
 
 /**
@@ -10,7 +9,7 @@ function createInteraction(interaction, request, reject){
     interaction.editReply(request, { fetchReply: true })
     let filter = m => m.author.id === message.author.id
 
-    return message.channel.awaitMessages({ filter, max: 1, time: 20000, errors: ['time'] })
+    return interaction.channel.awaitMessages({ filter, max: 1, time: 20000, errors: ['time'] })
             .then(collected => {
                 let response = collected.first().content;
                 if (response !== null) { 
@@ -19,7 +18,7 @@ function createInteraction(interaction, request, reject){
                 }
             })
             .catch(error => {
-                return message.reply(reject), console.log(reject)
+                return interaction.editReply(reject), console.log(reject)
             })
 }
 
