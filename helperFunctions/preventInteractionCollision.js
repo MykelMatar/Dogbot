@@ -6,7 +6,7 @@
  */
 async function preventInteractionCollision(interaction, collector) {
 
-    const interactionCollector = message.channel.createMessageComponentCollector({time: 15000 })
+    const interactionCollector = interaction.channel.createMessageComponentCollector({time: 15000 })
 
     return interactionCollector.on('collect', async i => {
         if (i.isCommand()) { 

@@ -8,7 +8,7 @@ const { text } = require('stream/consumers');
 
 
 module.exports = {
-    name: 'valstats',
+    name: 'get-stats-valorant',
     description: 'retrieves valorant stats from tracker.gg. Case sensitive',
     async execute(client, interaction, args, guildName) {
         console.log(`valstats requested by ${interaction.member.user.username}`);

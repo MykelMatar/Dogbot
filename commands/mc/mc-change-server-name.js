@@ -1,7 +1,7 @@
 const { MessageActionRow, MessageSelectMenu } = require('discord.js');
 const data = require('../../data.json');
 const writeToJson = require('../../helperFunctions/writeToJson');
-const generateMenuOptions = require('../../helperFunctions/generateMenuOptions');
+const generateMcMenuOptions = require('../../helperFunctions/generateMcMenuOptions');
 const preventInteractionCollision = require('../../helperFunctions/preventInteractionCollision');
 const createInteraction = require('../../helperFunctions/createInteraction');
 let cmdStatus = 0;
@@ -11,32 +11,30 @@ let cmdStatus = 0;
 
 
 module.exports = {
-    name: 'renamemc',
+    name: 'mc-change-server-name',
     description: "Renames existing mc server. Accessible via 'listmc' button or by calling command.",
     async execute(client, interaction, guildName) {
         console.log(`rename requested by ${interaction.member.user.username}`);
 
         // check for admin perms & prevent multiple instances from running
         if (!interaction.member.permissions.has("ADMINISTRATOR")) { return interaction.reply('Only Admins can use this command') }  // check for admin perms
-        if (cmdStatus == 1) { return interaction.reply('renamemc command already running.') } // prevent multiple instances from running
+        if (cmdStatus == 1) { return interaction.editReply('renamemc command already running.') } // prevent multiple instances from running
         cmdStatus = 1;
 
         let serverList = data.Guilds[guildName].MCData.serverList;
         let serverListSize = Object.values(serverList).length
+        let selectedServerIP = data.Guilds[guildName].MCData.selectedServer["IP"]
 
         // make sure there is at least 1 server
         if (serverListSize == 0) {
-            interaction.reply('No Registered Servers, use !addmc or !listmc to add servers.')
+            interaction.editReply('No Registered Servers, use !addmc or !listmc to add servers.')
             return cmdStatus = 0;
         }
 
         // create variables and generate options for select menu
         var options = [];
-        options = await generateMenuOptions(guildName, serverListSize);
+        options = await generateMcMenuOptions(guildName, serverListSize);
         let option = options[0];
-        let label = options[1];
-        let value = options[2];
-        let description = options[3]
 
         console.log(option);
 
@@ -50,7 +48,7 @@ module.exports = {
             );
 
         // send embed and store in variable to edit later
-        await interaction.reply({ content: 'Select the server you want to rename', ephemeral: true, components: [row] });
+        await interaction.editReply({ content: 'Select the server you want to rename', ephemeral: true, components: [row] });
 
         // Response collection and handling
         let filter = i => i.user.id === interaction.member.user.id;
@@ -73,10 +71,11 @@ module.exports = {
             newName = interaction.options._hoistedOptions[0].value
 
             if (Object.keys(serverList).includes(newName)) {
-                interaction.reply('Cannot have duplicate server names, please choose a different name or use !changemcip to change the IP of the existing server')
+                interaction.editReply('Cannot have duplicate server names, please choose a different name or use !changemcip to change the IP of the existing server')
                 return cmdStatus = 0;
             }
 
+            if(selectedServerIP == ip) data.Guilds[guildName].MCData.selectedServer["title"] = newName
             serverList[newName] = ip;
             delete serverList[serverName];
             writeToJson(data)

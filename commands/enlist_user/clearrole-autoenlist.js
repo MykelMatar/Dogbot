@@ -6,7 +6,7 @@ let cmdStatus = 0;
 
 
 module.exports = {
-    name: 'clearrole',
+    name: 'clearrole-autoenlist',
     description: 'clears the role used to enlist',
     async execute(client, interaction, guildName) {
         console.log(`clearrole requested by ${interaction.member.user.username}`)

@@ -1,7 +1,7 @@
 const { MessageActionRow, MessageSelectMenu} = require('discord.js');
 const data = require('../../data.json');
 const writeToJson = require('../../helperFunctions/writeToJson');
-const generateMenuOptions = require('../../helperFunctions/generateMenuOptions');
+const generateMcMenuOptions = require('../../helperFunctions/generateMcMenuOptions');
 const preventInteractionCollision = require('../../helperFunctions/preventInteractionCollision');
 let cmdStatus = 0;
 
@@ -11,7 +11,7 @@ let cmdStatus = 0;
 
 
 module.exports = {
-    name: 'delmc',
+    name: 'mc-delete-server',
     description: "Removes server from server list in JSON file. Accessible via 'listmc' button or by calling command",
     async execute(client, interaction, guildName) {
         console.log(`del requested by ${interaction.member.user.username}`);
@@ -35,7 +35,7 @@ module.exports = {
         }
 
         var options = [];
-        options = await generateMenuOptions(guildName, serverListSize);
+        options = await generateMcMenuOptions(guildName, serverListSize);
         let option = options[0];
         let label = options[1];
         let value = options[2];

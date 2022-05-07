@@ -11,10 +11,10 @@ let cmdStatus = 0;
 
 
 module.exports = {
-    name: 'listmc',
-    description: "Lists registered mc servers from JSON in an embed. 4 buttons: 'addmc', 'delmc', 'changemc', 'listmc'. DOES NOT REQUIRE ADMIN PERMS",
+    name: 'mc-list-servers',
+    description: "Lists registered mc servers from JSON in an embed. No Admin perms required.",
     async execute(client, interaction, guildName) {
-        console.log(`listmc requested by ${interaction.member.user.username}`);
+        console.log(`mc-list-servers requested by ${interaction.member.user.username}`);
 
         // prevent multiple instances from running
         if (cmdStatus == 1) { return interaction.editReply('listmc command already running.') } // prevent multiple instances from running
@@ -38,26 +38,22 @@ module.exports = {
             serverIPList = "N/A"
         }
 
-        // generate buttons
-        const row = new MessageActionRow()
-            .addComponents(
-                new MessageButton()
-                    .setCustomId('Add')
-                    .setLabel('Add')
-                    .setStyle('SUCCESS'),
-                new MessageButton()
-                    .setCustomId('Remove')
-                    .setLabel('Remove')
-                    .setStyle('DANGER'),
-                new MessageButton()
-                    .setCustomId('Change')
-                    .setLabel('Change')
-                    .setStyle('PRIMARY'),
-                new MessageButton()
-                    .setCustomId('Rename')
-                    .setLabel('Rename')
-                    .setStyle('SECONDARY'),
-            );
+        // // generate buttons
+        // const row = new MessageActionRow()
+        //     .addComponents(
+        //         new MessageButton()
+        //             .setCustomId('ListAdd')
+        //             .setLabel('Add')
+        //             .setStyle('SUCCESS'),
+        //         new MessageButton()
+        //             .setCustomId('ListRemove')
+        //             .setLabel('Remove')
+        //             .setStyle('DANGER'),
+        //         new MessageButton()
+        //             .setCustomId('ListChange')
+        //             .setLabel('Change')
+        //             .setStyle('PRIMARY'),
+        //     );
 
         // generate embed
         const embed = new MessageEmbed()
@@ -69,62 +65,45 @@ module.exports = {
             .setColor("#8570C1")
             .setFooter(JSON.stringify(Object.values(serverList).length) + ' / 10 Servers Registered')
 
-        await interaction.editReply({ ephemeral: true, embeds: [embed], components: [row] })
+        await interaction.editReply({ ephemeral: true, embeds: [embed], components: [] })
 
-        // create collector
-        const filter = i => i.user.id === interaction.member.user.id;
-        const collector = interaction.channel.createMessageComponentCollector({ filter, componentType: 'BUTTON', max: 1, time: 10000 }); // only message author can interact, 1 response, 10s timer 
-        const msgCollector = interaction.channel.createMessageCollector({ time: 10000 })
+        // // create collector
+        // const filter = i => i.user.id === interaction.member.user.id;
+        // const collector = interaction.channel.createMessageComponentCollector({ filter, componentType: 'BUTTON', max: 1,  time: 5000 }); // only message author can interact, 5s timer 
 
-        // retrieve commands for buttons
-        const command1 = client.commands.get('addmc');
-        const command2 = client.commands.get('delmc');
-        const command3 = client.commands.get('changemc');
-        const command4 = client.commands.get('renamemc');
+        // // retrieve commands for buttons
+        // const command1 = client.commands.get('mc-add-server');
+        // const command2 = client.commands.get('mc-delete-server');
+        // const command3 = client.commands.get('mc-change-server');
 
-        /** 
-         * prevent other button interactions occuring simultaneously 
-         * not using preventInteractionCollision because that function rewrites the last sent message to indicate an aborted command.
-         * this is not a behavior we want for !mc or !listmc since they display pertinent information
-         */
-        // msgCollector.on('collect', async m => {
-        //     if (m.content == '!mc' || m.content =='!enlist') {
-        //         msgCollector.stop();
-        //         collector.stop();
-        //         await sent.edit({ ephemeral: true, components: [] })
+        // // collect response
+        // collector.on('collect', async i => {
+        //     var update, execute;
+        //     // interaction handling
+        //     if (i.customId === 'ListAdd') {
+        //         update = i.update({ content: 'Adding Server (If Possible)', components: [] });
+        //         execute = command1.execute(client, interaction, guildName);
         //     }
+        //     else if (i.customId === 'ListRemove') {
+        //         interaction.editReply({ ephemeral: true, embeds: [] })
+        //         update = i.update({ content: 'Removing Server', components: [] });
+        //         execute = command2.execute(client, interaction, guildName);
+        //     }
+        //     else if (i.customId === 'ListChange') {
+        //         update = i.update({ content: 'Changing Server', components: [] });
+        //         execute = command3.execute(client, interaction, guildName);
+        //     }
+        //     Promise.all([update, execute])
         // });
 
-        // collect response
-        collector.on('collect', async i => {
-            var update, execute;
-            // interaction handling
-            if (i.customId === 'Add') {
-                update = i.update({ content: 'Adding Server (If Possible)', components: [] });
-                execute = command1.execute(client, interaction, guildName);
-            }
-            else if (i.customId === 'Remove') {
-                interaction.editReply({ ephemeral: true, embeds: [] })
-                update = i.update({ content: 'Removing Server', components: [] });
-                execute = command2.execute(client, interaction, guildName);
-            }
-            else if (i.customId === 'Change') {
-                update = i.update({ content: 'Changing Server', components: [] });
-                execute = command3.execute(client, interaction, guildName);
-            }
-            else if (i.customId === 'Rename') {
-                update = i.update({ content: 'Renaming Server', components: [] });
-                execute = command4.execute(client, interaction, guildName);
-            }
-            Promise.all([update, execute])
-        });
+        // collector.on('end', async collected => {
+        //     let buttonId = collected.first().customId
+        //     if (collected.size == 0) 
+        //         await interaction.editReply({ ephemeral: true, embeds: [embed], components: [] }) // remove buttons & embed
+        //     if (buttonId === 'ListAdd' || buttonId === 'ListRemove' || buttonId === 'ListChange') 
+        //         await interaction.editReply({ ephemeral: true, content: 'button selected', embeds: [], components: [] })   // remove buttons & embed
+        // });
 
-        collector.on('end', async collected => {
-            console.log(`listmc collected ${collected.size} button presses`)
-            if (collected.size == 0) await interaction.editReply({ ephemeral: true, embeds: [embed], components: [] }) // remove buttons & embed
-            if (collected.size == 1) await interaction.editReply({ ephemeral: true, content: 'button selected',embeds: [], components: [] })   // remove buttons & embed
-        });
-
-        cmdStatus = 0;
+        // cmdStatus = 0;
     }
 }
