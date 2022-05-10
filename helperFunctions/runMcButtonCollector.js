@@ -8,22 +8,9 @@
 function runMcButtonCollector(client, interaction, guildName) {
   const filter = i => i.user.id === interaction.member.user.id;
   const collector = interaction.channel.createMessageComponentCollector({ filter, componentType: 'BUTTON', max: 1, time: 10000 }); // only message author can interact, 1 response, 10s timer 
-  const msgCollector = interaction.channel.createMessageCollector({ time: 10000 })
-  const command1 = client.commands.get('changemc');
-  const command2 = client.commands.get('listmc');
 
-  /** 
-   * prevent other button interactions occuring simultaneously 
-   * not using preventInteractionCollision because that function rewrites the last sent message to indicate an aborted command.
-   * this is not a behavior we want for !mc or !listmc since they display pertinent information
-   */
-  // msgCollector.on('collect', async m => {
-  //   if (m.content == '!listmc') {
-  //     msgCollector.stop();
-  //     collector.stop();
-  //     await sent.edit({ ephemeral: true, components: [] })
-  //   }
-  // });
+  const command1 = client.commands.get('mc-change-server');
+  const command2 = client.commands.get('mc-list-servers');
 
   collector.on('collect', async i => {
     var update, execute;
