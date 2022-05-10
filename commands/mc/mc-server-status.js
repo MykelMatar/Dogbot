@@ -56,10 +56,10 @@ module.exports = {
               .setFooter('Server Online')
 
             await interaction.editReply({ ephemeral: true, embeds: [embed], components: [row]})
-            runMcButtonCollector(client, interaction, guildName, sent) 
+            runMcButtonCollector(client, interaction, guildName) 
           })
           .catch(async (error) => {
-            console.error('Server Offline')
+            console.log('Server Offline')
 
             // create embed to display server offline (its an embed to allow for editing during server info refresh)
             const embed = new MessageEmbed()
