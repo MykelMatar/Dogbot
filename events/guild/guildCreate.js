@@ -26,8 +26,7 @@ module.exports = async function(client, guild) {
                 title: "",
                 IP: "" 
             }
-        },
-        MenuOptions : {},
+        } 
     };
 
     data.Guilds[guildName] = newJson;
