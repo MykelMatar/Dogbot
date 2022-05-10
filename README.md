@@ -1,5 +1,6 @@
-# [Dogbot 2.0](https://discord.com/api/oauth2/authorize?client_id=848283770041532425&permissions=8&scope=bot%20applications.commands)  ![Dogbot PFP](https://github.com/MykelMatar/Dogbot/blob/main/pfp/Dogbot.png)
-## Description
+![Dogbot PFP](https://github.com/MykelMatar/Dogbot/blob/main/pfp/Dogbot.png)
+# [Dogbot 2.0](https://discord.com/api/oauth2/authorize?client_id=848283770041532425&permissions=8&scope=bot%20applications.commands)  
+## Description 
   Dogbot is a Discord bot made with Discord.js 13. All commands are registered /commands (currently not globally registered)
   
 ## List of Features:
