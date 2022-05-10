@@ -18,7 +18,7 @@ module.exports = {
         data.Guilds[guildName].ServerData['roles'].default = role;
         writeToJson(data);
 
-        interaction.editReply("default role set sucessfully")
+        await interaction.editReply("default role set successfully")
         console.log("default role set");
     }
 

@@ -25,6 +25,7 @@ module.exports = {
                 new MessageSelectMenu()
                     .setCustomId('role-select')
                     .setPlaceholder('Nothing selected')
+                    .setMinValues(0)
                     .setMaxValues(listSize)
                     .addOptions(option),
             );
@@ -40,21 +41,30 @@ module.exports = {
         const collector = await interaction.channel.createMessageComponentCollector({ componentType: 'SELECT_MENU' });
 
         collector.on('collect', async i => {
-            for (j = 0; j < i.values.length; j++) {
-                if (!(i.member.roles.cache.has(i.values[j]))){
-                    await i.member.roles.add(`${i.values[j]}`)
-                        .catch(error => {
-                            console.log(error)
-                            interaction.channel.send('could not give role. Make sure the "Dogbot" role is high up in the role hierarchy ')
-                        });
-                }
-                else {
-                    await i.member.roles.remove(`${i.values[j]}`)
-                        .catch(error => {
-                            console.log(error)
-                            interaction.channel.send('could not remove role. Make sure the "Dogbot" role is high up in the role hierarchy ')
-                        });
-                }
+            if (i.customId === 'role-select') {
+                await i.deferUpdate()
+                if (interaction.member.manageable) {    // verify that the member's roles can be changed
+                    for (let j = 0; j < i.values.length; j++) { // loop through options and verify whether user has roles or not
+                        if (!(i.member.roles.cache.has(i.values[j]))) { // add roles if user does not have them
+                            await i.member.roles.add(`${i.values[j]}`)
+                                .catch(error => {
+                                    console.log(error)
+                                    interaction.channel.send('could not give role. Make sure the "Dogbot" role is high up in the role hierarchy ')
+                                });
+                        }
+                    }
+                    for (let k = 0; k < i.values.length; k++) {
+                        
+                    }
+                        // if (!(i.values[j].includes(option[j].values))) { // remove roles if user deselects them
+                        //     await i.member.roles.remove(`${i.values[j]}`)
+                        //         .catch(error => {
+                        //             console.log(error)
+                        //             interaction.channel.send('could not remove role. Make sure the "Dogbot" role is high up in the role hierarchy ')
+                        //         });
+                        // }
+                } else
+                    interaction.channel.send('could not remove role. Make sure the "Dogbot" role is high up in the role hierarchy ')
             }
         });
 
