@@ -20,11 +20,43 @@ module.exports = (client) => {
     }
 
     // slash command creation
-
+    
+    // creation commands
+    // commands.create({
+    //     name: 'embed',
+    //     description: 'creates and sends an embed to the channel. Max of 5 fields.',
+    //     options: [
+    //         {
+    //             name: 'Title',
+    //             description: 'Embed title',
+    //             required: true,
+    //             type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING
+    //         },
+    //         {
+    //             name: 'Description',
+    //             description: 'Embed description',
+    //             required: true,
+    //             type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING
+    //         },
+    //         {
+    //             name: 'Field1name',
+    //             description: 'Name of the first content field',
+    //             required: true,
+    //             type: DiscordJS.Constants.ApplicationCommandOptionTypes.BOOLEAN
+    //         },
+    //         {
+    //             name: 'Field1content',
+    //             description: 'Name of the first content field',
+    //             required: true,
+    //             type: DiscordJS.Constants.ApplicationCommandOptionTypes.BOOLEAN
+    //         },
+    //     ]
+    // });
+    
     // enlist_user commands
     commands.create({
         name: 'clearrole-autoenlist',
-        description: 'Clears role used to automate /enlist'
+        description: 'Clears role used to automate /enlist-users'
     });
 
     commands.create({
@@ -81,7 +113,7 @@ module.exports = (client) => {
 
     commands.create({
         name: 'suggestion',
-        description: 'allows users to make suggestions for the bot',
+        description: 'allows users to make suggestions about dogbot',
         options: [
             {
                 name: 'suggestion',
@@ -115,7 +147,7 @@ module.exports = (client) => {
 
     commands.create({
         name: 'mc-change-server-ip',
-        description: 'Changes IP of existing server',
+        description: 'Changes the IP of an existing server',
         options: [
             {
                 name: 'new-ip',
@@ -128,7 +160,7 @@ module.exports = (client) => {
 
     commands.create({
         name: 'mc-change-server-name',
-        description: 'Retrieves MC server status',
+        description: 'Changes the name of an existing server',
         options: [
             {
                 name: 'newname',
@@ -141,7 +173,7 @@ module.exports = (client) => {
 
     commands.create({
         name: 'mc-change-server',
-        description: 'Changes Server that is being tracked by mc'
+        description: 'Changes Server that is being tracked by mc-server-status'
     });
 
     commands.create({
@@ -151,12 +183,12 @@ module.exports = (client) => {
 
     commands.create({
         name: 'mc-list-servers',
-        description: 'Lists registered mc servers'
+        description: 'Lists registered minecraft servers'
     });
 
     commands.create({
         name: 'mc-server-status',
-        description: 'Renames existing mc server'
+        description: 'Gets status of selected minecraft server'
     });
 
 
@@ -230,7 +262,7 @@ module.exports = (client) => {
 
     commands.create({
         name: 'clearrole-default',
-        description: 'removes default role given to new users. Add up to 10 roles.'
+        description: 'removes default role given to new users.'
     });
 
     commands.create({
