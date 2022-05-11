@@ -22,36 +22,18 @@ module.exports = (client) => {
     // slash command creation
     
     // creation commands
-    // commands.create({
-    //     name: 'embed',
-    //     description: 'creates and sends an embed to the channel. Max of 5 fields.',
-    //     options: [
-    //         {
-    //             name: 'Title',
-    //             description: 'Embed title',
-    //             required: true,
-    //             type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING
-    //         },
-    //         {
-    //             name: 'Description',
-    //             description: 'Embed description',
-    //             required: true,
-    //             type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING
-    //         },
-    //         {
-    //             name: 'Field1name',
-    //             description: 'Name of the first content field',
-    //             required: true,
-    //             type: DiscordJS.Constants.ApplicationCommandOptionTypes.BOOLEAN
-    //         },
-    //         {
-    //             name: 'Field1content',
-    //             description: 'Name of the first content field',
-    //             required: true,
-    //             type: DiscordJS.Constants.ApplicationCommandOptionTypes.BOOLEAN
-    //         },
-    //     ]
-    // });
+    commands.create({
+        name: 'say',
+        description: 'use Dogbot to say something',
+        options: [
+            {
+                name: 'message',
+                description: 'what you want dogbot to say',
+                required: true,
+                type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING
+            }
+        ]
+    })
     
     // enlist_user commands
     commands.create({
@@ -109,6 +91,11 @@ module.exports = (client) => {
     commands.create({
         name: 'elp',
         description: 'lists all commands and relevant information'
+    });
+
+    commands.create({
+        name: 'server-stats',
+        description: 'displays server info'
     });
 
     commands.create({

@@ -1,7 +1,6 @@
 const util = require('minecraft-server-util');
 const data = require('../../data.json');
 const writeToJson = require('../../helperFunctions/writeToJson');
-const createInteraction = require('../../helperFunctions/createInteraction');
 let cmdStatus = 0;
 
 
@@ -15,7 +14,7 @@ module.exports = {
         console.log(`addmc requested by ${interaction.member.user.username}`);
 
         if (!interaction.member.permissions.has("ADMINISTRATOR")) { return interaction.editReply('Only Admins can use this command') }
-        if (cmdStatus == 1) { return interaction.editReply('addmc command already running.') }
+        if (cmdStatus === 1) { return interaction.editReply('addmc command already running.') }
         cmdStatus = 1;
 
 
@@ -23,18 +22,18 @@ module.exports = {
         let serverList = data.Guilds[guildName].MCData.serverList
         let serverListSize = Object.values(serverList).length
 
-        if (serverListSize == 10) {
-            interaction.editReply('Max number of servers reached. Remove a server to add a new one (Limit of 10).')
+        if (serverListSize === 10) {
+            await interaction.editReply('Max number of servers reached. Remove a server to add a new one (Limit of 10).')
             return cmdStatus = 0;
         }
 
         // retrieve server IP and name
-        var ip = interaction.options._hoistedOptions[0].value
-        var name = interaction.options._hoistedOptions[1].value
+        const ip = interaction.options._hoistedOptions[0].value;
+        const name = interaction.options._hoistedOptions[1].value;
 
         // verify that IP is not already registered
         if (Object.values(serverList).includes(ip)) {
-            interaction.editReply("Server already registered, double check the IP or use **!renamemc** to change the name")
+            await interaction.editReply("Server already registered, double check the IP or use **!renamemc** to change the name")
             console.log("Duplicate IP Detected");
             return cmdStatus = 0;
 
@@ -42,7 +41,7 @@ module.exports = {
 
         // verify that name is not already registered under a different IP
         if (Object.keys(serverList).includes(name)) {
-            interaction.editReply('Cannot have duplicate server names, please choose a different name or use !changemcip to change the IP of the existing server')
+            await interaction.editReply('Cannot have duplicate server names, please choose a different name or use !changemcip to change the IP of the existing server')
             return cmdStatus = 0;
         }
 
@@ -59,11 +58,11 @@ module.exports = {
             serverList[name] = ip;
             writeToJson(data);
 
-            interaction.editReply("Server added sucessfully")
+            await interaction.editReply("Server added sucessfully")
             cmdStatus = 0;
 
         } catch (error) {
-            interaction.editReply('Could not retrieve server status. Double check IP and make sure server is online.')
+            await interaction.editReply('Could not retrieve server status. Double check IP and make sure server is online.')
             console.log('Invalid Server IP / Server Offline');
             cmdStatus = 0;
         }

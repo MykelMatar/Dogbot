@@ -1,11 +1,11 @@
-var requireDir = require('require-dir');
-var dir = requireDir('../commands', { extensions: ['.js'], recurse: true });
+const requireDir = require('require-dir');
+const dir = requireDir('../commands', {extension: '.js', recurse: true});
 
 module.exports = (client) => {
     const commandFiles = dir;
-    const cmdFolders = ['enlist_user', 'get_stats', 'help', 'mc', 'role_selection', 'creation']
+    const cmdFolders = ['creation', 'enlist_user', 'get_stats', 'help', 'mc', 'role_selection']
 
-    for (i = 0; i < cmdFolders.length; i++) { 
+    for (let i = 0; i < cmdFolders.length; i++) { 
         for (const file in commandFiles[`${cmdFolders[i]}`]) {
             const command = require(`../commands/${cmdFolders[i]}/${file}`);
             if (command.name) {
