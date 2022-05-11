@@ -1,6 +1,5 @@
-const { MessageEmbed, MessageActionRow, MessageSelectMenu } = require('discord.js');
+const {MessageEmbed, MessageActionRow, MessageSelectMenu, MessageButton} = require('discord.js');
 const preventInteractionCollision = require('../../helperFunctions/preventInteractionCollision');
-cmdStatus = 0;
 
 
 module.exports = {
@@ -8,47 +7,157 @@ module.exports = {
     description: 'lists all commands and relevant information',
     async execute(client, interaction) {
         console.log(`elp requested by ${interaction.member.user.username}`);
+        
+        // Generate buttons
+        const row = new MessageActionRow()
+            .addComponents(
+                new MessageButton()
+                    .setCustomId('prev')
+                    .setLabel('Prev')
+                    .setStyle('PRIMARY'),
+                new MessageButton()
+                    .setCustomId('next')
+                    .setLabel('Next')
+                    .setStyle('SECONDARY'),
+            )
 
         // create embed for mc commands
         const mcEmbed = new MessageEmbed()
-            .setTitle("mc elp")
+            .setTitle("minecraft commands")
             .setDescription(
-                `**All commands are preceded by an !**
-                mc commands involve showing and editing a minecraft server's 
-                status and information`
+                `**Use the buttons to navigate between command pages**`
             )
             .addFields(
                 {
-                    name: 'mc commands',
+                    name: 'command',
                     value:
-                        `>>> **/mc**    
-                        **/listmc**   
-                        **/addmc**      
-                        **/delmc**      
-                        **/changemc**   
-                        **/renamemc**   
-                        **/changemcip**
-                        **/suggestion** 
-                        **/valstats** `,
+                        `>>> **/mc-server-status**    
+                        **/mc-change-server**   
+                        **/mc-list-servers**      
+                        **/mc-add-server**      
+                        **/mc-change-server-ip**   
+                        **/mc-change-server-name**   
+                        **/mc-delete-server** `,
                     inline: true
                 },
                 {
                     name: 'function',
                     value:
-                    ` - tracks mc server status
-                      - lists all mc servers and their respective IPs
+                        ` - tracks mc server status
+                      - changes the server being tracked 
+                      - lists all servers and their respective IPs
                       - adds server to registered server list
-                      - deletes server from registered server list
-                      - changes the server being tracked by !mc
-                      - changes an existing server's name
                       - changes an existing server's IP address
-                      - allows users to make suggestions about dogbot
-                      - retrieves account stats from Tracker.gg`,
+                      - changes an existing server's name
+                      - deletes server from registered server list`,
                     inline: true
                 },
             )
             .setColor("#F5F5F5")
+            .setFooter(` Page 1`)
 
-        interaction.reply({ephemeral: true, embeds: [mcEmbed] });
+        // create embed for role commands
+        const roleEmbed = new MessageEmbed()
+            .setTitle("role commands")
+            .setDescription(
+                `**Use the buttons to navigate between command pages**`
+            )
+            .addFields(
+                {
+                    name: 'command',
+                    value:
+                        `>>> **/role-selection-menu**    
+                        **/setrole-default**   
+                        **/clearrole-default** 
+                        **/set-welcome-channel**`,
+                    inline: true
+                },
+                {
+                    name: 'function',
+                    value:
+                        ` - creates dropdown menu for users to select roles
+                      - changes the role given to new users
+                      - removes default role given to new users
+                      - sets the channel for Dogbot to detect users joining`,
+                    inline: true
+                },
+            )
+            .setColor("#F5F5F5")
+            .setFooter(` Page 2`)
+
+        // create embed for enlist commands
+        const enlistEmbed = new MessageEmbed()
+            .setTitle("enlist commands")
+            .setDescription(
+                `**Use the buttons to navigate between command pages**`
+            )
+            .addFields(
+                {
+                    name: 'command',
+                    value:
+                        `>>> **/enlist-users**    
+                        **/setrole-autoenlist**   
+                        **/clearrole-autoenlist**`,
+                    inline: true
+                },
+                {
+                    name: 'function',
+                    value:
+                        ` - creates interaction to enlist other users for event/group
+                      - changes the role used to enlist (for auto enlisting)
+                      - clears role used to automate enlisting`,
+                    inline: true
+                },
+            )
+            .setColor("#F5F5F5")
+            .setFooter(` Page 3`)
+
+        // create embed for get_stats commands
+        const statsEmbed = new MessageEmbed()
+            .setTitle("get-stats commands")
+            .setDescription(
+                `**Use the buttons to navigate between command pages**`
+            )
+            .addFields(
+                {
+                    name: 'command',
+                    value:
+                        `>>> **/get-stats-valorant**`,
+                    inline: true
+                },
+                {
+                    name: 'function',
+                    value:
+                        ` - retrieves Valorant stats from tracker.gg`,
+                    inline: true
+                },
+            )
+            .setColor("#F5F5F5")
+            .setFooter(` Page 4`)
+
+        const embeds = [mcEmbed, roleEmbed, enlistEmbed, statsEmbed] // array for indexing pages
+        let pageNumber = 0;
+        
+        interaction.reply({ephemeral: true, embeds: [embeds[pageNumber]], components: [row]}); // send mc embed as home page
+
+        // create collector
+        const filter = i => i.user.id === interaction.member.user.id;
+        const collector = interaction.channel.createMessageComponentCollector({ filter, componentType: 'BUTTON' }); // only message author can interact, 5s timer
+
+        // collect response
+        collector.on('collect', async i => {
+            await i.deferUpdate()
+            if (i.customId === 'next') {
+                if (pageNumber < embeds.length - 1) pageNumber++
+            }
+            if (i.customId === 'prev') {
+                if (pageNumber > 0) pageNumber--
+            }
+            await interaction.editReply({ephemeral: true, embeds: [embeds[pageNumber]], components: [row]}); // send mc embed as home page
+        });
+
+        collector.on('end', async collected => {
+
+        });
     }
 }

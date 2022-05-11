@@ -10,12 +10,9 @@ module.exports = {
         console.log(`setrole-default requested by ${interaction.member.user.username}`)
 
         if (!interaction.member.permissions.has("ADMINISTRATOR")) { return interaction.editReply('Only Admins can use this command') }
-
-        // retrieve role 
-        let role = interaction.options._hoistedOptions[0].value
-
-        // push role id to json
-        data.Guilds[guildName].ServerData['roles'].default = role;
+        
+        // retrieve role and push role id to json
+        data.Guilds[guildName].ServerData['roles'].default = interaction.options._hoistedOptions[0].value;
         writeToJson(data);
 
         await interaction.editReply("default role set successfully")

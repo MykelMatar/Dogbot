@@ -8,7 +8,7 @@ module.exports = {
         console.log(`role-selection-menu requested by ${interaction.member.user.username}`);
         
         // check for admin perms & prevent multiple instances from running
-        //if (!interaction.member.permissions.has("ADMINISTRATOR")) { return interaction.editReply('Only Admins can use this command') }  // check for admin perms
+        if (!interaction.member.permissions.has("ADMINISTRATOR")) { return interaction.editReply('Only Admins can use this command') }  // check for admin perms
 
         // retrieve role(s)
         let cmdOptions = interaction.options._hoistedOptions
@@ -34,35 +34,31 @@ module.exports = {
         await interaction.deleteReply()
         await interaction.channel.send({ content: 'Select Your desired roles. Select the roles again to remove them.', components: [row] });
 
-        // collect responses, stay up indefinitely
-        // if id is from these selections, go through with execution, otherwise do nothing
-
         // Response collection and handling
         const collector = await interaction.channel.createMessageComponentCollector({ componentType: 'SELECT_MENU' });
 
         collector.on('collect', async i => {
-            if (i.customId === 'role-select') {
+            const { customId, values, member } = i
+            if (customId === 'role-select') {
                 await i.deferUpdate()
                 if (interaction.member.manageable) {    // verify that the member's roles can be changed
-                    for (let j = 0; j < i.values.length; j++) { // loop through options and verify whether user has roles or not
-                        if (!(i.member.roles.cache.has(i.values[j]))) { // add roles if user does not have them
-                            await i.member.roles.add(`${i.values[j]}`)
-                                .catch(error => {
-                                    console.log(error)
-                                    interaction.channel.send('could not give role. Make sure the "Dogbot" role is high up in the role hierarchy ')
-                                });
-                        }
+                    const removed = cmdOptions.filter((option) => { // retrieve deselected roles 
+                        return !values.includes(option.value)
+                    })
+                    for (const id of values) { // add selected roles
+                        await member.roles.add(id)
+                            .catch(error => { // just in case Discord API error arises
+                                console.log(error)
+                                interaction.channel.send('could not give role. Make sure the "Dogbot" role is high up in the role hierarchy ')
+                            });
                     }
-                    for (let k = 0; k < i.values.length; k++) {
-                        
+                    for (const id of removed) { // remove deselected roles
+                        await member.roles.remove(id.value)
+                            .catch(error => {
+                                console.log(error)
+                                interaction.channel.send('could not give role. Make sure the "Dogbot" role is high up in the role hierarchy ')
+                            });
                     }
-                        // if (!(i.values[j].includes(option[j].values))) { // remove roles if user deselects them
-                        //     await i.member.roles.remove(`${i.values[j]}`)
-                        //         .catch(error => {
-                        //             console.log(error)
-                        //             interaction.channel.send('could not remove role. Make sure the "Dogbot" role is high up in the role hierarchy ')
-                        //         });
-                        // }
                 } else
                     interaction.channel.send('could not remove role. Make sure the "Dogbot" role is high up in the role hierarchy ')
             }
@@ -71,6 +67,5 @@ module.exports = {
         collector.on('end', async collected => {
             console.log(`role-selection-menu collected ${collected.size} menu selections`)
         });
-
     }
 }

@@ -52,12 +52,12 @@
 
 
 ## TODO: 
-  - [ ] fix /elp (paginate commands by category)
+  - [x] fix /elp (paginate commands by category)
   - [ ] add 'hide' option to all commands
-  - [ ] /say to send a message from dogbot
+  - [x] /say to send a message from dogbot
   - [ ] /createembed
-  - [ ] Prevent collisions for /mc, /listmc, and /autoenlist
-  - [ ] log users who enlist/dont enilst and tally it up then do something fun with it
+  - [x] Prevent collisions for /mc, /listmc, and /autoenlist
+  - [ ] log users who enlist/don't enlist and tally it up then do something fun with it
   - [ ] Add moderation tools
   - [ ] tic tac toe command
   - [ ] Poll creation
@@ -65,4 +65,5 @@
   - [ ] more game stats (apex, fortnite, csgo, destiny?)
   - [ ] server stats
   - [ ] custom commands
+  - [ ] type racer game
 

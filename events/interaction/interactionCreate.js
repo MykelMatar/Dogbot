@@ -9,6 +9,12 @@ module.exports = async (client, interaction) => {
     const { commandName, options } = interaction
 
     // Slash Command List + execution instructions
+    
+    // creation commands
+    if (commandName === 'say') {
+        await commands.get('say').execute(client, interaction, guildName)
+    }
+    
     // enlist_user commands
 
     if (commandName === 'clearrole-autoenlist') {
@@ -37,6 +43,10 @@ module.exports = async (client, interaction) => {
     // help commands
     if (commandName === 'elp') {
         await commands.get('elp').execute(client, interaction)
+    }
+
+    if (commandName === 'server-stats') {
+        await commands.get('server-stats').execute(client, interaction)
     }
 
     if (commandName === 'suggestion') {

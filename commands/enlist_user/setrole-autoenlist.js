@@ -12,14 +12,11 @@ module.exports = {
 
         if (!interaction.member.permissions.has("ADMINISTRATOR")) { return interaction.editReply('Only Admins can use this command') }
 
-        // retrieve role 
-        let role = interaction.options._hoistedOptions[0].value
-
         // push role id to json
-        data.Guilds[guildName].ServerData['roles'].autoenlist = role;
+        data.Guilds[guildName].ServerData['roles'].autoenlist = interaction.options._hoistedOptions[0].value;
         writeToJson(data);
 
-        interaction.editReply("autoenlist role set sucessfully")
+        await interaction.editReply("autoenlist role set sucessfully")
         console.log(" autoenlist role set");
     }
 

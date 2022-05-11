@@ -1,4 +1,4 @@
-const { MessageActionRow, MessageEmbed, MessageButton, ButtonInteraction } = require('discord.js');
+const { MessageActionRow, MessageEmbed, MessageButton } = require('discord.js');
 const data = require('../../data.json');
 let cmdStatus = 0;
 
@@ -59,22 +59,22 @@ module.exports = {
         var rejectedUsers = ['-'];
 
         collector.on('collect', async i => {
-            i.deferUpdate(); // prevents "this interaction failed" message from appearing
+            await i.deferUpdate(); // prevents "this interaction failed" message from appearing
             // interaction handling
             if (i.customId === 'Enlist') {
                 if (!enlistedUsers.includes('> ' + i.user.username + '\n')) enlistedUsers.push('> ' + i.user.username + '\n') // checks if user is in array 1 before adding them
-                if (!(enlistedUsers.includes('-')) && enlistedUsers.length == 0) { enlistedUsers.push('-') } // makes sure array 1 is never empty
+                if (!(enlistedUsers.includes('-')) && enlistedUsers.length === 0) { enlistedUsers.push('-') } // makes sure array 1 is never empty
                 if (rejectedUsers.includes('> ' + i.user.username + '\n')) { rejectedUsers.splice(rejectedUsers.indexOf('> ' + i.user.username + '\n'), 1) } // removes user from other array to ensure there are no duplicates
-                if (!(rejectedUsers.includes('-')) && rejectedUsers.length == 0) { rejectedUsers.push('-') } //makes sure array 2 is never empty
+                if (!(rejectedUsers.includes('-')) && rejectedUsers.length === 0) { rejectedUsers.push('-') } //makes sure array 2 is never empty
                 if (enlistedUsers.length > 1 && enlistedUsers.includes('-')) {  //removes extra dash if a user is in the array
                     enlistedUsers.splice(enlistedUsers.indexOf('-'), 1)
                 }
             }
             if (i.customId === 'Reject') {
                 if (!rejectedUsers.includes('> ' + i.user.username + '\n')) rejectedUsers.push('> ' + i.user.username + '\n') // checks if user is in array 1 before adding them
-                if (!(rejectedUsers.includes('-')) && rejectedUsers.length == 0) { rejectedUsers.push('-') } // makes sure array 1 is never empty
+                if (!(rejectedUsers.includes('-')) && rejectedUsers.length === 0) { rejectedUsers.push('-') } // makes sure array 1 is never empty
                 if (enlistedUsers.includes('> ' + i.user.username + '\n')) { enlistedUsers.splice(enlistedUsers.indexOf('> ' + i.user.username + '\n'), 1) } // removes user from other array to ensure there are no duplicates
-                if (!(enlistedUsers.includes('-')) && enlistedUsers.length == 0) { enlistedUsers.push('-') } //makes sure array 2 is never empty
+                if (!(enlistedUsers.includes('-')) && enlistedUsers.length === 0) { enlistedUsers.push('-') } //makes sure array 2 is never empty
                 if (rejectedUsers.length > 1 && rejectedUsers.includes('-')) {  //removes extra dash if a user is in the array
                     rejectedUsers.splice(rejectedUsers.indexOf('-'), 1)
                 }
