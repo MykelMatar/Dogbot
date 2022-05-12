@@ -3,7 +3,7 @@ const data = require('../../data.json');
 let cmdStatus = 0;
 
 
-
+// TODO use this command to send an autoenlist instead of having 2 seperate commands, and log users who enlist and dont in json, consider MongoDB 
 
 module.exports = {
     name: 'enlist-users',
@@ -37,9 +37,7 @@ module.exports = {
         await interaction.reply({ embeds: [embed], components: [row] })
 
         // create collector
-        const collector = interaction.channel.createMessageComponentCollector({ componentType: 'BUTTON'}); // only message author can interact, 1 response, 10s timer 
-        const msgCollector = interaction.channel.createMessageCollector()
-        let selectedRole = data.Guilds[guildName].ServerData['selectedRole']
+        const collector = interaction.channel.createMessageComponentCollector({ componentType: 'BUTTON'}); // only message author can interact, 1 response, 10s timer
 
         /** 
          * prevent other button interactions occuring simultaneously 

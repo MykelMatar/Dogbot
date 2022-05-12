@@ -4,14 +4,14 @@ const fs = require('fs');
 module.exports = async function(client, guild) {
     console.log(`Dogbot added to ${guild.name}`);
     if (!("Guilds" in data)) {
-        var gData = {
+        const gData = {
             Guilds: {}
         };
         writeToJson(gData);
     }
 
     let guildName = guild.name.replace(/\s+/g, ""); //removes whitespace from string
-    let newJson = {
+    data.Guilds[guildName] = {
         ServerData: {
             serverId: guild.id,
             welcomeChannel: null,
@@ -20,16 +20,15 @@ module.exports = async function(client, guild) {
                 default: null
             }
         },
-        MCData : {
+        MCData: {
             serverList: {},
             selectedServer: {
                 title: "",
-                IP: "" 
+                IP: ""
             }
-        } 
+        },
+        UserData: {}
     };
-
-    data.Guilds[guildName] = newJson;
     writeToJson(data);
 }
 
