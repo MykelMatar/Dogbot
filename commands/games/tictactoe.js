@@ -1,0 +1,265 @@
+const {MessageActionRow, MessageButton} = require('discord.js');
+const data = require('../../data.json')
+const writeToJson = require('../../helperFunctions/writeToJson')
+let selected = Array(9).fill(false)
+let color = 'SUCCESS';
+let symbol = 'O';
+let win = false
+let turn = 1;
+let winner, loser, user
+
+// TODO log player wins and display at the end of each game and write bot logic && close tic tac toe game when another is going on
+
+module.exports = {
+    name: 'tictactoe',
+    description: 'challenge a user to tictactoe',
+    async execute(client, interaction, guildName) {
+        console.log(`tictactoe requested by ${interaction.member.user.username}`)
+
+        let opponent
+        if (interaction.options._hoistedOptions[0] === undefined) opponent = client.user.username
+        else opponent = interaction.options._hoistedOptions[0].member.user.username;
+
+        // generate buttons
+        const row1 = new MessageActionRow()
+            .addComponents(
+                new MessageButton()
+                    .setCustomId('TL')
+                    .setLabel(' ')
+                    .setStyle('SECONDARY'),
+                new MessageButton()
+                    .setCustomId('TM')
+                    .setLabel('  ')
+                    .setStyle('SECONDARY'),
+                new MessageButton()
+                    .setCustomId('TR')
+                    .setLabel('   ')
+                    .setStyle('SECONDARY'),
+            );
+
+        const row2 = new MessageActionRow()
+            .addComponents(
+                new MessageButton()
+                    .setCustomId('ML')
+                    .setLabel('    ')
+                    .setStyle('SECONDARY'),
+                new MessageButton()
+                    .setCustomId('MM')
+                    .setLabel('     ')
+                    .setStyle('SECONDARY'),
+                new MessageButton()
+                    .setCustomId('MR')
+                    .setLabel('      ')
+                    .setStyle('SECONDARY'),
+            );
+
+        const row3 = new MessageActionRow()
+            .addComponents(
+                new MessageButton()
+                    .setCustomId('BL')
+                    .setLabel('      ')
+                    .setStyle('SECONDARY'),
+                new MessageButton()
+                    .setCustomId('BM')
+                    .setLabel('       ')
+                    .setStyle('SECONDARY'),
+                new MessageButton()
+                    .setCustomId('BR')
+                    .setLabel('        ')
+                    .setStyle('SECONDARY'),
+            );
+
+        await interaction.reply({
+            content: `${interaction.member.user.username} vs ${opponent}`,
+            components: [row1, row2, row3]
+        })
+
+        const filter = i => i.user.id === interaction.member.user.id;
+        const collector = interaction.channel.createMessageComponentCollector({filter, componentType: 'BUTTON'});
+
+
+        collector.on('collect', async i => {
+            await i.deferUpdate() // prevents "this interaction failed" message from appearing
+                .catch(error => console.log(error));
+
+            // interaction handling
+            if (i.customId === 'TL' && selected[0] === false) {
+                row1.components[0].label = symbol
+                row1.components[0].style = color
+                selected[0] = true;
+                await changeTurn(interaction, client);
+            }
+
+            if (i.customId === 'TM' && selected[1] === false) {
+                row1.components[1].label = symbol
+                row1.components[1].style = color
+                selected[1] = true;
+                await changeTurn(interaction, client);
+            }
+
+            if (i.customId === 'TR' && selected[2] === false) {
+                row1.components[2].label = symbol
+                row1.components[2].style = color
+                selected[2] = true;
+                await changeTurn(interaction, client);
+            }
+
+            if (i.customId === 'ML' && selected[3] === false) {
+                row2.components[0].label = symbol
+                row2.components[0].style = color
+                selected[3] = true;
+                await changeTurn(interaction, client);
+            }
+
+            if (i.customId === 'MM' && selected[4] === false) {
+                row2.components[1].label = symbol
+                row2.components[1].style = color
+                selected[4] = true;
+                await changeTurn(interaction, client);
+            }
+
+            if (i.customId === 'MR' && selected[5] === false) {
+                row2.components[2].label = symbol
+                row2.components[2].style = color
+                selected[5] = true;
+                await changeTurn(interaction, client);
+            }
+
+            if (i.customId === 'BL' && selected[6] === false) {
+                row3.components[0].label = symbol
+                row3.components[0].style = color
+                selected[6] = true;
+                await changeTurn(interaction, client);
+            }
+
+            if (i.customId === 'BM' && selected[7] === false) {
+                row3.components[1].label = symbol
+                row3.components[1].style = color
+                selected[7] = true;
+                await changeTurn(interaction, client);
+            }
+
+            if (i.customId === 'BR' && selected[8] === false) {
+                row3.components[2].label = symbol
+                row3.components[2].style = color
+                selected[8] = true;
+                await changeTurn(interaction, client);
+            }
+
+            await interaction.editReply({
+                content: `${interaction.member.user.username} vs ${opponent}`,
+                components: [row1, row2, row3]
+            });
+
+            collector.filter = i => i.user.id === user // change filter to only accept correct player's input
+
+            // win logic
+            // 3 in a row vertically left column
+            if (row1.components[1].label === row2.components[1].label &&
+                row1.components[1].label === row3.components[1].label) {
+                await endGame(interaction, collector, guildName)
+            }
+            // 3 in a row vertically middle column
+            else if (row1.components[1].label === row2.components[1].label &&
+                row1.components[1].label === row3.components[1].label) {
+                await endGame(interaction, collector, guildName)
+            }
+            // 3 in a row vertically right column
+            else if (row1.components[2].label === row2.components[2].label &&
+                row2.components[2].label === row3.components[2].label) {
+                await endGame(interaction, collector, guildName)
+            }
+            // 3 in a row horizontally top row
+            else if (row1.components[0].label === row1.components[1].label &&
+                row1.components[0].label === row1.components[2].label) {
+                await endGame(interaction, collector, guildName)
+            }
+            // 3 in a row horizontally middle row
+            else if (row2.components[0].label === row2.components[1].label &&
+                row2.components[0].label === row2.components[2].label) {
+                await endGame(interaction, collector, guildName)
+            }
+            // 3 in a row horizontally bottom row
+            else if (row3.components[0].label === row3.components[1].label &&
+                row3.components[0].label === row3.components[2].label) {
+                await endGame(interaction, collector, guildName)
+            }
+            // 3 in a row diagonally -slope
+            else if (row1.components[0].label === row2.components[1].label &&
+                row1.components[0].label === row3.components[2].label) {
+                await endGame(interaction, collector, guildName)
+            }
+            // 3 in a row horizontally +slope
+            else if (row1.components[2].label === row2.components[1].label &&
+                row1.components[2].label === row3.components[0].label) {
+                await endGame(interaction, collector, guildName)
+            }
+        });
+
+        collector.on('end', async collected => {
+            if (win === false)
+                await interaction.editReply({content: 'Tie!'})
+        });
+
+    }
+}
+
+// helper functions
+async function changeTurn(interaction, client) {
+    // change turns
+    if (turn === 1) turn = 2
+    else turn = 1
+
+    // set color and symbol
+    if (turn === 1) {
+        symbol = 'O'
+        color = 'SUCCESS'
+    } else {
+        symbol = 'X'
+        color = "DANGER"
+    }
+
+    // turn logic
+    if (turn === 1) user = interaction.member.user.id
+    else if (turn === 2 && !(interaction.options._hoistedOptions[0] === undefined)) // if its 2nd player's turn, and they're not a  bot
+        user = interaction.options._hoistedOptions[0].value
+    else if (turn === 2 && interaction.options._hoistedOptions[0] === undefined) // if its 2nd player's turn, and they're a  bot
+        user = client.user.id
+}
+
+async function endGame(interaction, collector, guildName) {
+    // set winner to write to json and display
+    if (turn === 2) {
+        winner = interaction.user.id
+        loser = user
+    } else if (turn === 1) {
+        winner = user
+        loser = interaction.user.id
+    }
+
+    // create tic tac toe user data
+    if (!data.Guilds[guildName].UserData[winner]) {
+        data.Guilds[guildName].UserData[winner] = {
+            ttt: {
+                wins: 0,
+                losses: 0
+            }
+        };
+    }
+    data.Guilds[guildName].UserData[winner].ttt['wins']++
+    data.Guilds[guildName].UserData[loser].ttt['losses']++
+    writeToJson(data)
+
+    let username = (interaction.guild.members.cache.get(winner)).user.username // convert id to username to display
+    await interaction.editReply({content: `${username} Wins!`})
+
+    win = true; // set win to prevent tie message
+    collector.stop(); // end collection
+
+    // reset game options
+    selected = Array(9).fill(false)
+    color = 'SUCCESS';
+    symbol = 'O';
+    win = false
+    turn = 1;
+}

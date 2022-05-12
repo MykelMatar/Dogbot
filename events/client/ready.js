@@ -59,6 +59,20 @@ module.exports = (client) => {
         ]
     });
 
+    
+    // games
+    commands.create({
+        name: 'tictactoe',
+        description: 'changes the role used to enlist (for automated enlisting)',
+        options: [
+            {
+                name: 'opponent',
+                description: 'user to challenge. Leave blank to challenge Dogbot',
+                required: false,
+                type: DiscordJS.Constants.ApplicationCommandOptionTypes.USER
+            },
+        ]
+    });
 
     // get_stats commands
     commands.create({

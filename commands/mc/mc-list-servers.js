@@ -1,14 +1,6 @@
-const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 const data = require('../../data.json');
 let cmdStatus = 0;
-
-
-
-
-
-
-
-
 
 module.exports = {
     name: 'mc-list-servers',
@@ -17,7 +9,7 @@ module.exports = {
         console.log(`mc-list-servers requested by ${interaction.member.user.username}`);
 
         // prevent multiple instances from running
-        if (cmdStatus == 1) { return interaction.editReply('listmc command already running.') } // prevent multiple instances from running
+        if (cmdStatus === 1) { return interaction.editReply('listmc command already running.') } // prevent multiple instances from running
         cmdStatus = 1;
 
         let serverList = data.Guilds[guildName].MCData.serverList;

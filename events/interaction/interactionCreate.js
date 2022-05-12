@@ -30,10 +30,16 @@ module.exports = async (client, interaction) => {
         await commands.get('setrole-autoenlist').execute(client, interaction, guildName)
     }
 
+    
+    // games commands
+    if (commandName === 'tictactoe') {
+        await commands.get('tictactoe').execute(client, interaction, guildName)
+    }
+    
 
     // get_stats commands
     if (commandName === 'get-stats-valorant') {
-        if (options._hoistedOptions[2] == undefined) ephemeralSetting = false
+        if (options._hoistedOptions[2] === undefined) ephemeralSetting = false
         else ephemeralSetting = options._hoistedOptions[2].value
         await interaction.deferReply({ ephemeral: ephemeralSetting })
         await commands.get('get-stats-valorant').execute(client, interaction, guildName)
