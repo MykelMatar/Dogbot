@@ -1,12 +1,14 @@
 const {MessageActionRow, MessageButton} = require('discord.js');
-const data = require('../../data.json')
-const writeToJson = require('../../helperFunctions/writeToJson')
+// const data = require('../../data.json')
+// const writeToJson = require('../../helperFunctions/writeToJson')
+const guildSchema = require('../../schemas/guild-schema')
 let selected = Array(9).fill(false)
 let color = 'SUCCESS';
 let symbol = 'O';
 let win = false
 let turn = 1;
 let winner, loser, user
+let cmdStatus = 0;
 
 // TODO log player wins and display at the end of each game and write bot logic && close tic tac toe game when another is going on
 
@@ -15,7 +17,10 @@ module.exports = {
     description: 'challenge a user to tictactoe',
     async execute(client, interaction, guildName) {
         console.log(`tictactoe requested by ${interaction.member.user.username}`)
-
+        
+        if (cmdStatus === 1) interaction.reply('please wait for current game to finish')
+        cmdStatus = 1;
+        
         let opponent
         if (interaction.options._hoistedOptions[0] === undefined) opponent = client.user.username
         else opponent = interaction.options._hoistedOptions[0].member.user.username;
@@ -262,4 +267,5 @@ async function endGame(interaction, collector, guildName) {
     symbol = 'O';
     win = false
     turn = 1;
+    cmdStatus = 0;
 }

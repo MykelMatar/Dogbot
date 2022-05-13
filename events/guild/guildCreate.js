@@ -1,42 +1,28 @@
-const data = require('../../data.json');
-const fs = require('fs');  
+const guilds = require('../../schemas/guild-schema')
 
 module.exports = async function(client, guild) {
-    console.log(`Dogbot added to ${guild.name}`);
-    if (!("Guilds" in data)) {
-        const gData = {
-            Guilds: {}
-        };
-        writeToJson(gData);
-    }
-
+    console.log(`Dogbot added to ${guild.name}\nCreating database entry...`);
+    
     let guildName = guild.name.replace(/\s+/g, ""); //removes whitespace from string
-    data.Guilds[guildName] = {
+    
+    await guilds.create({
+        guild: guildName,
+        guildId: guild.id,
         ServerData: {
-            serverId: guild.id,
             welcomeChannel: null,
             roles: {
                 autoenlist: null,
                 default: null
             }
         },
-        MCData: {
+        UserData: {},
+        MCServerData: {
             serverList: {},
             selectedServer: {
-                title: "",
-                IP: ""
+                name: null,
+                ip: null
             }
-        },
-        UserData: {}
-    };
-    writeToJson(data);
-}
-
-
-
-//writes to data.json
-function writeToJson(data) {
-    fs.writeFile("./data.json", JSON.stringify(data, null, 4), function (err) {
-        if (err) throw err;
-    });
+        }
+    })
+    console.log('Done!')
 }

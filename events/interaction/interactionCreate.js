@@ -35,6 +35,9 @@ module.exports = async (client, interaction) => {
     if (commandName === 'tictactoe') {
         await commands.get('tictactoe').execute(client, interaction, guildName)
     }
+    if (commandName === 'typingrace') {
+        await commands.get('typingrace').execute(client, interaction, guildName)
+    }
     
 
     // get_stats commands

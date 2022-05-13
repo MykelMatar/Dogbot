@@ -53,8 +53,8 @@ module.exports = {
         // });
 
         // collect response
-        var enlistedUsers = ['-'];
-        var rejectedUsers = ['-'];
+        let enlistedUsers = ['-'];
+        let rejectedUsers = ['-'];
 
         collector.on('collect', async i => {
             await i.deferUpdate(); // prevents "this interaction failed" message from appearing

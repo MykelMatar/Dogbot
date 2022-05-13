@@ -1,5 +1,4 @@
-const data = require('../../data.json');
-const writeToJson = require('../../helperFunctions/writeToJson');
+const guilds = require("../../schemas/guild-schema");
 
 
 
@@ -21,10 +20,11 @@ module.exports = {
         }
 
         // push channel id to json
-        data.Guilds[guildName].ServerData.welcomeChannel = channel;
-        writeToJson(data);
+        const currentGuild = await guilds.find({guildId: interaction.guildId})
+        currentGuild[0].ServerData.welcomeChannel = interaction.options._hoistedOptions[0].value;
+        await currentGuild[0].save();
 
-        interaction.editReply("welcome channel set sucessfully")
+        await interaction.editReply("welcome channel set sucessfully")
         console.log("welcome channel set");
     }
 

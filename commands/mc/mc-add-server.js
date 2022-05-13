@@ -1,17 +1,17 @@
 const util = require('minecraft-server-util');
 const data = require('../../data.json');
 const writeToJson = require('../../helperFunctions/writeToJson');
+const promptResponse  = require("../../helperFunctions/promptResponse");
+const {create} = require("domain");
+const {isNativeError} = require("util/types");
 let cmdStatus = 0;
-
-
-
 
 
 module.exports = {
     name: 'mc-add-server',
-    description: "Adds a new IP to the server list in JSON file. Accessible via 'listmc' button or by calling command",
+    description: "Adds a new IP to the server list in JSON file. Accessible via '/mc-list-servers' button or by slash command",
     async execute(client, interaction, guildName) {
-        console.log(`addmc requested by ${interaction.member.user.username}`);
+        console.log(`mc-add-server requested by ${interaction.member.user.username}`);
 
         if (!interaction.member.permissions.has("ADMINISTRATOR")) { return interaction.editReply('Only Admins can use this command') }
         if (cmdStatus === 1) { return interaction.editReply('addmc command already running.') }
@@ -28,8 +28,15 @@ module.exports = {
         }
 
         // retrieve server IP and name
-        const ip = interaction.options._hoistedOptions[0].value;
-        const name = interaction.options._hoistedOptions[1].value;
+        let ip, name
+        try {
+            ip = interaction.options._hoistedOptions[0].value 
+            name = interaction.options._hoistedOptions[1].value
+        }catch {
+            // not using Promise.all bc 1 response must be collected before the other / not simultaneous
+            ip = await promptResponse(interaction, 'Input server IP (server must be online)' , 'Request Timeout')
+            name = await promptResponse(interaction, 'Input Name', 'Request Timeout');
+        }
 
         // verify that IP is not already registered
         if (Object.values(serverList).includes(ip)) {

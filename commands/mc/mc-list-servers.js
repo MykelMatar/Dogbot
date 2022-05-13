@@ -1,4 +1,4 @@
-const { MessageEmbed } = require('discord.js');
+const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
 const data = require('../../data.json');
 let cmdStatus = 0;
 
@@ -30,72 +30,75 @@ module.exports = {
             serverIPList = "N/A"
         }
 
-        // // generate buttons
-        // const row = new MessageActionRow()
-        //     .addComponents(
-        //         new MessageButton()
-        //             .setCustomId('ListAdd')
-        //             .setLabel('Add')
-        //             .setStyle('SUCCESS'),
-        //         new MessageButton()
-        //             .setCustomId('ListRemove')
-        //             .setLabel('Remove')
-        //             .setStyle('DANGER'),
-        //         new MessageButton()
-        //             .setCustomId('ListChange')
-        //             .setLabel('Change')
-        //             .setStyle('PRIMARY'),
-        //     );
+        // generate buttons
+        const row = new MessageActionRow()
+            .addComponents(
+                new MessageButton()
+                    .setCustomId('ListAdd')
+                    .setLabel('Add')
+                    .setStyle('SUCCESS'),
+                new MessageButton()
+                    .setCustomId('ListRemove')
+                    .setLabel('Remove')
+                    .setStyle('DANGER'),
+                new MessageButton()
+                    .setCustomId('ListChange')
+                    .setLabel('Change')
+                    .setStyle('PRIMARY'),
+            );
 
         // generate embed
         const embed = new MessageEmbed()
             .setTitle("Registered MC Servers")
             .addFields(
-                { name: 'Server Name', value: serverNameList, inline: true },               // Discord.js v13 requires manual call of toString on all methods
+                { name: 'Server Name', value: serverNameList, inline: true }, 
                 { name: 'IP', value: serverIPList, inline: true },
             )
             .setColor("#8570C1")
             .setFooter(JSON.stringify(Object.values(serverList).length) + ' / 10 Servers Registered')
 
-        await interaction.editReply({ ephemeral: true, embeds: [embed], components: [] })
+        await interaction.editReply({ ephemeral: true, embeds: [embed], components: [row] })
 
-        // // create collector
-        // const filter = i => i.user.id === interaction.member.user.id;
-        // const collector = interaction.channel.createMessageComponentCollector({ filter, componentType: 'BUTTON', max: 1,  time: 5000 }); // only message author can interact, 5s timer 
+        // create collector
+        const filter = i => i.user.id === interaction.member.user.id;
+        const collector = interaction.channel.createMessageComponentCollector({ filter, componentType: 'BUTTON',  time: 10000 }); // only message author can interact, 10s timer 
 
-        // // retrieve commands for buttons
-        // const command1 = client.commands.get('mc-add-server');
-        // const command2 = client.commands.get('mc-delete-server');
-        // const command3 = client.commands.get('mc-change-server');
+        // retrieve commands for button
+        const command1 = client.commands.get('mc-add-server');
+        const command2 = client.commands.get('mc-delete-server');
+        const command3 = client.commands.get('mc-change-server');
 
-        // // collect response
-        // collector.on('collect', async i => {
-        //     var update, execute;
-        //     // interaction handling
-        //     if (i.customId === 'ListAdd') {
-        //         update = i.update({ content: 'Adding Server (If Possible)', components: [] });
-        //         execute = command1.execute(client, interaction, guildName);
-        //     }
-        //     else if (i.customId === 'ListRemove') {
-        //         interaction.editReply({ ephemeral: true, embeds: [] })
-        //         update = i.update({ content: 'Removing Server', components: [] });
-        //         execute = command2.execute(client, interaction, guildName);
-        //     }
-        //     else if (i.customId === 'ListChange') {
-        //         update = i.update({ content: 'Changing Server', components: [] });
-        //         execute = command3.execute(client, interaction, guildName);
-        //     }
-        //     Promise.all([update, execute])
-        // });
+        // collect response
+        collector.on('collect', async i => {
+            let update, execute;
+            // interaction handling
+            if (i.customId === 'ListAdd') {
+                update = i.update({ ephemeral: true, embeds: [], components: [] });
+                execute = command1.execute(client, interaction, guildName);
+                collector.stop()
+            }
+            else if (i.customId === 'ListRemove') {
+                await interaction.editReply({ephemeral: true, embeds: []})
+                update = i.update({ content: 'Removing Server', components: [] });
+                execute = command2.execute(client, interaction, guildName);
+                collector.stop()
+            }
+            else if (i.customId === 'ListChange') {
+                update = i.update({ephemeral: true, content: 'Changing Server', components: [] });
+                execute = command3.execute(client, interaction, guildName);
+                collector.stop()
+            }
+            await Promise.all([update, execute])
+        });
 
-        // collector.on('end', async collected => {
-        //     let buttonId = collected.first().customId
-        //     if (collected.size == 0) 
-        //         await interaction.editReply({ ephemeral: true, embeds: [embed], components: [] }) // remove buttons & embed
-        //     if (buttonId === 'ListAdd' || buttonId === 'ListRemove' || buttonId === 'ListChange') 
-        //         await interaction.editReply({ ephemeral: true, content: 'button selected', embeds: [], components: [] })   // remove buttons & embed
-        // });
+        collector.on('end', async collected => {
+            let buttonId = collected.first().customId
+            if (collected.size === 0) 
+                await interaction.editReply({ ephemeral: true, embeds: [embed], components: [] }) // remove buttons & embed
+            if (buttonId === 'ListAdd' || buttonId === 'ListRemove' || buttonId === 'ListChange') 
+                await interaction.editReply({ ephemeral: true, embeds: [], components: [] })   // remove buttons & embed
+        });
 
-        // cmdStatus = 0;
+        cmdStatus = 0;
     }
 }

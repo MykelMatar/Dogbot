@@ -1,20 +1,23 @@
 const DiscordJS = require('discord.js');
+const mongoose = require('mongoose') 
 
-
-module.exports = (client) => {
+module.exports = async (client) => {
+    await mongoose.connect(process.env.MONGO_URI,{keepAlive: true, dbName: 'Dogbot'})
     client.user.setActivity('try /elp');
     console.log('Dogbot ready');
 
     // slash commands
-    const guildId = '351618107384528897'
+    const guildId = '351618107384528897' // crayon
+    const guildId2 = '715122900021149776' // bot testing
     const guild = client.guilds.cache.get(guildId)
+    const guild2 = client.guilds.cache.get(guildId2)
     let commands
-
     // guild.commands.set([]) // resets guild commands
     // client.application.commands.set([]) // reset application commands
 
-    if (guild) {
+    if (guild || guild2) {
         commands = guild.commands
+        commands = guild2.commands
     } else {
         // commands = client.application?.commands // register slash commands globally
     }
@@ -68,10 +71,15 @@ module.exports = (client) => {
             {
                 name: 'opponent',
                 description: 'user to challenge. Leave blank to challenge Dogbot',
-                required: false,
+                required: true,
                 type: DiscordJS.Constants.ApplicationCommandOptionTypes.USER
             },
         ]
+    });
+
+    commands.create({
+        name: 'typingrace',
+        description: 'starts multiplayer typing race',
     });
 
     // get_stats commands
