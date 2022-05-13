@@ -16,15 +16,14 @@ module.exports = {
         let serverListSize = Object.values(serverList).length
 
         // ensures command does not execute if 0 or 1 server exists
-        if (serverListSize == 0) {
+        if (serverListSize === 0) {
             return interaction.editReply('No Registered Servers, use !addmc or !listmc to add servers.')
         }
 
         // retrieve required JSON data
         let MCServerIP = JSON.stringify(data.Guilds[guildName].MCData.selectedServer["IP"]).replace(/[""]/g, '')
         let title = JSON.stringify(data.Guilds[guildName].MCData.selectedServer["title"]).replace(/[""]/g, '')
-  
-
+        
         // Generate buttons
         const row = new MessageActionRow()
           .addComponents(
@@ -74,7 +73,7 @@ module.exports = {
             embed.fields[4] = []
             embed.setFooter('')
 
-            // send embed at collect response
+            // send embed and collect response
             await interaction.editReply({ephemeral: true, embeds: [embed], components: [row]})
             runMcButtonCollector(client, interaction, guildName)
           });

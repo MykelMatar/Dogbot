@@ -11,4 +11,4 @@ client.events = new Collection();
   require(`./handlers/${handler}`)(client);
 });
 
-client.login(process.env.bot_token)
+client.login(process.env.BOT_TOKEN)

@@ -17,8 +17,8 @@
 | /suggestion  | allows users to make suggestions about Dogbot |
     
 ### minecraft commands: 
-| command      | description                                                        |
-|--------------|--------------------------------------------------------------------|
+| command                | description                                              |
+|------------------------|----------------------------------------------------------|
 | /mc-server-status      | Gets status of selected minecraft server                 |
 | /mc-change-server      | Changes Server that is being tracked by mc-server-status |
 | /mc-list-servers       | Lists registered mc servers                              |
@@ -59,9 +59,9 @@
   - [x] Prevent collisions for /mc, /listmc, and /autoenlist
   - [ ] log users who enlist/don't enlist and tally it up then do something fun with it
   - [ ] Add moderation tools
-  - [ ] tic tac toe command
+  - [x] tic-tac-toe command
   - [ ] Poll creation
-  - [ ] Magic 8 ball
+  - [ ] Magic 8-ball
   - [ ] more game stats (apex, fortnite, csgo, destiny?)
   - [ ] server stats
   - [ ] custom commands

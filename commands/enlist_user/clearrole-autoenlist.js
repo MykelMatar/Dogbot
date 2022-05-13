@@ -1,6 +1,6 @@
 const data = require('../../data.json');
 const writeToJson = require('../../helperFunctions/writeToJson');
-const createInteraction = require('../../helperFunctions/createInteraction');
+const createInteraction = require('../../helperFunctions/promptResponse');
 let cmdStatus = 0;
 
 
