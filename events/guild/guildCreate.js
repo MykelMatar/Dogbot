@@ -15,9 +15,24 @@ module.exports = async function(client, guild) {
                 default: null
             }
         },
-        UserData: {},
+        UserData: [{
+            username: String,
+            id: String,
+            tttStats: {
+                wins: Number,
+                losses: Number
+            },
+            enlistStats: {
+                enlistStats: Number,
+                rejects: Number
+            }
+        }],
         MCServerData: {
-            serverList: {},
+            serverList: {
+                serverList: [{
+                    name: String,
+                    ip: String,
+                }],},
             selectedServer: {
                 name: null,
                 ip: null

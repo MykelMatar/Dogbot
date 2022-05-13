@@ -10,8 +10,7 @@ const guildSchema = mongoose.Schema({
             default: String
         }
     },
-    UserData: {
-        User: {
+    UserData: [{
             username: String,
             id: String,
             tttStats: {
@@ -22,10 +21,12 @@ const guildSchema = mongoose.Schema({
                 enlistStats: Number,
                 rejects: Number
             }
-        }
-    },
+    }],
     MCServerData: {
-        serverList: {},
+        serverList: [{
+                name: String, 
+                ip: String,
+        }],
         selectedServer: {
             name: String, 
             ip: String
