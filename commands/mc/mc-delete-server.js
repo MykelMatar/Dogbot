@@ -1,8 +1,7 @@
 const {MessageActionRow, MessageSelectMenu} = require('discord.js');
-const data = require('../../data.json');
-const writeToJson = require('../../helperFunctions/writeToJson');
 const generateMcMenuOptions = require('../../helperFunctions/generateMcMenuOptions');
 const preventInteractionCollision = require('../../helperFunctions/preventInteractionCollision');
+const guilds = require("../../schemas/guild-schema");
 let cmdStatus = 0;
 
 
@@ -21,8 +20,10 @@ module.exports = {
         } // prevent multiple instances from running
         cmdStatus = 1;
 
-        let serverList = data.Guilds[guildName].MCData.serverList;
-        let serverListSize = Object.values(serverList).length
+        // retrieve server doc and list from mongo
+        const currentGuild = await guilds.find({guildId: interaction.guildId})
+        let serverList = currentGuild[0].MCServerData.serverList
+        let serverListSize = serverList.length
 
         // ensures command does not execute if 0 or 1 server exists
         if (serverListSize === 0) {
@@ -38,7 +39,7 @@ module.exports = {
         }
 
         let options = [];
-        options = await generateMcMenuOptions(guildName, serverListSize);
+        options = await generateMcMenuOptions(guildName, interaction, serverListSize);
         let option = options[0];
 
         // generate select menu
@@ -59,28 +60,29 @@ module.exports = {
             max: 1,
             time: 15000
         });
-        let serverName;
 
         await preventInteractionCollision(interaction, collector)
 
+        let serverName;
+        
         collector.on('collect', async i => {
 
             let selection = i.values[0];
             for (let i = 0; i < serverListSize; i++) {
                 if (selection == `selection${i}`) {
                     // delete server and if its selectedServer, delete it from there
-                    let selectedServer = data.Guilds[guildName].MCData.selectedServer
-                    let selectedServerIP = Object.values(data.Guilds[guildName].MCData.selectedServer)[1]
-                    serverName = Object.keys(serverList)[i]
-                    let serverIP = Object.values(serverList)[i]
-                    delete serverList[serverName];
+                    let selectedServerIP = currentGuild[0].MCServerData.selectedServer.ip // selectedServer ip
+                    let serverIP = serverList[i].ip // server selected for deletion's ip
+                    serverName = serverList[i].name // server selected for deletion's name
+                    
+                    serverList.splice(i, 1 ) // delete selected server from array
                     
                     // set a new selected server if the current one was deleted 
-                    if (selectedServerIP == serverIP) {
-                        selectedServer['title'] = Object.keys(serverList)[0]
-                        selectedServer["IP"] = Object.values(serverList)[0]
+                    if (selectedServerIP === serverIP) {
+                        currentGuild[0].MCServerData.selectedServer.ip = serverList[0].ip
+                        currentGuild[0].MCServerData.selectedServer.name = serverList[0].name
                     }
-                    writeToJson(data);
+                    await currentGuild[0].save()
                 }
             }
             if (i.customId === "selection") {

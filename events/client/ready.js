@@ -1,6 +1,7 @@
 const DiscordJS = require('discord.js');
 const mongoose = require('mongoose') 
 
+
 module.exports = async (client) => {
     await mongoose.connect(process.env.MONGO_URI,{keepAlive: true, dbName: 'Dogbot'})
     client.user.setActivity('try /elp');

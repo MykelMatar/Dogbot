@@ -1,18 +1,23 @@
-const data = require('../data.json');
+const guilds = require("../schemas/guild-schema");
 
 /**
  * refreshes the "Menu Options" in data.JSON and creates a variable-size discord drowpdown menu
  * @param  {string} guildName
+ * @param interaction
  * @param  {int} listSize
  */
- async function generateMcMenuOptions(guildName, listSize) {
+ async function generateMcMenuOptions(guildName, interaction, listSize) {
     console.log('creating menu:');
-    var option = [], label = [], value = [], description = [];  // arrays to store options and their information
+    let option = [], label = [], value = [], description = [];  // arrays to store options and their information
+    
+    // retrieve server doc and list from mongo
+    const currentGuild = await guilds.find({guildId: interaction.guildId})
+    let serverList = currentGuild[0].MCServerData.serverList
     
     console.log('generating options')
     for (let i = 0; i < listSize; i++) {
-        label[i] = Object.keys(data.Guilds[guildName].MCData.serverList)[i]
-        description[i] = Object.values(data.Guilds[guildName].MCData.serverList)[i]
+        label[i] = serverList[i].name
+        description[i] = serverList[i].ip
         value[i] = `selection${i}`
     }
 
