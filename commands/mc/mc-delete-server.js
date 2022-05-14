@@ -1,6 +1,5 @@
 const {MessageActionRow, MessageSelectMenu} = require('discord.js');
 const generateMcMenuOptions = require('../../helperFunctions/generateMcMenuOptions');
-const preventInteractionCollision = require('../../helperFunctions/preventInteractionCollision');
 const guilds = require("../../schemas/guild-schema");
 let cmdStatus = 0;
 
@@ -32,8 +31,7 @@ module.exports = {
         }
         if (serverListSize === 1) {
             await interaction.editReply(
-                `Cannot remove the only existing server, use /mc-add-server or /mc-list-servers to add servers, 
-                          or change server information with /mc-change-server-name and /mc-change-server-ip.`
+                `Cannot remove the only existing server, use /mc-add-server or /mc-list-servers to add servers, or change server information with /mc-change-server-name and /mc-change-server-ip.`
             )
             return cmdStatus = 0;
         }
@@ -46,55 +44,65 @@ module.exports = {
         const row = new MessageActionRow()
             .addComponents(
                 new MessageSelectMenu()
-                    .setCustomId('selection')
+                    .setCustomId('delete-menu')
                     .setPlaceholder('Nothing selected')
                     .addOptions(option),
             );
 
         await interaction.editReply({content: 'Select a Server to Delete', components: [row]});
 
-        const filter = i => i.user.id === interaction.member.user.id;
+        const filter = i => i.user.id === interaction.member.user.id
         const collector = interaction.channel.createMessageComponentCollector({
             filter,
             componentType: 'SELECT_MENU',
-            max: 1,
             time: 15000
         });
 
-        await preventInteractionCollision(interaction, collector)
-
         let serverName;
-        
-        collector.on('collect', async i => {
 
-            let selection = i.values[0];
-            for (let i = 0; i < serverListSize; i++) {
-                if (selection == `selection${i}`) {
+        collector.on('collect', async i => {
+            if (i.customId !== 'delete-menu') return collector.stop() // check for correct menu interaction
+            let selectedServerIP, serverIP
+
+            for (let j = 0; j < serverListSize; j++) {
+                if (i.values[0] === `selection${j}`) {
                     // delete server and if its selectedServer, delete it from there
-                    let selectedServerIP = currentGuild[0].MCServerData.selectedServer.ip // selectedServer ip
-                    let serverIP = serverList[i].ip // server selected for deletion's ip
-                    serverName = serverList[i].name // server selected for deletion's name
-                    
-                    serverList.splice(i, 1 ) // delete selected server from array
-                    
-                    // set a new selected server if the current one was deleted 
-                    if (selectedServerIP === serverIP) {
-                        currentGuild[0].MCServerData.selectedServer.ip = serverList[0].ip
-                        currentGuild[0].MCServerData.selectedServer.name = serverList[0].name
-                    }
-                    await currentGuild[0].save()
+                    selectedServerIP = currentGuild[0].MCServerData.selectedServer.ip // selectedServer ip
+                    serverIP = serverList[j].ip // server selected for deletion's ip
+                    serverName = serverList[j].name // server selected for deletion's name
+
+                    serverList.splice(j, 1) // delete selected server from array
                 }
             }
-            if (i.customId === "selection") {
-                await i.update({content: 'Server Deleted', components: []});
+            // set a new selected server if the current one was deleted 
+            if (selectedServerIP === serverIP) {
+                currentGuild[0].MCServerData.selectedServer.ip = serverList[0].ip
+                currentGuild[0].MCServerData.selectedServer.name = serverList[0].name
             }
+            await currentGuild[0].save() // save changes to mongo
+            collector.stop()
         });
 
         collector.on('end', async collected => {
-            if (collected.size === 1) await interaction.editReply({content: serverName + ' Deleted', components: []})
-            else await interaction.editReply({content: 'Request Timeout', components: []})
+            if (collected.size === 0)
+                await interaction.editReply({
+                    ephemeral: true,
+                    content: 'Request Timeout',
+                    components: []
+                })
+            else if (collected.first().customId !== 'delete-menu')
+                await interaction.editReply({
+                    ephemeral: true,
+                    content: 'Avoid using multiple commands at once',
+                    components: []
+                })
+            else if (collected.first().customId === 'delete-menu')
+                await interaction.editReply({
+                    ephemeral: true,
+                    content: serverName + ' Deleted',
+                    components: []
+                })
         });
-
         cmdStatus = 0;
     }
 }

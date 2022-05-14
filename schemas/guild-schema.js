@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
 const guildSchema = mongoose.Schema({
     guild: String,
@@ -6,34 +6,36 @@ const guildSchema = mongoose.Schema({
     ServerData: {
         welcomeChannel: String,
         roles: {
-            autoenlist: String, 
-            default: String
-        }
+            autoenlist: String,
+            default: String,
+        },
     },
-    UserData: [{
+    UserData: [
+        {
             username: String,
             id: String,
             tttStats: {
                 wins: Number,
-                losses: Number
+                losses: Number,
             },
             enlistStats: {
                 enlistStats: Number,
-                rejects: Number
-            }
-    }],
+                rejects: Number,
+            },
+        },
+    ],
     MCServerData: {
-        serverList: [{
-                name: String, 
+        serverList: [
+            {
+                name: String,
                 ip: String,
-        }],
+            },
+        ],
         selectedServer: {
-            name: String, 
-            ip: String
-        }
-    }
-})
+            name: String,
+            ip: String,
+        },
+    },
+});
 
-module.exports = mongoose.model('Guilds', guildSchema)
-
-
+module.exports = mongoose.model("Guilds", guildSchema);

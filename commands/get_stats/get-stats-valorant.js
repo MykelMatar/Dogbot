@@ -14,10 +14,10 @@ module.exports = {
         console.log(`valstats requested by ${interaction.member.user.username}`);
 
         // retrieve username and tag
-        var user = interaction.options._hoistedOptions[0].value
-        var tag = interaction.options._hoistedOptions[1].value
-        var uriUser = encodeURIComponent(user.trim()) // encode string to have URI value for URL
-        var uriTag = encodeURIComponent(tag.trim())
+        let user = interaction.options._hoistedOptions[0].value
+        let tag = interaction.options._hoistedOptions[1].value
+        let uriUser = encodeURIComponent(user.trim()) // encode string to have URI value for URL
+        let uriTag = encodeURIComponent(tag.trim())
 
         // GET web page for user
         try {
