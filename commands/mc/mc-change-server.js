@@ -1,13 +1,12 @@
-const { MessageActionRow, MessageSelectMenu } = require('discord.js');
+const {MessageActionRow, MessageSelectMenu} = require('discord.js');
 const util = require('minecraft-server-util');
 const data = require('../../data.json');
 const writeToJson = require('../../helperFunctions/writeToJson');
 const refreshServerStatus = require('../../helperFunctions/refreshServerStatus');
 const generateMcMenuOptions = require('../../helperFunctions/generateMcMenuOptions');
 const preventInteractionCollision = require('../../helperFunctions/preventInteractionCollision');
+const guilds = require("../../schemas/guild-schema");
 let cmdStatus = 0;
-
-
 
 
 module.exports = {
@@ -17,75 +16,88 @@ module.exports = {
         console.log(`changemc requested by ${interaction.member.user.username}`);
 
         // prevent multiple instances from running
-        if (cmdStatus === 1) { return interaction.editReply('changemc command already running.') } 
+        if (cmdStatus === 1) {
+            return interaction.editReply('changemc command already running.')
+        }
         cmdStatus = 1;
 
-        // retrieve length of serverList in JSON to use as menu length
-        let serverListSize = Object.values(data.Guilds[guildName].MCData.serverList).length
+        // retrieve server doc and list from mongo
+        const currentGuild = await guilds.find({guildId: interaction.guildId})
+        let serverList = currentGuild[0].MCServerData.serverList
+        let serverListSize = serverList.length
 
         // make sure there are at least 2 servers
         if (serverListSize === 0) {
-            await interaction.editReply('No Registered Servers, use !addmc or !listmc to add servers.')
+            await interaction.editReply('No Registered Servers, use /mc-add-server or /mc-list-servers to add servers.')
             return cmdStatus = 0;
-        }
-        else if (serverListSize === 1) {
-            await interaction.editReply('Only 1 Registered Server, use !addmc or !listmc to add more servers.')
+        } else if (serverListSize === 1) {
+            await interaction.editReply('Only 1 Registered Server, use /mc-add-server or /mc-list-servers to add more servers.')
             return cmdStatus = 0;
         }
 
         // create variables and generate options for select menu
-        var options = [];
-        options = await generateMcMenuOptions(guildName, serverListSize);
+        let options = [];
+        options = await generateMcMenuOptions(guildName, interaction, serverListSize);
         let option = options[0];
         let label = options[1];
-        let value = options[2];
         let description = options[3]
-
-        console.log(option);
 
         // generate select menu
         let row = new MessageActionRow()
             .addComponents(
                 new MessageSelectMenu()
-                    .setCustomId('selection')
+                    .setCustomId('change-menu')
                     .setPlaceholder('Nothing selected')
                     .addOptions(option),
             );
 
         // send embed and store in variable to edit later
-        await interaction.editReply({ content: 'Select a Different Server to Check', components: [row], embeds: [] });
+        await interaction.editReply({content: 'Select a Different Server to Check', components: [row], embeds: []});
 
         // Response collection and handling
-        const filter = i => i.user.id === interaction.member.user.id;
-        const collector = interaction.channel.createMessageComponentCollector({ filter, max: 1, componentType: 'SELECT_MENU', time: 15000 }); //componentType: 'SELECT_MENU',
+        const filter = i => i.user.id === interaction.member.user.id
+        const collector = interaction.channel.createMessageComponentCollector({
+            filter,
+            componentType: 'SELECT_MENU',
+            time: 15000
+        });
         const command = client.commands.get('mc-server-status');
 
-        await preventInteractionCollision(interaction, collector);
-
         collector.on('collect', async i => {
-            let selection = i.values[0]
-            // find user selection and push new selected server info to JSON
-            for (let i = 0; i < serverListSize; i++) {
-                if (selection === `selection${i}`) {
-                    let newTitle = label[i];
-                    let newIP = description[i];
-                    data.Guilds[guildName].MCData.selectedServer["title"] = newTitle;
-                    data.Guilds[guildName].MCData.selectedServer["IP"] = newIP;
-                    writeToJson(data);
+            // find user selection and change mongo doc info
+            if (i.customId !== 'change-menu') return collector.stop()
+            for (let j = 0; j < serverListSize; j++) {
+                if (i.values[0] === `selection${j}`) {
+                    currentGuild[0].MCServerData.selectedServer.name = label[j];
+                    currentGuild[0].MCServerData.selectedServer.ip = description[j];
                 }
             }
-
+            await currentGuild[0].save() // write to mongo
+            collector.stop()
         });
 
         // check whether a user responded or not, and edit embed accordingly
         collector.on('end', async collected => {
-            let serverName = data.Guilds[guildName].MCData.selectedServer["title"]
-            console.log(`mc-change-server collected ${collected.size} selections`)
-            if (collected.size === 1)  {
-                await interaction.editReply({ ephemeral: true, content: `Server Updated. Now Tracking: ${serverName}`, components: [] })
-                await command.execute(client, interaction, guildName)
-            }
-            else await interaction.editReply({ephemeral: true, content: 'Request Timeout', components: [] })
+            if (collected.size === 0) 
+                await interaction.editReply({
+                    ephemeral: true, 
+                    content: 'Request Timeout', 
+                    components: []
+                })
+            else if (collected.first().customId !== 'change-menu') 
+                await interaction.editReply({
+                    ephemeral: true,
+                    content: 'Avoid using multiple commands at once',
+                    components: []
+                })
+            else if (collected.first().customId === 'change-menu') {
+                await interaction.editReply({
+                    ephemeral: true,
+                    content: `Server Updated, now Tracking ${currentGuild[0].MCServerData.selectedServer.name}. Retrieving server status...`,
+                    components: []
+                })
+               // await command.execute(client, interaction, guildName)
+            } 
             cmdStatus = 0;
         });
     }

@@ -1,10 +1,10 @@
 const guilds = require('../../schemas/guild-schema')
 
-module.exports = async function(client, guild) {
+module.exports = async function (client, guild) {
     console.log(`Dogbot added to ${guild.name}\nCreating database entry...`);
-    
+
     let guildName = guild.name.replace(/\s+/g, ""); //removes whitespace from string
-    
+
     await guilds.create({
         guild: guildName,
         guildId: guild.id,
@@ -32,7 +32,8 @@ module.exports = async function(client, guild) {
                 serverList: [{
                     name: String,
                     ip: String,
-                }],},
+                }],
+            },
             selectedServer: {
                 name: null,
                 ip: null

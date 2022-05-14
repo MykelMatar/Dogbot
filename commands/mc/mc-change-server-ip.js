@@ -1,13 +1,8 @@
 const { MessageActionRow, MessageSelectMenu } = require('discord.js');
 const util = require('minecraft-server-util');
-const data = require('../../data.json')
-const writeToJson = require('../../helperFunctions/writeToJson');
 const generateMcMenuOptions = require('../../helperFunctions/generateMcMenuOptions');
-const preventInteractionCollision = require('../../helperFunctions/preventInteractionCollision');
-const createInteraction = require('../../helperFunctions/promptResponse');
+const guilds = require("../../schemas/guild-schema");
 let cmdStatus = 0;
-
-
 
 
 module.exports = {
@@ -21,32 +16,32 @@ module.exports = {
         if (cmdStatus === 1) { return interaction.editReply('mc-change-server-ip command already running.') } // prevent multiple instances from running
         cmdStatus = 1;
 
-        let serverList = data.Guilds[guildName].MCData.serverList;
-        let serverListSize = Object.values(serverList).length
-        let selectedServerName = data.Guilds[guildName].MCData.selectedServer["title"]
+        // retrieve server doc and list from mongo
+        const currentGuild = await guilds.find({guildId: interaction.guildId})
+        let serverList = currentGuild[0].MCServerData.serverList
+        let serverListSize = serverList.length
 
         // make sure there is at least 1 server
         if (serverListSize === 0) {
-            await interaction.editReply('No Registered Servers, use !addmc or !listmc to add servers.')
+            await interaction.editReply('No Registered Servers, use /mc-add-server or /mc-list-servers to add servers.')
             return cmdStatus = 0;
         }
 
-        // retrieve server IP
+        // retrieve server IP from user input
         let ip = interaction.options._hoistedOptions[0].value
-
+        
         // verify that IP is not already registered
-        if (Object.values(serverList).includes(ip)) {
-            await interaction.editReply("Server already registered, double check the IP or use **!renamemc** to change the name")
+        if (serverList.some(function (o) {return o["ip"] === ip;})) {
+            await interaction.editReply(
+                "Server already registered, double check the IP or use **!renamemc** to change the name"
+            );
             console.log("Duplicate IP Detected");
-            return cmdStatus = 0;
-
+            return (cmdStatus = 0);
         }
 
         // make sure IP is a valid server IP by checking its status (server must be online for this to work)
         try {
-            let response = await util.status(ip)
-            console.log(response);
-            await interaction.editReply('Valid server IP detected')
+            await util.status(ip)
         } catch (error) {
             await interaction.editReply('Could not retrieve server status. Double check IP and make sure server is online.')
             console.log('Invalid Server IP / Server Offline');
@@ -54,17 +49,15 @@ module.exports = {
         }
 
         // create variables and generate options for select menu
-        var options = [];
-        options = await generateMcMenuOptions(guildName, serverListSize);
+        let options = [];
+        options = await generateMcMenuOptions(guildName, interaction, serverListSize);
         let option = options[0];
-
-        console.log(option);
 
         // generate select menu
         let row = new MessageActionRow()
             .addComponents(
                 new MessageSelectMenu()
-                    .setCustomId('selection')
+                    .setCustomId('change-ip-menu')
                     .setPlaceholder('Nothing selected')
                     .addOptions(option),
             );
@@ -75,27 +68,36 @@ module.exports = {
         // Response collection and handling
         let filter = i => i.user.id === interaction.member.user.id;
         const collector = interaction.channel.createMessageComponentCollector({ filter, componentType: 'SELECT_MENU', max: 1, time: 15000 });
-        const command = client.commands.get('mc');
         let serverName;
-
-        await preventInteractionCollision(interaction, collector)
-
+        
         collector.on('collect', async i => {
-            let selection = i.values[0]
-            for (let i = 0; i < serverListSize; i++) {
-                if (selection === `selection${i}`) {
-                    serverName = Object.keys(serverList)[i]
-                }
+            if (i.customId !== 'change-ip-menu') return collector.stop()
+            // find selection and replace corresponding ip in mongo
+            for (let j = 0; j < serverListSize; j++) {
+                if (i.values[0] === `selection${j}`) 
+                    currentGuild[0].MCServerData.serverList[j].ip = ip
+                    serverName = currentGuild[0].MCServerData.serverList[j].name
             }
+            await currentGuild[0].save() // save changes to mongo
+            collector.stop()
         });
 
         collector.on('end', async collected => {
-            console.log(`mc-change-server-ip collected ${collected.size} menu selections`)
-            if (collected.size === 1) await interaction.editReply({ content: serverName + ' IP changed successfully', ephemeral: true, components: [] })
-            else await interaction.editReply({ content: 'Request Timeout', ephemeral: true, components: [] })
-            if (serverName === selectedServerName) data.Guilds[guildName].MCData.selectedServer["IP"] = ip; // if selected server ip (if applicable)
-            serverList[serverName] = ip;
-            writeToJson(data);
+            if (collected.size === 0)
+                await interaction.editReply({
+                    ephemeral: true,
+                    content: 'Request Timeout',
+                    components: []
+                })
+            else if (collected.first().customId !== 'change-ip-menu')
+                await interaction.editReply({
+                    ephemeral: true,
+                    content: 'Avoid using multiple commands at once',
+                    components: []
+                })
+            else if (collected.first().customId === 'change-ip-menu')
+                await interaction.editReply({ content: serverName + ' IP changed successfully', ephemeral: true, components: [] })
+            
             cmdStatus = 0;
         });
     }
