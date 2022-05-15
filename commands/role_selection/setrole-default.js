@@ -9,9 +9,9 @@ module.exports = {
         if (!interaction.member.permissions.has("ADMINISTRATOR")) { return interaction.editReply('Only Admins can use this command') }
          
         // retrieve role and push role id to db
-        const currentGuild = await guilds.find({guildId: interaction.guildId})
-        currentGuild[0].ServerData.roles.default = interaction.options._hoistedOptions[0].value;
-        await currentGuild[0].save();
+        const currentGuild = await guilds.findOne({guildId: interaction.guildId})
+        currentGuild.ServerData.roles.default = interaction.options._hoistedOptions[0].value;
+        await currentGuild.save();
 
         await interaction.editReply("default role set successfully")
         console.log("default role set");

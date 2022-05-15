@@ -1,16 +1,11 @@
 const { MessageEmbed } = require('discord.js');
-const cheerio = require('cheerio');
-const pretty = require('pretty');
 const fetchHTML = require('../../helperFunctions/fetchHTML');
-const { map } = require('cheerio/lib/api/traversing');
-const { text } = require('stream/consumers');
-
 
 
 module.exports = {
     name: 'get-stats-valorant',
     description: 'retrieves valorant stats from tracker.gg. Case sensitive',
-    async execute(client, interaction, args, guildName) {
+    async execute(client, interaction) {
         console.log(`valstats requested by ${interaction.member.user.username}`);
 
         // retrieve username and tag
@@ -27,7 +22,7 @@ module.exports = {
             let rank = $('.valorant-highlighted-stat__value').first().text();
             let kad = $('.valorant-highlighted-stat__value').last().text();
             var stats = []; // array to store all values of the .value class
-            $('.value').each(function (i, e) { // sort .value items into array
+            $('.value').each(function (i) { // sort .value items into array
                 stats[i] = $(this).text();
             });
 

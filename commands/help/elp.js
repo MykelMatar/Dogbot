@@ -1,6 +1,4 @@
 const {MessageEmbed, MessageActionRow, MessageSelectMenu, MessageButton} = require('discord.js');
-const preventInteractionCollision = require('../../helperFunctions/preventInteractionCollision');
-
 
 module.exports = {
     name: 'elp',
@@ -154,10 +152,6 @@ module.exports = {
                 if (pageNumber > 0) pageNumber--
             }
             await interaction.editReply({ephemeral: true, embeds: [embeds[pageNumber]], components: [row]}); // send mc embed as home page
-        });
-
-        collector.on('end', async collected => {
-
         });
     }
 }

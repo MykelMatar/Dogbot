@@ -22,7 +22,9 @@ module.exports = async (client, interaction) => {
     }
 
     if (commandName === 'enlist-users') {
-        await commands.get('enlist-users').execute(client, interaction, guildName)
+        interaction.reply('enlisting users')
+        await commands.get('enlist-users').execute(client, interaction)
+        await interaction.deleteReply()
     }
 
     if (commandName === 'setrole-autoenlist') {
