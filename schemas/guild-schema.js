@@ -19,7 +19,7 @@ const guildSchema = mongoose.Schema({
                 losses: Number,
             },
             enlistStats: {
-                enlistStats: Number,
+                enlists: Number,
                 rejects: Number,
             },
         },

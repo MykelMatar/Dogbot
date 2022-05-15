@@ -53,6 +53,7 @@
 
 ## TODO: 
   - [x] fix /elp (paginate commands by category)
+  - [ ] delete user data when user leaves
   - [ ] add 'hide' option to all commands
   - [x] /say to send a message from dogbot
   - [ ] /createembed

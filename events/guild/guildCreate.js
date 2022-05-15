@@ -23,7 +23,7 @@ module.exports = async function (client, guild) {
                 losses: Number
             },
             enlistStats: {
-                enlistStats: Number,
+                enlists: Number,
                 rejects: Number
             }
         }],

@@ -1,7 +1,7 @@
 const { MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
 const util = require('minecraft-server-util');
 const runMcButtonCollector = require('../../helperFunctions/runMcButtonCollector');
-const data = require('../../data.json');
+const guilds = require("../../schemas/guild-schema");
 
 
 
@@ -11,18 +11,19 @@ module.exports = {
     description: "Retrieves MC server status from selectedServer in JSON and displays information in embed. 2 buttons: 'changemc', 'listmc'. DOES NOT REQUIRE ADMIN PERMS",
     async execute(client, interaction, guildName){
         console.log(`mc-server-status requested by ${interaction.member.user.username}`);
-        
-        let serverList = data.Guilds[guildName].MCData.serverList;
-        let serverListSize = Object.values(serverList).length
 
+        // retrieve server doc and list from mongo
+        const currentGuild = await guilds.find({guildId: interaction.guildId})
+        let serverList = currentGuild[0].MCServerData.serverList
+        
         // ensures command does not execute if 0 or 1 server exists
-        if (serverListSize === 0) {
+        if (serverList.length === 0) {
             return interaction.editReply('No Registered Servers, use !addmc or !listmc to add servers.')
         }
 
         // retrieve required JSON data
-        let MCServerIP = JSON.stringify(data.Guilds[guildName].MCData.selectedServer["IP"]).replace(/[""]/g, '')
-        let title = JSON.stringify(data.Guilds[guildName].MCData.selectedServer["title"]).replace(/[""]/g, '')
+        let title = currentGuild[0].MCServerData.selectedServer.name
+        let MCServerIP = currentGuild[0].MCServerData.selectedServer.ip
         
         // Generate buttons
         const row = new MessageActionRow()
@@ -40,14 +41,15 @@ module.exports = {
         // Check Server Status
         util.status(MCServerIP) // port default is 25565
           .then(async (response) => {
-            console.error('Server Online')
+            console.log('Server Online')
 
             // create Embed w/ server info (use console.log(response) for extra information about server)
             const embed = new MessageEmbed()
               .setTitle(title)
               .addFields(
                 { name: 'Server IP',      value: `>  ${MCServerIP.toString()}` },
-                { name: 'Modpack',        value: `> [${response.motd.clean.toString()}](https://www.curseforge.com/minecraft/modpacks)` },
+                { name: 'Modpack',        value:  `> ${response.motd.clean.toString()}`},
+                  //`> [${response.motd.clean.toString()}](https://www.curseforge.com/minecraft/modpacks)`
                 { name: 'Version',        value: `>  ${response.version.name.toString()}` },
                 { name: 'Online Players', value: `>  ${response.players.online.toString()}` },
               )

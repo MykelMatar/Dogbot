@@ -1,10 +1,5 @@
 const {MessageActionRow, MessageSelectMenu} = require('discord.js');
-const util = require('minecraft-server-util');
-const data = require('../../data.json');
-const writeToJson = require('../../helperFunctions/writeToJson');
-const refreshServerStatus = require('../../helperFunctions/refreshServerStatus');
 const generateMcMenuOptions = require('../../helperFunctions/generateMcMenuOptions');
-const preventInteractionCollision = require('../../helperFunctions/preventInteractionCollision');
 const guilds = require("../../schemas/guild-schema");
 let cmdStatus = 0;
 
@@ -96,7 +91,7 @@ module.exports = {
                     content: `Server Updated, now Tracking ${currentGuild[0].MCServerData.selectedServer.name}. Retrieving server status...`,
                     components: []
                 })
-               // await command.execute(client, interaction, guildName)
+               await command.execute(client, interaction, guildName)
             } 
             cmdStatus = 0;
         });

@@ -1,7 +1,4 @@
-const data = require('../../data.json');
-const writeToJson = require('../../helperFunctions/writeToJson');
-const createInteraction = require('../../helperFunctions/promptResponse');
-
+const guilds = require("../../schemas/guild-schema");
 
 
 module.exports = {
@@ -12,12 +9,14 @@ module.exports = {
 
         if (!interaction.member.permissions.has("ADMINISTRATOR")) { return interaction.editReply('Only Admins can use this command') }
 
-        // push role id to json
-        data.Guilds[guildName].ServerData['roles'].autoenlist = interaction.options._hoistedOptions[0].value;
-        writeToJson(data);
+        // retrieve server doc and list from mongo
+        const currentGuild = await guilds.find({guildId: interaction.guildId})
+        
+        // push role id to mongo
+        currentGuild[0].ServerData.roles.autoenlist = interaction.options._hoistedOptions[0].value;
+        await currentGuild[0].save()
 
-        await interaction.editReply("autoenlist role set sucessfully")
-        console.log(" autoenlist role set");
+        await interaction.editReply("Autoenlist role set sucessfully")
+        console.log("Autoenlist role set");
     }
-
 }
