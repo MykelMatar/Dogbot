@@ -11,10 +11,11 @@ const guilds = require("../schemas/guild-schema");
 async function autoDetectRole(client, message, guildName) {
     
     // Create button interaction to enlist members of a specific role (role can be set with /setrole-autoenlist)
-    const currentGuild = await guilds.find({guildId: message.guildId})
-    let selectedRole = currentGuild[0].ServerData.roles.autoenlist
+    const currentGuild = await guilds.findOne({guildId: message.guildId})
+    if (!currentGuild) return
+    let selectedRole = currentGuild.ServerData.roles.autoenlist
     
-    if (selectedRole == null) return console.log('no autoenlist role') ; // return if no selected roll
+    if (selectedRole == null) return ; // return if no selected roll
     else if (message.content.includes(`${selectedRole}`)) {
         console.log('autoenlist role detected');
         // generate buttons

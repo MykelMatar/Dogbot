@@ -1,4 +1,4 @@
-const {MessageActionRow, MessageEmbed, MessageButton, User} = require('discord.js');
+const {MessageActionRow, MessageEmbed, MessageButton } = require('discord.js');
 const guilds = require("../../schemas/guild-schema");
 
 module.exports = {
@@ -117,7 +117,7 @@ module.exports = {
                 }
                 
                 // repeat for rejected users
-                enlistedUserIds.forEach((userIds, index) => {
+                rejectedUserIds.forEach((userIds, index) => {
                     if (!(UserData.some(user => user.id === enlistedUserIds[index]))) { // create user data if it doesnt exist
                         let username = message.guild.members.cache.get(`${enlistedUserIds[index]}`).user.username
                         UserData.push({
