@@ -9,16 +9,16 @@ module.exports = async (client) => {
 
     // slash commands
     const guildId = '351618107384528897' // crayon
-    const guildId2 = '715122900021149776' // bot testing
+    // const guildId2 = '715122900021149776' // bot testing
     const guild = client.guilds.cache.get(guildId)
-    const guild2 = client.guilds.cache.get(guildId2)
+    // const guild2 = client.guilds.cache.get(guildId2)
     let commands
-    // guild.commands.set([]) // resets guild commands
-    // client.application.commands.set([]) // reset application commands
+    // await guild.commands.set([]) // resets guild commands
+    // await client.application.commands.set([]) // reset application commands
 
-    if (guild || guild2) {
+    if (guild) {
         commands = guild.commands
-        commands = guild2.commands
+        // commands = guild2.commands
     } else {
         // commands = client.application?.commands // register slash commands globally
     }
@@ -26,7 +26,7 @@ module.exports = async (client) => {
     // slash command creation
     
     // creation commands
-    commands.create({
+    commands?.create({
         name: 'say',
         description: 'use Dogbot to say something',
         options: [
@@ -38,19 +38,19 @@ module.exports = async (client) => {
             }
         ]
     })
-    
+
     // enlist_user commands
-    commands.create({
+    commands?.create({
         name: 'clearrole-autoenlist',
         description: 'Clears role used to automate /enlist-users'
     });
 
-    commands.create({
+    commands?.create({
         name: 'enlist-users',
         description: 'creates interaction to enlist other users for event/group'
     });
 
-    commands.create({
+    commands?.create({
         name: 'setrole-autoenlist',
         description: 'changes the role used to enlist (for automated enlisting)',
         options: [
@@ -63,9 +63,9 @@ module.exports = async (client) => {
         ]
     });
 
-    
+
     // games
-    commands.create({
+    commands?.create({
         name: 'tictactoe',
         description: 'changes the role used to enlist (for automated enlisting)',
         options: [
@@ -78,13 +78,13 @@ module.exports = async (client) => {
         ]
     });
 
-    commands.create({
+    commands?.create({
         name: 'typingrace',
         description: 'starts multiplayer typing race',
     });
 
     // get_stats commands
-    commands.create({
+    commands?.create({
         name: 'get-stats-valorant',
         description: 'retrieves valorant stats from tracker.gg',
         options: [
@@ -111,17 +111,17 @@ module.exports = async (client) => {
 
 
     //help commands
-    commands.create({
+    commands?.create({
         name: 'elp',
         description: 'lists all commands and relevant information'
     });
 
-    commands.create({
+    commands?.create({
         name: 'server-stats',
         description: 'displays server info'
     });
 
-    commands.create({
+    commands?.create({
         name: 'suggestion',
         description: 'allows users to make suggestions about dogbot',
         options: [
@@ -136,7 +136,7 @@ module.exports = async (client) => {
 
 
     // mc commands
-    commands.create({
+    commands?.create({
         name: 'mc-add-server',
         description: 'Adds a new IP to the server list',
         options: [
@@ -155,7 +155,7 @@ module.exports = async (client) => {
         ]
     });
 
-    commands.create({
+    commands?.create({
         name: 'mc-change-server-ip',
         description: 'Changes the IP of an existing server',
         options: [
@@ -168,7 +168,7 @@ module.exports = async (client) => {
         ]
     });
 
-    commands.create({
+    commands?.create({
         name: 'mc-change-server-name',
         description: 'Changes the name of an existing server',
         options: [
@@ -181,29 +181,37 @@ module.exports = async (client) => {
         ]
     });
 
-    commands.create({
+    commands?.create({
         name: 'mc-change-server',
         description: 'Changes Server that is being tracked by mc-server-status'
     });
 
-    commands.create({
+    commands?.create({
         name: 'mc-delete-server',
         description: 'Removes server from server list'
     });
 
-    commands.create({
+    commands?.create({
         name: 'mc-list-servers',
         description: 'Lists registered minecraft servers'
     });
 
-    commands.create({
+    commands?.create({
         name: 'mc-server-status',
-        description: 'Gets status of selected minecraft server'
+        description: 'Gets status of selected minecraft server',
+        options: [
+            {
+                name: 'hide',
+                description: 'whether to hide message or not (true by default).',
+                required: false,
+                type: DiscordJS.Constants.ApplicationCommandOptionTypes.BOOLEAN
+            }
+        ]
     });
 
 
     //role_selection commands
-    commands.create({
+    commands?.create({
         name: 'role-selection-menu',
         description: 'creates dropdown menu for users to select roles. Add up to 10 roles.',
         options: [
@@ -270,12 +278,12 @@ module.exports = async (client) => {
         ]
     });
 
-    commands.create({
+    commands?.create({
         name: 'clearrole-default',
         description: 'removes default role given to new users.'
     });
 
-    commands.create({
+    commands?.create({
         name: 'set-welcome-channel',
         description: 'sets the welcome channel of the server',
         options: [
@@ -288,7 +296,7 @@ module.exports = async (client) => {
         ]
     });
 
-    commands.create({
+    commands?.create({
         name: 'setrole-default',
         description: 'changes the role given to new users',
         options: [
@@ -300,5 +308,4 @@ module.exports = async (client) => {
             },
         ]
     });
-
 }

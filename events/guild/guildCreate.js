@@ -1,10 +1,13 @@
 const guilds = require('../../schemas/guild-schema')
 
 module.exports = async function (client, guild) {
-    console.log(`Dogbot added to ${guild.name}\nCreating database entry...`);
+    console.log(`Dogbot added to ${guild.name}`);
 
-    let guildName = guild.name.replace(/\s+/g, ""); //removes whitespace from string
+    const guildName = guild.name.replace(/\s+/g, ""); //removes whitespace from string
+    const existingGuild = await guilds.findOne({guildId: guild.id})
+    if (existingGuild !== null) return
 
+    console.log('Creating database entry...')
     await guilds.create({
         guild: guildName,
         guildId: guild.id,
@@ -15,25 +18,9 @@ module.exports = async function (client, guild) {
                 default: null
             }
         },
-        UserData: [{
-            username: String,
-            id: String,
-            tttStats: {
-                wins: Number,
-                losses: Number
-            },
-            enlistStats: {
-                enlists: Number,
-                rejects: Number
-            }
-        }],
+        UserData: [],
         MCServerData: {
-            serverList: {
-                serverList: [{
-                    name: String,
-                    ip: String,
-                }],
-            },
+            serverList: [],
             selectedServer: {
                 name: null,
                 ip: null

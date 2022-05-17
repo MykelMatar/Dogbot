@@ -7,6 +7,7 @@ module.exports = async (client, interaction) => {
     let commands = client.commands
     let guildName = interaction.guild.name.replace(/\s+/g, "");
     const { commandName, options } = interaction
+    let ephemeralSetting;
 
     // Slash Command List + execution instructions
     
@@ -49,8 +50,8 @@ module.exports = async (client, interaction) => {
         await interaction.deferReply({ ephemeral: ephemeralSetting })
         await commands.get('get-stats-valorant').execute(client, interaction, guildName)
     }
-
-
+    
+    
     // help commands
     if (commandName === 'elp') {
         await commands.get('elp').execute(client, interaction)
@@ -98,7 +99,9 @@ module.exports = async (client, interaction) => {
     }
 
     if (commandName === 'mc-server-status') {
-        await interaction.deferReply({ ephemeral: true }); // wait 15s; offline servers take a while to respond.
+        if (options._hoistedOptions[0] === undefined) ephemeralSetting = false
+        else ephemeralSetting = options._hoistedOptions[0].value
+        await interaction.deferReply({ ephemeral: ephemeralSetting }); // wait 15s; offline servers take a while to respond.
         await commands.get('mc-server-status').execute(client, interaction, guildName)
     }
 

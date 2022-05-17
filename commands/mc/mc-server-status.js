@@ -4,7 +4,7 @@ const runMcButtonCollector = require('../../helperFunctions/runMcButtonCollector
 const guilds = require("../../schemas/guild-schema");
 
 
-
+// TODO: create favorite players list to see if they are online the server or not
 
 module.exports = {
     name: 'mc-server-status',
@@ -13,8 +13,8 @@ module.exports = {
         console.log(`mc-server-status requested by ${interaction.member.user.username}`);
 
         // retrieve server doc and list from mongo
-        const currentGuild = await guilds.find({guildId: interaction.guildId})
-        let serverList = currentGuild[0].MCServerData.serverList
+        const currentGuild = await guilds.findOne({guildId: interaction.guildId})
+        let serverList = currentGuild.MCServerData.serverList
         
         // ensures command does not execute if 0 or 1 server exists
         if (serverList.length === 0) {
@@ -22,8 +22,8 @@ module.exports = {
         }
 
         // retrieve required JSON data
-        let title = currentGuild[0].MCServerData.selectedServer.name
-        let MCServerIP = currentGuild[0].MCServerData.selectedServer.ip
+        let title = JSON.stringify(currentGuild.MCServerData.selectedServer.name)
+        let MCServerIP = JSON.stringify(currentGuild.MCServerData.selectedServer.ip)
         
         // Generate buttons
         const row = new MessageActionRow()
@@ -39,15 +39,15 @@ module.exports = {
           )
 
         // Check Server Status
-        util.status(MCServerIP) // port default is 25565
+        util.status(MCServerIP.replace(/["]+/g, '')) // port default is 25565
           .then(async (response) => {
             console.log('Server Online')
-
+              console.log(response.players.sample)
             // create Embed w/ server info (use console.log(response) for extra information about server)
             const embed = new MessageEmbed()
-              .setTitle(title)
+              .setTitle(title.replace(/["]+/g, ''))
               .addFields(
-                { name: 'Server IP',      value: `>  ${MCServerIP.toString()}` },
+                { name: 'Server IP',      value: `>  ${MCServerIP.replace(/["]+/g, '')}` },
                 { name: 'Modpack',        value:  `> ${response.motd.clean.toString()}`},
                   //`> [${response.motd.clean.toString()}](https://www.curseforge.com/minecraft/modpacks)`
                 { name: 'Version',        value: `>  ${response.version.name.toString()}` },
@@ -56,7 +56,7 @@ module.exports = {
               .setColor("#8570C1")
               .setFooter('Server Online')
 
-            await interaction.editReply({ ephemeral: true, embeds: [embed], components: [row]})
+            await interaction.editReply({  embeds: [embed], components: [row]})
             runMcButtonCollector(client, interaction, guildName) 
           })
           .catch(async (error) => {
