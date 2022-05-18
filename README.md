@@ -1,15 +1,21 @@
 <img align="right" src="https://github.com/MykelMatar/Dogbot/blob/main/pfp/Dogbot.png">
 
 # [Dogbot 2.0](https://discord.com/api/oauth2/authorize?client_id=848283770041532425&permissions=8&scope=bot%20applications.commands) 
-  ### Dogbot is a Discord bot made with Discord.js 13. All commands are registered /commands (currently not globally registered)
+  ### Dogbot is a multipurpose Discord bot made with Discord.js 13. All commands are registered /commands (currently not globally registered)
   
 ## List of Features:
-  * Tracks the status of a Minecraft server
+  * Tracks the status of a Minecraft server (can add up to 10 servers to track)
   * Retrieves Valorant Account Stats from tracker.gg
   * Role selection menu and default roles
   * enlist users for an event or gamer sesh 
+  * play TicTacToe against other users
 
 ## All Commands: 
+### creation commands:
+| command     | description                   |
+|-------------|-------------------------------|
+| /say        | send a message through Dogbot |
+
 ### help commands: 
 | command      | description                                   |
 |--------------|-----------------------------------------------|
@@ -50,21 +56,23 @@
 |---------------------|-------------------------------------------|
 | /get-stats-valorant | retrieves valorant stats from tracker.gg  |
 
+### game commands:
+| command           | description                                              |
+|-------------------|----------------------------------------------------------|
+| /tictactoe        | Play tic tac toe against another user                    |
+
 
 ## TODO: 
-  - [x] fix /elp (paginate commands by category)
-  - [ ] delete user data when user leaves
   - [ ] add 'hide' option to all commands
-  - [x] /say to send a message from dogbot
-  - [ ] /createembed
-  - [x] Prevent collisions for /mc, /listmc, and /autoenlist
   - [ ] log users who enlist/don't enlist and tally it up then do something fun with it
-  - [ ] Add moderation tools
-  - [x] tic-tac-toe command
-  - [ ] Poll creation
+  - [ ] Add moderation tools (/filter command to auto delete messages with certain words)
   - [ ] Magic 8-ball
   - [ ] more game stats (apex, fortnite, csgo, destiny?)
   - [ ] server stats
-  - [ ] custom commands
   - [ ] type racer game
+  - [x] fix /elp (paginate commands by category)
+  - [X] delete user data when user leaves
+  - [x] /say to send a message from dogbot
+  - [x] Prevent collisions for /mc, /listmc, and /autoenlist
+  - [x] tic-tac-toe command
 

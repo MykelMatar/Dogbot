@@ -1,4 +1,4 @@
-const {MessageEmbed, MessageActionRow, MessageSelectMenu, MessageButton} = require('discord.js');
+const {MessageEmbed, MessageActionRow, MessageButton} = require('discord.js');
 
 module.exports = {
     name: 'elp',
@@ -19,7 +19,7 @@ module.exports = {
                     .setStyle('SECONDARY'),
             )
 
-        // create embed for mc commands
+        // embed for mc commands
         const mcEmbed = new MessageEmbed()
             .setTitle("minecraft commands")
             .setDescription(
@@ -52,9 +52,9 @@ module.exports = {
                 },
             )
             .setColor("#F5F5F5")
-            .setFooter(` Page 1`)
+            .setFooter(`Page 1`)
 
-        // create embed for role commands
+        // embed for role commands
         const roleEmbed = new MessageEmbed()
             .setTitle("role commands")
             .setDescription(
@@ -81,9 +81,9 @@ module.exports = {
                 },
             )
             .setColor("#F5F5F5")
-            .setFooter(` Page 2`)
+            .setFooter(`Page 2`)
 
-        // create embed for enlist commands
+        // embed for enlist commands
         const enlistEmbed = new MessageEmbed()
             .setTitle("enlist commands")
             .setDescription(
@@ -108,9 +108,9 @@ module.exports = {
                 },
             )
             .setColor("#F5F5F5")
-            .setFooter(` Page 3`)
+            .setFooter(`Page 3`)
 
-        // create embed for get_stats commands
+        // embed for get_stats commands
         const statsEmbed = new MessageEmbed()
             .setTitle("get-stats commands")
             .setDescription(
@@ -131,9 +131,32 @@ module.exports = {
                 },
             )
             .setColor("#F5F5F5")
-            .setFooter(` Page 4`)
+            .setFooter(`Page 4`)
 
-        const embeds = [mcEmbed, roleEmbed, enlistEmbed, statsEmbed] // array for indexing pages
+        // embed for get_stats commands
+        const gamesEmbed = new MessageEmbed()
+            .setTitle("game commands")
+            .setDescription(
+                `**Use the buttons to navigate between command pages**`
+            )
+            .addFields(
+                {
+                    name: 'command',
+                    value:
+                        `>>> **/tictactoe**`,
+                    inline: true
+                },
+                {
+                    name: 'function',
+                    value:
+                        ` - starts a tictactoe game against another user`,
+                    inline: true
+                },
+            )
+            .setColor("#F5F5F5")
+            .setFooter(`Page 5`)
+
+        const embeds = [mcEmbed, roleEmbed, enlistEmbed, statsEmbed, gamesEmbed] // array for indexing pages
         let pageNumber = 0;
         
         interaction.reply({ephemeral: true, embeds: [embeds[pageNumber]], components: [row]}); // send mc embed as home page

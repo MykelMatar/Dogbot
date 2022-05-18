@@ -1,6 +1,6 @@
 /**
  * sends a message and collects the response
- * @param  {discord interaction} interaction
+ * @param  interaction
  * @param  {string} request
  * @param  {string} requestFail
  */
@@ -16,7 +16,7 @@ async function promptResponse(interaction, request, requestFail){
                     return response;
                 }
             })
-            .catch(error => {
+            .catch(() => {
                 return interaction.editReply(requestFail), console.log(requestFail)
             })
 }

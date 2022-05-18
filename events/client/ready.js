@@ -71,7 +71,7 @@ module.exports = async (client) => {
         options: [
             {
                 name: 'opponent',
-                description: 'user to challenge. Leave blank to challenge Dogbot',
+                description: 'user to challenge.',
                 required: true,
                 type: DiscordJS.Constants.ApplicationCommandOptionTypes.USER
             },

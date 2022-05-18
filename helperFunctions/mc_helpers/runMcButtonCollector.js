@@ -1,7 +1,7 @@
 /**
  * collection and interaction handling for /mc-server-status
- * @param  {discord client} client
- * @param  {discord interaction} interaction
+ * @param  client
+ * @param  interaction
  * @param  {string} guildName
  */
 function runMcButtonCollector(client, interaction, guildName) {
