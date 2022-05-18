@@ -1,6 +1,6 @@
 const { MessageActionRow, MessageSelectMenu } = require('discord.js');
 const util = require('minecraft-server-util');
-const generateMcMenuOptions = require('../../helperFunctions/generateMcMenuOptions');
+const generateMcMenuOptions = require('../../helperFunctions/mc_helpers/generateMcMenuOptions');
 const guilds = require("../../schemas/guild-schema");
 let cmdStatus = 0;
 

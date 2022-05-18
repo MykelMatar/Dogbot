@@ -1,5 +1,5 @@
 const { MessageActionRow, MessageButton } = require('discord.js');
-const guilds = require("../schemas/guild-schema");
+const guilds = require("../../schemas/guild-schema");
 
 /**
  * sends a message and collects the response
@@ -15,7 +15,7 @@ async function autoDetectRole(client, message, guildName) {
     if (!currentGuild) return
     let selectedRole = currentGuild.ServerData.roles.autoenlist
     
-    if (selectedRole == null) return ; // return if no selected roll
+    if (selectedRole == null) return; // return if no selected roll
     else if (message.content.includes(`${selectedRole}`)) {
         console.log('autoenlist role detected');
         // generate buttons
@@ -47,7 +47,7 @@ async function autoDetectRole(client, message, guildName) {
             }
         });
 
-        collector.on('end', async collected => {
+        collector.on('end', async () => {
             await sent.delete();   // remove buttons
         });
     }

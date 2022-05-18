@@ -1,13 +1,11 @@
 const {MessageActionRow, MessageButton} = require('discord.js');
-// const data = require('../../data.json')
-// const writeToJson = require('../../helperFunctions/writeToJson')
-const guildSchema = require('../../schemas/guild-schema')
+const updateUserData = require("../../helperFunctions/general_helpers/updateUserData");
 let selected = Array(9).fill(false)
 let color = 'SUCCESS';
 let symbol = 'O';
 let win = false
 let turn = 1;
-let winner, loser, user
+let winner, loser, user, selectedRow, index
 let cmdStatus = 0;
 
 // TODO log player wins and display at the end of each game and write bot logic && close tic tac toe game when another is going on
@@ -17,10 +15,10 @@ module.exports = {
     description: 'challenge a user to tictactoe',
     async execute(client, interaction, guildName) {
         console.log(`tictactoe requested by ${interaction.member.user.username}`)
-        
+
         if (cmdStatus === 1) interaction.reply('please wait for current game to finish')
         cmdStatus = 1;
-        
+
         let opponent
         if (interaction.options._hoistedOptions[0] === undefined) opponent = client.user.username
         else opponent = interaction.options._hoistedOptions[0].member.user.username;
@@ -74,6 +72,7 @@ module.exports = {
                     .setStyle('SECONDARY'),
             );
 
+        // create board
         await interaction.reply({
             content: `${interaction.member.user.username} vs ${opponent}`,
             components: [row1, row2, row3]
@@ -82,74 +81,75 @@ module.exports = {
         const filter = i => i.user.id === interaction.member.user.id;
         const collector = interaction.channel.createMessageComponentCollector({filter, componentType: 'BUTTON'});
 
-
+        
+        // start game
         collector.on('collect', async i => {
             await i.deferUpdate() // prevents "this interaction failed" message from appearing
                 .catch(error => console.log(error));
 
             // interaction handling
-            if (i.customId === 'TL' && selected[0] === false) {
-                row1.components[0].label = symbol
-                row1.components[0].style = color
-                selected[0] = true;
-                await changeTurn(interaction, client);
+            switch (i.customId) {
+                case 'TL':
+                    if (selected[0]) return;
+                    selectedRow = row1
+                    index = 0
+                    selected[0] = true;
+                    break;
+                case 'TM':
+                    if (selected[1]) return;
+                    selectedRow = row1;
+                    index = 1
+                    selected[1] = true;
+                    break;
+                case 'TR':
+                    if (selected[2]) return;
+                    selectedRow = row1;
+                    index = 2
+                    selected[2] = true;
+                    break;
+                case 'ML':
+                    if (selected[3]) return;
+                    selectedRow = row2;
+                    index = 0
+                    selected[3] = true;
+                    break;
+                case 'MM':
+                    if (selected[4]) return;
+                    selectedRow = row2;
+                    index = 1
+                    selected[4] = true;
+                    break;
+                case 'MR':
+                    if (selected[5]) return;
+                    selectedRow = row2;
+                    index = 2
+                    selected[5] = true;
+                    break;
+                case 'BL':
+                    if (selected[6]) return;
+                    selectedRow = row3;
+                    index = 0
+                    selected[6] = true;
+                    break;
+                case 'BM':
+                    if (selected[7]) return;
+                    selectedRow = row3;
+                    index = 1
+                    selected[7] = true;
+                    break;
+                case 'BR':
+                    if (selected[8]) return;
+                    selectedRow = row3;
+                    index = 2
+                    selected[8] = true;
+                    break;
+                default:
+                    return
             }
 
-            if (i.customId === 'TM' && selected[1] === false) {
-                row1.components[1].label = symbol
-                row1.components[1].style = color
-                selected[1] = true;
-                await changeTurn(interaction, client);
-            }
-
-            if (i.customId === 'TR' && selected[2] === false) {
-                row1.components[2].label = symbol
-                row1.components[2].style = color
-                selected[2] = true;
-                await changeTurn(interaction, client);
-            }
-
-            if (i.customId === 'ML' && selected[3] === false) {
-                row2.components[0].label = symbol
-                row2.components[0].style = color
-                selected[3] = true;
-                await changeTurn(interaction, client);
-            }
-
-            if (i.customId === 'MM' && selected[4] === false) {
-                row2.components[1].label = symbol
-                row2.components[1].style = color
-                selected[4] = true;
-                await changeTurn(interaction, client);
-            }
-
-            if (i.customId === 'MR' && selected[5] === false) {
-                row2.components[2].label = symbol
-                row2.components[2].style = color
-                selected[5] = true;
-                await changeTurn(interaction, client);
-            }
-
-            if (i.customId === 'BL' && selected[6] === false) {
-                row3.components[0].label = symbol
-                row3.components[0].style = color
-                selected[6] = true;
-                await changeTurn(interaction, client);
-            }
-
-            if (i.customId === 'BM' && selected[7] === false) {
-                row3.components[1].label = symbol
-                row3.components[1].style = color
-                selected[7] = true;
-                await changeTurn(interaction, client);
-            }
-
-            if (i.customId === 'BR' && selected[8] === false) {
-                row3.components[2].label = symbol
-                row3.components[2].style = color
-                selected[8] = true;
-                await changeTurn(interaction, client);
-            }
+            selectedRow.components[index].label = symbol
+            selectedRow.components[index].style = color
+            await changeTurn(interaction, client)
 
             await interaction.editReply({
                 content: `${interaction.member.user.username} vs ${opponent}`,
@@ -194,14 +194,14 @@ module.exports = {
                 row1.components[0].label === row3.components[2].label) {
                 await endGame(interaction, collector, guildName)
             }
-            // 3 in a row horizontally +slope
+            // 3 in a row diagonally +slope
             else if (row1.components[2].label === row2.components[1].label &&
                 row1.components[2].label === row3.components[0].label) {
                 await endGame(interaction, collector, guildName)
             }
         });
 
-        collector.on('end', async collected => {
+        collector.on('end', async () => {
             if (win === false)
                 await interaction.editReply({content: 'Tie!'})
         });
@@ -209,7 +209,12 @@ module.exports = {
     }
 }
 
+
+////////////////////////////////////////////////////
 // helper functions
+///////////////////////////////////////////////////
+
+
 async function changeTurn(interaction, client) {
     // change turns
     if (turn === 1) turn = 2
@@ -232,7 +237,8 @@ async function changeTurn(interaction, client) {
         user = client.user.id
 }
 
-async function endGame(interaction, collector, guildName) {
+
+async function endGame(interaction, collector) {
     // set winner to write to json and display
     if (turn === 2) {
         winner = interaction.user.id
@@ -242,24 +248,15 @@ async function endGame(interaction, collector, guildName) {
         loser = interaction.user.id
     }
 
-    // create tic tac toe user data
-    if (!data.Guilds[guildName].UserData[winner]) {
-        data.Guilds[guildName].UserData[winner] = {
-            ttt: {
-                wins: 0,
-                losses: 0
-            }
-        };
-    }
-    data.Guilds[guildName].UserData[winner].ttt['wins']++
-    data.Guilds[guildName].UserData[loser].ttt['losses']++
-    writeToJson(data)
-
     let username = (interaction.guild.members.cache.get(winner)).user.username // convert id to username to display
     await interaction.editReply({content: `${username} Wins!`})
 
     win = true; // set win to prevent tie message
     collector.stop(); // end collection
+
+    // update tic tac toe user data
+    await updateUserData(interaction, [winner], 'tttWins')
+    await updateUserData(interaction, [loser], 'tttWins')
 
     // reset game options
     selected = Array(9).fill(false)

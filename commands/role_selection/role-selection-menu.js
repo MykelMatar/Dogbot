@@ -1,5 +1,5 @@
 const { MessageActionRow, MessageSelectMenu } = require('discord.js');
-const generateMenuOptions = require('../../helperFunctions/generateMenuOptions');
+const generateMenuOptions = require('../../helperFunctions/general_helpers/generateMenuOptions');
 
 // TODO: create embed with roles and descriptions; consider creating /addrole {role} {description} and /removerole commands
 module.exports = {
