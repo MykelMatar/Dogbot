@@ -134,6 +134,15 @@ module.exports = async (client) => {
         ]
     });
 
+    // commands?.create({
+    //     name: 'simleave',
+    //     description: 'simulates user leaving'
+    // });
+    // commands?.create({
+    //     name: 'simjoin',
+    //     description: 'simulates user joining'
+    // });
+
 
     // mc commands
     commands?.create({
@@ -201,8 +210,14 @@ module.exports = async (client) => {
         description: 'Gets status of selected minecraft server',
         options: [
             {
+                name: 'username',
+                description: 'check to see if a certain user in online.',
+                required: false,
+                type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING
+            },
+            {
                 name: 'hide',
-                description: 'whether to hide message or not (true by default).',
+                description: 'whether to hide message or not (false by default).',
                 required: false,
                 type: DiscordJS.Constants.ApplicationCommandOptionTypes.BOOLEAN
             }

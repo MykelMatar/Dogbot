@@ -5,7 +5,7 @@ const fs = require('fs')
 module.exports = {
     name: 'suggestion',
     description: 'allows users to make suggestions about dogbot',
-    async execute(client, interaction, args, guildName) {
+    async execute(client, interaction) {
         console.log(`suggestion created by ${interaction.member.user.username}`);
 
         let suggestion = JSON.stringify((interaction.options._hoistedOptions[0]).value)
@@ -14,6 +14,6 @@ module.exports = {
             if (err) throw err
         });
 
-        interaction.editReply({content: 'Suggestion noted'})
+        await interaction.editReply({content: 'Suggestion noted'})
     }
 }

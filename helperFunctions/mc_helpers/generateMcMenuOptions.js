@@ -1,4 +1,4 @@
-const guilds = require("../schemas/guild-schema");
+const guilds = require("../../schemas/guild-schema");
 
 /**
  * refreshes the "Menu Options" in data.JSON and creates a variable-size discord drowpdown menu

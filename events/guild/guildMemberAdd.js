@@ -1,10 +1,13 @@
-const data = require('../../data.json');
+const guilds = require('../../schemas/guild-schema')
+
 
 module.exports = async function(client, guildMember) {
     console.log(`${guildMember.user.username} has joined the server`);
-    let guildName = guildMember.guild.name.replace(/\s+/g, "");
-    let welcomeChannel = data.Guilds[guildName].ServerData.welcomeChannel;
-    let defaultRole =  data.Guilds[guildName].ServerData['roles'].default;
+    
+    let currentGuild = await guilds.findOne({guildId: guildMember.guild.id})
+    
+    let welcomeChannel = currentGuild.ServerData.welcomeChannel
+    let defaultRole =  currentGuild.ServerData.roles.default;
     let channel = guildMember.guild.channels.cache.get(welcomeChannel)
 
     // check for valid welcomeChannel, defaultRole
@@ -19,4 +22,5 @@ module.exports = async function(client, guildMember) {
                 channel.send('Could not give default role. Make sure the "Dogbot" role is high up in the role hierarchy. ')
             })
     }
+    else channel.send('Could not give default role. Make sure the "Dogbot" role is high up in the role hierarchy. ')
 }

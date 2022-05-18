@@ -1,5 +1,5 @@
 const util = require("minecraft-server-util");
-const promptResponse = require("../../helperFunctions/promptResponse");
+const promptResponse = require("../../helperFunctions/general_helpers/promptResponse");
 const guilds = require("../../schemas/guild-schema");
 let cmdStatus = 0;
 

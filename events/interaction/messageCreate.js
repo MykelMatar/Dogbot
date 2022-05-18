@@ -1,4 +1,4 @@
-const autoDetectRole = require('../../helperFunctions/autoDetectRole');
+const autoDetectRole = require('../../helperFunctions/enlist_helpers/autoDetectRole');
 
 
 module.exports = async (client, message,) => {

@@ -1,5 +1,5 @@
 const { MessageEmbed } = require('discord.js');
-const fetchHTML = require('../../helperFunctions/fetchHTML');
+const fetchHTML = require('../../helperFunctions/general_helpers/fetchHTML');
 
 
 module.exports = {
@@ -19,13 +19,14 @@ module.exports = {
             const $ = await fetchHTML(`https://tracker.gg/valorant/profile/riot/${uriUser}%23${uriTag}/overview`);
 
             // retrieve stats via their classes
-            let rank = $('.valorant-highlighted-stat__value').first().text();
-            let kad = $('.valorant-highlighted-stat__value').last().text();
-            var stats = []; // array to store all values of the .value class
+            let statHeaderClass = $('.stat__value')
+            let rank = statHeaderClass.first().text();
+            let kad = statHeaderClass.last().text();
+            let stats = []; // array to store all values of the .value class
             $('.value').each(function (i) { // sort .value items into array
                 stats[i] = $(this).text();
             });
-
+            
             // create Embed w/ user info and stats
             const embed = new MessageEmbed()
                 .setTitle(`${user}'s Valorant Stats (Past 20 Games)`)
@@ -51,9 +52,11 @@ module.exports = {
                 .setFooter('via Tracker.gg, visit the website for more info')
 
             await interaction.editReply({ embeds: [embed] })
-        } catch {
+        } 
+        catch (error) {
+            console.log(error)
             console.log('invalid username / no tracker.gg connection');
-            return interaction.editReply('Invalid username / tracker.gg profile private')
+            //return interaction.editReply('Invalid username / tracker.gg profile private')
         }
 
     }

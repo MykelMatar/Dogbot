@@ -17,7 +17,6 @@ module.exports = async (client, interaction) => {
     }
     
     // enlist_user commands
-
     if (commandName === 'clearrole-autoenlist') {
         await commands.get('clearrole-autoenlist').execute(client, interaction, guildName)
     }
@@ -65,6 +64,12 @@ module.exports = async (client, interaction) => {
         await interaction.deferReply({ ephemeral: true })
         await commands.get('suggestion').execute(client, interaction, guildName)
     }
+    if (commandName === 'simleave') {
+        await commands.get('simleave').execute(client, interaction)
+    }
+    // if (commandName === 'simjoin') {
+    //     await commands.get('simjoin').execute(client, interaction)
+    // }
 
 
     // mc commands
@@ -99,8 +104,8 @@ module.exports = async (client, interaction) => {
     }
 
     if (commandName === 'mc-server-status') {
-        if (options._hoistedOptions[0] === undefined) ephemeralSetting = false
-        else ephemeralSetting = options._hoistedOptions[0].value
+        if (options._hoistedOptions[1] === undefined) ephemeralSetting = false
+        else ephemeralSetting = options._hoistedOptions[1].value
         await interaction.deferReply({ ephemeral: ephemeralSetting }); // wait 15s; offline servers take a while to respond.
         await commands.get('mc-server-status').execute(client, interaction, guildName)
     }

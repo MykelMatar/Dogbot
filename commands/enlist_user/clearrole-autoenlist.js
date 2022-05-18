@@ -10,11 +10,11 @@ module.exports = {
         if (!interaction.member.permissions.has("ADMINISTRATOR")) { return interaction.editReply('Only Admins can use this command') }
 
         // retrieve server doc and list from mongo
-        const currentGuild = await guilds.find({guildId: interaction.guildId})
+        const currentGuild = await guilds.findOne({guildId: interaction.guildId})
 
         // clear role id and push to mongo
-        currentGuild[0].ServerData.roles.autoenlist = null;
-        await currentGuild[0].save()
+        currentGuild.ServerData.roles.autoenlist = null;
+        await currentGuild.save()
 
         interaction.reply({ephemeral: true, content: 'Role Cleared Successfully'})
         console.log("Role cleared");
