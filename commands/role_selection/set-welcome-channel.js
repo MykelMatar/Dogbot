@@ -6,7 +6,7 @@ module.exports = {
     name: 'set-welcome-channel',
     description: 'changes server welcome channel',
     async execute(client, interaction, guildName) {
-        console.log(`set-welcome-channel requested by ${interaction.member.user.username}`)
+        console.log(`set-welcome-channel requested by ${interaction.member.user.username} in ${interaction.member.guild.name}`)
 
         if (!interaction.member.permissions.has("ADMINISTRATOR")) { return interaction.editReply('Only Admins can use this command') }
 

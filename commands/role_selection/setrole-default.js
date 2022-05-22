@@ -5,7 +5,7 @@ module.exports = {
     name: 'setrole-default',
     description: 'changes the role given to new users upon joining',
     async execute(client, interaction, guildName) {
-        console.log(`setrole-default requested by ${interaction.member.user.username}`)
+        console.log(`setrole-default requested by ${interaction.member.user.username} in ${interaction.member.guild.name}`)
         if (!interaction.member.permissions.has("ADMINISTRATOR")) { return interaction.editReply('Only Admins can use this command') }
          
         // retrieve role and push role id to db

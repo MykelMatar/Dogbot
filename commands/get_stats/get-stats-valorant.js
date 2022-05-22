@@ -6,7 +6,7 @@ module.exports = {
     name: 'get-stats-valorant',
     description: 'retrieves valorant stats from tracker.gg. Case sensitive',
     async execute(client, interaction) {
-        console.log(`valstats requested by ${interaction.member.user.username}`);
+        console.log(`valstats requested by ${interaction.member.user.username} in ${interaction.member.guild.name}`);
 
         // retrieve username and tag
         let user = interaction.options._hoistedOptions[0].value

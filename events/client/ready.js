@@ -23,7 +23,15 @@ module.exports = async (client) => {
         // commands = client.application?.commands // register slash commands globally
     }
 
+    console.log(guild.commands)
     // slash command creation
+    
+    
+    // test
+    commands?.create({
+        name: 'test',
+        description: 'test typescript commands',
+    })
     
     // creation commands
     commands?.create({
@@ -217,7 +225,7 @@ module.exports = async (client) => {
             },
             {
                 name: 'hide',
-                description: 'whether to hide message or not (false by default).',
+                description: 'whether to hide message or not (true by default).',
                 required: false,
                 type: DiscordJS.Constants.ApplicationCommandOptionTypes.BOOLEAN
             }

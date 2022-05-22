@@ -5,7 +5,7 @@ module.exports = {
     name: 'clearrole-default',
     description: 'clears the role used to enlist',
     async execute(client, interaction, guildName) {
-        console.log(`clearrole requested by ${interaction.member.user.username}`)
+        console.log(`clearrole requested by ${interaction.member.user.username} in ${interaction.member.guild.name}`)
 
         if (!interaction.member.permissions.has("ADMINISTRATOR")) { return await interaction.reply('Only Admins can use this command') }
 

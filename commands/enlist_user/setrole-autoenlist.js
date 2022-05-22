@@ -5,7 +5,7 @@ module.exports = {
     name: 'setrole-autoenlist',
     description: 'changes the role used to trigger autoenlist',
     async execute(client, interaction) {
-        console.log(`setrole-autoenlist requested by ${interaction.member.user.username}`)
+        console.log(`setrole-autoenlist requested by ${interaction.member.user.username} in ${interaction.member.guild.name}`)
 
         if (!interaction.member.permissions.has("ADMINISTRATOR")) { return interaction.editReply('Only Admins can use this command') }
 

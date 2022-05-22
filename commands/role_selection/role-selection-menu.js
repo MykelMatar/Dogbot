@@ -6,7 +6,7 @@ module.exports = {
     name: 'role-selection-menu',
     description: 'creates dropdown menu to select user roles',
     async execute(client, interaction, guildName) {
-        console.log(`role-selection-menu requested by ${interaction.member.user.username}`);
+        console.log(`role-selection-menu requested by ${interaction.member.user.username} in ${interaction.member.guild.name}`);
         
         // check for admin perms & prevent multiple instances from running
         if (!interaction.member.permissions.has("ADMINISTRATOR")) { return interaction.editReply('Only Admins can use this command') }  // check for admin perms
@@ -61,7 +61,7 @@ module.exports = {
                             });
                     }
                 } else
-                    interaction.channel.send('could not remove role. Make sure the "Dogbot" role is high up in the role hierarchy ')
+                    interaction.channel.send('could not edit role. Make sure the "Dogbot" role is high up in the role hierarchy ')
             }
         });
 
