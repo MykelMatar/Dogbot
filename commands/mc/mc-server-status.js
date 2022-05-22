@@ -8,7 +8,7 @@ module.exports = {
     name: 'mc-server-status',
     description: "Retrieves MC server status from selectedServer in JSON and displays information in embed. 2 buttons: 'changemc', 'listmc'. DOES NOT REQUIRE ADMIN PERMS",
     async execute(client, interaction, guildName) {
-        console.log(`mc-server-status requested by ${interaction.member.user.username}`);
+        console.log(`mc-server-status requested by ${interaction.member.user.username} in ${interaction.member.guild.name}`);
 
         // retrieve server doc and list from mongo
         const currentGuild = await guilds.findOne({guildId: interaction.guildId})
@@ -53,17 +53,25 @@ module.exports = {
                     )
                     .setColor("#8570C1")
                     .setFooter('Server Online')
-
-                let searchedPlayer = interaction.options._hoistedOptions[0]
+                
+                // searched Player embed field 
+                let searchedPlayer = interaction.options._hoistedOptions.find(option => option.name === 'username')
                 let onlinePlayers = response.players.sample
+                let foundPlayer = false;
                 console.log(onlinePlayers)
+                
                 if (onlinePlayers === null || onlinePlayers == '[]') 
                     console.log('no searched player')
-                else if (searchedPlayer !== null) {
+                else if (searchedPlayer !== undefined) {
                     onlinePlayers.forEach(player => {
-                        if (player.name === searchedPlayer.value)
+                        if (player.name === searchedPlayer.value) {
                             embed.addField('Searched User', `>  ${player.name} is online`)
+                            foundPlayer = true;
+                        }
                     })
+                    if(foundPlayer === false) {
+                        embed.addField('Searched User', `>  ${searchedPlayer.value} is offline`)
+                    }
                 }
                 
                 await interaction.editReply({embeds: [embed], components: [row]})

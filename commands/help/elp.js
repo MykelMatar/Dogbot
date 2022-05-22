@@ -4,7 +4,7 @@ module.exports = {
     name: 'elp',
     description: 'lists all commands and relevant information',
     async execute(client, interaction) {
-        console.log(`elp requested by ${interaction.member.user.username}`);
+        console.log(`elp requested by ${interaction.member.user.username} in ${interaction.member.guild.name}`);
         
         // Generate buttons
         const row = new MessageActionRow()

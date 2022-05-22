@@ -14,7 +14,7 @@ module.exports = {
     name: 'tictactoe',
     description: 'challenge a user to tictactoe',
     async execute(client, interaction, guildName) {
-        console.log(`tictactoe requested by ${interaction.member.user.username}`)
+        console.log(`tictactoe requested by ${interaction.member.user.username} in ${interaction.member.guild.name}`)
 
         if (cmdStatus === 1) interaction.reply('please wait for current game to finish')
         cmdStatus = 1;

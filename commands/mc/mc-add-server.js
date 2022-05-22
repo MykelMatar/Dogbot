@@ -7,9 +7,10 @@ module.exports = {
     name: "mc-add-server",
     description:
         "Adds a new IP to the server list in JSON file. Accessible via '/mc-list-servers' button or by slash command",
+    
     async execute(client, interaction) {
         console.log(
-            `mc-add-server requested by ${interaction.member.user.username}`
+            `mc-add-server requested by ${interaction.member.user.username} in ${interaction.member.guild.name}`
         );
 
         if (!interaction.member.permissions.has("ADMINISTRATOR")) {

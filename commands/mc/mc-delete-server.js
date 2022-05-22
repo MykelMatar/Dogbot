@@ -8,7 +8,7 @@ module.exports = {
     name: 'mc-delete-server',
     description: "Removes server from server list in JSON file. Accessible via 'listmc' button or by calling command",
     async execute(client, interaction, guildName) {
-        console.log(`mc-delete-server requested by ${interaction.member.user.username}`);
+        console.log(`mc-delete-server requested by ${interaction.member.user.username} in ${interaction.member.guild.name}`);
 
         // check for admin perms & prevent multiple instances from running
         if (!interaction.member.permissions.has("ADMINISTRATOR")) {

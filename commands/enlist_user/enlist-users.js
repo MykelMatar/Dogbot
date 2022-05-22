@@ -1,5 +1,4 @@
 const {MessageActionRow, MessageEmbed, MessageButton} = require('discord.js');
-const guilds = require("../../schemas/guild-schema");
 const updateUserData = require("../../helperFunctions/general_helpers/updateUserData");
 const updateEnlistUserArrays = require("../../helperFunctions/enlist_helpers/updateEnlistUserArrays");
 
@@ -7,7 +6,7 @@ module.exports = {
     name: 'enlist-users',
     description: 'creates message to enlist other users for event/group',
     async execute(client, message) {
-        console.log(`recruitment started by ${message.member.user.username}`);
+        console.log(`recruitment started by ${message.member.user.username} in ${message.member.guild.name}`);
 
         // generate buttons
         const row = new MessageActionRow()
@@ -34,7 +33,7 @@ module.exports = {
         let sent = await message.channel.send({embeds: [embed], components: [row]})
 
         // create collector
-        const collector = message.channel.createMessageComponentCollector({componentType: 'BUTTON', time: 10000}); // only message author can interact, 1 response, 2 hour timer
+        const collector = message.channel.createMessageComponentCollector({componentType: 'BUTTON', time: 7.2e+6}); // only message author can interact, 1 response, 2 hour timer
 
         // collect response
         let enlistedUsers = ['-'];

@@ -6,7 +6,7 @@ module.exports = {
     name: 'mc-list-servers',
     description: "Lists registered mc servers from JSON in an embed. No Admin perms required.",
     async execute(client, interaction, guildName) {
-        console.log(`mc-list-servers requested by ${interaction.member.user.username}`);
+        console.log(`mc-list-servers requested by ${interaction.member.user.username} in ${interaction.member.guild.name}`);
 
         // prevent multiple instances from running
         if (cmdStatus === 1) {

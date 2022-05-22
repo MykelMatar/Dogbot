@@ -27,11 +27,12 @@ async function updateUserData(message, userIdArray, statName) {
             statsArray = [0, 0, 0, 1];
             break;
     }
-
-
+    
     userIdArray.forEach((userIds, index) => {
+        console.log('checking for user data...')
+        console.log(UserData.some(user => user.id === userIdArray[index]))
+        console.log({UserData, userIdArray})
         if (!(UserData.some(user => user.id === userIdArray[index]))) { // if user data doesnt exist, create data
-
             let username = message.guild.members.cache.get(`${userIdArray[index]}`).user.username
             UserData.push({
                 username: username,
@@ -47,6 +48,8 @@ async function updateUserData(message, userIdArray, statName) {
             })
         } else { // if it does exist, update it
             userIdArray.forEach((userIds, index) => {
+                console.log('updating stats')
+                console.log({UserData, userIdArray})
                 if (userIdArray[index] === UserData[index].id) {
                     switch (statName) { // update values for selected stat
                         case 'tttWins':

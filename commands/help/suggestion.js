@@ -6,7 +6,7 @@ module.exports = {
     name: 'suggestion',
     description: 'allows users to make suggestions about dogbot',
     async execute(client, interaction) {
-        console.log(`suggestion created by ${interaction.member.user.username}`);
+        console.log(`suggestion created by ${interaction.member.user.username} in ${interaction.member.guild.name}`);
 
         let suggestion = JSON.stringify((interaction.options._hoistedOptions[0]).value)
 

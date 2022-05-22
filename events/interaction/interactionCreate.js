@@ -104,8 +104,9 @@ module.exports = async (client, interaction) => {
     }
 
     if (commandName === 'mc-server-status') {
-        if (options._hoistedOptions[1] === undefined) ephemeralSetting = false
-        else ephemeralSetting = options._hoistedOptions[1].value
+        let hideOption = interaction.options._hoistedOptions.find(option => option.name === 'hide')
+        if (hideOption === undefined) ephemeralSetting = true
+        else ephemeralSetting = interaction.options._hoistedOptions.find(option => option.name === 'hide').value
         await interaction.deferReply({ ephemeral: ephemeralSetting }); // wait 15s; offline servers take a while to respond.
         await commands.get('mc-server-status').execute(client, interaction, guildName)
     }

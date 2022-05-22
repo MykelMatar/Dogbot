@@ -4,7 +4,7 @@ module.exports = {
     name: 'server-stats',
     description: 'displays server information',
     async execute(client, interaction, guildName) {
-        console.log(`server-stats requested by ${interaction.member.user.username}`)
+        console.log(`server-stats requested by ${interaction.member.user.username} in ${interaction.member.guild.name}`)
         
         const { guild } = interaction
         

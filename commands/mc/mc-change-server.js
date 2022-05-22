@@ -8,7 +8,7 @@ module.exports = {
     name: 'mc-change-server',
     description: "Changes Server that is Being Tracked. Accessible via 'mc' or 'listmc' buttons, or by calling command.",
     async execute(client, interaction, guildName) {
-        console.log(`changemc requested by ${interaction.member.user.username}`);
+        console.log(`changemc requested by ${interaction.member.user.username} in ${interaction.member.guild.name}`);
 
         // prevent multiple instances from running
         if (cmdStatus === 1) {

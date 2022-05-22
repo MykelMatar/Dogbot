@@ -8,7 +8,7 @@ module.exports = {
     name: 'mc-change-server-name',
     description: "Renames existing mc server. Accessible via '/mc-list-servers' button or by calling command.",
     async execute(client, interaction, guildName) {
-        console.log(`/mc-change-server-name requested by ${interaction.member.user.username}`);
+        console.log(`/mc-change-server-name requested by ${interaction.member.user.username} in ${interaction.member.guild.name}`);
 
         // check for admin perms & prevent multiple instances from running
         if (!interaction.member.permissions.has("ADMINISTRATOR")) { return interaction.editReply('Only Admins can use this command') }  // check for admin perms
