@@ -12,4 +12,5 @@ module.exports = (client) => {
             client.on(eventName, event.bind(null, client));
         }
     }
+    console.log(client.events)
 }
