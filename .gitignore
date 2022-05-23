@@ -1,5 +1,3 @@
-OldIndexWorking.js
-data.json
 
 # Logs
 logs
@@ -105,4 +103,3 @@ dist
 
 # TernJS port file
 .tern-port
-OldIndexWorking.js

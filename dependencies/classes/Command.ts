@@ -1,5 +1,5 @@
 import {Client, GuildMember, Interaction} from "discord.js";
-import guilds from '../schemas/guild-schema'
+import guilds from '../../dependencies/schemas/guild-schema'
 
 export class Command {
     name: string

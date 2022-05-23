@@ -1,5 +1,5 @@
 import {Client} from "discord.js";
-import {getFiles} from "../helpers/get-files";
+import {getFiles} from "../dependencies/helpers/get-files";
 
 export default (client: Client) => {
     const commandFiles = getFiles('./commands', '.ts')
@@ -11,7 +11,5 @@ export default (client: Client) => {
             client.commands.set(commands[command].name, commands[command])
         }
     }
-    // @ts-ignore
-    //console.log(client.commands)
 }
 
