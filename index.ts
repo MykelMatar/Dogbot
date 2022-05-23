@@ -1,13 +1,12 @@
-const { Client, Collection } = require('discord.js');
-require('dotenv').config();
+const {Client, Collection} = require('discord.js');
+import 'dotenv/config'
 
-const client = new Client({intents: ['GUILDS', 'GUILD_MEMBERS', 'GUILD_MESSAGES', 'GUILD_EMOJIS_AND_STICKERS', 'GUILD_MESSAGE_REACTIONS']});
-
-client.commands = new Collection();
-client.events = new Collection();
+const client = new Client({intents: ['GUILDS', 'GUILD_MEMBERS', 'GUILD_MESSAGES']})
+client.commands = new Collection(); // create commands property for Client so commands can be passed around 
 
 ['command_handler', 'event_handler'].forEach(handler => {
-    require(`./handlers/${handler}`)(client);
+    require(`./handlers/${handler}`).default(client)
 });
 
 client.login(process.env.BOT_TOKEN)
+
