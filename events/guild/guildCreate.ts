@@ -1,5 +1,5 @@
 import {Client, Guild} from "discord.js";
-import guilds from '../../schemas/guild-schema'
+import guilds from '../../dependencies/schemas/guild-schema'
 
 export async function guildCreate (client: Client, guild: Guild) {
     console.log(`Dogbot added to ${guild.name}`);

@@ -1,4 +1,4 @@
-import {Category, Command} from "../../classes/Command";
+import {Category, Command} from "../../dependencies/classes/Command";
 import util from 'minecraft-server-util';
 
 export const mcAddServer = new Command(
