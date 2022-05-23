@@ -1,7 +1,7 @@
 import {Client} from "discord.js";
 import {Interaction} from "discord.js";
 
-export default async (client: Client, interaction: Interaction) => {
+export async function interactionCreate (client: Client, interaction: Interaction) {
     if (!interaction.isCommand()) return
     
     // @ts-ignore
@@ -12,9 +12,22 @@ export default async (client: Client, interaction: Interaction) => {
 
     // Slash Command List + execution instructions
 
-    // creation commands
+    // test commands
     if (commandName === 'test2') {
-        console.log('test detected')
         await commands.get('test').execute(client,  interaction)
     }
+    
+    // minecraft commands
+    if (commandName === 'mc-add-server') {
+        await commands.get('mc-add-server').execute(client,  interaction)
+    }
+    
+    // test commands
+    if (commandName === 'simjoin') {
+        await commands.get('simjoin').execute(client,  interaction)
+    }
+    if (commandName === 'simleave') {
+        await commands.get('simleave').execute(client,  interaction)
+    }
+    
 }

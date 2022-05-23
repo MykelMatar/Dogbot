@@ -12,6 +12,6 @@ export default (client: Client) => {
         }
     }
     // @ts-ignore
-    console.log(client.commands)
+    //console.log(client.commands)
 }
 
