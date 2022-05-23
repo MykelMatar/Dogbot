@@ -14,6 +14,7 @@ export default async (client: Client, interaction: Interaction) => {
 
     // creation commands
     if (commandName === 'test2') {
-        await commands.get('testCommand').default.execute(client,  interaction)
+        console.log('test detected')
+        await commands.get('test').execute(client,  interaction)
     }
 }
