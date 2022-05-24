@@ -1,7 +1,8 @@
-<img align="right" src="https://github.com/MykelMatar/Dogbot/blob/main/pfp/Dogbot.png">
+<img ="right" src="https://github.com/MykelMatar/Dogbot/blob/main/pfp/Dogbot.png">
 
 # [Dogbot 2.0](https://discord.com/api/oauth2/authorize?client_id=848283770041532425&permissions=8&scope=bot%20applications.commands) 
-  ### Dogbot is a multipurpose Discord bot made with Discord.js 13. All commands are registered /commands (currently not globally registered)
+  ### Dogbot is your Discord gaming companion. Track your favorite minecraft servers, get stats from all your favorite games (not yet), enlist fellow gamers for your event, and more! View the [Commands](##All Commands:) section for a comprehensive list of features.
+#### All commands are /commands (currently not globally registered)
   
 ## List of Features:
   * Tracks the status of a Minecraft server (can add up to 10 servers to track)
@@ -11,56 +12,59 @@
   * play TicTacToe against other users
 
 ## All Commands: 
+#### Whether The command works or not can be determined by the Status symbol. More information about the state of the commands can be found below their respective tables
 ### creation commands:
-| command           | description                   |
-|-------------------|-------------------------------|
-| /say | send a message through Dogbot |
+| command | description                    | Status |
+|:-------:|--------------------------------|:------:|
+|  /say   | send a message through Dogbot  |   ❌    |
+commands not implemented
 
 ### help commands: 
-| command      | description                                   |
-|--------------|-----------------------------------------------|
-| /elp         | lists all commands and relevant information   |
-| /suggestion  | allows users to make suggestions about Dogbot |
-    
-### minecraft commands: 
-| command                | description                                              |
-|------------------------|----------------------------------------------------------|
-| /mc-server-status      | Gets status of selected minecraft server                 |
-| /mc-change-server      | Changes Server that is being tracked by mc-server-status |
-| /mc-list-servers       | Lists registered mc servers                              |
-| /mc-add-server         | Adds a new IP to the server list                         |
-| /mc-change-server-ip   | Changes the IP of an existing server                     |
-| /mc-change-server-name | Changes the name of an existing server                   |
-| /mc-delete-server      | Removes server from server list                          |
+|   command   | description                                   | Status |
+|:-----------:|-----------------------------------------------|:------:|
+|    /elp     | lists all commands and relevant information   |   ❌    |
+| /suggestion | allows users to make suggestions about Dogbot |   ❌    |
+commands not implemented
 
+### minecraft commands: 
+| command                | description                                              | Status |
+|:-----------------------|:---------------------------------------------------------|:------:|
+| /mc-server-status      | Gets status of selected minecraft server                 |   ✅    |
+| /mc-change-server      | Changes Server that is being tracked by mc-server-status |   ✅    |
+| /mc-list-servers       | Lists registered mc servers                              |   ✅    |
+| /mc-add-server         | Adds a new IP to the server list                         |   ✅    |
+| /mc-change-server-ip   | Changes the IP of an existing server                     |   ✅    |
+| /mc-change-server-name | Changes the name of an existing server                   |   ✅    |
+| /mc-delete-server      | Removes server from server list                          |   ✅    |
 
 ### role selection commands:
-| command              | description                                                                                      |
-|----------------------|--------------------------------------------------------------------------------------------------|
-| /role-selection-menu | creates dropdown menu for users to select roles. Add up to 10 roles                              |
-| /setrole-default     | changes the role given to new users                                                              |
-| /clearrole-default   | removes default role given to new users                                                          |
-| /set-welcome-channel | sets the welcome channel of the server (for users to be granted the default role upon joining)   |
-
+| command              | description                                                                                    | Status |
+|----------------------|------------------------------------------------------------------------------------------------|:------:|
+| /role-selection-menu | creates dropdown menu for users to select roles. Add up to 10 roles                            |   ❌    |
+| /setrole-default     | changes the role given to new users                                                            |   ❌    |
+| /clearrole-default   | removes default role given to new users                                                        |   ❌    |
+| /set-welcome-channel | sets the welcome channel of the server (for users to be granted the default role upon joining) |   ❌    |
+commands not implemented
 
 ### enlist-user commands: 
-| command                | description                                                 |
-|------------------------|-------------------------------------------------------------|
-| /enlist-users          | Creates interaction to enlist other users for event/group   |
-| /setrole-autoenlist    | changes the role used to enlist (for automated enlisting)   |
-| /clearrole-autoenlist  | Clears role used to automate /enlist-users                  |
-
+| command               | description                                               | Status |
+|-----------------------|-----------------------------------------------------------|:------:|
+| /enlist-users         | Creates interaction to enlist other users for event/group |   ❌    |
+| /setrole-autoenlist   | changes the role used to enlist (for automated enlisting) |   ❌    |
+| /clearrole-autoenlist | Clears role used to automate /enlist-users                |   ❌    |
+commands not implemented
 
 ### get-stats commands: 
-| command             | description                               |
-|---------------------|-------------------------------------------|
-| /get-stats-valorant | retrieves valorant stats from tracker.gg  |
+| command             | description                              | Status |
+|---------------------|------------------------------------------|:------:|
+| /get-stats-valorant | retrieves valorant stats from tracker.gg |   ❌    |
+issue with tracker.gg website, direct link requests not currently working (no ETA)
 
 ### game commands:
-| command           | description                                              |
-|-------------------|----------------------------------------------------------|
-| /tictactoe        | Play tic tac toe against another user                    |
-
+| command    | description                           | Status |
+|------------|---------------------------------------|:------:|
+| /tictactoe | Play tic tac toe against another user |   ❌    |
+command not implemented
 
 ## TODO: 
   - [ ] add 'hide' option to all commands
