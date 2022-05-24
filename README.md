@@ -4,6 +4,7 @@
   ### Dogbot is a multipurpose Discord bot made with Discord.js 13. All commands are registered /commands (currently not globally registered)
   
 ## List of Features:
+***
   * Tracks the status of a Minecraft server (can add up to 10 servers to track)
   * Retrieves Valorant Account Stats from tracker.gg
   * Role selection menu and default roles
@@ -11,10 +12,11 @@
   * play TicTacToe against other users
 
 ## All Commands: 
+***
 ### creation commands:
-| command     | description                   |
-|-------------|-------------------------------|
-| /say        | send a message through Dogbot |
+| command           | description                   |
+|-------------------|-------------------------------|
+| ```diff - /say``` | send a message through Dogbot |
 
 ### help commands: 
 | command      | description                                   |

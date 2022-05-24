@@ -1,4 +1,4 @@
-import {Client, GuildMember, Interaction} from "discord.js";
+import {Client, GuildMember, CommandInteraction, GuildCacheMessage, CacheType} from "discord.js";
 import guilds from '../../dependencies/schemas/guild-schema'
 
 export class Command {
@@ -6,24 +6,21 @@ export class Command {
     description: string
     category: Category
     requiresAdmin?: boolean
-    executeCallback: (client: Client, interaction: Interaction) => void
-    GuildData: any
-    cmdStatus: boolean
+    executeCallback: (client: Client, interaction: CommandInteraction, guildName?: string) => void
+    guildData: any
     
-    public async execute(client: Client, interaction: Interaction): Promise<void> {
-        this.cmdStatus = true
+    public async execute(client: Client, interaction: CommandInteraction, guildName?: string): Promise<GuildCacheMessage<CacheType>> {
         if (!(!(interaction.member instanceof GuildMember) || interaction.member.partial)) {
             console.log(`${this.name} requested by ${interaction.member.user.username} in ${interaction.member.guild.name}`)
         }
+        
         // @ts-ignore
-        if (!interaction.member.permissions?.has("ADMINISTRATOR")) {
-            this.cmdStatus = false
-            // @ts-ignore
-            return interaction.editReply("Only Admins can use this command");
+        if (this.requiresAdmin && !interaction.member.permissions?.has("ADMINISTRATOR")) {
+                return interaction.editReply("Only Admins can use this command");
         }
         
-        this.GuildData = await guilds.findOne({guildId: interaction.guildId})
-        this.executeCallback(client, interaction)
+        this.guildData = await guilds.findOne({guildId: interaction.guildId})
+        this.executeCallback(client, interaction, guildName)
     }
 
     constructor(name: string, description: string, callback: (client, interaction) => Promise<void>) {

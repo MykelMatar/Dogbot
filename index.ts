@@ -9,4 +9,3 @@ client.commands = new Collection(); // create commands property for Client so co
 });
 
 client.login(process.env.BOT_TOKEN)
-
