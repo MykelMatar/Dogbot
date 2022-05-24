@@ -17,14 +17,16 @@
 | command | description                    | Status |
 |:-------:|--------------------------------|:------:|
 |  /say   | send a message through Dogbot  |   ❌    |
-commands not implemented
+
+    commands not implemented
 
 ### help commands 
 |   command   | description                                   | Status |
-|:-----------:|-----------------------------------------------|:------:|
-|    /elp     | lists all commands and relevant information   |   ❌    |
+|:-----------|-----------------------------------------------|:------:|
+| /elp       | lists all commands and relevant information   |   ❌    |
 | /suggestion | allows users to make suggestions about Dogbot |   ❌    |
-commands not implemented
+
+    commands not implemented
 
 ### minecraft commands 
 | command                | description                                              | Status |
@@ -44,7 +46,8 @@ commands not implemented
 | /setrole-default     | changes the role given to new users                                                            |   ❌    |
 | /clearrole-default   | removes default role given to new users                                                        |   ❌    |
 | /set-welcome-channel | sets the welcome channel of the server (for users to be granted the default role upon joining) |   ❌    |
-commands not implemented
+
+    commands not implemented
 
 ### enlist-user commands 
 | command               | description                                               | Status |
@@ -52,19 +55,22 @@ commands not implemented
 | /enlist-users         | Creates interaction to enlist other users for event/group |   ❌    |
 | /setrole-autoenlist   | changes the role used to enlist (for automated enlisting) |   ❌    |
 | /clearrole-autoenlist | Clears role used to automate /enlist-users                |   ❌    |
-commands not implemented
+
+    commands not implemented
 
 ### get-stats commands
 | command             | description                              | Status |
 |---------------------|------------------------------------------|:------:|
 | /get-stats-valorant | retrieves valorant stats from tracker.gg |   ❌    |
-issue with tracker.gg website, direct link requests not currently working (no ETA)
+
+    issue with tracker.gg website, direct link requests not currently working (no ETA)
 
 ### game commands
 | command    | description                           | Status |
 |------------|---------------------------------------|:------:|
 | /tictactoe | Play tic tac toe against another user |   ❌    |
-command not implemented
+
+    command not implemented
 
 ## TODO: 
   - [ ] add 'hide' option to all commands
