@@ -1,5 +1,5 @@
 import {Client, GuildMember, CommandInteraction, GuildCacheMessage, CacheType} from "discord.js";
-import guilds from '../../dependencies/schemas/guild-schema'
+import guilds from '../schemas/guild-schema'
 
 export class Command {
     name: string
