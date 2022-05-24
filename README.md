@@ -1,7 +1,7 @@
-<img ="right" src="https://github.com/MykelMatar/Dogbot/blob/main/pfp/Dogbot.png">
+<img align="right" src="https://github.com/MykelMatar/Dogbot/blob/main/pfp/Dogbot.png">
 
 # [Dogbot 2.0](https://discord.com/api/oauth2/authorize?client_id=848283770041532425&permissions=8&scope=bot%20applications.commands) 
-  ### Dogbot is your Discord gaming companion. Track your favorite minecraft servers, get stats from all your favorite games (not yet), enlist fellow gamers for your event, and more! View the [Commands](##All Commands:) section for a comprehensive list of features.
+  ### Dogbot is your Discord gaming companion. Track your favorite minecraft servers, get stats from all your favorite games (not yet), enlist fellow gamers for your event, and more! View the [Commands](##All-Commands:) section for a comprehensive list of features.
 #### All commands are /commands (currently not globally registered)
   
 ## List of Features:
