@@ -12,6 +12,7 @@ export const getStatsValorant = new Command(
         let tag = interaction.options._hoistedOptions[1].value
         let uriUser = encodeURIComponent(user.trim()) // encode string to have URI value for URL
         let uriTag = encodeURIComponent(tag.trim())
+        
         // GET web page for user
         try {
             const $: CheerioAPI = await fetchHTML(`https://tracker.gg/valorant/profile/riot/${uriUser}%23${uriTag}/overview`);

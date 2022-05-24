@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 
 export async function ready(client: Client) {
     await mongoose.connect(process.env.MONGO_URI, {keepAlive: true, dbName: 'Dogbot'})
-    client.user.setActivity('try /elp');
+    client.user.setActivity('/elp');
     console.log('Dogbot ready')
 
     // slash commands
@@ -60,6 +60,12 @@ export async function ready(client: Client) {
         ]
     });
 
+    //help
+    commands?.create({
+        name: 'elp',
+        description: 'lists all commands and relevant information'
+    });
+    
     // minecraft commands
     commands?.create({
         name: 'mc-add-server',
