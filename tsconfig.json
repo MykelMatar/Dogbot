@@ -3,6 +3,8 @@
     "watch": true,
     "target": "ESNext",
     "module": "CommonJS",
+    "outDir" : "./build",
+    "rootDir": "./src",
     "lib": ["DOM","ES6"],
     "skipLibCheck": true,
     "importHelpers": true,
