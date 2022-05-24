@@ -1,7 +1,7 @@
 <img align="right" src="https://github.com/MykelMatar/Dogbot/blob/main/pfp/Dogbot.png">
 
 # [Dogbot 2.0](https://discord.com/api/oauth2/authorize?client_id=848283770041532425&permissions=8&scope=bot%20applications.commands) 
-  ### Dogbot is your Discord gaming companion. Track your favorite minecraft servers, get stats from all your favorite games (not yet), enlist fellow gamers for your event, and more! View the [Commands](##All-Commands:) section for a comprehensive list of features.
+  ### Dogbot is your Discord gaming companion. Track your favorite minecraft servers, [get stats](#get-stats-commands) from all your favorite games (not yet), [enlist](#enlist-user-commands) fellow gamers for your event, and more! View the [Commands](#all-commands) section for a comprehensive list of features and the working status of the commands.
 #### All commands are /commands (currently not globally registered)
   
 ## List of Features:
@@ -11,22 +11,22 @@
   * enlist users for an event or gamer sesh 
   * play TicTacToe against other users
 
-## All Commands: 
+## All Commands
 #### Whether The command works or not can be determined by the Status symbol. More information about the state of the commands can be found below their respective tables
-### creation commands:
+### creation commands
 | command | description                    | Status |
 |:-------:|--------------------------------|:------:|
 |  /say   | send a message through Dogbot  |   ❌    |
 commands not implemented
 
-### help commands: 
+### help commands 
 |   command   | description                                   | Status |
 |:-----------:|-----------------------------------------------|:------:|
 |    /elp     | lists all commands and relevant information   |   ❌    |
 | /suggestion | allows users to make suggestions about Dogbot |   ❌    |
 commands not implemented
 
-### minecraft commands: 
+### minecraft commands 
 | command                | description                                              | Status |
 |:-----------------------|:---------------------------------------------------------|:------:|
 | /mc-server-status      | Gets status of selected minecraft server                 |   ✅    |
@@ -37,7 +37,7 @@ commands not implemented
 | /mc-change-server-name | Changes the name of an existing server                   |   ✅    |
 | /mc-delete-server      | Removes server from server list                          |   ✅    |
 
-### role selection commands:
+### role selection commands
 | command              | description                                                                                    | Status |
 |----------------------|------------------------------------------------------------------------------------------------|:------:|
 | /role-selection-menu | creates dropdown menu for users to select roles. Add up to 10 roles                            |   ❌    |
@@ -46,7 +46,7 @@ commands not implemented
 | /set-welcome-channel | sets the welcome channel of the server (for users to be granted the default role upon joining) |   ❌    |
 commands not implemented
 
-### enlist-user commands: 
+### enlist-user commands 
 | command               | description                                               | Status |
 |-----------------------|-----------------------------------------------------------|:------:|
 | /enlist-users         | Creates interaction to enlist other users for event/group |   ❌    |
@@ -54,13 +54,13 @@ commands not implemented
 | /clearrole-autoenlist | Clears role used to automate /enlist-users                |   ❌    |
 commands not implemented
 
-### get-stats commands: 
+### get-stats commands
 | command             | description                              | Status |
 |---------------------|------------------------------------------|:------:|
 | /get-stats-valorant | retrieves valorant stats from tracker.gg |   ❌    |
 issue with tracker.gg website, direct link requests not currently working (no ETA)
 
-### game commands:
+### game commands
 | command    | description                           | Status |
 |------------|---------------------------------------|:------:|
 | /tictactoe | Play tic tac toe against another user |   ❌    |
