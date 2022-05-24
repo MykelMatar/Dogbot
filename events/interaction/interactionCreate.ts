@@ -1,33 +1,29 @@
-import {Client} from "discord.js";
-import {Interaction} from "discord.js";
+import {CommandInteraction} from "discord.js";
 
-export async function interactionCreate (client: Client, interaction: Interaction) {
+export async function interactionCreate (client, interaction: CommandInteraction) {
     if (!interaction.isCommand()) return
     
-    // @ts-ignore
     let commands = client.commands
     let guildName = interaction.guild.name.replace(/\s+/g, "");
+    let ephemeralSetting
     const { commandName, options } = interaction
-    let ephemeralSetting;
-
-    // Slash Command List + execution instructions
-
-    // test commands
-    if (commandName === 'test2') {
-        await commands.get('test').execute(client,  interaction)
-    }
     
-    // minecraft commands
-    if (commandName === 'mc-add-server') {
-        await commands.get('mc-add-server').execute(client,  interaction)
+    /*
+    * Slash Command Event Listeners
+    * Promise.All is not used because deferReply must occur before the command gets executed
+     */
+    for (let command of commands) {
+        if (commandName == command[1].name){
+            // @ts-ignore
+            let hideOption = interaction.options._hoistedOptions.find(option => option.name === 'hide')
+            if (hideOption === undefined) ephemeralSetting = true
+            else ephemeralSetting = hideOption.value
+            
+            if (command[1].name.startsWith('mc') || command[1].name.startsWith('get-stats')){
+                await interaction.deferReply({ ephemeral: ephemeralSetting })
+            }
+            await commands.get(command[1].name).execute(client, interaction, guildName)
+            break
+        }
     }
-    
-    // test commands
-    if (commandName === 'simjoin') {
-        await commands.get('simjoin').execute(client,  interaction)
-    }
-    if (commandName === 'simleave') {
-        await commands.get('simleave').execute(client,  interaction)
-    }
-    
 }

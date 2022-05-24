@@ -1,7 +1,6 @@
 import {Dirent} from "fs";
 import * as fs from 'node:fs'
 
-
 const getFiles = (dir: string, suffix: string): string[] => {
     const files: Dirent[] = fs.readdirSync(dir, {
         withFileTypes: true,

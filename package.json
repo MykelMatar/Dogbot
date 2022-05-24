@@ -10,7 +10,6 @@
     "mongoose": "^6.3.3",
     "node": "^17.1.0",
     "node.js": "^0.0.1-security",
-    "nodemon": "^2.0.16",
     "require-dir": "^1.2.0"
   },
   "name": "dogbot",
@@ -30,5 +29,9 @@
     "url": "https://github.com/MykelMatar/Dogbot/issues"
   },
   "homepage": "https://github.com/MykelMatar/Dogbot#readme",
-  "keywords": []
+  "keywords": [],
+  "devDependencies": {
+    "nodemon": "^2.0.16",
+    "ts-node": "^10.8.0"
+  }
 }
