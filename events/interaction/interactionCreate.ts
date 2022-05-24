@@ -9,7 +9,7 @@ export async function interactionCreate (client, interaction: CommandInteraction
     const { commandName, options } = interaction
     
     /*
-    * Slash Command Event Listeners
+    * Slash Command Event Listener
     * Promise.All is not used because deferReply must occur before the command gets executed
      */
     for (let command of commands) {
