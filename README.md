@@ -16,7 +16,7 @@
 ### creation commands:
 | command           | description                   |
 |-------------------|-------------------------------|
-| ```diff - /say``` | send a message through Dogbot |
+| /say | send a message through Dogbot |
 
 ### help commands: 
 | command      | description                                   |
