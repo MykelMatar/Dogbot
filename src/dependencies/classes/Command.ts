@@ -23,7 +23,7 @@ export class Command {
         this.executeCallback(client, interaction, guildName)
     }
 
-    constructor(name: string, description: string, callback: (client, interaction) => Promise<void>) {
+    constructor(name: string, description: string, callback: (client , interaction: CommandInteraction, guildName?: string) => void) {
         this.name = name
         this.description = description
         this.executeCallback = callback

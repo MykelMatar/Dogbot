@@ -1,16 +1,18 @@
-import {MessageEmbed} from "discord.js";
+import {Client, CommandInteraction, MessageEmbed} from "discord.js";
 import {fetchHTML} from "../../dependencies/helpers/fetchHTML";
-import {Category, Command} from "../../dependencies/classes/Command";
-import {Cheerio, CheerioAPI} from "cheerio";
+import {Command} from "../../dependencies/classes/Command";
+import {CheerioAPI} from "cheerio";
 
 export const getStatsValorant = new Command(
     'get-stats-valorant',
     'retrieves valorant stats from tracker.gg',
-    async (client, interaction) => {
+    async (client: Client, interaction: CommandInteraction) => {
         // retrieve username and tag
-        let user = interaction.options._hoistedOptions[0].value
-        let tag = interaction.options._hoistedOptions[1].value
+        let user = interaction.options.data[0].value
+        let tag = interaction.options.data[1].value
+        // @ts-ignore
         let uriUser = encodeURIComponent(user.trim()) // encode string to have URI value for URL
+        // @ts-ignore
         let uriTag = encodeURIComponent(tag.trim())
         
         // GET web page for user

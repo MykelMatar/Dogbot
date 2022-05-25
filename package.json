@@ -18,9 +18,9 @@
   "description": "Discord MC server bot that detects server status",
   "main": "src/index.ts",
   "scripts": {
-    "bot": "ts-node /src/index.ts",
     "start": "NODE_PATH=./build node build/index.js",
-    "build": "tsc -p ."
+    "build": "tsc -p .",
+    "bot": "nodemon ./src/index.ts"
   },
   "repository": {
     "type": "git",

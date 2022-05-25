@@ -1,4 +1,4 @@
-import {Category, Command} from "../../dependencies/classes/Command";
+import {Command} from "../../dependencies/classes/Command";
 import {MessageActionRow, MessageButton, MessageEmbed} from "discord.js";
 import {status} from "minecraft-server-util";
 import {runMCButtonCollector} from "../../dependencies/helpers/runMCButtonCollector";
@@ -51,7 +51,7 @@ export const mcServerStatus = new Command(
                     .setFooter('Server Online')
 
                 // searched Player embed field 
-                let searchedPlayer = interaction.options._hoistedOptions.find(option => option.name === 'username')
+                let searchedPlayer = interaction.options.data.find(option => option.name === 'username')
                 let onlinePlayers = response.players.sample
                 let foundPlayer = false;
                 console.log(onlinePlayers)
@@ -66,7 +66,7 @@ export const mcServerStatus = new Command(
                             foundPlayer = true;
                         }
                     })
-                    if(foundPlayer === false) {
+                    if (foundPlayer === false) {
                         embed.addField('Searched User', `>  ${searchedPlayer.value} is offline`)
                     }
                 }
@@ -79,13 +79,12 @@ export const mcServerStatus = new Command(
 
                 // create embed to display server offline (its an embed to allow for editing during server info refresh)
                 const embed = new MessageEmbed()
-                    .setTitle(title)
+                    .setTitle(title.replace(/["]+/g, ''))
                     .addField("Server Offline", "all good")   // ? add cmd to change server offline interaction ?
                     .setColor("#8570C1")
 
                 // send embed and collect response
-                await interaction.editReply({ephemeral: true, embeds: [embed], components: [row]})
+                await interaction.editReply({embeds: [embed], components: [row]})
                 await runMCButtonCollector(client, interaction, guildName)
             });
-    }
-)
+    })

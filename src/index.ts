@@ -11,7 +11,8 @@ client.commands = new Collection(); // create commands property for Client so co
 
 client.login(process.env.BOT_TOKEN)
 
+// express server on port 8080 for docker
 const app = express();
-app.listen(4000, () => {
-    console.log(`server running on port 4000`);
+app.listen(8080, () => {
+    console.log(`server running on port 8080`);
 });

@@ -1,4 +1,4 @@
-import {Category, Command} from "../../dependencies/classes/Command";
+import {Command} from "../../dependencies/classes/Command";
 import {generateMCMenuOptions} from "../../dependencies/helpers/generateMCMenuOptions";
 import {MessageActionRow, MessageSelectMenu} from "discord.js";
 
@@ -6,7 +6,7 @@ export const mcDeleteServer = new Command(
     'mc-delete-server',
     'deletes registered server',
     async (client, interaction, guildName?) => {
-        
+
         const MCServerData = mcDeleteServer.guildData.MCServerData
         let serverListSize = MCServerData.serverList.length
 
@@ -19,11 +19,10 @@ export const mcDeleteServer = new Command(
             await interaction.editReply(
                 `Cannot remove the only existing server, use /mc-add-server or /mc-list-servers to add servers, or change server information with /mc-change-server-name and /mc-change-server-ip.`
             )
-            return 
+            return
         }
-
-        let options = [];
-        options = await generateMCMenuOptions(interaction, guildName, serverListSize);
+        
+        let options = await generateMCMenuOptions(interaction, guildName, serverListSize);
         let option = options[0];
 
         // generate select menu
@@ -71,31 +70,16 @@ export const mcDeleteServer = new Command(
 
         collector.on('end', async collected => {
             if (collected.size === 0) {
-                await interaction.editReply({
-                    ephemeral: true,
-                    content: 'Request Timeout',
-                    components: []
-                });
+                await interaction.editReply({content: 'Request Timeout', components: []});
                 console.log('Request Timeout')
-            }
-            else if (collected.first().customId !== 'delete-menu') {
-                await interaction.editReply({
-                    ephemeral: true,
-                    content: 'Avoid using multiple commands at once',
-                    components: []
-                });
+            } else if (collected.first().customId !== 'delete-menu') {
+                await interaction.editReply({content: 'Avoid using multiple commands at once', components: []});
                 console.log('Command Collision Detected')
-            }
-            else if (collected.first().customId === 'delete-menu') {
-                await interaction.editReply({
-                    ephemeral: true,
-                    content: serverName + ' Deleted',
-                    components: []
-                });
+            } else if (collected.first().customId === 'delete-menu') {
+                await interaction.editReply({content: serverName + ' Deleted', components: []});
                 console.log('Server Deleted Successfully')
             }
         });
-    }
-)
+    })
 
 mcDeleteServer.requiresAdmin = true;

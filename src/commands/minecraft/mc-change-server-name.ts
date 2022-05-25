@@ -1,5 +1,5 @@
 import {MessageActionRow, MessageSelectMenu} from "discord.js";
-import {Category, Command} from "../../dependencies/classes/Command";
+import {Command} from "../../dependencies/classes/Command";
 import {generateMCMenuOptions} from "../../dependencies/helpers/generateMCMenuOptions";
 
 export const mcChangeServerName = new Command(
@@ -13,14 +13,14 @@ export const mcChangeServerName = new Command(
         // make sure there is at least 1 server
         if (serverListSize === 0) {
             await interaction.editReply('No Registered Servers, use /mc-add-server or /mc-list-servers to add servers.')
-            return 
+            return
         }
 
         // retrieve new name from user input
-        let newName = interaction.options._hoistedOptions[0].value
-        if (newName.length > 30)  { 
+        let newName = interaction.options.data[0].value
+        if (newName.toString().length > 30) {
             await interaction.editReply('Please keep server name below 30 characters')
-            return 
+            return
         }
 
         // verify that name is not already registered under a different IP
@@ -47,11 +47,7 @@ export const mcChangeServerName = new Command(
             );
 
         // send embed
-        await interaction.editReply({
-            ephemeral: true,
-            content: 'Select the server you want to rename',
-            components: [row]
-        });
+        await interaction.editReply({content: 'Select the server you want to rename', components: [row]});
 
         // Response collection and handling
         let filter = i => i.user.id === interaction.member.user.id;
@@ -80,30 +76,17 @@ export const mcChangeServerName = new Command(
 
         collector.on('end', async collected => {
             if (collected.size === 0) {
-                await interaction.editReply({
-                    ephemeral: true,
-                    content: 'Request Timeout',
-                    components: []
-                });
+                await interaction.editReply({content: 'Request Timeout', components: []});
                 console.log('Request Timeout')
-            }
-            else if (collected.first().customId !== 'change-server-menu') {
-                await interaction.editReply({
-                    ephemeral: true,
-                    content: 'Avoid using multiple commands at once',
-                    components: []
-                });
+            } else if (collected.first().customId !== 'change-server-menu') {
+                await interaction.editReply({content: 'Avoid using multiple commands at once', components: []});
                 console.log('Command Collision Detected')
-            }
-            else if (collected.first().customId === 'change-server-menu') {
+            } else if (collected.first().customId === 'change-server-menu') {
                 await interaction.editReply({
-                    content: ` ${serverName} renamed successfully to ${newName}`,
-                    ephemeral: true,
-                    components: []
+                    content: ` ${serverName} renamed successfully to ${newName}`, components: []
                 });
                 console.log('Server Renamed Successfully')
             }
         });
-    }
-)
+    })
 mcChangeServerName.requiresAdmin = true

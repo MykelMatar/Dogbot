@@ -1,4 +1,4 @@
-import {Category, Command} from "../../dependencies/classes/Command";
+import {Command} from "../../dependencies/classes/Command";
 import {generateMCMenuOptions} from "../../dependencies/helpers/generateMCMenuOptions";
 import {MessageActionRow, MessageSelectMenu} from "discord.js";
 
@@ -6,7 +6,7 @@ export const mcChangeServer = new Command(
     'mc-change-server',
     'changes server being tracked by mc-server-status',
     async (client, interaction, guildName?) => {
-        
+
         const MCServerData = mcChangeServer.guildData.MCServerData
         let serverListSize = MCServerData.serverList.length
 
@@ -61,25 +61,15 @@ export const mcChangeServer = new Command(
         // check whether a user responded or not, and edit embed accordingly
         collector.on('end', async collected => {
             if (collected.size === 0)
-                await interaction.editReply({
-                    ephemeral: true,
-                    content: 'Request Timeout',
-                    components: []
-                })
+                await interaction.editReply({content: 'Request Timeout', components: []})
             else if (collected.first().customId !== 'change-menu')
-                await interaction.editReply({
-                    ephemeral: true,
-                    content: 'Avoid using multiple commands at once',
-                    components: []
-                })
+                await interaction.editReply({content: 'Avoid using multiple commands at once', components: []})
             else if (collected.first().customId === 'change-menu') {
                 await interaction.editReply({
-                    ephemeral: true,
                     content: `Server Updated, now Tracking ${MCServerData.selectedServer.name}. Retrieving server status...`,
                     components: []
                 })
                 await client.commands.get('mc-server-status').execute(client, interaction, guildName);
             }
         });
-    }
-)
+    })

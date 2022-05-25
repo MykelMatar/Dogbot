@@ -5,5 +5,4 @@ export const simjoin = new Command(
     'simulates user joining',
     async (client, message) => {
         client.emit('guildMemberAdd', message.member)
-    }
-)
+    })
