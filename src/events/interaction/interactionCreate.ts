@@ -6,7 +6,7 @@ export async function interactionCreate (client, interaction: CommandInteraction
     let commands = client.commands
     let guildName = interaction.guild.name.replace(/\s+/g, "");
     let ephemeralSetting
-    const { commandName, options } = interaction
+    const {commandName} = interaction
     
     /*
     * Slash Command Event Listener
@@ -15,7 +15,7 @@ export async function interactionCreate (client, interaction: CommandInteraction
     for (let command of commands) {
         if (commandName == command[1].name){
             // @ts-ignore
-            let hideOption = interaction.options._hoistedOptions.find(option => option.name === 'hide')
+            let hideOption = interaction.options.data.find(option => option.name === 'hide')
             if (hideOption === undefined) ephemeralSetting = true
             else ephemeralSetting = hideOption.value
             

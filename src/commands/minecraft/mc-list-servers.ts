@@ -1,4 +1,4 @@
-import {Category, Command} from "../../dependencies/classes/Command";
+import {Command} from "../../dependencies/classes/Command";
 import {MessageActionRow, MessageButton, MessageEmbed} from "discord.js";
 
 export const mcListServers = new Command(
@@ -7,10 +7,9 @@ export const mcListServers = new Command(
     async (client, interaction, guildName?) => {
 
         const MCServerData = mcListServers.guildData.MCServerData
-        let serverListSize = MCServerData.serverList.length
 
         // retrieve server names and IPs
-        let serverNameList:string[] = [], serverIPList:string[] = []
+        let serverNameList: string[] = [], serverIPList: string[] = []
         for (let i = 0; i < MCServerData.serverList.length; i++) {
             serverNameList.push(MCServerData.serverList[i].name)
             serverIPList.push(MCServerData.serverList[i].ip)
@@ -50,7 +49,7 @@ export const mcListServers = new Command(
             .setColor("#8570C1")
             .setFooter(MCServerData.serverList.length + ' / 10 Servers Registered')
 
-        await interaction.editReply({ephemeral: true, embeds: [embed], components: [row]})
+        await interaction.editReply({embeds: [embed], components: [row]})
 
         // create collector
         const filter = i => i.user.id === interaction.member.user.id;
@@ -70,20 +69,15 @@ export const mcListServers = new Command(
             let update, execute;
             // interaction handling
             if (i.customId === 'ListAdd') {
-                update = i.update({
-                    ephemeral: true,
-                    embeds: [],
-                    content: 'Adding Server (if possible)',
-                    components: []
-                });
+                update = i.update({embeds: [], content: 'Adding Server (if possible)', components: []});
                 execute = command1.execute(client, interaction, guildName);
                 collector.stop()
             } else if (i.customId === 'ListRemove') {
-                update = i.update({ephemeral: true, embeds: [], content: 'Removing Server', components: []});
+                update = i.update({embeds: [], content: 'Removing Server', components: []});
                 execute = command2.execute(client, interaction, guildName);
                 collector.stop()
             } else if (i.customId === 'ListChange') {
-                update = i.update({ephemeral: true, content: 'Changing Server', components: []});
+                update = i.update({content: 'Changing Server', components: []});
                 execute = command3.execute(client, interaction, guildName);
                 collector.stop()
             }
@@ -92,10 +86,9 @@ export const mcListServers = new Command(
 
         collector.on('end', async collected => {
             if (collected.size === 0)
-                await interaction.editReply({ephemeral: true, embeds: [embed], components: []}) // remove buttons & embed
+                await interaction.editReply({embeds: [embed], components: []}) // remove buttons & embed
             else if (collected.first().customId === 'ListAdd' || collected.first().customId === 'ListRemove' || collected.first().customId === 'ListChange')
-                await interaction.editReply({ephemeral: true, content: 'Button Pressed', embeds: [], components: []})   // remove buttons & embed
+                await interaction.editReply({content: 'Button Pressed', embeds: [], components: []})   // remove buttons & embed
         });
 
-    }
-)
+    })

@@ -34,6 +34,48 @@ export async function ready(client: Client) {
         description: 'simulates user joining'
     });
 
+    // enlist-users commands
+    commands?.create({
+        name: 'clearrole-autoenlist',
+        description: 'Clears role used to automate /enlist-users'
+    });
+
+    commands?.create({
+        name: 'enlist-users',
+        description: 'creates interaction to enlist other users for event/group'
+    });
+    commands?.create({
+        name: 'enlist-stats',
+        description: 'shows how many times a user enlisted and rejected the Enlist prompt',
+        options: [
+            {
+                name: 'user',
+                description: 'user whose stats you want to show. leave blank to display your own',
+                required: false,
+                type: DiscordJS.Constants.ApplicationCommandOptionTypes.USER
+            },
+            {
+                name: 'hide',
+                description: 'whether to hide the message from everyone else. True by default',
+                required: false,
+                type: DiscordJS.Constants.ApplicationCommandOptionTypes.BOOLEAN
+            }
+        ]
+    });
+
+    commands?.create({
+        name: 'setrole-autoenlist',
+        description: 'changes the role used to enlist (for automated enlisting)',
+        options: [
+            {
+                name: 'role',
+                description: 'role to be auto-detected',
+                required: true,
+                type: DiscordJS.Constants.ApplicationCommandOptionTypes.ROLE
+            },
+        ]
+    });
+    
     // get-stats commands
     commands?.create({
         name: 'get-stats-valorant',
@@ -53,7 +95,7 @@ export async function ready(client: Client) {
             },
             {
                 name: 'hide',
-                description: 'optional setting: stats are only displayed for you. Leave blank to make it public',
+                description: 'whether to hide the message from everyone else. True by default',
                 required: false,
                 type: DiscordJS.Constants.ApplicationCommandOptionTypes.BOOLEAN
             }
@@ -139,7 +181,7 @@ export async function ready(client: Client) {
             },
             {
                 name: 'hide',
-                description: 'whether to hide message or not (true by default).',
+                description: 'Whether to hide the message from everyone else. True by default.',
                 required: false,
                 type: DiscordJS.Constants.ApplicationCommandOptionTypes.BOOLEAN
             }

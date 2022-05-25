@@ -1,6 +1,6 @@
-FROM node:16 as base
+FROM node:16.13 as base
 
-WORKDIR /home/michael/node/dogbot
+WORKDIR /home/michael/node/Dogbot
 
 COPY package*.json ./
 COPY tsconfig.json ./

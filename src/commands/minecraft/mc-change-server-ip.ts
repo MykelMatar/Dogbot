@@ -1,6 +1,6 @@
 import {MessageActionRow, MessageSelectMenu} from "discord.js";
 import {status} from "minecraft-server-util";
-import {Category, Command} from "../../dependencies/classes/Command";
+import {Command} from "../../dependencies/classes/Command";
 import {generateMCMenuOptions} from "../../dependencies/helpers/generateMCMenuOptions";
 
 
@@ -15,11 +15,11 @@ export const mcChangeServerIP = new Command(
         // make sure there is at least 1 server
         if (serverListSize === 0) {
             await interaction.editReply('No Registered Servers, use /mc-add-server or /mc-list-servers to add servers.')
-            return ;
+            return;
         }
 
         // retrieve server IP from user input
-        let ip = interaction.options._hoistedOptions[0].value
+        let ip = interaction.options.data[0].value
 
         // verify that IP is not already registered
         if (MCServerData.serverList.some(function (o) {
@@ -33,6 +33,7 @@ export const mcChangeServerIP = new Command(
 
         // make sure IP is a valid server IP by checking its status (server must be online for this to work)
         try {
+            // @ts-ignore
             await status(ip)
         } catch (error) {
             await interaction.editReply('Could not retrieve server status. Double check IP and make sure server is online.')
@@ -53,11 +54,7 @@ export const mcChangeServerIP = new Command(
             );
 
         // send embed
-        await interaction.editReply({
-            ephemeral: true,
-            content: 'Select the server you want to change the IP of',
-            components: [row]
-        });
+        await interaction.editReply({content: 'Select the server you want to change the IP of', components: [row]});
 
         // Response collection and handling
         let filter = i => i.user.id === interaction.member.user.id;
@@ -84,32 +81,17 @@ export const mcChangeServerIP = new Command(
 
         collector.on('end', async collected => {
             if (collected.size === 0) {
-                await interaction.editReply({
-                    ephemeral: true,
-                    content: 'Request Timeout',
-                    components: []
-                });
+                await interaction.editReply({content: 'Request Timeout', components: []});
                 console.log('Request Timeout')
-            }
-            else if (collected.first().customId !== 'change-ip-menu') {
-                await interaction.editReply({
-                    ephemeral: true,
-                    content: 'Avoid using multiple commands at once',
-                    components: []
-                });
+            } else if (collected.first().customId !== 'change-ip-menu') {
+                await interaction.editReply({content: 'Avoid using multiple commands at once', components: []});
                 console.log('Command Collision Detected')
-            }
-            else if (collected.first().customId === 'change-ip-menu') {
-                await interaction.editReply({
-                    content: serverName + ' IP changed successfully',
-                    ephemeral: true,
-                    components: []
-                });
+            } else if (collected.first().customId === 'change-ip-menu') {
+                await interaction.editReply({content: serverName + ' IP changed successfully', components: []});
                 console.log('Server IP changed Successfully')
             }
         });
 
-    }
-)
+    })
 
 mcChangeServerIP.requiresAdmin = true;

@@ -1,4 +1,4 @@
-import {Category, Command} from "../../dependencies/classes/Command";
+import {Command} from "../../dependencies/classes/Command";
 import {promptResponse} from "../../dependencies/helpers/promptResponse"
 import {status} from 'minecraft-server-util'
 
@@ -10,22 +10,22 @@ export const mcAddServer = new Command(
         const serverList = mcAddServer.guildData.MCServerData.serverList
         if (serverList.length === 10) {
             await interaction.editReply("Max number of servers reached (Limit of 10).");
-            return 
+            return
         }
 
         // retrieve server IP and name
         let ip, name;
         try {
             // if slash command is used
-            ip = interaction.options._hoistedOptions[0].value;
-            name = interaction.options._hoistedOptions[1].value;
+            ip = interaction.options.data[0].value;
+            name = interaction.options.data[1].value;
         } catch {
             // if button on /mc-list-servers is used
             ip = await promptResponse(interaction, "Input server IP (server must be online)", "Request Timeout");
             name = await promptResponse(interaction, "Input Name", "Request Timeout");
-            if (name.length > 30){
+            if (name.toString().length > 30) {
                 await interaction.editReply('Please keep server name below 30 characters')
-                return 
+                return
             }
             // not using Promise.all bc 1 response must be collected before the other / not simultaneous
         }
@@ -63,7 +63,6 @@ export const mcAddServer = new Command(
             );
             console.log("Invalid Server IP / Server Offline");
         }
-    }
-)
+    })
 
 mcAddServer.requiresAdmin = true;

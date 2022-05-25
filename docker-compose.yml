@@ -7,11 +7,9 @@ services:
       dockerfile: Dockerfile
       target: base
     volumes:
-      - ./src:/home/michael/node/dogbot/src
-      - ./nodemon.json:/home/michael/node/dogbot/nodemon.json
+      - ./src:/home/michael/node/Dogbot/src
+      - ./nodemon.json:/home/michael/node/Dogbot/nodemon.json
     container_name: ts-node-docker
     expose:
-      - '4000'
-    ports:
-      - '4000:4000'
+      - '8080'
     command: npm run bot

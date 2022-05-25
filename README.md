@@ -13,21 +13,6 @@
 
 ## All Commands
 #### Whether The command works or not can be determined by the Status symbol. More information about the state of the commands can be found below their respective tables
-### creation commands
-| command | description                    | Status |
-|:-------:|--------------------------------|:------:|
-|  /say   | send a message through Dogbot  |   ❌    |
-
-    commands not implemented
-
-### help commands 
-|   command   | description                                   | Status |
-|:-----------|-----------------------------------------------|:------:|
-| /elp       | lists all commands and relevant information   |   ❌    |
-| /suggestion | allows users to make suggestions about Dogbot |   ❌    |
-
-    commands not implemented
-
 ### minecraft commands 
 | command                | description                                              | Status |
 |:-----------------------|:---------------------------------------------------------|:------:|
@@ -39,6 +24,15 @@
 | /mc-change-server-name | Changes the name of an existing server                   |   ✅    |
 | /mc-delete-server      | Removes server from server list                          |   ✅    |
 
+
+### enlist-user commands
+| command               | description                                                         | Status |
+|-----------------------|---------------------------------------------------------------------|:------:|
+| /enlist-users         | Creates interaction to enlist other users for event/group           |   ✅    |
+| /enlist-stats         | shows how many times a user enlisted and rejected the Enlist prompt |   ✅    |
+| /setrole-autoenlist   | changes the role used to enlist (for automated enlisting)           |   ✅    |
+| /clearrole-autoenlist | Clears role used to automate /enlist-users                          |   ✅    |
+
 ### role selection commands
 | command              | description                                                                                    | Status |
 |----------------------|------------------------------------------------------------------------------------------------|:------:|
@@ -46,15 +40,6 @@
 | /setrole-default     | changes the role given to new users                                                            |   ❌    |
 | /clearrole-default   | removes default role given to new users                                                        |   ❌    |
 | /set-welcome-channel | sets the welcome channel of the server (for users to be granted the default role upon joining) |   ❌    |
-
-    commands not implemented
-
-### enlist-user commands 
-| command               | description                                               | Status |
-|-----------------------|-----------------------------------------------------------|:------:|
-| /enlist-users         | Creates interaction to enlist other users for event/group |   ❌    |
-| /setrole-autoenlist   | changes the role used to enlist (for automated enlisting) |   ❌    |
-| /clearrole-autoenlist | Clears role used to automate /enlist-users                |   ❌    |
 
     commands not implemented
 
@@ -71,6 +56,21 @@
 | /tictactoe | Play tic tac toe against another user |   ❌    |
 
     command not implemented
+
+### creation commands
+| command | description                    | Status |
+|:-------:|--------------------------------|:------:|
+|  /say   | send a message through Dogbot  |   ❌    |
+
+    commands not implemented
+
+### help commands
+| command     | description                                   | Status |
+|:------------|-----------------------------------------------|:------:|
+| /elp        | lists all commands and relevant information   |   ✅    |
+| /suggestion | allows users to make suggestions about Dogbot |   ❌    |
+
+    commands not implemented
 
 ## TODO: 
   - [ ] add 'hide' option to all commands
