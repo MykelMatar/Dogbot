@@ -48,6 +48,7 @@ export const enlistStats = new Command(
                 {name: 'Ratio', value: enlistRatio.toString(), inline: true},
                 {name: 'Cool or Cringe', value: socialStatus, inline: false},
             ])
+            .setColor("#8570C1")
 
         let ephemeralSetting
         let hideOption = interaction.options.data.find(option => option.name === 'hide')

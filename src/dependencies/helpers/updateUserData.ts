@@ -24,41 +24,70 @@ export async function updateUserData(message, userIdArray: number[], statName: S
     }
 
     console.log('checking for user data...')
-    for (const userId of userIdArray) { // for of instead of for each so await can be used inside
+    for (const userId of userIdArray) { // for of instead of for each so await can be used
         const index = userIdArray.indexOf(userId);
 
         let guildMember = await message.guild.members.fetch(userId)
         if (!(UserData.some(user => user.id === userIdArray[index]))) { // if user data doesnt exist, create data
             console.log(`creating user data for ${guildMember.user.username}...`)
             let username = message.guild.members.cache.get(`${userIdArray[index]}`).user.username
-            UserData.push({
-                username: username,
-                id: userIdArray[index],
-                tttStats: {
-                    wins: statsArray[0],
-                    losses: statsArray[1]
-                },
-                enlistStats: {
-                    enlists: statsArray[2],
-                    rejects: statsArray[3]
-                }
-            })
+
+            // check which stat needs to be added
+            switch (statName) {
+                case 'tttWins' || 'tttLosses':
+                    if (UserData.tttWins == null) {
+                        UserData.push({
+                            username: username,
+                            id: userIdArray[index],
+                            tttStats: {
+                                wins: statsArray[0],
+                                losses: statsArray[1]
+                            }
+                        })
+                    }
+                    break;
+                case 'enlist' || 'reject':
+                    if (UserData.enlistStats == null) {
+                        UserData.push({
+                            username: username,
+                            id: userIdArray[index],
+                            enlistStats: {
+                                enlists: statsArray[2],
+                                rejects: statsArray[3]
+                            }
+                        })
+                    }
+                    break;
+            }
             console.log('Done!')
         } else { // if it does exist, update it
             console.log(`updating user data for ${guildMember.user.username}...`)
-            let user = UserData.findIndex(user => user.id === userId)
-            switch (statName) { // update values for selected stat
+            let user = UserData.find(user => user.id === userId)
+            // check if the correct stats exist within the user data
+            switch (statName) {
                 case 'tttWins':
-                    UserData[user].tttStats.wins++;
+                    if (user.tttStats == '{}') {
+                        user.tttStats.wins = 1
+                        user.tttStats.losses = 0
+                    } else user.tttStats.wins++;
                     break;
                 case 'tttLosses':
-                    UserData[user].tttStats.losses++;
+                    if (user.tttStats == '{}') {
+                        user.tttStats.wins = 0
+                        user.tttStats.losses = 1
+                    } else user.tttStats.losses++;
                     break;
                 case 'enlist':
-                    UserData[user].enlistStats.enlists++;
+                    if (user.enlistStats == '{}') {
+                        user.enlistStats.enlists = 1
+                        user.enlistStats.rejects = 0
+                    } else user.enlistStats.enlists++;
                     break;
                 case 'reject':
-                    UserData[user].enlistStats.rejects++;
+                    if (user.enlistStats == '{}') {
+                        user.enlistStats.enlists = 0
+                        user.enlistStats.rejects = 1
+                    } else user.enlistStats.rejects++
                     break;
             }
             console.log('Done!')
