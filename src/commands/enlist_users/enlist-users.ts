@@ -3,6 +3,7 @@ import {MessageActionRow, MessageButton, MessageEmbed} from "discord.js";
 import {updateEnlistUserArrays} from "../../dependencies/helpers/updateEnlistUserArrays";
 import {StatName, updateUserData} from "../../dependencies/helpers/updateUserData";
 
+//TODO: add time option (use date-fns)
 export const enlistUsers = new Command(
     'enlist-users',
     'creates message embed with buttons to enlist other users for event/group', 
@@ -32,7 +33,7 @@ export const enlistUsers = new Command(
     let sent = await message.channel.send({embeds: [embed], components: [row]})
 
     // create collector
-    const collector = message.channel.createMessageComponentCollector({componentType: 'BUTTON', time: 5000}); // only message author can interact, 1 response, 2 hour timer
+    const collector = message.channel.createMessageComponentCollector({componentType: 'BUTTON', time: 5000}); // only message author can interact, 1 response, 2 hour (7.2e+6) timer
 
     // collect response
     let enlistedUsers = ['-'];

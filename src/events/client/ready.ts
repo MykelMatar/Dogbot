@@ -76,6 +76,20 @@ export async function ready(client: Client) {
         ]
     });
     
+    // game commands
+    commands?.create({
+        name: 'tictactoe',
+        description: 'starts a tic tac toe game against another member',
+        options: [
+            {
+                name: 'opponent',
+                description: 'member to play against',
+                required: true,
+                type: DiscordJS.Constants.ApplicationCommandOptionTypes.USER
+            },
+        ]
+    });
+    
     // get-stats commands
     commands?.create({
         name: 'get-stats-valorant',

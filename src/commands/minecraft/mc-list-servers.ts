@@ -47,7 +47,7 @@ export const mcListServers = new Command(
                 {name: 'IP', value: serverIPList.join(' \n '), inline: true},
             )
             .setColor("#8570C1")
-            .setFooter(MCServerData.serverList.length + ' / 10 Servers Registered')
+            .setFooter({text: MCServerData.serverList.length + ' / 10 Servers Registered'})
 
         await interaction.editReply({embeds: [embed], components: [row]})
 

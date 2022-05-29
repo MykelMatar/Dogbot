@@ -50,7 +50,8 @@ export const elp = new Command(
                 inline: true
             },
         )
-        .setColor("#F5F5F5")
+        //.setColor("#F5F5F5")
+        .setColor("#8570C1")
         .setFooter({text: 'Page 1'})
 
     // embed for role commands
@@ -79,7 +80,7 @@ export const elp = new Command(
                 inline: true
             },
         )
-        .setColor("#F5F5F5")
+        .setColor("#8570C1")
         .setFooter({text: 'Page 2'})
 
     // embed for enlist commands
@@ -106,7 +107,7 @@ export const elp = new Command(
                 inline: true
             },
         )
-        .setColor("#F5F5F5")
+        .setColor("#8570C1")
         .setFooter({text: 'Page 3'})
 
     // embed for get_stats commands
@@ -129,7 +130,7 @@ export const elp = new Command(
                 inline: true
             },
         )
-        .setColor("#F5F5F5")
+        .setColor("#8570C1")
         .setFooter({text: 'Page 4'})
 
     // embed for get_stats commands
@@ -152,7 +153,7 @@ export const elp = new Command(
                 inline: true
             },
         )
-        .setColor("#F5F5F5")
+        .setColor("#8570C1")
         .setFooter({text: 'Page 5'})
 
     const embeds = [mcEmbed, roleEmbed, enlistEmbed, statsEmbed, gamesEmbed] // array for indexing pages
