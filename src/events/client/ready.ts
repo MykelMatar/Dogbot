@@ -89,6 +89,10 @@ export async function ready(client: Client) {
             },
         ]
     });
+    commands?.create({
+        name: 'typing-race',
+        description: 'creates typing race for members to participate in',
+    });
     
     // get-stats commands
     commands?.create({

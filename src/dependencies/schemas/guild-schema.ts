@@ -14,14 +14,20 @@ const guildSchema = new mongoose.Schema({
         {
             username: String,
             id: String,
-            tttStats: {
-                wins: Number,
-                losses: Number,
-            },
             enlistStats: {
                 enlists: Number,
                 rejects: Number,
             },
+            tttStats: {
+                wins: Number,
+                losses: Number,
+            },
+            typingRaceStats: {
+                AverageWPM: Number,
+                AverageRawWPM: Number,
+                AverageAccuracy: Number,
+                FirstPlaceWins: Number,
+            }
         },
     ],
     MCServerData: {

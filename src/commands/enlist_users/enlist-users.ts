@@ -33,13 +33,13 @@ export const enlistUsers = new Command(
     let sent = await message.channel.send({embeds: [embed], components: [row]})
 
     // create collector
-    const collector = message.channel.createMessageComponentCollector({componentType: 'BUTTON', time: 5000}); // only message author can interact, 1 response, 2 hour (7.2e+6) timer
+    const collector = message.channel.createMessageComponentCollector({componentType: 'BUTTON', time: 7.2e+6}); // only message author can interact, 1 response, 2 hour (7.2e+6) timer
 
     // collect response
-    let enlistedUsers = ['-'];
-    let enlistedUserIds = []; // for pushing user data to mongoDB
-    let rejectedUsers = ['-'];
-    let rejectedUserIds = [];
+    let enlistedUsers: string[] = ['-'];
+    let enlistedUserIds: string[] = []; // for pushing user data to mongoDB
+    let rejectedUsers: string[] = ['-'];
+    let rejectedUserIds: string[] = [];
 
     collector.on('collect', async i => {
         await i.deferUpdate(); // prevents "this message failed" message from appearing

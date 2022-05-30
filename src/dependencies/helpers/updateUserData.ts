@@ -1,13 +1,13 @@
 import guilds from "../schemas/guild-schema";
 
-export async function updateUserData(message, userIdArray: number[], statName: StatName) {
+export async function updateUserData(message, userIdArray: string[], statName: StatName, trStats?: (number | boolean)[]) {
     if (userIdArray.length === 0) return console.log(`User Id Array is empty, skipping user data check`)
     console.log('Valid User Id Array')
 
     const currentGuild = await guilds.findOne({guildId: message.guildId})
     const UserData = currentGuild.UserData
 
-    let statsArray = []; // statsArray Format: [tttwins, tttlosses, enlists, rejects] type: integers
+    let statsArray: number[] = []; // statsArray Format: [tttwins, tttlosses, enlists, rejects] 
     switch (statName) { // default values for creating user data
         case 'tttWins':
             statsArray = [1, 0, 0, 0];
@@ -58,12 +58,26 @@ export async function updateUserData(message, userIdArray: number[], statName: S
                         })
                     }
                     break;
+                case 'trWins' || 'trLosses':
+                    if (UserData.enlistStats == null) {
+                        UserData.push({
+                            username: username,
+                            id: userIdArray[index],
+                            typingRaceStats: {
+                                AverageWPM: trStats[0],
+                                AverageRawWPM: trStats[1],
+                                AverageAccuracy: trStats[2],
+                                FirstPlaceWins: trStats[3] ? 1 : 0,
+                            }
+                        })
+                    }
+                    break;
             }
             console.log('Done!')
-        } else { // if it does exist, update it
+        } else { 
             console.log(`updating user data for ${guildMember.user.username}...`)
             let user = UserData.find(user => user.id === userId)
-            // check if the correct stats exist within the user data
+            // check if the corresponding stat exists within the user data: if it doesn't exist, make it, if it exists, update it
             switch (statName) {
                 case 'tttWins':
                     if (user.tttStats == '{}') {
@@ -89,6 +103,20 @@ export async function updateUserData(message, userIdArray: number[], statName: S
                         user.enlistStats.rejects = 1
                     } else user.enlistStats.rejects++
                     break;
+                case 'trWins' || 'trLosses':
+                    if (user.typingRaceStats == '{}') {
+                        user.typingRaceStats.AverageWPM = trStats[0]
+                        user.typingRaceStats.AverageRawWPM = trStats[1]
+                        user.typingRaceStats.AverageAccuracy = trStats[2]
+                        if (statName == 'trWins') user.typingRaceStats.FirstPlaceWins = 1
+                        else user.typingRaceStats.FirstPlaceWins = 0
+                    } else {
+                        user.typingRaceStats.AverageWPM = parseFloat(((user.typingRaceStats.AverageWPM + trStats[0]) / 2).toFixed(2))
+                        user.typingRaceStats.AverageRawWPM = parseFloat(((user.typingRaceStats.AverageRawWPM + trStats[1]) / 2).toFixed(2))
+                        user.typingRaceStats.AverageAccuracy = parseFloat(((user.typingRaceStats.AverageAccuracy + trStats[2]) / 2).toFixed(4))
+                        if (statName == 'trWins') user.typingRaceStats.FirstPlaceWins++
+                    }
+                    break;
             }
             console.log('Done!')
         }
@@ -100,5 +128,7 @@ export const enum StatName {
     tttWins = 'tttWins',
     tttLosses = 'tttLosses',
     enlist = 'enlist',
-    reject = 'reject'
+    reject = 'reject',
+    trWins = 'trWins',
+    trLosses = 'trLosses'
 }
