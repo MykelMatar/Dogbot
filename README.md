@@ -29,33 +29,34 @@
 | command               | description                                                         | Status |
 |-----------------------|---------------------------------------------------------------------|:------:|
 | /enlist-users         | Creates interaction to enlist other users for event/group           |   ✅    |
-| /enlist-stats         | shows how many times a user enlisted and rejected the Enlist prompt |   ✅    |
-| /setrole-autoenlist   | changes the role used to enlist (for automated enlisting)           |   ✅    |
+| /enlist-stats         | Shows how many times a user enlisted and rejected the Enlist prompt |   ✅    |
+| /setrole-autoenlist   | Changes the role used to enlist (for automated enlisting)           |   ✅    |
 | /clearrole-autoenlist | Clears role used to automate /enlist-users                          |   ✅    |
 
 ### role selection commands
 | command              | description                                                                                    | Status |
 |----------------------|------------------------------------------------------------------------------------------------|:------:|
-| /role-selection-menu | creates dropdown menu for users to select roles. Add up to 10 roles                            |   ❌    |
-| /setrole-default     | changes the role given to new users                                                            |   ❌    |
-| /clearrole-default   | removes default role given to new users                                                        |   ❌    |
-| /set-welcome-channel | sets the welcome channel of the server (for users to be granted the default role upon joining) |   ❌    |
+| /role-selection-menu | Creates dropdown menu for users to select roles. Add up to 10 roles                            |   ❌    |
+| /setrole-default     | Changes the role given to new users                                                            |   ❌    |
+| /clearrole-default   | Removes default role given to new users                                                        |   ❌    |
+| /set-welcome-channel | Sets the welcome channel of the server (for users to be granted the default role upon joining) |   ❌    |
 
     commands not implemented
 
 ### get-stats commands
 | command             | description                              | Status |
 |---------------------|------------------------------------------|:------:|
-| /get-stats-valorant | retrieves valorant stats from tracker.gg |   ❌    |
+| /get-stats-valorant | Retrieves valorant stats from tracker.gg |   ✅    |
 
-    issue with tracker.gg website, direct link requests not currently working (no ETA)
+    implemented + more error codes added for clarity
 
 ### game commands
-| command    | description                           | Status |
-|------------|---------------------------------------|:------:|
-| /tictactoe | Play tic tac toe against another user |   ❌    |
+| command      | description                             | Status |
+|--------------|-----------------------------------------|:------:|
+| /tictactoe   | Play tic tac toe against another user   |   ✅*   |
+| /typing-race | Start a typing race against other users |   ✅*   |
 
-    command not implemented
+    *implemented but not thoroughly tested
 
 ### creation commands
 | command | description                    | Status |
@@ -70,16 +71,16 @@
 | /elp        | lists all commands and relevant information   |   ✅    |
 | /suggestion | allows users to make suggestions about Dogbot |   ❌    |
 
-    commands not implemented
+    command not implemented
 
 ## TODO: 
-  - [ ] add 'hide' option to all commands
-  - [ ] log users who enlist/don't enlist and tally it up then do something fun with it
-  - [ ] Add moderation tools (/filter command to auto delete messages with certain words)
   - [ ] Magic 8-ball
-  - [ ] more game stats (apex, fortnite, csgo, destiny?)
   - [ ] server stats
-  - [ ] type racer game
+  - [ ] ~~add 'hide' option to all commands~~ not necessary
+  - [ ] ~~Add moderation tools (/filter command to auto delete messages with certain words)~~ ***plenty of bots do this really well already***
+  - [ ] ~~more game stats (apex, fortnite, csgo, destiny?)~~ ***doesnt work well with other games***
+  - [x] type racer game
+  - [x] log users who enlist/don't enlist and tally it up then do something fun with it
   - [x] fix /elp (paginate commands by category)
   - [X] delete user data when user leaves
   - [x] /say to send a message from dogbot
