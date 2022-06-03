@@ -59,7 +59,7 @@ export const typingrace = new Command(
 
             // generate prompt 
             let prompt: string = words[Math.floor(Math.random() * words.length)]
-            for (let i = 0; i < 100; i++) {
+            for (let i = 0; i < 50; i++) {
                 prompt += ' ' + (words[Math.floor(Math.random() * words.length)])
             }
 
@@ -70,8 +70,8 @@ export const typingrace = new Command(
 
             await sent.edit({content: 'enlisting ended', embeds: [signUpEmbed, promptEmbed]})   // remove buttons
 
-            const filter = m => !m.author.bot && racerIds.includes(m.author.id)
-            const promptCollector = message.channel.createMessageCollector({filter, time: 120000}) // 2 min timer (120000 ms)
+            const filter = m => !(m.author.bot) && racerIds.includes(m.author.id)
+            const promptCollector = message.channel.createMessageCollector({filter, time: 60000}) // 1 min timer (60000 ms)
             const startDate = new Date()
             let submissionTime: number,
                 accuracy: number,
@@ -89,17 +89,19 @@ export const typingrace = new Command(
                 accuracy = similarity(prompt, m.content)
                 characterCount = m.content.length
                 errors = Math.round((1 - accuracy) * prompt.length)
-                accuracy = parseFloat(accuracy.toFixed(4)) // convert accuracy to a more readable number after it's used to calculate error for mongo pushing and embed display
-
-                if (submissionTime < .167 && accuracy > .96) { // if user submission is faster than 15 seconds
+                
+                if (submissionTime < .27 && accuracy > .98) { // if user submission is faster than 16.2 seconds
                     rawWPM = 0
                     netWPM = 0
                     await m.channel.send('submission disqualified. Please refrain from copy pasting the prompt.')
+                    return
                 }
+                accuracy = parseFloat(accuracy.toFixed(4)) // convert accuracy to a more readable number after it's used to calculate error for mongo pushing and embed display
                 if (errors > 30) {
                     rawWPM = 0
                     netWPM = 0
                     await m.channel.send('submissions with greater than 30 errors do not count, be accurate')
+                    return
                 } else {
                     // rawWPM = (All Typed Entries / 5) / time (min), where All Typed Entries is the no. of characters
                     rawWPM = parseFloat(((characterCount / 5) / submissionTime).toFixed(2))
@@ -126,23 +128,24 @@ export const typingrace = new Command(
                 if (!(collectedUsers.includes(m.author.id))) {
                     collectedUsers.push(m.author.id)
                 }
+                
                 // check if every user has submitted something
                 racerIds.sort().every((element, index) => {
                     if (element == (collectedUsers.sort())[index]) return endRace = true;
                 })
-                if (endRace === true) promptCollector.stop()
+                // if (endRace === true) promptCollector.stop()
 
-                promptCollector.filter = m => !(collectedUsers.includes(m.author.id))
-                // check for user submissions faster than 20s (probably cheaters)
+                 promptCollector.filter = m => !(collectedUsers.includes(m.author.id))
 
             })
 
             promptCollector.on('end', async collected => {
                 let highestWPM: number = 0;
+                console.log(typingRacers)
                 typingRacers.forEach(racer => {
                     if (racer.WPM > highestWPM) highestWPM = racer.WPM
-                    console.log(racer.name)
                 })
+                
                 let winner = typingRacers.find(racer => racer.WPM === highestWPM)
                 winner.isWinner = true;
                 for (const typingRacer of typingRacers) {

@@ -103,7 +103,9 @@ export async function updateUserData(message, userIdArray: string[], statName: S
                         user.enlistStats.rejects = 1
                     } else user.enlistStats.rejects++
                     break;
-                case 'trWins' || 'trLosses':
+                case 'trWins': // fall-through (like saying trWins || trLosses)
+                case 'trLosses':
+                    console.log(user.typingRaceStats == '{}')
                     if (user.typingRaceStats == '{}') {
                         user.typingRaceStats.AverageWPM = trStats[0]
                         user.typingRaceStats.AverageRawWPM = trStats[1]

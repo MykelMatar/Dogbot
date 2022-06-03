@@ -55,13 +55,14 @@
 |--------------|-----------------------------------------|:------:|
 | /tictactoe   | Play tic tac toe against another user   |   ✅*   |
 | /typing-race | Start a typing race against other users |   ✅*   |
+| /magic8      | Predicts via a Magic 8 ball             |   ✅*   |
 
-    *implemented but not thoroughly tested
+    *implemented but not thoroughly tested, typeracer cheat detection may be broken
 
 ### creation commands
 | command | description                    | Status |
 |:-------:|--------------------------------|:------:|
-|  /say   | send a message through Dogbot  |   ❌    |
+|  /say   | send a message through Dogbot  |   ✅    |
 
     commands not implemented
 
@@ -69,14 +70,11 @@
 | command     | description                                   | Status |
 |:------------|-----------------------------------------------|:------:|
 | /elp        | lists all commands and relevant information   |   ✅    |
-| /suggestion | allows users to make suggestions about Dogbot |   ❌    |
-
-    command not implemented
 
 ## TODO: 
   - [ ] Magic 8-ball
   - [ ] server stats
-  - [ ] ~~add 'hide' option to all commands~~ not necessary
+  - [ ] ~~add 'hide' option to all commands~~ ***not necessary***
   - [ ] ~~Add moderation tools (/filter command to auto delete messages with certain words)~~ ***plenty of bots do this really well already***
   - [ ] ~~more game stats (apex, fortnite, csgo, destiny?)~~ ***doesnt work well with other games***
   - [x] type racer game
