@@ -72,11 +72,11 @@
 | /elp        | lists all commands and relevant information   |   ✅    |
 
 ## TODO: 
-  - [ ] Magic 8-ball
   - [ ] server stats
   - [ ] ~~add 'hide' option to all commands~~ ***not necessary***
   - [ ] ~~Add moderation tools (/filter command to auto delete messages with certain words)~~ ***plenty of bots do this really well already***
   - [ ] ~~more game stats (apex, fortnite, csgo, destiny?)~~ ***doesnt work well with other games***
+  - [x] Magic 8-ball
   - [x] type racer game
   - [x] log users who enlist/don't enlist and tally it up then do something fun with it
   - [x] fix /elp (paginate commands by category)
