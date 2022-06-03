@@ -125,6 +125,30 @@ export async function ready(client: Client) {
         name: 'elp',
         description: 'lists all commands and relevant information'
     });
+    commands?.create({
+        name: 'say',
+        description: 'sends a message via Dogbot',
+        options: [
+            {
+                name: 'message',
+                description: 'message to say',
+                required: true,
+                type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING
+            },
+        ]
+    });
+    commands?.create({
+        name: 'magic8',
+        description: 'Predicts via a magic 8-ball',
+        options: [
+            {
+                name: 'prompt',
+                description: 'prompt you desire a prediction for',
+                required: true,
+                type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING
+            },
+        ]
+    });
     
     // minecraft commands
     commands?.create({
