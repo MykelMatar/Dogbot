@@ -39,7 +39,7 @@ export const elp = new Command(
             },
             {
                 name: 'function',
-                value:
+                value: 
                     `- tracks mc server status
                   - changes the server being tracked 
                   - lists all servers and their respective IPs
@@ -93,7 +93,8 @@ export const elp = new Command(
             {
                 name: 'command',
                 value:
-                    `**/enlist-users**    
+                    `**/enlist-users**
+                    **/enlist-stats**    
                     **/setrole-autoenlist**   
                     **/clearrole-autoenlist**`,
                 inline: true
@@ -102,6 +103,7 @@ export const elp = new Command(
                 name: 'function',
                 value:
                     `- creates interaction to enlist other users for event/group
+                  - shows user stats relevant to the enlist-users prompt 
                   - changes the role used to enlist (for auto enlisting)
                   - clears role used to automate enlisting`,
                 inline: true
@@ -143,13 +145,17 @@ export const elp = new Command(
             {
                 name: 'command',
                 value:
-                    `**/tictactoe**`,
+                    `**/magic8**
+                    **/tictactoe**
+                    **/typingrace**`,
                 inline: true
             },
             {
                 name: 'function',
                 value:
-                    `- starts a tictactoe game against another user`,
+                    `- Responds to a prompt via a magic 8-ball
+                    - starts a tictactoe game against another user
+                    - creates a typing race between different users`,
                 inline: true
             },
         )

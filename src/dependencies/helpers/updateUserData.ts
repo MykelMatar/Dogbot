@@ -74,9 +74,10 @@ export async function updateUserData(message, userIdArray: string[], statName: S
                     break;
             }
             console.log('Done!')
-        } else { 
+        } else {
             console.log(`updating user data for ${guildMember.user.username}...`)
             let user = UserData.find(user => user.id === userId)
+            console.log(user)
             // check if the corresponding stat exists within the user data: if it doesn't exist, make it, if it exists, update it
             switch (statName) {
                 case 'tttWins':
@@ -120,10 +121,10 @@ export async function updateUserData(message, userIdArray: string[], statName: S
                     }
                     break;
             }
-            console.log('Done!')
         }
     }
     await currentGuild.save()
+    console.log('Done!')
 }
 
 export const enum StatName {
