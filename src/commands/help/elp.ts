@@ -122,13 +122,15 @@ export const elp = new Command(
             {
                 name: 'command',
                 value:
-                    `**/get-stats-valorant**`,
+                    `**/get-stats-valorant**
+                    **server-stats**`,
                 inline: true
             },
             {
                 name: 'function',
                 value:
-                    `- retrieves Valorant stats from tracker.gg`,
+                    `- retrieves Valorant stats from tracker.gg
+                    - displays relevant server stats`,
                 inline: true
             },
         )

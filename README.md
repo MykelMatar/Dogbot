@@ -24,7 +24,6 @@
 | /mc-change-server-name | Changes the name of an existing server                   |   ✅    |
 | /mc-delete-server      | Removes server from server list                          |   ✅    |
 
-
 ### enlist-user commands
 | command               | description                                                         | Status |
 |-----------------------|---------------------------------------------------------------------|:------:|
@@ -47,6 +46,7 @@
 | command             | description                              | Status |
 |---------------------|------------------------------------------|:------:|
 | /get-stats-valorant | Retrieves valorant stats from tracker.gg |   ✅    |
+| /server-stats       | displays relevant serer stats            |   ✅    |
 
     implemented + more error codes added for clarity
 
@@ -64,13 +64,11 @@
 |:-------:|--------------------------------|:------:|
 |  /say   | send a message through Dogbot  |   ✅    |
 
-    commands not implemented
 
 ### help commands
 | command       | description                                 | Status |
 |:--------------|---------------------------------------------|:------:|
 | /elp          | lists all commands and relevant information |   ✅    |
-| /server-stats | displays relevant serer stats               |   ✅    |
 
 ## TODO: 
   - [ ] ~~add 'hide' option to all commands~~ ***not necessary***
