@@ -46,7 +46,7 @@
 | command             | description                              | Status |
 |---------------------|------------------------------------------|:------:|
 | /get-stats-valorant | Retrieves valorant stats from tracker.gg |   ✅    |
-| /server-stats       | displays relevant serer stats            |   ✅    |
+| /server-stats       | displays relevant server stats           |   ✅    |
 
     implemented + more error codes added for clarity
 
