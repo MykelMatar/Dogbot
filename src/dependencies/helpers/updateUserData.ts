@@ -6,7 +6,7 @@ export async function updateUserData(message, userIdArray: string[], statName: S
 
     const currentGuild = await guilds.findOne({guildId: message.guildId})
     const UserData = currentGuild.UserData
-
+    
     let statsArray: number[] = []; // statsArray Format: [tttwins, tttlosses, enlists, rejects] 
     switch (statName) { // default values for creating user data
         case 'tttWins':
@@ -77,28 +77,31 @@ export async function updateUserData(message, userIdArray: string[], statName: S
         } else {
             console.log(`updating user data for ${guildMember.user.username}...`)
             let user = UserData.find(user => user.id === userId)
-            console.log(user)
             // check if the corresponding stat exists within the user data: if it doesn't exist, make it, if it exists, update it
             switch (statName) {
                 case 'tttWins':
+                    console.log(user.tttStats)
                     if (user.tttStats == '{}') {
                         user.tttStats.wins = 1
                         user.tttStats.losses = 0
                     } else user.tttStats.wins++;
                     break;
                 case 'tttLosses':
+                    console.log(user.tttStats)
                     if (user.tttStats == '{}') {
                         user.tttStats.wins = 0
                         user.tttStats.losses = 1
                     } else user.tttStats.losses++;
                     break;
                 case 'enlist':
+                    console.log(user.enlistStats)
                     if (user.enlistStats == '{}') {
                         user.enlistStats.enlists = 1
                         user.enlistStats.rejects = 0
                     } else user.enlistStats.enlists++;
                     break;
                 case 'reject':
+                    console.log(user.enlistStats)
                     if (user.enlistStats == '{}') {
                         user.enlistStats.enlists = 0
                         user.enlistStats.rejects = 1

@@ -3,7 +3,7 @@ import {MessageActionRow, MessageButton, MessageEmbed} from "discord.js";
 import {updateEnlistUserArrays} from "../../dependencies/helpers/updateEnlistUserArrays";
 import {StatName, updateUserData} from "../../dependencies/helpers/updateUserData";
 
-//TODO: add time option (use date-fns)
+// TODO: add user input to give details about event (string)
 export const enlistUsers = new Command(
     'enlist-users',
     'creates message embed with buttons to enlist other users for event/group', 
@@ -33,7 +33,7 @@ export const enlistUsers = new Command(
     let sent = await message.channel.send({embeds: [embed], components: [row]})
 
     // create collector
-    const collector = message.channel.createMessageComponentCollector({componentType: 'BUTTON', time: 1.08e+7}); // only message author can interact, 1 response, 3 hour (1.08e+7) timer
+    const collector = message.channel.createMessageComponentCollector({componentType: 'BUTTON', time: 7.2e+6}); // only message author can interact, 1 response, 3 hour (1.08e+7) timer
 
     // collect response
     let enlistedUsers: string[] = ['-'];
@@ -49,9 +49,9 @@ export const enlistUsers = new Command(
         embed.fields[1].value = rejectedUsers.join('');
         await sent.edit({embeds: [embed], components: [row]});
     });
-
+    
     collector.on('end', async collected => {
-        await sent.edit({content: 'enlisting ended', embeds: [embed]})   // remove buttons
+        await sent.edit({content: 'ENLISTING ENDED', embeds: [embed], components: []})   // remove buttons
         if (collected.size === 0) return // make sure users were collected
 
         await updateUserData(message, enlistedUserIds, StatName.enlist);

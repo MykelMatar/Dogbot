@@ -75,7 +75,7 @@ export async function ready(client: Client) {
             },
         ]
     });
-    
+
     // game commands
     commands?.create({
         name: 'tictactoe',
@@ -93,7 +93,7 @@ export async function ready(client: Client) {
         name: 'typing-race',
         description: 'creates typing race for members to participate in',
     });
-    
+
     // get-stats commands
     commands?.create({
         name: 'get-stats-valorant',
@@ -138,6 +138,18 @@ export async function ready(client: Client) {
         ]
     });
     commands?.create({
+        name: 'server-stats',
+        description: 'displays relevant server stats',
+        options: [
+            {
+                name: 'hide',
+                description: 'whether to hide the message from everyone else. True by default',
+                required: false,
+                type: DiscordJS.Constants.ApplicationCommandOptionTypes.BOOLEAN
+            }
+        ]
+    });
+    commands?.create({
         name: 'magic8',
         description: 'Predicts via a magic 8-ball',
         options: [
@@ -149,7 +161,7 @@ export async function ready(client: Client) {
             },
         ]
     });
-    
+
     // minecraft commands
     commands?.create({
         name: 'mc-add-server',
