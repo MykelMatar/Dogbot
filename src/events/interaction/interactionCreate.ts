@@ -19,7 +19,7 @@ export async function interactionCreate (client, interaction: CommandInteraction
             if (hideOption === undefined) ephemeralSetting = true
             else ephemeralSetting = hideOption.value
             
-            if (command[1].name.startsWith('mc') || command[1].name.startsWith('get-stats')){
+            if (command[1].name.startsWith('mc') || command[1].name.startsWith('get-stats') || command[1].name.startsWith('server-stats')){
                 await interaction.deferReply({ ephemeral: ephemeralSetting })
             }
             await commands.get(command[1].name).execute(client, interaction, guildName)

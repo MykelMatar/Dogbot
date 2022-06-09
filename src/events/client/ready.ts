@@ -9,19 +9,17 @@ export async function ready(client: Client) {
     // slash commands
     const guildId = '351618107384528897' // crayon
     const guild = client.guilds.cache.get(guildId)
-    // const guildId2 = '715122900021149776' // bot testing
-    // const guild2 = client.guilds.cache.get(guildId2)
     let commands
     // await guild.commands.set([]) // resets guild commands
     // await client.application.commands.set([]) // reset application commands
-
-    if (guild) {
-        commands = guild.commands
-        // commands = guild2.commands
-    } else {
-        // commands = client.application?.commands // register slash commands globally
-    }
-
+    
+    commands = client.application?.commands // register slash commands globally
+    
+    // uncomment for testing new commands and comment out line 16
+    // if (guild) {
+    //     commands = guild.commands
+    // }
+    
     // slash command creation
 
     // test

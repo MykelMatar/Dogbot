@@ -19,12 +19,12 @@ export const serverStats = new Command(
                 {name: `Owner` , value: `${owner}`, inline: true},
                 {name: `Creation Date` , value: `${guild.createdAt}`, inline: true},
                 {name: `Date Dogbot was Added` , value: `${guild.joinedAt}`, inline: true},
-                {name: `Server Verification⠀⠀` , value: verification, inline: true},
                 {name: 'Member Count', value: `${guild.memberCount}`, inline: true},
+                {name: `Server Verification⠀⠀` , value: verification, inline: true},
                 {name: 'Premium Tier', value: `${guild.premiumTier}`, inline: true},
             )
             .setColor("#8570C1")
         
-        await interaction.reply({embeds: [embed]})
+        await interaction.editReply({embeds: [embed]})
     }
 )

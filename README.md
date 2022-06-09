@@ -2,7 +2,7 @@
 
 # [Dogbot 2.0](https://discord.com/api/oauth2/authorize?client_id=848283770041532425&permissions=8&scope=bot%20applications.commands) 
   ### Dogbot is your Discord gaming companion. Track your favorite minecraft servers, get your Valorant [stats](#get-stats-commands), [enlist](#enlist-user-commands) fellow gamers for your event, and more! View the [Commands](#all-commands) section for a comprehensive list of features and the working status of the commands.
-#### All commands are /commands (currently not globally registered)
+#### All commands are globally registered /commands 
   
 ## List of Features:
   * Tracks the status of a Minecraft server (can add up to 10 servers to track)
