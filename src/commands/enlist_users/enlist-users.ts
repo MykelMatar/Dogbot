@@ -33,7 +33,7 @@ export const enlistUsers = new Command(
     let sent = await message.channel.send({embeds: [embed], components: [row]})
 
     // create collector
-    const collector = message.channel.createMessageComponentCollector({componentType: 'BUTTON', time: 7.2e+6}); // only message author can interact, 1 response, 3 hour (1.08e+7) timer
+    const collector = message.channel.createMessageComponentCollector({componentType: 'BUTTON', time: 1.08e+7}); // only message author can interact, 1 response, 3 hour (1.08e+7) timer
 
     // collect response
     let enlistedUsers: string[] = ['-'];

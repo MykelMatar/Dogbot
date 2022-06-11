@@ -7,8 +7,6 @@ export async function ready(client: Client) {
     console.log('Dogbot ready')
 
     // slash commands
-    const guildId = '351618107384528897' // crayon
-    const guild = client.guilds.cache.get(guildId)
     let commands
     // await guild.commands.set([]) // resets guild commands
     // await client.application.commands.set([]) // reset application commands
@@ -16,11 +14,13 @@ export async function ready(client: Client) {
     commands = client.application?.commands // register slash commands globally
     
     // uncomment for testing new commands and comment out line 16
+    // const guildId = '351618107384528897' // crayon
+    // const guild = client.guilds.cache.get(guildId)
     // if (guild) {
     //     commands = guild.commands
     // }
     
-    // slash command creation
+    // slash command template + options
 
     // test
     commands?.create({
