@@ -42,12 +42,15 @@ export const enlistUsers = new Command(
     let rejectedUserIds: string[] = [];
 
     collector.on('collect', async i => {
-        await i.deferUpdate(); // prevents "this message failed" message from appearing
-        await updateEnlistUserArrays(i, enlistedUsers, rejectedUsers, enlistedUserIds, rejectedUserIds)
+        // @ts-ignore
+        if(i.customId === 'Enlist' ||  i.customId === 'Reject') {
+            await i.deferUpdate(); // prevents "this message failed" message from appearing
+            await updateEnlistUserArrays(i, enlistedUsers, rejectedUsers, enlistedUserIds, rejectedUserIds)
 
-        embed.fields[0].value = enlistedUsers.join('');
-        embed.fields[1].value = rejectedUsers.join('');
-        await sent.edit({embeds: [embed], components: [row]});
+            embed.fields[0].value = enlistedUsers.join('');
+            embed.fields[1].value = rejectedUsers.join('');
+            await sent.edit({embeds: [embed], components: [row]});
+        }
     });
     
     collector.on('end', async collected => {

@@ -1,6 +1,9 @@
 import DiscordJS, {Client} from "discord.js";
 import mongoose from "mongoose";
 
+// IDEA: Hangman
+// IDEA: create leaderboards for games and enlists
+// IDEA: when dogbot restart, check if button exists, get the time that message was created at (if possible), and continue collector for remaining time
 export async function ready(client: Client) {
     await mongoose.connect(process.env.MONGO_URI, {keepAlive: true, dbName: 'Dogbot'})
     client.user.setActivity('/elp');

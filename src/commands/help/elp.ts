@@ -175,13 +175,15 @@ export const elp = new Command(
 
     // collect response
     collector.on('collect', async i => {
-        await i.deferUpdate()
         if (i.customId === 'next') {
+            await i.deferUpdate()
             if (pageNumber < embeds.length - 1) pageNumber++
+            await interaction.editReply({ embeds: [embeds[pageNumber]], components: [row]}); // send mc embed as home page
         }
         if (i.customId === 'prev') {
+            await i.deferUpdate()
             if (pageNumber > 0) pageNumber--
+            await interaction.editReply({ embeds: [embeds[pageNumber]], components: [row]}); // send mc embed as home page
         }
-        await interaction.editReply({ embeds: [embeds[pageNumber]], components: [row]}); // send mc embed as home page
     });
 })

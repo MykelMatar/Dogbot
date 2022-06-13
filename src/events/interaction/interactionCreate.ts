@@ -6,6 +6,7 @@ export async function interactionCreate (client, interaction: CommandInteraction
     let commands = client.commands
     let guildName = interaction.guild.name.replace(/\s+/g, "");
     let ephemeralSetting
+    let hideCommands: string[] = ['mc', 'get-stats', 'server-stats']
     const {commandName} = interaction
     
     /*
@@ -18,8 +19,8 @@ export async function interactionCreate (client, interaction: CommandInteraction
             let hideOption = interaction.options.data.find(option => option.name === 'hide')
             if (hideOption === undefined) ephemeralSetting = true
             else ephemeralSetting = hideOption.value
-            
-            if (command[1].name.startsWith('mc') || command[1].name.startsWith('get-stats') || command[1].name.startsWith('server-stats')){
+
+            if (hideCommands.some(com => command[1].name.startsWith(com))){
                 await interaction.deferReply({ ephemeral: ephemeralSetting })
             }
             await commands.get(command[1].name).execute(client, interaction, guildName)

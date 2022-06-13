@@ -10,19 +10,20 @@
   * Role selection menu and default roles
   * enlist users for an event or gamer sesh 
   * play TicTacToe against other users
+  * get your discord server's stats
 
 ## All Commands
 ### Visit the [Wiki](https://github.com/MykelMatar/Dogbot/wiki) or click on a command name below for more detailed information
 ### [minecraft commands](https://github.com/MykelMatar/Dogbot/wiki#minecraft-server-tracking-commands)
-| command                | description                                              | Status |
-|:-----------------------|:---------------------------------------------------------|:------:|
-| [/mc-server-status](https://github.com/MykelMatar/Dogbot/wiki#mc-server-status)      | Gets status of selected minecraft server                 |   ✅    |
-| [/mc-change-server](https://github.com/MykelMatar/Dogbot/wiki#mc-change-server)      | Changes Server that is being tracked by mc-server-status |   ✅    |
-| [/mc-list-servers](https://github.com/MykelMatar/Dogbot/wiki#mc-list-servers)       | Lists registered mc servers                              |   ✅    |
-| [/mc-add-server](https://github.com/MykelMatar/Dogbot/wiki#mc-add-server)         | Adds a new IP to the server list                         |   ✅    |
-| [/mc-change-server-ip](https://github.com/MykelMatar/Dogbot/wiki#mc-change-server-ip)   | Changes the IP of an existing server                     |   ✅    |
+| command                                                                                   | description                                              | Status |
+|:------------------------------------------------------------------------------------------|:---------------------------------------------------------|:------:|
+| [/mc-server-status](https://github.com/MykelMatar/Dogbot/wiki#mc-server-status)           | Gets status of selected minecraft server                 |   ✅    |
+| [/mc-change-server](https://github.com/MykelMatar/Dogbot/wiki#mc-change-server)           | Changes Server that is being tracked by mc-server-status |   ✅    |
+| [/mc-list-servers](https://github.com/MykelMatar/Dogbot/wiki#mc-list-servers)             | Lists registered mc servers                              |   ✅    |
+| [/mc-add-server](https://github.com/MykelMatar/Dogbot/wiki#mc-add-server)                 | Adds a new IP to the server list                         |   ✅    |
+| [/mc-change-server-ip](https://github.com/MykelMatar/Dogbot/wiki#mc-change-server-ip)     | Changes the IP of an existing server                     |   ✅    |
 | [/mc-change-server-name](https://github.com/MykelMatar/Dogbot/wiki#mc-change-server-name) | Changes the name of an existing server                   |   ✅    |
-| [/mc-delete-server](https://github.com/MykelMatar/Dogbot/wiki#mc-delete-server)      | Removes server from server list                          |   ✅    |
+| [/mc-delete-server](https://github.com/MykelMatar/Dogbot/wiki#mc-delete-server)           | Removes server from server list                          |   ✅    |
 
 ### enlist-user commands
 | command               | description                                                         | Status |
@@ -70,17 +71,4 @@
 |:--------------|---------------------------------------------|:------:|
 | /elp          | lists all commands and relevant information |   ✅    |
 
-## TODO: 
-  - [ ] ~~add 'hide' option to all commands~~ ***not necessary***
-  - [ ] ~~Add moderation tools (/filter command to auto delete messages with certain words)~~ ***plenty of bots do this really well already***
-  - [ ] ~~more game stats (apex, fortnite, csgo, destiny?)~~ ***doesnt work well with other games***
-  - [x] server stats
-  - [x] Magic 8-ball
-  - [x] type racer game
-  - [x] log users who enlist/don't enlist and tally it up then do something fun with it
-  - [x] fix /elp (paginate commands by category)
-  - [X] delete user data when user leaves
-  - [x] /say to send a message from dogbot
-  - [x] Prevent collisions for /mc, /listmc, and /autoenlist
-  - [x] tic-tac-toe command
 
