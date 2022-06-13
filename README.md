@@ -1,8 +1,8 @@
 <img align="right" src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/Dogbot.png">
 
-# [Dogbot 2.0](https://discord.com/api/oauth2/authorize?client_id=848283770041532425&permissions=8&scope=bot%20applications.commands) 
-  ### Dogbot is your Discord gaming companion. Track your favorite minecraft servers, get your Valorant [stats](#get-stats-commands), [enlist](#enlist-user-commands) fellow gamers for your event, and more! View the [Commands](#all-commands) section for a comprehensive list of features and the working status of the commands.
-#### All commands are globally registered /commands 
+# Dogbot  
+  ### Dogbot is your Discord gaming companion. Track your favorite minecraft servers, get your Valorant stats, enlist fellow gamers for your event, and more! View the [Commands](#all-commands) section below to check whether a command if working or not, or view the [Wiki](https://github.com/MykelMatar/Dogbot/wiki) more information about the commands. 
+[Click to add Dogbot to your server](https://discord.com/api/oauth2/authorize?client_id=848283770041532425&permissions=8&scope=bot%20applications.commands)
   
 ## List of Features:
   * Tracks the status of a Minecraft server (can add up to 10 servers to track)
@@ -12,17 +12,17 @@
   * play TicTacToe against other users
 
 ## All Commands
-#### Whether The command works or not can be determined by the Status symbol. More information about the state of the commands can be found below their respective tables
-### minecraft commands 
+### Visit the [Wiki](https://github.com/MykelMatar/Dogbot/wiki) or click on a command name below for more detailed information
+### [minecraft commands](https://github.com/MykelMatar/Dogbot/wiki#minecraft-server-tracking-commands)
 | command                | description                                              | Status |
 |:-----------------------|:---------------------------------------------------------|:------:|
-| /mc-server-status      | Gets status of selected minecraft server                 |   ✅    |
-| /mc-change-server      | Changes Server that is being tracked by mc-server-status |   ✅    |
-| /mc-list-servers       | Lists registered mc servers                              |   ✅    |
-| /mc-add-server         | Adds a new IP to the server list                         |   ✅    |
-| /mc-change-server-ip   | Changes the IP of an existing server                     |   ✅    |
-| /mc-change-server-name | Changes the name of an existing server                   |   ✅    |
-| /mc-delete-server      | Removes server from server list                          |   ✅    |
+| [/mc-server-status](https://github.com/MykelMatar/Dogbot/wiki#mc-server-status)      | Gets status of selected minecraft server                 |   ✅    |
+| [/mc-change-server](https://github.com/MykelMatar/Dogbot/wiki#mc-change-server)      | Changes Server that is being tracked by mc-server-status |   ✅    |
+| [/mc-list-servers](https://github.com/MykelMatar/Dogbot/wiki#mc-list-servers)       | Lists registered mc servers                              |   ✅    |
+| [/mc-add-server](https://github.com/MykelMatar/Dogbot/wiki#mc-add-server)         | Adds a new IP to the server list                         |   ✅    |
+| [/mc-change-server-ip](https://github.com/MykelMatar/Dogbot/wiki#mc-change-server-ip)   | Changes the IP of an existing server                     |   ✅    |
+| [/mc-change-server-name](https://github.com/MykelMatar/Dogbot/wiki#mc-change-server-name) | Changes the name of an existing server                   |   ✅    |
+| [/mc-delete-server](https://github.com/MykelMatar/Dogbot/wiki#mc-delete-server)      | Removes server from server list                          |   ✅    |
 
 ### enlist-user commands
 | command               | description                                                         | Status |
