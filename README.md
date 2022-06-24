@@ -1,9 +1,12 @@
-<img align="right" src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/Dogbot.png">
+<p align="center">
+  <img src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/Dogbot_Title.png">
+</p>
 
-# ![Dogbot](https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/Dogbot_Title.png)  
   ### Dogbot is your Discord gaming companion. Track your favorite minecraft servers, get your Valorant stats, enlist fellow gamers for your event, and more! View the [Commands](#all-commands) section below to check whether a command if working or not, or view the [Wiki](https://github.com/MykelMatar/Dogbot/wiki) more information about the commands. 
 [Click to add Dogbot to your server](https://discord.com/api/oauth2/authorize?client_id=848283770041532425&permissions=8&scope=bot%20applications.commands)
-  
+<img align="right" src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/Dogbot.png">
+ 
+
 ## List of Features:
   * Tracks the status of a Minecraft server (can add up to 10 servers to track)
   * Retrieves Valorant Account Stats from tracker.gg
