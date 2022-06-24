@@ -1,10 +1,9 @@
 <p align="center">
-  <img src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/Dogbot_Title.png">
+  <img src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/Dogbot_Logo_Title.png">
 </p>
 
   ### Dogbot is your Discord gaming companion. Track your favorite minecraft servers, get your Valorant stats, enlist fellow gamers for your event, and more! View the [Commands](#all-commands) section below to check whether a command if working or not, or view the [Wiki](https://github.com/MykelMatar/Dogbot/wiki) more information about the commands. 
 [Click to add Dogbot to your server](https://discord.com/api/oauth2/authorize?client_id=848283770041532425&permissions=8&scope=bot%20applications.commands)
-<img align="right" src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/Dogbot.png">
  
 
 ## List of Features:
