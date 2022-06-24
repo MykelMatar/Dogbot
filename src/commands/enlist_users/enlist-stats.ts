@@ -21,8 +21,8 @@ export const enlistStats = new Command(
         if (userData === undefined) return interaction.reply({
             ephemeral: true,
             content: 'User does not have any data. Data is only created for users who have enlisted, rejected, or played a game'
-        })
-
+        }) 
+        
         // get enlist stats
         let enlistRatio: number, socialStatus: string
         const enlistValue: number = userData.enlistStats.enlists
