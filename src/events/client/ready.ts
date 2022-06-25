@@ -11,17 +11,17 @@ export async function ready(client: Client) {
 
     // slash commands
     let commands
-    // await guild.commands.set([]) // resets guild commands
-    // await client.application.commands.set([]) // reset application commands
-    
     commands = client.application?.commands // register slash commands globally
     
-    // uncomment for testing new commands and comment out line 16
+    // uncomment for testing new commands, comment out line 14
     // const guildId = '351618107384528897' // crayon
     // const guild = client.guilds.cache.get(guildId)
+    // await guild.commands.set([]) // resets guild commands
+    // await client.application.commands.set([]) // reset application commands
     // if (guild) {
     //     commands = guild.commands
     // }
+    
     
     // slash command template + options
 
