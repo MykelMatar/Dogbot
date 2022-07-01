@@ -1,6 +1,5 @@
 import {Client, GuildMember, CommandInteraction, GuildCacheMessage, CacheType} from "discord.js";
 import guilds from '../schemas/guild-schema'
-import {BaseDocumentType} from "mongoose";
 
 export class Command {
     name: string
