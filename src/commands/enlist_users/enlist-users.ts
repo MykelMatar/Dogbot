@@ -1,9 +1,8 @@
 import {Command} from "../../dependencies/classes/Command";
-import {MessageActionRow, MessageButton, MessageEmbed} from "discord.js";
+import {InteractionCollector, Message, MessageActionRow, MessageButton, MessageEmbed} from "discord.js";
 import {updateEnlistUserArrays} from "../../dependencies/helpers/updateEnlistUserArrays";
 import {StatName, updateUserData} from "../../dependencies/helpers/updateUserData";
 
-// TODO: add user input to give details about event (string)
 export const enlistUsers = new Command(
     'enlist-users',
     'creates message embed with buttons to enlist other users for event/group', 
@@ -20,20 +19,20 @@ export const enlistUsers = new Command(
                 .setLabel('Reject')
                 .setStyle('DANGER'),
         );
-
+        
     // generate embed
     const embed = new MessageEmbed()
-        .setTitle('Registered Users')
+        .setTitle('Registered Gamers')
         .addFields(
-            {name: 'Enlisted', value: '-', inline: true},               // Discord.js v13 requires manual call of toString on all methods
-            {name: 'Not Enlisted', value: '-', inline: true},
+            {name: 'Gaming', value: '-', inline: true},               // Discord.js v13 requires manual call of toString on all methods
+            {name: 'Not Gaming', value: '-', inline: true},
         )
         .setColor("#8570C1")
 
-    let sent = await message.channel.send({embeds: [embed], components: [row]})
+    let sent: Message = await message.channel.send({embeds: [embed], components: [row]})
 
     // create collector
-    const collector = message.channel.createMessageComponentCollector({componentType: 'BUTTON', time: 1.08e+7}); // only message author can interact, 1 response, 3 hour (1.08e+7) timer
+    const collector: InteractionCollector<any> = message.channel.createMessageComponentCollector({componentType: 'BUTTON', time: 1.08e+7}); // only message author can interact, 1 response, 3 hour (1.08e+7) timer
 
     // collect response
     let enlistedUsers: string[] = ['-'];
@@ -42,7 +41,6 @@ export const enlistUsers = new Command(
     let rejectedUserIds: string[] = [];
 
     collector.on('collect', async i => {
-        // @ts-ignore
         if(i.customId === 'Enlist' ||  i.customId === 'Reject') {
             await i.deferUpdate(); // prevents "this message failed" message from appearing
             await updateEnlistUserArrays(i, enlistedUsers, rejectedUsers, enlistedUserIds, rejectedUserIds)

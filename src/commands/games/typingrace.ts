@@ -68,7 +68,7 @@ export const typingrace = new Command(
                 .addField('Prompt', prompt)
                 .setColor("#8570C1")
 
-            await sent.edit({content: 'enlisting ended', embeds: [signUpEmbed, promptEmbed]})   // remove buttons
+            await sent.edit({content: 'sign-up ended', embeds: [signUpEmbed, promptEmbed], components: []})   // remove buttons
 
             const filter = m => !(m.author.bot) && racerIds.includes(m.author.id)
             const promptCollector = message.channel.createMessageCollector({filter, time: 60000}) // 1 min timer (60000 ms)
@@ -130,12 +130,12 @@ export const typingrace = new Command(
                 }
                 
                 // check if every user has submitted something
-                racerIds.sort().every((element, index) => {
-                    if (element == (collectedUsers.sort())[index]) return endRace = true;
-                })
+                // racerIds.sort().every((element, index) => {
+                //     if (element == (collectedUsers.sort())[index]) return endRace = true;
+                // })
                 // if (endRace === true) promptCollector.stop()
 
-                 promptCollector.filter = m => !(collectedUsers.includes(m.author.id))
+                 promptCollector.filter = m => !(m.author.bot) && !(collectedUsers.includes(m.author.id))
 
             })
 

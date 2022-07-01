@@ -35,16 +35,6 @@
 | /setrole-autoenlist   | Changes the role used to enlist (for automated enlisting)           |   ✅    |
 | /clearrole-autoenlist | Clears role used to automate /enlist-users                          |   ✅    |
 
-### role selection commands
-| command              | description                                                                                    | Status |
-|----------------------|------------------------------------------------------------------------------------------------|:------:|
-| /role-selection-menu | Creates dropdown menu for users to select roles. Add up to 10 roles                            |   ❌    |
-| /setrole-default     | Changes the role given to new users                                                            |   ❌    |
-| /clearrole-default   | Removes default role given to new users                                                        |   ❌    |
-| /set-welcome-channel | Sets the welcome channel of the server (for users to be granted the default role upon joining) |   ❌    |
-
-    commands not implemented
-
 ### get-stats commands
 | command             | description                              | Status |
 |---------------------|------------------------------------------|:------:|

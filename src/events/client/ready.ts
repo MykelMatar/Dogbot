@@ -6,13 +6,14 @@ import mongoose from "mongoose";
 // IDEA: when dogbot restart, check if button exists, get the time that message was created at (if possible), and continue collector for remaining time
 export async function ready(client: Client) {
     await mongoose.connect(process.env.MONGO_URI, {keepAlive: true, dbName: 'Dogbot'})
-    client.user.setActivity('/elp');
+    
+    client.user.setActivity('with the bois', {type: "PLAYING"});
     console.log('Dogbot ready')
 
     // slash commands
     let commands
     commands = client.application?.commands // register slash commands globally
-    
+
     // uncomment for testing new commands, comment out line 14
     // const guildId = '351618107384528897' // crayon
     // const guild = client.guilds.cache.get(guildId)
@@ -21,8 +22,7 @@ export async function ready(client: Client) {
     // if (guild) {
     //     commands = guild.commands
     // }
-    
-    
+
     // slash command template + options
 
     // test
@@ -43,7 +43,15 @@ export async function ready(client: Client) {
 
     commands?.create({
         name: 'enlist-users',
-        description: 'creates interaction to enlist other users for event/group'
+        description: 'creates interaction to enlist other users for event/group',
+        options: [
+            {
+                name: 'description',
+                description: 'details about the event',
+                required: false,
+                type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING
+            }
+        ]
     });
     commands?.create({
         name: 'enlist-stats',
@@ -242,7 +250,5 @@ export async function ready(client: Client) {
             }
         ]
     });
-
-
 }
 

@@ -6,7 +6,7 @@ export const magic8 = new Command(
     'Predicts via a maigc 8-ball',
     async (client, interaction) => {
 
-        let responses: string[] = ['yes', 'no', 'perhaps', 'definitely not', 'absolutely', 'how would I know?']
+        let responses: string[] = ['yes', 'no', 'perhaps', 'definitely not', 'absolutely', 'how would I know?', 'shut up bitch', 'lol no']
         let response = responses[Math.floor(Math.random() * responses.length)]
         let responseEmbed = new MessageEmbed()
             .setTitle(response)

@@ -54,9 +54,8 @@ export const mcServerStatus = new Command(
                 let searchedPlayer = interaction.options.data.find(option => option.name === 'username')
                 let onlinePlayers = response.players.sample
                 let foundPlayer = false;
-                console.log(onlinePlayers)
-
-                // @ts-ignore
+                console.log({onlinePlayers})
+                
                 if (onlinePlayers === null)
                     console.log('no searched player')
                 else if (searchedPlayer !== undefined) {

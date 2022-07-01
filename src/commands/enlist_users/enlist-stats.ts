@@ -1,5 +1,6 @@
 import {Command} from "../../dependencies/classes/Command";
-import {MessageEmbed} from "discord.js";
+import {CommandInteractionOption, MessageEmbed} from "discord.js";
+
 
 // TODO: add command for users who 'enlist' but never attend (admin controlled)
 export const enlistStats = new Command(
@@ -8,20 +9,24 @@ export const enlistStats = new Command(
     async (client, interaction) => {
 
         // set user whose data is being retrieved
-        let username
-        let userId: any = (interaction.options.data.find(option => option.name === 'user')) // any is used bc it can be lots of different types
-        if (userId == undefined) {
-                username = interaction.user.username
-                userId = interaction.user.id
+        let username: string, userId: string | number | boolean
+        let user: CommandInteractionOption = (interaction.options.data.find(option => option.name === 'user'));
+        if (user == undefined) {
+            username = interaction.user.username
+            userId = interaction.user.id
+        } else {
+            username = user.user.username
+            userId = user.value
         }
-        else userId = userId.value
 
         // retrieve user data from mongo
         let userData = enlistStats.guildData.UserData.find(user => user.id === userId)
-        if (userData === undefined) return interaction.reply({
-            ephemeral: true,
-            content: 'User does not have any data. Data is only created for users who have enlisted, rejected, or played a game'
-        }) 
+        if (userData === undefined) {
+            return interaction.reply({
+                ephemeral: true,
+                content: 'User does not have any data. Data is only created for users who have enlisted, rejected, or played a game'
+            })
+        }
         
         // get enlist stats
         let enlistRatio: number, socialStatus: string
@@ -29,8 +34,8 @@ export const enlistStats = new Command(
         const rejectValue: number = userData.enlistStats.rejects
 
         // find enlist-to-reject ratio
-        if (rejectValue !== 0) enlistRatio = (enlistValue / rejectValue) 
-        else enlistRatio = enlistValue 
+        if (rejectValue !== 0) enlistRatio = (enlistValue / rejectValue)
+        else enlistRatio = enlistValue
 
         // determine social status
         if (enlistValue > rejectValue * 10 && rejectValue !== 0) socialStatus = 'epic gamer'
