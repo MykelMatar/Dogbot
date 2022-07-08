@@ -19,34 +19,34 @@ export const getStatsValorant = new Command(
             const $: CheerioAPI = await fetchHTML(`https://tracker.gg/valorant/profile/riot/${uriUser}%23${uriTag}/overview`);
             const $maps: CheerioAPI = await fetchHTML(`https://tracker.gg/valorant/profile/riot/${uriUser}%23${uriTag}/maps`);
             const $agents: CheerioAPI = await fetchHTML(`https://tracker.gg/valorant/profile/riot/${uriUser}%23${uriTag}/agents`);
-            
+
             // create arrays to hold stats
-            let stats: string[] = [], 
-                topMaps: string[] = [], 
-                statsRank: string[] = [], 
+            let stats: string[] = [],
+                topMaps: string[] = [],
+                statsRank: string[] = [],
                 topAgents: string[] = [],
                 topWeapons: string[] = [];
 
             let statHeaderClass = $('.stat__value') // stats found in the large header
             let rank: string = statHeaderClass.first().text();
             let kad: string = statHeaderClass.last().text();
-            
+
             $('span.value').each(function (i) { // overview stats section
                 stats[i] = $(this).text();
             });
             $('span.rank').each(function (i) { // top% for the stats
                 statsRank[i] = $(this).text();
             });
-            $('div.weapon__name').each(function (i) { 
+            $('div.weapon__name').each(function (i) {
                 topWeapons[i] = $(this).text();
             });
-            $maps('div.value').each(function (i) { 
+            $maps('div.value').each(function (i) {
                 topMaps[i] = $maps(this).text();
             });
             $agents('span.agent__name-name').each(function (i) {
                 topAgents[i] = $agents(this).text();
             });
-    
+
             // create Embed w/ user info and stats
             const embed = new MessageEmbed()
                 .setTitle(`${user}'s Valorant Stats`)
@@ -77,14 +77,16 @@ export const getStatsValorant = new Command(
                 let statusText = error.response.statusText
                 console.log({status, statusText})
 
-                if (status == 404) {
-                    await interaction.editReply('invalid username')
+                if (status == 404) { // error handling
+                    await interaction.editReply('*invalid username*')
                 } else if (status == 451) {
-                    await interaction.editReply('tracker.gg profile private, cannot access information')
+                    await interaction.editReply('*tracker.gg profile private, cannot access information*')
                 } else if (status == 400) {
-                    await interaction.editReply('tracker.gg API issues, cannot connect to website. Please try again later')
+                    await interaction.editReply('*tracker.gg API issues, cannot connect to website. Please try again later*')
+                } else if (status == 403) {
+                    await interaction.editReply('*blocked connection. Try again later*')
                 } else {
-                    await interaction.editReply('unknown error response. Please open an issue in the github issues page, or check if one already exists. The github page can be accessed by using /elp')
+                    await interaction.editReply('*unknown error response. Please open an issue in the github issues page, or check if one already exists. The github page can be accessed by using /elp*')
                 }
             } else console.log(error)
         }
