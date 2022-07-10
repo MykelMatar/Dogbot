@@ -20,8 +20,8 @@ client.commands = new Collection(); // create commands property for Client so co
 client.login(process.env.BOT_TOKEN).catch(console.error)
 
 // express server on port 8080 for docker
-const app = express();
-app.listen(8080, () => {
-    console.log(`server running on port 8080`);
-});
+// const app = express();
+// app.listen(8080, () => {
+//     console.log(`server running on port 8080`);
+// });
 //console.log(process.memoryUsage().heapUsed / 1024 / 1024) check mb of mem usage

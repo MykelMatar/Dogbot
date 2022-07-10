@@ -9,7 +9,8 @@
     "minecraft-server-util": "^5.2.5",
     "mongoose": "^6.3.3",
     "node": "^17.1.0",
-    "node.js": "^0.0.1-security"
+    "node.js": "^0.0.1-security",
+    "nodemon": "^2.0.19"
   },
   "name": "dogbot",
   "version": "2.1.0",

@@ -17,8 +17,6 @@ export const getStatsValorant = new Command(
         try {
             // get webpages
             const $: CheerioAPI = await fetchHTML(`https://tracker.gg/valorant/profile/riot/${uriUser}%23${uriTag}/overview`);
-            const $maps: CheerioAPI = await fetchHTML(`https://tracker.gg/valorant/profile/riot/${uriUser}%23${uriTag}/maps`);
-            const $agents: CheerioAPI = await fetchHTML(`https://tracker.gg/valorant/profile/riot/${uriUser}%23${uriTag}/agents`);
 
             // create arrays to hold stats
             let stats: string[] = [],
@@ -31,21 +29,14 @@ export const getStatsValorant = new Command(
             let rank: string = statHeaderClass.first().text();
             let kad: string = statHeaderClass.last().text();
 
-            $('span.value').each(function (i) { // overview stats section
+            $('div.m-14mlk1i').each(function (i) { // overview stats section
                 stats[i] = $(this).text();
             });
             $('span.rank').each(function (i) { // top% for the stats
                 statsRank[i] = $(this).text();
             });
-            $('div.weapon__name').each(function (i) {
-                topWeapons[i] = $(this).text();
-            });
-            $maps('div.value').each(function (i) {
-                topMaps[i] = $maps(this).text();
-            });
-            $agents('span.agent__name-name').each(function (i) {
-                topAgents[i] = $agents(this).text();
-            });
+
+            console.log(stats)
 
             // create Embed w/ user info and stats
             const embed = new MessageEmbed()
@@ -63,15 +54,16 @@ export const getStatsValorant = new Command(
                     {name: 'Aces', value: stats[15], inline: true},
                     {name: 'Clutches', value: stats[16], inline: true},
                     {name: 'Most Kills (Match)', value: stats[17], inline: true},
-                    {name: 'Top Agents', value: `${topAgents[0]}\n${topAgents[1]}\n${topAgents[2]}`, inline: true},
-                    {name: 'Top Weapons', value: `${topWeapons[0]}\n${topWeapons[1]}\n${topWeapons[2]}`, inline: true},
-                    {name: 'Top Maps', value: `${topMaps[0]}\n ${topMaps[14]}\n ${topMaps[28]}\n`, inline: true},
+                    // {name: 'Top Agents', value: `${topAgents[0]}\n${topAgents[1]}\n${topAgents[2]}`, inline: true},
+                    // {name: 'Top Weapons', value: `${topWeapons[0]}\n${topWeapons[1]}\n${topWeapons[2]}`, inline: true},
+                    // {name: 'Top Maps', value: `${topMaps[0]}\n ${topMaps[14]}\n ${topMaps[28]}\n`, inline: true},
                 )
                 .setColor("#8570C1")
                 .setFooter({text: 'via Tracker.gg, visit the website for more info'})
 
             await interaction.editReply({embeds: [embed]})
         } catch (error) {
+            console.log(error.response)
             if (error.response) {
                 let status = error.response.status
                 let statusText = error.response.statusText
