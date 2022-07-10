@@ -30,37 +30,32 @@
 ### enlist-user commands
 | command               | description                                                         | Status |
 |-----------------------|---------------------------------------------------------------------|:------:|
-| /enlist-users         | Creates interaction to enlist other users for event/group           |   ✅   |
-| /enlist-stats         | Shows how many times a user enlisted and rejected the Enlist prompt |   ✅   |
-| /setrole-autoenlist   | Changes the role used to enlist (for automated enlisting)           |   ✅   |
-| /clearrole-autoenlist | Clears role used to automate /enlist-users                          |   ✅   |
+| [/enlist-users](https://github.com/MykelMatar/Dogbot/wiki#enlist-users)         | Creates interaction to enlist other users for event/group           |   ✅   |
+| [/enlist-stats](https://github.com/MykelMatar/Dogbot/wiki#enlist-stats)         | Shows how many times a user enlisted and rejected the Enlist prompt |   ✅   |
+| [/setrole-autoenlist](https://github.com/MykelMatar/Dogbot/wiki#setrole-autoenlist)   | Changes the role used to enlist (for automated enlisting)     |   ✅   |
+| [/clearrole-autoenlist](https://github.com/MykelMatar/Dogbot/wiki#clearrole-autoenlist) | Clears role used to automate /enlist-users                  |   ✅   |
 
 ### get-stats commands
 | command             | description                              | Status |
 |---------------------|------------------------------------------|:------:|
-| /get-stats-valorant | Retrieves valorant stats from tracker.gg |   ❌   |
-| /server-stats       | displays relevant server stats           |   ✅   |
+| [/get-stats-valorant](https://github.com/MykelMatar/Dogbot/wiki#get-stats-valorant) | Retrieves valorant stats from tracker.gg |   ❌   |
+| [/server-stats](https://github.com/MykelMatar/Dogbot/wiki#server-stats)       | displays relevant server stats           |   ✅   |
 
     Dogbot has been blocked by tracker.gg. Currently working on solutions.
 
 ### game commands
 | command      | description                             | Status |
 |--------------|-----------------------------------------|:------:|
-| /tictactoe   | Play tic tac toe against another user   |   ✅*  |
-| /typing-race | Start a typing race against other users |   ✅*  |
-| /magic8      | Predicts via a Magic 8 ball             |   ✅*  |
+| [/tictactoe](https://github.com/MykelMatar/Dogbot/wiki#tictactoe)   | Play tic tac toe against another user   |   ✅*  |
+| [/typing-race](https://github.com/MykelMatar/Dogbot/wiki#typing-race) | Start a typing race against other users |   ✅*  |
+| [/magic8](https://github.com/MykelMatar/Dogbot/wiki#magic8)      | Predicts via a Magic 8 ball             |   ✅*  |
 
     *implemented but not thoroughly tested, typeracer cheat detection may be broken
 
-### creation commands
-| command | description                    | Status |
-|:-------:|--------------------------------|:------:|
-|  /say   | send a message through Dogbot  |   ✅   |
-
-
-### help commands
-| command       | description                                 | Status |
-|:--------------|---------------------------------------------|:------:|
-| /elp          | lists all commands and relevant information |   ✅   |
+### other commands
+| command | description                                  | Status |
+|:-------:|----------------------------------------------|:------:|
+|  [/speak](https://github.com/MykelMatar/Dogbot/wiki#speak)   | send a message through Dogbot                |   ✅  |
+| [/elp](https://github.com/MykelMatar/Dogbot/wiki#elp)    | lists all commands and relevant information  |   ✅  |
 
 
