@@ -4,15 +4,33 @@
 
   ### Dogbot is your Discord gaming companion. Track your favorite minecraft servers, get your Valorant stats, enlist fellow gamers for your event, and more! View the [Commands](#all-commands) section below to check whether a command if working or not, or view the [Wiki](https://github.com/MykelMatar/Dogbot/wiki) more information about the commands. 
 [Click to add Dogbot to your server](https://discord.com/api/oauth2/authorize?client_id=848283770041532425&permissions=8&scope=bot%20applications.commands)
- 
+<p align="left">
+  <img src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/magic8.png" width="30%"></img>
+</p>
 
-## List of Features:
+
+## List of Features: 
   * Tracks the status of a Minecraft server (can add up to 10 servers to track)
   * Retrieves Valorant Account Stats from tracker.gg
   * Role selection menu and default roles
   * enlist users for an event or gamer sesh 
   * play TicTacToe against other users
   * get your discord server's stats
+
+## Images Gallery
+**Minecraft Commands**  
+<img src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/mc-server-status.png" width="30%"></img>
+<img src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/mc-list-servers.png" width="36%"></img>  
+
+**Enlist Commands**  
+<img src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/autoenlist.png" width="34%"></img>
+<img src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/enlist-users.png" width="32%"></img>
+<img src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/enlist-stats.png" width="33%"></img>
+
+**Other Commands**  
+<img src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/get-stats-valorant.png" width="35%"></img> 
+<img src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/server-stats.png" width="60%"></img>
+
 
 ## All Commands
 ### Visit the [Wiki](https://github.com/MykelMatar/Dogbot/wiki) or click on a command name below for more detailed information
