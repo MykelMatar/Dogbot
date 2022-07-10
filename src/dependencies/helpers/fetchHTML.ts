@@ -18,6 +18,7 @@ export async function fetchHTML(url: string) {
         }
     }
 
-    const {data} = await axios.post(url, {}, config)
+    const {data} = await axios.get(url, config)
+    console.log(data)
     return cheerio.load(data)
 }

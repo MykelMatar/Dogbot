@@ -135,7 +135,7 @@ export async function ready(client: Client) {
         description: 'lists all commands and relevant information'
     });
     commands?.create({
-        name: 'say',
+        name: 'speak',
         description: 'sends a message via Dogbot',
         options: [
             {
