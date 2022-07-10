@@ -5,8 +5,8 @@ import StealthPlugin from 'puppeteer-extra-plugin-stealth'
 import Adblocker from 'puppeteer-extra-plugin-adblocker'
 
 export async function fetchHTML(url: string) {
-    
-    puppeteer.use(Adblocker({ blockTrackers: true }))
+
+    puppeteer.use(Adblocker({blockTrackers: true}))
     // puppeteer
     //     .use(StealthPlugin())
     //     .launch({'ignoreHTTPSErrors': true})
@@ -17,7 +17,11 @@ export async function fetchHTML(url: string) {
     //         console.log(pageData)
     //     })
     const getData = await puppeteer.use(StealthPlugin())
-        .launch({headless: true, 'ignoreHTTPSErrors': true})
+        .launch({
+            headless: true,
+            'ignoreHTTPSErrors': true,
+            executablePath: '/usr/bin/google-chrome'
+        })
         .then(async browser => {
             const page = await browser.newPage();
             await page.goto(url)
