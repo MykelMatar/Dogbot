@@ -41,7 +41,7 @@
 | /get-stats-valorant | Retrieves valorant stats from tracker.gg |   ❌   |
 | /server-stats       | displays relevant server stats           |   ✅   |
 
-    implemented + more error codes added for clarity
+    Dogbot has been blocked by tracker.gg. Currently working on solutions.
 
 ### game commands
 | command      | description                             | Status |
