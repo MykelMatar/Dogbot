@@ -30,37 +30,37 @@
 ### enlist-user commands
 | command               | description                                                         | Status |
 |-----------------------|---------------------------------------------------------------------|:------:|
-| /enlist-users         | Creates interaction to enlist other users for event/group           |   ✅    |
-| /enlist-stats         | Shows how many times a user enlisted and rejected the Enlist prompt |   ✅    |
-| /setrole-autoenlist   | Changes the role used to enlist (for automated enlisting)           |   ✅    |
-| /clearrole-autoenlist | Clears role used to automate /enlist-users                          |   ✅    |
+| /enlist-users         | Creates interaction to enlist other users for event/group           |   ✅   |
+| /enlist-stats         | Shows how many times a user enlisted and rejected the Enlist prompt |   ✅   |
+| /setrole-autoenlist   | Changes the role used to enlist (for automated enlisting)           |   ✅   |
+| /clearrole-autoenlist | Clears role used to automate /enlist-users                          |   ✅   |
 
 ### get-stats commands
 | command             | description                              | Status |
 |---------------------|------------------------------------------|:------:|
-| /get-stats-valorant | Retrieves valorant stats from tracker.gg |   ✅    |
-| /server-stats       | displays relevant server stats           |   ✅    |
+| /get-stats-valorant | Retrieves valorant stats from tracker.gg |   ❌   |
+| /server-stats       | displays relevant server stats           |   ✅   |
 
     implemented + more error codes added for clarity
 
 ### game commands
 | command      | description                             | Status |
 |--------------|-----------------------------------------|:------:|
-| /tictactoe   | Play tic tac toe against another user   |   ✅*   |
-| /typing-race | Start a typing race against other users |   ✅*   |
-| /magic8      | Predicts via a Magic 8 ball             |   ✅*   |
+| /tictactoe   | Play tic tac toe against another user   |   ✅*  |
+| /typing-race | Start a typing race against other users |   ✅*  |
+| /magic8      | Predicts via a Magic 8 ball             |   ✅*  |
 
     *implemented but not thoroughly tested, typeracer cheat detection may be broken
 
 ### creation commands
 | command | description                    | Status |
 |:-------:|--------------------------------|:------:|
-|  /say   | send a message through Dogbot  |   ✅    |
+|  /say   | send a message through Dogbot  |   ✅   |
 
 
 ### help commands
 | command       | description                                 | Status |
 |:--------------|---------------------------------------------|:------:|
-| /elp          | lists all commands and relevant information |   ✅    |
+| /elp          | lists all commands and relevant information |   ✅   |
 
 
