@@ -1,24 +1,38 @@
 import * as cheerio from 'cheerio'
-import axios from "axios";
 import 'dotenv/config'
+import puppeteer from 'puppeteer-extra'
+import StealthPlugin from 'puppeteer-extra-plugin-stealth'
+import Adblocker from 'puppeteer-extra-plugin-adblocker'
 
 export async function fetchHTML(url: string) {
-    let config = {
-        headers:{
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'
-        },
-        proxy: {
-            protocol: 'http',
-            host: `proxy-server.scraperapi.com`,
-            port: 8001,
-            auth: {
-                username: 'scraperapi', 
-                password: `${process.env.SCRAPER_API_KEY}`
-            }
-        }
-    }
+    
+    puppeteer.use(Adblocker({ blockTrackers: true }))
+    // puppeteer
+    //     .use(StealthPlugin())
+    //     .launch({'ignoreHTTPSErrors': true})
+    //     .then(async browser => {
+    //         const page = await browser.newPage();
+    //         await page.goto(url)
+    //         const pageData = await page.content()
+    //         console.log(pageData)
+    //     })
+    const getData = await puppeteer.use(StealthPlugin())
+        .launch({headless: true, 'ignoreHTTPSErrors': true})
+        .then(async browser => {
+            const page = await browser.newPage();
+            await page.goto(url)
+            return await page.content()
+        })
 
-    const {data} = await axios.get(url, config)
-    console.log(data)
-    return cheerio.load(data)
+    return cheerio.load(getData)
 }
+
+// .launch ({args: [
+//     `--proxy-server=http://scraperapi:${process.env.SCRAPER_API_KEY}@proxy-server.scraperapi.com:8001`
+// ]
+// })
+
+// await page.authenticate({
+//     username: 'scraperapi',
+//     password: process.env.SCRAPER_API_KEY,
+// })

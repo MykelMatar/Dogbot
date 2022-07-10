@@ -17,7 +17,6 @@ export const getStatsValorant = new Command(
         try {
             // get webpages
             const $: CheerioAPI = await fetchHTML(`https://tracker.gg/valorant/profile/riot/${uriUser}%23${uriTag}/overview`);
-
             // create arrays to hold stats
             let stats: string[] = [],
                 topMaps: string[] = [],
@@ -25,18 +24,16 @@ export const getStatsValorant = new Command(
                 topAgents: string[] = [],
                 topWeapons: string[] = [];
 
-            let statHeaderClass = $('.stat__value') // stats found in the large header
+            let statHeaderClass = $('span.stat__value') // stats found in the large header
             let rank: string = statHeaderClass.first().text();
             let kad: string = statHeaderClass.last().text();
 
-            $('div.m-14mlk1i').each(function (i) { // overview stats section
+            $('span.value').each(function (i) { // overview stats section
                 stats[i] = $(this).text();
             });
             $('span.rank').each(function (i) { // top% for the stats
                 statsRank[i] = $(this).text();
             });
-
-            console.log(stats)
 
             // create Embed w/ user info and stats
             const embed = new MessageEmbed()
@@ -63,7 +60,6 @@ export const getStatsValorant = new Command(
 
             await interaction.editReply({embeds: [embed]})
         } catch (error) {
-            console.log(error.response)
             if (error.response) {
                 let status = error.response.status
                 let statusText = error.response.statusText
