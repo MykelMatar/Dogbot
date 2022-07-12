@@ -1,6 +1,9 @@
 FROM node:16.13 as base
 
 WORKDIR /home/michael/node/Dogbot
+
+# if running on oracle server
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true 
     
 COPY package*.json ./
 COPY tsconfig.json ./
