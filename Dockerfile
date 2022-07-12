@@ -1,4 +1,4 @@
-FROM node:latest as base
+FROM node:16.13.0 as base
 
 WORKDIR /home/michael/node/Dogbot
 
