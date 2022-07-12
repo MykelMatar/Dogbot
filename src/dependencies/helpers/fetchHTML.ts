@@ -20,7 +20,7 @@ export async function fetchHTML(url: string) {
         .launch({
             headless: true,
             'ignoreHTTPSErrors': true,
-            executablePath: '/usr/bin/google-chrome'
+            // executablePath: '/usr/bin/google-chrome'
         })
         .then(async browser => {
             const page = await browser.newPage();
