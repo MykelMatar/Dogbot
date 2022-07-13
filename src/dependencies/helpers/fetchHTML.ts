@@ -6,19 +6,11 @@ import Adblocker from 'puppeteer-extra-plugin-adblocker'
 
 export async function fetchHTML(url: string) {
 
-    puppeteer.use(Adblocker({blockTrackers: true}))
-    // puppeteer
-    //     .use(StealthPlugin())
-    //     .launch({'ignoreHTTPSErrors': true})
-    //     .then(async browser => {
-    //         const page = await browser.newPage();
-    //         await page.goto(url)
-    //         const pageData = await page.content()
-    //         console.log(pageData)
-    //     })
-    const getData = await puppeteer.use(StealthPlugin())
+    const data = await puppeteer
+        .use(Adblocker({blockTrackers: true}))
+        .use(StealthPlugin())
         .launch({
-            executablePath: '/usr/bin/chromium-l10n',
+            executablePath: '/usr/bin/chromium',
             args: [
                 "--disable-gpu",
                 "--disable-dev-shm-usage",
@@ -35,15 +27,5 @@ export async function fetchHTML(url: string) {
             return await page.content()
         })
 
-    return cheerio.load(getData)
+    return cheerio.load(data)
 }
-
-// .launch ({args: [
-//     `--proxy-server=http://scraperapi:${process.env.SCRAPER_API_KEY}@proxy-server.scraperapi.com:8001`
-// ]
-// })
-
-// await page.authenticate({
-//     username: 'scraperapi',
-//     password: process.env.SCRAPER_API_KEY,
-// })
