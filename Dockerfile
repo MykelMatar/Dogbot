@@ -50,8 +50,9 @@ ENV PUPPETEER_EXECUTABLE_PATH /usr/bin/chromium
 COPY package*.json ./
 COPY tsconfig.json ./
 
-RUN npm install puppeteer@10.0.0
 RUN npm i
+RUN npm uninstall puppeteer
+RUN npm install puppeteer@10.0.0
 
 COPY . .
 
