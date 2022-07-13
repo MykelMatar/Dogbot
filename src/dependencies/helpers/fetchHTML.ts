@@ -24,8 +24,9 @@ export async function fetchHTML(url: string) {
         .then(async browser => {
             const page = await browser.newPage();
             await page.goto(url)
-            return await page.content()
+            return [await page.content(), await browser.close()]
         })
-
-    return cheerio.load(data)
+    
+    // @ts-ignore
+    return cheerio.load(data[0])
 }
