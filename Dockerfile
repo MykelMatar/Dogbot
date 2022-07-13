@@ -3,7 +3,7 @@ FROM --platform=linux/arm64 node:16.13.0 as base
 WORKDIR /home/michael/node/Dogbot
 
 RUN apt-get update \
-&& apt-get install -y chromium \
+&& apt-get install -y chromium chromium-l10n \
 && apt-get install -y ca-certificates \
 fonts-liberation \
 libappindicator3-1 \
