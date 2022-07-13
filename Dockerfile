@@ -49,8 +49,6 @@ COPY package*.json ./
 COPY tsconfig.json ./
 
 RUN npm i
-RUN npm uninstall puppeteer
-RUN npm install puppeteer@10.0.0
 
 COPY . .
 
