@@ -5,7 +5,7 @@ WORKDIR /home/michael/node/Dogbot
 # if running on linux
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true 
 
-RUN apt-get install -y \
+RUN apt-get update && apt-get -y install curl && apt-get install -y \
     fonts-liberation \
     gconf-service \
     libappindicator1 \
