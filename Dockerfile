@@ -2,10 +2,9 @@ FROM node:16.13.0 as base
 
 WORKDIR /home/michael/node/Dogbot
 
-# if running on linux
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true 
-
-RUN apt-get update && apt-get -y install curl && apt-get install -y \
+RUN apt-get update && \
+    apt-get install -y \
+    curl \
     fonts-liberation \
     gconf-service \
     libappindicator1 \
@@ -38,6 +37,9 @@ RUN apt-get update && apt-get -y install curl && apt-get install -y \
     libxss1 \
     libxtst6 \
     xdg-utils
+
+# if running on linux
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true 
 
 COPY package*.json ./
 COPY tsconfig.json ./

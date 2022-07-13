@@ -1,7 +1,7 @@
 version: '3.7'
 
 services:
-  ts-node-docker:
+  dogbot-docker:
     build:
       context: .
       dockerfile: Dockerfile
@@ -9,6 +9,6 @@ services:
     volumes:
       - ./src:/home/michael/node/Dogbot/src
     container_name: ts-node-docker
-    expose:
-      - '8080'
+#    expose:
+#      - '8080'
     command: npm run bot
