@@ -20,9 +20,9 @@ export async function fetchHTML(url: string) {
         .launch({
             executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
             args: [
-                "--disable-gpu",
-                "--disable-dev-shm-usage",
-                "--disable-setuid-sandbox",
+                // "--disable-gpu",
+                // "--disable-dev-shm-usage",
+                // "--disable-setuid-sandbox",
                 "--no-sandbox",
             ],
             headless: true,

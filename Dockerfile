@@ -2,8 +2,6 @@ FROM --platform=linux/arm64 node:16.13.0 as base
 
 WORKDIR /home/michael/node/Dogbot
 
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true 
-
 RUN apt-get update \
 && apt-get install -y chromium \
 && apt-get install -y ca-certificates \
