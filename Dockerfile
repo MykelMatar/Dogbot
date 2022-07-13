@@ -5,14 +5,14 @@ WORKDIR /home/michael/node/Dogbot
 # if running on oracle server
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true 
 
-RUN apt-get update \
-    && apt-get install -y wget gnupg \
-    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
-    && apt-get update \
-    && apt-get install -y google-chrome-stable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 \
-      --no-install-recommends \
-    && rm -rf /var/lib/apt/lists/* \
+# Oracle Linux 8 
+RUN yum upgrade -y \
+    sudo dnf install https://yum.oracle.com/repo/OracleLinux/OL8/developer/EPEL/aarch64/getPackage/minizip-2.8.9-2.el8.aarch64.rpm \
+    sudo dnf install https://yum.oracle.com/repo/OracleLinux/OL8/developer/EPEL/aarch64/getPackage/chromium-common-88.0.4324.150-1.0.1.el8.aarch64.rpm 
+
+ENV PUPPETEER_CHROMIUM_REVISION 88.0.4324.150-1.0.1
+ENV PUPPETEER_EXECUTABLE_PATH /usr/lib64/chromium-browser
+
     
 COPY package*.json ./
 COPY tsconfig.json ./
