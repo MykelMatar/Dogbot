@@ -4,7 +4,7 @@ WORKDIR /home/michael/node/Dogbot
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true 
 
-RUN apt-get update &&  apt install chromium-browser
+RUN apt update &&  apt install -y chromium
     
 COPY package*.json ./
 COPY tsconfig.json ./
