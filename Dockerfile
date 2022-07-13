@@ -2,52 +2,19 @@ FROM node:16.13.0 as base
 
 WORKDIR /home/michael/node/Dogbot
 
-RUN apt-get update && \
-    apt-get install -y \
-    curl \
-    fonts-liberation \
-    gconf-service \
-    libappindicator1 \
-    libasound2 \
-    libatk1.0-0 \
-    libcairo2 \
-    libcups2 \
-    libfontconfig1 \
-    libgbm-dev \
-    libgdk-pixbuf2.0-0 \
-    ibgtk-3-0 \
-    libicu-dev \
-    libjpeg-dev \
-    libnspr4 \
-    libnss3 \
-    libpango-1.0-0 \
-    libpangocairo-1.0-0 \
-    libpng-dev \
-    libx11-6 \
-    libx11-xcb1 \
-    libxcb1 \
-    libxcomposite1 \
-    libxcursor1 \
-    libxdamage1 \
-    libxext6 \
-    libxfixes3 \
-    libxi6 \
-    libxrandr2 \
-    libxrender1 \
-    libxss1 \
-    libxtst6 \
-    xdg-utils
-
-# if running on linux
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true 
 
+RUN apt-get update && apt-get install curl gnupg -y \
+  && curl --location --silent https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+  && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
+  && apt-get update \
+  && apt-get install google-chrome-stable -y --no-install-recommends \
+  && rm -rf /var/lib/apt/lists/* \
+    
 COPY package*.json ./
 COPY tsconfig.json ./
 
-RUN npm ci 
 RUN npm i
-
-RUN chmod -R o+rwx node_modules/puppeteer/.local-chromium
 
 COPY . .
 
