@@ -18,8 +18,12 @@ export async function fetchHTML(url: string) {
     //     })
     const getData = await puppeteer.use(StealthPlugin())
         .launch({
-            executablePath: '/usr/lib64/chromium-browser',
-            args: ['--use-gl=egl'],
+            args: [
+                "--disable-gpu",
+                "--disable-dev-shm-usage",
+                "--disable-setuid-sandbox",
+                "--no-sandbox",
+            ],
             headless: true,
             'ignoreHTTPSErrors': true,
             // executablePath: '/usr/bin/google-chrome'
