@@ -42,7 +42,7 @@ lsb-release \
 wget \
 xdg-utils
 
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
+# ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 ENV PUPPETEER_EXECUTABLE_PATH /usr/bin/chromium
     
 COPY package*.json ./
