@@ -1,6 +1,6 @@
 FROM --platform=linux/arm64 node:16.13.0 as base
 
-WORKDIR /home/michael/node/Dogbot
+WORKDIR /home/bin
 
 RUN apt-get update \
 && apt-get install -y chromium chromium-l10n \
@@ -41,6 +41,8 @@ libxtst6 \
 lsb-release \
 wget \
 xdg-utils
+
+WORKDIR /home/michael/node/Dogbot
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
     
