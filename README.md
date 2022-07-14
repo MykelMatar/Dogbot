@@ -23,9 +23,9 @@
 <img src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/mc-list-servers.png" width="36%"></img>  
 
 **Enlist Commands**  
-<img src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/autoenlist.png" width="34%"></img>
-<img src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/enlist-users.png" width="32%"></img>
-<img src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/enlist-stats.png" width="33%"></img>
+<img src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/autoenlist.png" width="33%"></img>
+<img src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/enlist-users.png" width="31%"></img>
+<img src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/enlist-stats.png" width="32%"></img>
 
 **Other Commands**  
 <img src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/get-stats-valorant.png" width="35%"></img> 
