@@ -27,7 +27,7 @@ export const enlistStats = new Command(
                 content: 'User does not have any data. Data is only created for users who have enlisted, rejected, or played a game'
             })
         }
-        
+
         // get enlist stats
         let enlistRatio: number, socialStatus: string
         const enlistValue: number = userData.enlistStats.enlists
@@ -38,12 +38,13 @@ export const enlistStats = new Command(
         else enlistRatio = enlistValue
 
         // determine social status
-        if (enlistValue > rejectValue * 10 && rejectValue !== 0) socialStatus = 'epic gamer'
+        if ((enlistValue > rejectValue * 10 && rejectValue !== 0) || rejectValue < enlistValue + 10 && rejectValue == 0) socialStatus = 'epic gamer'
         else if (enlistValue > rejectValue) socialStatus = 'cool'
         else if (enlistValue < rejectValue) socialStatus = 'cringe'
-        else if (enlistValue * 10 < rejectValue && enlistValue !== 0) socialStatus = 'super cringe'
+        else if ((enlistValue * 10 < rejectValue && enlistValue !== 0) || (rejectValue > enlistValue + 10 && enlistValue == 0)) socialStatus = 'super cringe'
         else if (enlistValue === rejectValue && enlistValue !== 0) socialStatus = 'meh'
         else if (enlistValue === 0 && rejectValue === 0) socialStatus = 'TBD'
+        else socialStatus = 'stat machine broke'
 
         const embed = new MessageEmbed()
             .setTitle(`${username}'s Enlist Stats`)

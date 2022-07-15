@@ -10,7 +10,6 @@ export async function fetchHTML(url: string) {
         .use(Adblocker({blockTrackers: true}))
         .use(StealthPlugin())
         .launch({
-            executablePath: '/usr/bin/chromium',
             args: [
                 "--disable-gpu",
                 "--disable-dev-shm-usage",
