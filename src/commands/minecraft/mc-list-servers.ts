@@ -1,6 +1,7 @@
 import {Command} from "../../dependencies/classes/Command";
 import {MessageActionRow, MessageButton, MessageEmbed} from "discord.js";
 
+//TODO check if it is feasible to get the status of every server on the list
 export const mcListServers = new Command(
     'mc-list-servers',
     'lists all registered MC server',

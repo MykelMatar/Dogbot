@@ -33,7 +33,9 @@ export const mcServerStatus = new Command(
             )
 
         // Check Server Status
-        status(MCServerIP.replace(/["]+/g, '')) // port default is 25565
+        const options = { timeout: 3000 }
+        
+        status(MCServerIP.replace(/["]+/g, ''), 25565, options) // port default is 25565
             .then(async (response) => {
                 console.log('Server Online')
 
@@ -48,7 +50,7 @@ export const mcServerStatus = new Command(
                         {name: 'Online Players', value: `>  ${response.players.online.toString()}`},
                     )
                     .setColor("#8570C1")
-                    .setFooter('Server Online')
+                    .setFooter({text: 'Server Online'})
 
                 // searched Player embed field 
                 let searchedPlayer = interaction.options.data.find(option => option.name === 'username')

@@ -26,14 +26,14 @@ export async function ready(client: Client) {
     // slash command template + options
 
     // test
-    commands?.create({
-        name: 'simleave',
-        description: 'simulates user leaving'
-    });
-    commands?.create({
-        name: 'simjoin',
-        description: 'simulates user joining'
-    });
+    // commands?.create({
+    //     name: 'simleave',
+    //     description: 'simulates user leaving'
+    // });
+    // commands?.create({
+    //     name: 'simjoin',
+    //     description: 'simulates user joining'
+    // });
 
     // enlist-users commands
     commands?.create({
@@ -174,7 +174,7 @@ export async function ready(client: Client) {
     // minecraft commands
     commands?.create({
         name: 'mc-add-server',
-        description: 'test2 typescript commands',
+        description: 'add a new minecraft server to the list',
         options: [
             {
                 name: 'ip',
@@ -240,6 +240,25 @@ export async function ready(client: Client) {
                 name: 'username',
                 description: 'check to see if a certain user in online.',
                 required: false,
+                type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING
+            },
+            {
+                name: 'hide',
+                description: 'Whether to hide the message from everyone else. True by default.',
+                required: false,
+                type: DiscordJS.Constants.ApplicationCommandOptionTypes.BOOLEAN
+            }
+        ]
+    });
+
+    commands?.create({
+        name: 'mc-single-server-status',
+        description: 'check the status of a server 1 time',
+        options: [
+            {
+                name: 'ip',
+                description: 'IP of the server. MAKE SURE THE SERVER IS ONLINE',
+                required: true,
                 type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING
             },
             {
