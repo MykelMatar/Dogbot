@@ -22,22 +22,44 @@ export const mcListServers = new Command(
             serverIPList = ["N/A"]
         }
 
-        // generate buttons
-        const row = new MessageActionRow()
-            .addComponents(
-                new MessageButton()
-                    .setCustomId('ListAdd')
-                    .setLabel('Add')
-                    .setStyle('SUCCESS'),
-                new MessageButton()
-                    .setCustomId('ListRemove')
-                    .setLabel('Remove')
-                    .setStyle('DANGER'),
-                new MessageButton()
-                    .setCustomId('ListChange')
-                    .setLabel('Change')
-                    .setStyle('PRIMARY'),
-            );
+        let row; // variable amount of buttons to reflect doable actions
+        if (serverIPList.length === 10) {
+            row = new MessageActionRow()
+                .addComponents(
+                    new MessageButton()
+                        .setCustomId('ListRemove')
+                        .setLabel('Remove')
+                        .setStyle('DANGER'),
+                    new MessageButton()
+                        .setCustomId('ListChange')
+                        .setLabel('Change')
+                        .setStyle('PRIMARY'),
+                );
+        } else if (serverIPList.length === 1) {
+            row = new MessageActionRow()
+                .addComponents(
+                    new MessageButton()
+                        .setCustomId('ListAdd')
+                        .setLabel('Add')
+                        .setStyle('SUCCESS'),
+                );
+        } else {
+            row = new MessageActionRow()
+                .addComponents(
+                    new MessageButton()
+                        .setCustomId('ListAdd')
+                        .setLabel('Add')
+                        .setStyle('SUCCESS'),
+                    new MessageButton()
+                        .setCustomId('ListRemove')
+                        .setLabel('Remove')
+                        .setStyle('DANGER'),
+                    new MessageButton()
+                        .setCustomId('ListChange')
+                        .setLabel('Change')
+                        .setStyle('PRIMARY'),
+                );
+        }
 
         // generate embed
         const embed = new MessageEmbed()
@@ -57,8 +79,8 @@ export const mcListServers = new Command(
         const collector = interaction.channel.createMessageComponentCollector({
             filter,
             componentType: 'BUTTON',
-            time: 10000
-        }); // only message author can interact, 10s timer 
+            time: 20000
+        }); // only message author can interact, 20s timer 
 
         // retrieve commands for button
         const command1 = client.commands.get('mc-add-server');
@@ -89,7 +111,7 @@ export const mcListServers = new Command(
             if (collected.size === 0)
                 await interaction.editReply({embeds: [embed], components: []}) // remove buttons & embed
             else if (collected.first().customId === 'ListAdd' || collected.first().customId === 'ListRemove' || collected.first().customId === 'ListChange')
-                await interaction.editReply({content: 'Button Pressed', embeds: [], components: []})   // remove buttons & embed
+                await interaction.editReply({content: 'Executing...', embeds: [], components: []})   // remove buttons & embed
         });
 
     })

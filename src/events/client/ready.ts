@@ -73,6 +73,19 @@ export async function ready(client: Client) {
     });
 
     commands?.create({
+        name: 'enlist-leaderboard',
+        description: 'displays top 10 best and top 10 most cringe gamers',
+        options: [
+            {
+                name: 'hide',
+                description: 'whether to hide the message from everyone else. True by default',
+                required: false,
+                type: DiscordJS.Constants.ApplicationCommandOptionTypes.BOOLEAN
+            }
+        ]
+    });
+
+    commands?.create({
         name: 'setrole-autoenlist',
         description: 'changes the role used to enlist (for automated enlisting)',
         options: [

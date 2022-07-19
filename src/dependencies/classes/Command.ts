@@ -6,20 +6,26 @@ export class Command {
     description: string
     requiresAdmin?: boolean
     executeCallback: (client: Client, interaction: CommandInteraction, guildName?: string) => void
-    guildData: any
+    guildData: any // mongoDB document
 
     public async execute(client: Client, interaction: CommandInteraction, guildName?: string): Promise<GuildCacheMessage<CacheType>> {
-        if (!(!(interaction.member instanceof GuildMember) || interaction.member.partial)) {
-            console.log(`${this.name} requested by ${interaction.member.user.username} in ${interaction.member.guild.name}`)
-        }
+        try {
+            if (!(!(interaction.member instanceof GuildMember) || interaction.member.partial)) {
+                console.log(`${this.name} requested by ${interaction.member.user.username} in ${interaction.member.guild.name}`)
+            }
 
-        // @ts-ignore
-        if (this.requiresAdmin && !interaction.member.permissions.has("ADMINISTRATOR")) {
-            return interaction.editReply({content: "Only Admins can use this command"});
-        }
+            // @ts-ignore
+            if (this.requiresAdmin && !interaction.member.permissions.has("ADMINISTRATOR")) {
+                return interaction.editReply({content: "Only Admins can use this command"});
+            }
 
-        this.guildData = await guilds.findOne({guildId: interaction.guildId})
-        this.executeCallback(client, interaction, guildName)
+            this.guildData = await guilds.findOne({guildId: interaction.guildId})
+            this.executeCallback(client, interaction, guildName)
+        }
+        catch (e) {
+            console.log(e)
+            return interaction.editReply({content: "error with command execution"});
+        }
     }
 
     constructor(name: string, description: string, callback: (client, interaction: CommandInteraction, guildName?: string) => void) {

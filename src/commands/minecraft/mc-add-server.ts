@@ -30,19 +30,15 @@ export const mcAddServer = new Command(
             // not using Promise.all bc 1 response must be collected before the other / not simultaneous
         }
         let server = {name: name, ip: ip}; // setup variable to push to mongo
-
-
+        
         // verify that IP is not already registered
-        if (serverList.some(function (o) {
-            return o["ip"] === ip;
-        })) {
+        if (serverList.some(o => o["ip"] === ip)) {
             await interaction.editReply(
                 "Server already registered, double check the IP or use **/mc-change-server-name** to change its name"
             );
             return console.log("Duplicate IP Detected");
         }
-
-
+        
         // make sure IP is a valid server IP by checking its status (server must be online for this to work)
         try {
             await status(ip);

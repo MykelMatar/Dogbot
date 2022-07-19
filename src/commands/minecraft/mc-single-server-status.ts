@@ -6,13 +6,15 @@ export const mcSingleServerStatus = new Command(
     'mc-single-server-status',
     'get the status of a mc server 1 time (quick check)',
     async (client, interaction) => {
+
+        const serverList = mcSingleServerStatus.guildData.MCServerData.serverList
         
         // Generate buttons
         const row = new MessageActionRow()
             .addComponents(
                 new MessageButton()
-                    .setCustomId('addnew')
-                    .setLabel('Add to list')
+                    .setCustomId('SingleAdd')
+                    .setLabel('Add To List')
                     .setStyle('PRIMARY'),
             )
         
@@ -34,8 +36,40 @@ export const mcSingleServerStatus = new Command(
                     )
                     .setColor("#8570C1")
                     .setFooter({text: 'Server Online'})
+                
+                if (serverList.length === 10 || serverList.some(o => o["ip"] === ip)) {
+                    return interaction.editReply({embeds: [embed]})
+                } else {
+                    await interaction.editReply({embeds: [embed], components: [row]})
+                }
+                
+                let server = {name: ip, ip: ip}; // setup variable to push to mongo
+                
+                // create collector
+                const filter = i => i.user.id === interaction.member.user.id;
+                const collector = interaction.channel.createMessageComponentCollector({
+                    filter,
+                    componentType: 'BUTTON',
+                    time: 10000
+                }); // only message author can interact, 10s timer
 
-                await interaction.editReply({embeds: [embed], components: [row]})
+                // collect response
+                collector.on('collect', async i => {
+                    // interaction handling
+                    if (i.customId === 'SingleAdd') {
+                        await i.update({embeds: [embed], content: 'Adding Server (if possible)', components: []});
+                        serverList.push(server);
+                        await mcSingleServerStatus.guildData.save();
+                        collector.stop()
+                    }
+                });
+
+                collector.on('end', async collected => {
+                    if (collected.size === 0)
+                        await interaction.editReply({embeds: [embed], components: []}) // remove buttons & embed
+                    else if (collected.first().customId === 'SingleAdd')
+                        await interaction.editReply({content: 'server added successfully', embeds: [embed], components: []})   // remove buttons & embed
+                });
         })
             .catch(async () => {
                 console.log('Server Offline')
@@ -49,5 +83,6 @@ export const mcSingleServerStatus = new Command(
                 // send embed and collect response
                 await interaction.editReply({embeds: [embed]})
             })
+        
     }
 )

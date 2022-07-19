@@ -30,17 +30,26 @@ export const enlistStats = new Command(
         }
 
         // get enlist stats
-        let enlistRatio: number, socialStatus: string, commendation: string
+        let enlistRatio: string, socialStatus: string, commendation: string
         const enlistValue: number = userData.enlistStats.enlists
         const rejectValue: number = userData.enlistStats.rejects
 
         // find enlist-to-reject ratio
-        if (rejectValue !== 0) enlistRatio = (enlistValue / rejectValue)
-        else enlistRatio = enlistValue
+        if (rejectValue !== 0) enlistRatio = (enlistValue / rejectValue).toFixed(2)
+        else enlistRatio = enlistValue.toFixed(2)
+
+        let enlistPercentage, rejectPercentage
+        let totalValue = enlistValue + rejectValue
+        if (rejectValue === 0) enlistPercentage = 100
+        else enlistPercentage = (enlistValue / totalValue) * 100
+
+        if (enlistValue === 0) rejectPercentage = 100
+        else rejectPercentage = (rejectValue / totalValue) * 100
+
 
         // determine social status and commendation
-        if ((enlistValue > (rejectValue + 1) * 10 && rejectValue !== 0)) {
-            socialStatus = 'epic gamer 😎' // add 1 to avoid multiplication by 0
+        if (enlistValue > (rejectValue + 1) * 10 ) { // add 1 to avoid multiplication by 0
+            socialStatus = 'epic gamer 😎'
             commendation = 'frequent gamer'
         } else if (enlistValue > rejectValue) {
             socialStatus = 'cool'
@@ -48,7 +57,7 @@ export const enlistStats = new Command(
         } else if (enlistValue < rejectValue) {
             socialStatus = 'cringe'
             commendation = 'infrequent gamer'
-        } else if (((enlistValue + 1) * 10 < rejectValue && enlistValue !== 0)) {
+        } else if ((enlistValue + 1) * 10 < rejectValue) {
             socialStatus = 'giga cringelord'
             commendation = 'never games (cringe)'
         } else if (enlistValue === rejectValue && enlistValue !== 0) {
@@ -67,8 +76,12 @@ export const enlistStats = new Command(
             .addFields([
                 {name: 'Enlists ✅', value: enlistValue.toString(), inline: true},
                 {name: 'Rejects ❌', value: rejectValue.toString(), inline: true},
-                {name: 'Ratio', value: enlistRatio.toString(), inline: true},
-                {name: 'Cool or Cringe?', value: socialStatus, inline: false},
+                {
+                    name: 'Enlist to Reject Ratio',
+                    value: `**${enlistRatio}**\n*${enlistPercentage.toFixed(2)}% enlist rate*⠀⠀⠀*${rejectPercentage.toFixed(2)}% reject rate*`,
+                    inline: false
+                },
+                {name: 'Cool or Cringe?⠀⠀', value: socialStatus, inline: true},
                 {name: 'Commendation', value: commendation, inline: true}
             ])
             .setColor("#8570C1")
