@@ -48,18 +48,18 @@ export const enlistStats = new Command(
 
 
         // determine social status and commendation
-        if (enlistValue > (rejectValue + 1) * 10 ) { // add 1 to avoid multiplication by 0
+        if (enlistValue > (rejectValue + 1) * 10) { // add 1 to avoid multiplication by 0
             socialStatus = 'epic gamer 😎'
             commendation = 'frequent gamer'
         } else if (enlistValue > rejectValue) {
             socialStatus = 'cool'
             commendation = 'usually games'
-        } else if (enlistValue < rejectValue) {
-            socialStatus = 'cringe'
-            commendation = 'infrequent gamer'
         } else if ((enlistValue + 1) * 10 < rejectValue) {
             socialStatus = 'giga cringelord'
             commendation = 'never games (cringe)'
+        } else if (enlistValue < rejectValue) {
+            socialStatus = 'cringe'
+            commendation = 'infrequent gamer'
         } else if (enlistValue === rejectValue && enlistValue !== 0) {
             socialStatus = 'meh'
             commendation = 'wildcard'
