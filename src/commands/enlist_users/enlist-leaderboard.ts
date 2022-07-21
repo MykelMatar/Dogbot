@@ -2,6 +2,25 @@ import {Command} from "../../dependencies/classes/Command";
 import {MessageEmbed} from "discord.js";
 
 //TODO if user changes username, does it affect any commands?
+/*
+ Ranking Algorithm
+ methodology: 
+    Method 1 Ranking algorithm - 
+        (percentage * weight) + (normalizedEnlists * weight) - addition of final values
+        - maxEnlists requires normalization bc value is technically infinite
+        
+            sum normalization: Let A be an attribute which we want to maximize, and its elements are [a1, a2 ... an], 1<a<n
+                                ai / sum(A) = maximizeFunc(ai, A)
+                                ex) several cards with several mpgs. normalize by dividing one mpg by the sum mpg of all other cars
+                                 
+            Apply weights (weights determined by you, e.g. 1 for percentage and 0.75 for enlist totals
+            1. as it is: directly multiply the weights to the optimized score
+            2. sum: normalize weight via sum logic then multiply
+            3. max: normalize weight by max logic, then multiply
+            
+            alternative final values: handles very small results
+            log(percentage* weight) * log(normalizedEnlists * weight)
+*/
 
 export const enlistLeaderboard = new Command(
     'enlist-leaderboard',
@@ -13,96 +32,100 @@ export const enlistLeaderboard = new Command(
         if (userData.length === 0) {
             await interaction.reply({content: 'This server does not have any user data. User data is created upon interacting with the enlist prompt or playing a game'})
         } else if (userData.length === 1) {
-            await interaction.reply({content: 'Cannot create a leaderboard with only 1 user. There must be at least 3 users. User data is created upon interacting with the enlist prompt or playing a game'})
+            await interaction.reply({content: 'Cannot create a leaderboard with only 1 user, there must be at least 3 users. User data is created upon interacting with the enlist prompt or playing a game'})
         } else if (userData.length === 2) {
-            await interaction.reply({content: 'Cannot create a leaderboard with only 2 users. There must be at least 3 users. User data is created upon interacting with the enlist prompt or playing a game'})
+            await interaction.reply({content: 'Cannot create a leaderboard with only 2 users, there must be at least 3 users. User data is created upon interacting with the enlist prompt or playing a game'})
         }
 
+        // get total amount of enlists for normalization later
+        let totalEnlistValue: number = 0
+        for (const user of userData){
+            let enlists = user.enlistStats.enlists
+            let rejects = user.enlistStats.rejects
+  
+            totalEnlistValue += (enlists + rejects)
+        }
+
+        // determine and normalize weights (also using sum normalization)
+        let percentageWeight = .8,
+            enlistWeight = 1
+
+        let normalizedEnlistWeight = enlistWeight / (percentageWeight + enlistWeight)
+        let normalizedPercentageWeight = percentageWeight / (percentageWeight + enlistWeight)
+        
         let tempUsers: User[] = []
         for (const user of userData) {
-            let enlistValue = user.enlistStats.enlists
-            let rejectValue = user.enlistStats.rejects
             let enlistPercentage, rejectPercentage
+            let enlists = user.enlistStats.enlists
+            let rejects = user.enlistStats.rejects
+            let userTotalValue = enlists + rejects
+            
+            if (rejects === 0) enlistPercentage = 1
+            else enlistPercentage = (enlists / userTotalValue)
 
-            let totalValue = enlistValue + rejectValue
-            if (rejectValue === 0) enlistPercentage = 100
-            else enlistPercentage = (enlistValue / totalValue) * 100
+            if (enlists === 0) rejectPercentage = 1
+            else rejectPercentage = (rejects / userTotalValue)
+            
+            let normalizedEnlistValue = enlists / totalEnlistValue
+            let normalizedRejectValue = rejects / totalEnlistValue
+            
+            let adjustedEnlistRank: number = (enlistPercentage * percentageWeight) + (normalizedEnlistValue * enlistWeight)
+            let adjustedRejectRank: number = (rejectPercentage * percentageWeight) + (normalizedRejectValue * enlistWeight)
 
-            if (enlistValue === 0) rejectPercentage = 100
-            else rejectPercentage = (rejectValue / totalValue) * 100
-
-
+            if (isNaN(adjustedEnlistRank)) {
+                adjustedEnlistRank = 0
+            }
+            if (isNaN(adjustedRejectRank)) {
+                adjustedRejectRank = 0
+            }
+            
             let tempUser: User = {
                 name: user.username,
-                enlists: enlistValue,
-                rejects: rejectValue,
+                enlists: enlists,
+                rejects: rejects,
                 enlistPercentage: enlistPercentage,
-                rejectPercentage: rejectPercentage
+                rejectPercentage: rejectPercentage, // this + all above properties are for printing in embed
+                adjustedEnlistRankValue: adjustedEnlistRank, 
+                adjustedRejectRankValue: adjustedRejectRank,
             }
 
             tempUsers.push(tempUser)
         }
+        tempUsers = tempUsers.filter(user => (user.enlists + user.rejects >= 5)) // only include users with > 5 enlists to reduce outliers
         
-        tempUsers = tempUsers.filter(user => (user.enlists + user.rejects > 4)) // only include users with > 5 enlists to reduce outliers 
+        // 2d arrays that store names, percentages, and total enlist values
+        let names1 = [], percentages1 = [], totals1 = []
+        let names2 = [], percentages2 = [], totals2 = []
         
-        let enlistRankings: User[] = tempUsers.sort((a, b) => (a.enlistPercentage > b.enlistPercentage ? 1 : -1))
-        let rejectRankings: User[] = tempUsers.sort((a, b) => (a.rejectPercentage < b.rejectPercentage ? 1 : -1))
-        console.log({enlistRankings})
+        let top3Gamers = [names1, percentages1, totals1],
+            top3Losers = [names2, percentages2, totals2]
         
-        let topTied: User[] = []
-
-        let top3GamerNames: string[] = [],
-            top3GamerPercentages: string[] = [],
-            top3GamerInteractions: string[] = [],
-            top3CringeNames: string[] = [],
-            top3CringePercentages: string[] = [],
-            top3CringeInteractions: string[] = []
-
-        // handle ties
-        for (let i = 0; i < enlistRankings.length; i++) {
-            if (enlistRankings[i + 1] === undefined) break
-            if (enlistRankings[i + 1].enlistPercentage === enlistRankings[i].enlistPercentage) {
-                topTied.push(enlistRankings[i])
-                topTied.push(enlistRankings[i + 1])
-            }
-        }
-
-        // filter duplicate users
-        topTied = topTied.filter((user, i) => topTied.indexOf(user) === i)
-
-        // handle cases where there are no ties or ties are less than 3
-        if (topTied.length !== 0) {
-            topTied = topTied.sort((a, b) => ((a.enlists + a.rejects) > (b.enlists + b.rejects) ? 1 : -1))
-        } else if (topTied.length === 0) {
-            topTied.unshift(enlistRankings[enlistRankings.length-1])
-            topTied.unshift(enlistRankings[enlistRankings.length-2])
-            topTied.unshift(enlistRankings[enlistRankings.length-3])
-        } else if (topTied.length === 1) {
-            topTied.unshift(enlistRankings[enlistRankings.length-2])
-            topTied.unshift(enlistRankings[enlistRankings.length-3])
-        } else if (topTied.length === 2) {
-            topTied.unshift(enlistRankings[enlistRankings.length-3])
-        }
-
-        // push users and values to arrays for display in embed
+        // have to seperate rankings into 2 loops because of issue declaring both rankings as tempUsers.sort()
+        let enlistRankings: User[] = tempUsers.sort((a,b) => (b.adjustedEnlistRankValue - a.adjustedEnlistRankValue))
         for (let i = 0; i < 3; i++) {
-            top3GamerNames.push(`**${i + 1}.** ${topTied[(topTied.length - (i + 1))].name}\n`,)
-            top3GamerPercentages.push(`**${i + 1}.** ${topTied[(topTied.length - (i + 1))].enlistPercentage.toFixed(2)}\n`)
-            top3GamerInteractions.push(`**${i + 1}.** ${topTied[(topTied.length - (i + 1))].enlists + topTied[(topTied.length - (i + 1))].rejects}\n`)
-            top3CringeNames.push(`**${i + 1}.** ${rejectRankings[i].name}\n`)
-            top3CringePercentages.push(`**${i + 1}.** ${rejectRankings[i].rejectPercentage.toFixed(2)}\n`,)
-            top3CringeInteractions.push(`**${i + 1}.** ${rejectRankings[i].enlists + rejectRankings[i].rejects}\n`)
+            top3Gamers[0].push(`**${i + 1}.** ${enlistRankings[i].name}\n`,)
+            top3Gamers[1].push(`**${i + 1}.** ${(enlistRankings[i].enlistPercentage*100).toFixed(2)}\n`)
+            top3Gamers[2].push(`**${i + 1}.** ${enlistRankings[i].enlists + enlistRankings[i].rejects}\n`)
         }
+        
+        let rejectRankings: User[] = tempUsers.sort((a, b) => (a.adjustedRejectRankValue < b.adjustedRejectRankValue ? 1 : -1))
+        console.log(rejectRankings)
+        for (let i = 0; i < 3; i++) {
+            top3Losers[0].push(`**${i + 1}.** ${rejectRankings[i].name}\n`)
+            top3Losers[1].push(`**${i + 1}.** ${(rejectRankings[i].rejectPercentage*100).toFixed(2)}\n`,)
+            top3Losers[2].push(`**${i + 1}.** ${rejectRankings[i].enlists + rejectRankings[i].rejects}\n`)
+        }
+
 
         const embed = new MessageEmbed()
             .setTitle(`Enlist Leaderboard`)
             .addFields([
-                {name: 'Top 3 Gamers⠀⠀⠀⠀⠀', value: top3GamerNames.join(''), inline: true},
-                {name: 'Enlist Percentage⠀⠀⠀', value: top3GamerPercentages.join(''), inline: true},
-                {name: 'Total Interactions', value: top3GamerInteractions.join(''), inline: true},
-                {name: 'Top 3 Cringelords', value: top3CringeNames.join(''), inline: true},
-                {name: 'Reject Percentage', value: top3CringePercentages.join(''), inline: true},
-                {name: 'Total Interactions', value: top3CringeInteractions.join(''), inline: true},
+                {name: 'Top 3 Gamers⠀⠀⠀⠀⠀', value: top3Gamers[0].join(''), inline: true},
+                {name: 'Enlist Percentage⠀⠀⠀', value: top3Gamers[1].join(''), inline: true},
+                {name: 'Total Interactions', value: top3Gamers[2].join(''), inline: true},
+                {name: 'Top 3 Cringelords', value: top3Losers[0].join(''), inline: true},
+                {name: 'Reject Percentage', value: top3Losers[1].join(''), inline: true},
+                {name: 'Total Interactions', value: top3Losers[2].join(''), inline: true},
             ])
             .setColor("#8570C1")
             .setFooter({text: 'Users with less than 5 interactions are not included on this leaderboard'})
@@ -113,7 +136,6 @@ export const enlistLeaderboard = new Command(
         else ephemeralSetting = hideOption.value
 
         await interaction.reply({ephemeral: ephemeralSetting, embeds: [embed]})
-
     }
 )
 
@@ -123,18 +145,7 @@ interface User {
     rejects: number,
     enlistPercentage: number
     rejectPercentage: number
+    adjustedEnlistRankValue: number
+    adjustedRejectRankValue: number
+    
 }
-
-function getDuplicates<T>(input: T[]): Map<T, number[]> {
-    return input.reduce((output, element, idx) => {
-        const recordedDuplicates = output.get(element);
-        if (recordedDuplicates) {
-            output.set(element, [...recordedDuplicates, idx]);
-        } else if (input.lastIndexOf(element) !== idx) {
-            output.set(element, [idx]);
-        }
-
-        return output;
-    }, new Map<T, number[]>());
-}
-

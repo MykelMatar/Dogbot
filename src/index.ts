@@ -2,6 +2,8 @@ const {Client, Collection} = require('discord.js');
 import express from 'express';
 import 'dotenv/config'
 
+console.clear()
+
 const client = new Client({
     intents: ['GUILDS', 'GUILD_MEMBERS', 'GUILD_MESSAGES', 'GUILD_PRESENCES'],
     sweepers: {
