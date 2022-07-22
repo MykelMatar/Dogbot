@@ -48,7 +48,7 @@ export const enlistStats = new Command(
         if (enlistValue === 0) rejectPercentage = 100
         else rejectPercentage = (rejectValue / totalValue) * 100
 
-        if (enlistValue === 0) ignorePercentage = 100
+        if (enlistValue === 0 && rejectValue === 0) ignorePercentage = 100
         else ignorePercentage = (ignoreValue / totalValue) * 100
 
 
