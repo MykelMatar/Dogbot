@@ -1,5 +1,5 @@
 import {Command} from "../../dependencies/classes/Command";
-import {Message, MessageActionRow, MessageButton, MessageEmbed} from "discord.js";
+import {Message, MessageActionRow, MessageButton, MessageEmbed, MessageAttachment} from "discord.js";
 import {updateEnlistUserArrays} from "../../dependencies/helpers/updateEnlistUserArrays";
 import {StatName, updateUserData} from "../../dependencies/helpers/updateUserData";
 
@@ -25,24 +25,28 @@ export const enlistUsers = new Command(
                     .setLabel('Be Cringe')
                     .setStyle('DANGER'),
             );
-
+        
         // generate embed
+        const file = new MessageAttachment('./src/dependencies/images/Dogbot_Logo_512.png')
+        const file2 = new MessageAttachment('./src/dependencies/images/Dogbot.png')
         const embed = new MessageEmbed()
             .setTitle('Registered Gamers')
+            .setThumbnail('attachment://Dogbot.png')
+            // .setImage('attachment://Dogbot_Logo_512.png')
             .addFields(
                 {name: 'Gaming⠀⠀⠀', value: '-', inline: true},
                 {name: 'Perhaps', value: '-', inline: true},
                 {name: 'Not Gaming', value: '-', inline: true},
             )
-            .setFooter({text: 'Selecting the "Perhaps" option will not count towards your enlist stats',})
             .setColor("#8570C1")
+            .setFooter({text: 'Selecting the "Perhaps" option will not count towards your enlist stats',})
 
-        let sent: Message = await message.channel.send({embeds: [embed], components: [row]})
+        let sent: Message = await message.channel.send({embeds: [embed], files: [file2], components: [row]})
 
         const collector = message.channel.createMessageComponentCollector({
             componentType: 'BUTTON',
-            time: 5000
-        }); // only message author can interact, 1 response, 3 hour (1.08e+7) timer
+            time: 1.08e+7 // 3 hour (1.08e+7) timer
+        }); 
 
 
         let enlistedUsers: string[] = ['-'],
