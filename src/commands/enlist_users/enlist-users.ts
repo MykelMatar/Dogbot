@@ -8,6 +8,8 @@ export const enlistUsers = new Command(
     'creates message embed with buttons to enlist other users for event/group',
     async (client, message) => {
 
+        const userData = enlistUsers.guildData.UserData
+        
         const row = new MessageActionRow()
             .addComponents(
                 new MessageButton()
@@ -39,7 +41,7 @@ export const enlistUsers = new Command(
 
         const collector = message.channel.createMessageComponentCollector({
             componentType: 'BUTTON',
-            time: 1.08e+7
+            time: 5000
         }); // only message author can interact, 1 response, 3 hour (1.08e+7) timer
 
 
@@ -48,7 +50,8 @@ export const enlistUsers = new Command(
             rejectedUsers: string[] = ['-'],
             rejectedUserIds: string[] = [],
             potentialUsers: string[] = ['-'],
-            potentialUserIds: string[] = []
+            potentialUserIds: string[] = [],
+            ignoredUserIds: string[] = []
         let userArrays = [enlistedUsers, enlistedUserIds, rejectedUsers, rejectedUserIds, potentialUsers, potentialUserIds] // makes it easier to pass to 'update' function   
 
         collector.on('collect', async i => {
@@ -64,10 +67,23 @@ export const enlistUsers = new Command(
         });
 
         collector.on('end', async collected => {
-            await sent.edit({content: 'ENLISTING ENDED', embeds: [embed], components: []})   // remove buttons
+            await sent.edit({content: '⚠ ***ENLISTING ENDED*** ⚠', embeds: [embed], components: []})
             if (collected.size === 0) return // make sure users were collected
 
+            let allUserIds: string[] = [],
+                allRegisteredUserIds: string[] = []
+            for (const user of userData) {
+                allUserIds.push(user.id)
+            }
+            
+            enlistedUserIds.forEach(id => allRegisteredUserIds.push(id))
+            rejectedUserIds.forEach(id => allRegisteredUserIds.push(id))
+            potentialUserIds.forEach(id => allRegisteredUserIds.push(id))
+            
+            ignoredUserIds = allUserIds.filter(id => !(allRegisteredUserIds.includes(id)))
+            
             await updateUserData(message, enlistedUserIds, StatName.enlist);
             await updateUserData(message, rejectedUserIds, StatName.reject);
+            await updateUserData(message, ignoredUserIds, StatName.ignore);
         });
     })

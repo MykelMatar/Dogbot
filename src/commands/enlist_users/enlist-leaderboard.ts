@@ -5,21 +5,18 @@ import {MessageEmbed} from "discord.js";
 /*
  Ranking Algorithm
  methodology: 
-    Method 1 Ranking algorithm - 
-        (percentage * weight) + (normalizedEnlists * weight) - addition of final values
-        - maxEnlists requires normalization bc value is technically infinite
-        
-            sum normalization: Let A be an attribute which we want to maximize, and its elements are [a1, a2 ... an], 1<a<n
-                                ai / sum(A) = maximizeFunc(ai, A)
-                                ex) several cards with several mpgs. normalize by dividing one mpg by the sum mpg of all other cars
-                                 
-            Apply weights (weights determined by you, e.g. 1 for percentage and 0.75 for enlist totals
-            1. as it is: directly multiply the weights to the optimized score
-            2. sum: normalize weight via sum logic then multiply
-            3. max: normalize weight by max logic, then multiply
-            
-            alternative final values: handles very small results
-            log(percentage* weight) * log(normalizedEnlists * weight)
+    (percentage * percentage weight) + (normalizedEnlists * enlist weight) - addition of final values
+    - Enlist value requires normalization bc value its technically infinite
+    
+        sum normalization: Let A be an attribute which we want to maximize, and its elements are [a1, a2 ... an], 1<a<n
+                            ai / sum(A) = maximizeFunc(ai, A)
+                            ex) several cars with several mpgs. normalize by dividing one mpg by the sum mpg of all other cars
+                             
+        Apply weights (weights determined by you, e.g. 1 for percentage and 0.75 for enlist totals
+        1. as it is: directly multiply the weights to the optimized score
+        2. sum: normalize weight via sum logic then multiply
+        3. max: normalize weight by max logic, then multiply
+
 */
 
 export const enlistLeaderboard = new Command(
@@ -46,18 +43,15 @@ export const enlistLeaderboard = new Command(
             totalEnlistValue += (enlists + rejects)
         }
 
-        // determine and normalize weights (also using sum normalization)
+        // declare  weights (use 'as it is' / no normalization)
         let percentageWeight = .8,
             enlistWeight = 1
-
-        let normalizedEnlistWeight = enlistWeight / (percentageWeight + enlistWeight)
-        let normalizedPercentageWeight = percentageWeight / (percentageWeight + enlistWeight)
         
         let tempUsers: User[] = []
         for (const user of userData) {
             let enlistPercentage, rejectPercentage
-            let enlists = user.enlistStats.enlists
-            let rejects = user.enlistStats.rejects
+            let enlists: number = user.enlistStats.enlists
+            let rejects: number = user.enlistStats.rejects
             let userTotalValue = enlists + rejects
             
             if (rejects === 0) enlistPercentage = 1
@@ -66,8 +60,8 @@ export const enlistLeaderboard = new Command(
             if (enlists === 0) rejectPercentage = 1
             else rejectPercentage = (rejects / userTotalValue)
             
-            let normalizedEnlistValue = enlists / totalEnlistValue
-            let normalizedRejectValue = rejects / totalEnlistValue
+            let normalizedEnlistValue: number = enlists / totalEnlistValue
+            let normalizedRejectValue: number = rejects / totalEnlistValue
             
             let adjustedEnlistRank: number = (enlistPercentage * percentageWeight) + (normalizedEnlistValue * enlistWeight)
             let adjustedRejectRank: number = (rejectPercentage * percentageWeight) + (normalizedRejectValue * enlistWeight)

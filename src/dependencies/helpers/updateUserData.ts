@@ -6,20 +6,23 @@ export async function updateUserData(message, userIdArray: string[], statName: S
 
     const currentGuild = await guilds.findOne({guildId: message.guildId})
     const UserData = currentGuild.UserData
-    
-    let statsArray: number[] = []; // statsArray Format: [tttwins, tttlosses, enlists, rejects] 
+
+    let statsArray: number[] = []; // statsArray Format: [tttwins, tttlosses, enlists, rejects, ignores] 
     switch (statName) { // default values for creating user data
         case 'tttWins':
-            statsArray = [1, 0, 0, 0];
+            statsArray = [1, 0, 0, 0, 0];
             break;
         case 'tttLosses':
-            statsArray = [0, 1, 0, 0];
+            statsArray = [0, 1, 0, 0, 0];
             break;
         case 'enlist':
-            statsArray = [0, 0, 1, 0];
+            statsArray = [0, 0, 1, 0, 0];
             break;
         case 'reject':
-            statsArray = [0, 0, 0, 1];
+            statsArray = [0, 0, 0, 1, 0];
+            break;
+        case 'ignore':
+            statsArray = [0, 0, 0, 0, 1];
             break;
     }
 
@@ -46,14 +49,15 @@ export async function updateUserData(message, userIdArray: string[], statName: S
                         })
                     }
                     break;
-                case 'enlist' || 'reject':
+                case 'enlist' || 'reject' || 'ignore':
                     if (UserData.enlistStats == null) {
                         UserData.push({
                             username: username,
                             id: userIdArray[index],
                             enlistStats: {
                                 enlists: statsArray[2],
-                                rejects: statsArray[3]
+                                rejects: statsArray[3],
+                                ignores: statsArray[4]
                             }
                         })
                     }
@@ -98,6 +102,7 @@ export async function updateUserData(message, userIdArray: string[], statName: S
                     if (user.enlistStats == '{}') {
                         user.enlistStats.enlists = 1
                         user.enlistStats.rejects = 0
+                        user.enlistStats.ignores = 0
                     } else user.enlistStats.enlists++;
                     break;
                 case 'reject':
@@ -105,7 +110,16 @@ export async function updateUserData(message, userIdArray: string[], statName: S
                     if (user.enlistStats == '{}') {
                         user.enlistStats.enlists = 0
                         user.enlistStats.rejects = 1
+                        user.enlistStats.ignores = 0
                     } else user.enlistStats.rejects++
+                    break;
+                case 'ignore':
+                    console.log(user.enlistStats)
+                    if (user.enlistStats == '{}') {
+                        user.enlistStats.enlists = 0
+                        user.enlistStats.rejects = 0
+                        user.enlistStats.ignores = 1
+                    } else user.enlistStats.ignores++
                     break;
                 case 'trWins': // fall-through (like saying trWins || trLosses)
                 case 'trLosses':
@@ -135,6 +149,7 @@ export const enum StatName {
     tttLosses = 'tttLosses',
     enlist = 'enlist',
     reject = 'reject',
+    ignore = 'ignore',
     trWins = 'trWins',
     trLosses = 'trLosses'
 }

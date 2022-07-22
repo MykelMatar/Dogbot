@@ -3,6 +3,7 @@ import {fetchHTML} from "../../dependencies/helpers/fetchHTML";
 import {Command} from "../../dependencies/classes/Command";
 import {CheerioAPI} from "cheerio";
 
+//TODO fix error handling
 export const getStatsValorant = new Command(
     'get-stats-valorant',
     'retrieves valorant stats from tracker.gg',

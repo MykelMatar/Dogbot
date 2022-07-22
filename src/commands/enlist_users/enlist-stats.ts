@@ -33,22 +33,30 @@ export const enlistStats = new Command(
         let enlistRatio: string, socialStatus: string, commendation: string
         const enlistValue: number = userData.enlistStats.enlists
         const rejectValue: number = userData.enlistStats.rejects
+        const ignoreValue: number = userData.enlistStats.ignores
 
         // find enlist-to-reject ratio
         if (rejectValue !== 0) enlistRatio = (enlistValue / rejectValue).toFixed(2)
         else enlistRatio = enlistValue.toFixed(2)
 
-        let enlistPercentage, rejectPercentage
-        let totalValue = enlistValue + rejectValue
+        let enlistPercentage, rejectPercentage, ignorePercentage
+        let totalValue = enlistValue + rejectValue + ignoreValue
+
         if (rejectValue === 0) enlistPercentage = 100
         else enlistPercentage = (enlistValue / totalValue) * 100
 
         if (enlistValue === 0) rejectPercentage = 100
         else rejectPercentage = (rejectValue / totalValue) * 100
 
+        if (enlistValue === 0) ignorePercentage = 100
+        else ignorePercentage = (ignoreValue / totalValue) * 100
+
 
         // determine social status and commendation
-        if (enlistValue > (rejectValue + 1) * 10) { // add 1 to avoid multiplication by 0
+        if (ignoreValue > enlistValue + rejectValue) {
+            socialStatus = 'rude'
+            commendation = 'pro donoWaller'
+        } else if (enlistValue > (rejectValue + 1) * 10) { // add 1 to avoid multiplication by 0
             socialStatus = 'epic gamer 😎'
             commendation = 'frequent gamer'
         } else if (enlistValue > rejectValue) {
@@ -74,11 +82,16 @@ export const enlistStats = new Command(
         const embed = new MessageEmbed()
             .setTitle(`${username}'s Enlist Stats`)
             .addFields([
-                {name: 'Enlists ✅', value: enlistValue.toString(), inline: true},
-                {name: 'Rejects ❌', value: rejectValue.toString(), inline: true},
+                {name: 'Enlists ✓', value: enlistValue.toString(), inline: true},
+                {name: 'Rejects ✕', value: rejectValue.toString(), inline: true},
+                {name: 'Ignores ~', value: ignoreValue.toString(), inline: true},
                 {
                     name: 'Enlist to Reject Ratio',
-                    value: `**${enlistRatio}**\n*${enlistPercentage.toFixed(2)}% enlist rate*⠀⠀⠀*${rejectPercentage.toFixed(2)}% reject rate*`,
+                    value: `**${enlistRatio}**
+                            -------------------- 
+                            *${enlistPercentage.toFixed(2)}% enlist rate*
+                            *${rejectPercentage.toFixed(2)}% reject rate*
+                            *${ignorePercentage.toFixed(2)}% ignore rate*`,
                     inline: false
                 },
                 {name: 'Cool or Cringe?⠀⠀', value: socialStatus, inline: true},

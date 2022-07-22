@@ -17,6 +17,7 @@ const guildSchema = new mongoose.Schema({
             enlistStats: {
                 enlists: Number,
                 rejects: Number,
+                ignores: Number, 
             },
             tttStats: {
                 wins: Number,
