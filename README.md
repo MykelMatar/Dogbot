@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/Dogbot_512_Full.png">
+  <img src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/Dogbot_512_Full.png" width="50%">
 </p>
 
   ### Dogbot is your Discord gaming companion. Track your favorite minecraft servers, get your Valorant stats, enlist fellow gamers for your event, and more! View the [Commands](#all-commands) section below to check whether a command if working or not, or view the [Wiki](https://github.com/MykelMatar/Dogbot/wiki) more information about the commands. 
