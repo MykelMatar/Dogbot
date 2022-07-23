@@ -8,6 +8,7 @@ import {
     SlashCommandBuilder
 } from "discord.js";
 import {newClient} from "../../dependencies/myTypes";
+import {log} from "../../dependencies/logger";
 
 //TODO check if it is feasible to get the status of every server on the list
 export const mcListServers = {
@@ -102,7 +103,7 @@ export const mcListServers = {
                 // interaction handling
                 if (i.customId === 'ListAdd') {
                     update = i.update({embeds: [], content: 'Adding Server (if possible)', components: []});
-                    execute = command1.execute(client, interaction, guildData, guildName);
+                    execute = command1.execute(client, interaction, guildData, guildName); 
                     collector.stop()
                 } else if (i.customId === 'ListRemove') {
                     update = i.update({embeds: [], content: 'Removing Server', components: []});
@@ -116,14 +117,14 @@ export const mcListServers = {
                 await Promise.all([update, execute])
             });
         } catch (e) {
-            console.log(e)
+            log.error(e)
         }
 
         collector.on('end', async collected => {
             if (collected.size === 0)
                 await interaction.editReply({embeds: [embed], components: []}) // remove buttons & embed
             else if (collected.first().customId === 'ListAdd' || collected.first().customId === 'ListRemove' || collected.first().customId === 'ListChange')
-                await interaction.editReply({content: 'Executing...', embeds: [], components: []})   // remove buttons & embed
+                await interaction.editReply({content: '*Executing...*', embeds: [], components: []})   // remove buttons & embed
         });
     }
 }

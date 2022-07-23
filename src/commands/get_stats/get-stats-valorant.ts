@@ -2,11 +2,11 @@ import {CommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js"
 import {fetchHTML} from "../../dependencies/helpers/fetchHTML";
 import {CheerioAPI} from "cheerio";
 import {newClient} from "../../dependencies/myTypes";
+import {log} from "../../dependencies/logger";
 
-//TODO fix error handling
 
 export const getStatsValorant = {
-    data: new SlashCommandBuilder() 
+    data: new SlashCommandBuilder()
         .setName('get-stats-valorant')
         .setDescription('Retrieves player stats from Tracker.gg')
         .addStringOption(option =>
@@ -18,11 +18,11 @@ export const getStatsValorant = {
                 .setDescription('tag of player, case-sensitive')
                 .setRequired(true))
         .addBooleanOption(option =>
-        option.setName('hide')
-            .setDescription('Whether to hide response or not')
-            .setRequired(false)),
-        
-    async execute(client: newClient, interaction: CommandInteraction){
+            option.setName('hide')
+                .setDescription('Whether to hide response or not')
+                .setRequired(false)),
+
+    async execute(client: newClient, interaction: CommandInteraction) {
         // retrieve username and tag
         let user: string = interaction.options.data[0].value.toString()
         let tag: string = interaction.options.data[1].value.toString()
@@ -33,7 +33,32 @@ export const getStatsValorant = {
         try {
             // get webpages
             const $: CheerioAPI = await fetchHTML(`https://tracker.gg/valorant/profile/riot/${uriUser}%23${uriTag}/overview`);
-            // create arrays to hold stats
+
+            // catch errors before scraping information
+            let status, privateProfile, error
+            $('h1').each(function () { // h1 is defined if an error code is present
+                status = $(this).text()
+            });
+            $('span.lead').each(function () { // span.lead returns private profile errors
+                privateProfile = $(this).text()
+                error = $(this).text() // contains error info if profile is not private
+            });
+
+            // handle errors
+            if (privateProfile == 'This profile is private.') {
+                return interaction.editReply('*tracker.gg profile private, cannot access information*')
+            }
+            if (status == 404) {
+                log.error(`${status} error. ${error}`)
+                return interaction.editReply(`*${status} error. ${error}*`)
+            } else if (status == 400) {
+                log.error(`${status} error. ${error}`)
+                return interaction.editReply(`*${status} error. ${error}*`)
+            } else if (status != undefined) {
+                return interaction.editReply(`*unknown error response. Please open an issue in the github issues page, or check if one already exists. The github page can be accessed by using /elp*`)
+            }
+            
+            // if no errors, proceed. create arrays to hold stats
             let stats: string[] = [],
                 statsRank: string[] = []
 
@@ -64,32 +89,13 @@ export const getStatsValorant = {
                     {name: 'Aces', value: stats[15], inline: true},
                     {name: 'Clutches', value: stats[16], inline: true},
                     {name: 'Most Kills (Match)', value: stats[17], inline: true},
-                    // {name: 'Top Agents', value: `${topAgents[0]}\n${topAgents[1]}\n${topAgents[2]}`, inline: true},
-                    // {name: 'Top Weapons', value: `${topWeapons[0]}\n${topWeapons[1]}\n${topWeapons[2]}`, inline: true},
-                    // {name: 'Top Maps', value: `${topMaps[0]}\n ${topMaps[14]}\n ${topMaps[28]}\n`, inline: true},
                 )
                 .setColor("#8570C1")
                 .setFooter({text: 'via Tracker.gg, visit the website for more info'})
 
             await interaction.editReply({embeds: [embed]})
         } catch (error) {
-            if (error.response) {
-                let status = error.response.status
-                let statusText = error.response.statusText
-                console.log({status, statusText})
-
-                if (status == 404) { // error handling
-                    await interaction.editReply('*invalid username*')
-                } else if (status == 451) {
-                    await interaction.editReply('*tracker.gg profile private, cannot access information*')
-                } else if (status == 400) {
-                    await interaction.editReply('*tracker.gg API issues, cannot connect to website. Please try again later*')
-                } else if (status == 403) {
-                    await interaction.editReply('*blocked connection. Try again later*')
-                } else {
-                    await interaction.editReply('*unknown error response. Please open an issue in the github issues page, or check if one already exists. The github page can be accessed by using /elp*')
-                }
-            } else console.log(error)
+            log.error(error)
         }
     }
 }

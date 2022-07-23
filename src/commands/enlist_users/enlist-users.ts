@@ -12,6 +12,7 @@ import {
 import {newClient} from "../../dependencies/myTypes";
 import {updateEnlistUserArrays} from "../../dependencies/helpers/updateEnlistUserArrays";
 import {StatName, updateUserData} from "../../dependencies/helpers/updateUserData";
+import {log} from "../../dependencies/logger";
 
 export const enlistUsers = {
     data: new SlashCommandBuilder()
@@ -84,7 +85,12 @@ export const enlistUsers = {
                 }
             });
         } catch (e) {
-            console.log(e)
+            await sent.edit({
+                content: '*error while collecting responses, please try again*',
+                embeds: [embed],
+                components: []
+            });
+            log.error(e)
         }
 
         collector.on('end', async collected => {

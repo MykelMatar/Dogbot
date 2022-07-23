@@ -148,7 +148,6 @@ export const typingrace = {
 
             promptCollector.on('end', async () => {
                 let highestWPM: number = 0;
-                console.log(typingRacers)
                 typingRacers.forEach(racer => {
                     if (racer.WPM > highestWPM) highestWPM = racer.WPM
                 })

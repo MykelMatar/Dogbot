@@ -2,8 +2,6 @@ const {Client, Collection, GatewayIntentBits} = require('discord.js');
 import 'dotenv/config'
 import {newClient} from "./dependencies/myTypes";
 
-// console.clear()
-
 const client: newClient = new Client({
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildPresences,],
     sweepers: {

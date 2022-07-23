@@ -8,6 +8,8 @@ import {
 } from "discord.js";
 import {generateMCMenuOptions} from "../../dependencies/helpers/generateMCMenuOptions";
 import {newClient} from "../../dependencies/myTypes";
+import {log} from "../../dependencies/logger";
+
 
 export const mcDeleteServer = {
     data: new SlashCommandBuilder()
@@ -21,14 +23,12 @@ export const mcDeleteServer = {
 
         // ensures command does not execute if 0 or 1 server exists
         if (serverListSize === 0) {
-            await interaction.editReply('No Registered Servers, use /mc-add-server or /mc-list-servers to add servers.')
-            return
+            return await interaction.editReply('*No Registered Servers, use /mc-add-server or /mc-list-servers to add servers.*')
         }
         if (serverListSize === 1) {
-            await interaction.editReply(
-                `Cannot remove the only existing server, use /mc-add-server or /mc-list-servers to add servers, or change server information with /mc-change-server-name and /mc-change-server-ip.`
+            return await interaction.editReply(
+                `*Cannot remove the only existing server, use /mc-add-server or /mc-list-servers to add servers, or change server information with /mc-change-server-name and /mc-change-server-ip.*`
             )
-            return
         }
 
         let options = await generateMCMenuOptions(interaction, guildName, serverListSize);
@@ -78,19 +78,19 @@ export const mcDeleteServer = {
                 collector.stop()
             });
         } catch (e) {
-            console.log(e)
+            log.error(e)
         }
 
         collector.on('end', async collected => {
             if (collected.size === 0) {
-                await interaction.editReply({content: 'Request Timeout', components: []});
-                console.log('Request Timeout')
+                await interaction.editReply({content: '*Request Timeout*', components: []});
+                log.error('Request Timeout')
             } else if (collected.first().customId !== 'delete-menu') {
-                await interaction.editReply({content: 'Avoid using multiple commands at once', components: []});
-                console.log('Command Collision Detected')
+                await interaction.editReply({content: '*Avoid using multiple commands at once*', components: []});
+                log.error('Command Collision Detected')
             } else if (collected.first().customId === 'delete-menu') {
-                await interaction.editReply({content: serverName + ' Deleted', components: []});
-                console.log('Server Deleted Successfully')
+                await interaction.editReply({content: `**${serverName}** deleted`, components: []});
+                log.info('Server Deleted Successfully')
             }
         });
     }

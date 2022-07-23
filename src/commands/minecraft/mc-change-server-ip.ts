@@ -9,6 +9,7 @@ import {
 import {status} from "minecraft-server-util";
 import {generateMCMenuOptions} from "../../dependencies/helpers/generateMCMenuOptions";
 import {newClient} from "../../dependencies/myTypes";
+import {log} from "../../dependencies/logger";
 
 export const mcChangeServerIP = {
     data: new SlashCommandBuilder()
@@ -26,7 +27,7 @@ export const mcChangeServerIP = {
 
         // make sure there is at least 1 server
         if (serverListSize === 0) {
-            await interaction.editReply('No Registered Servers, use /mc-add-server or /mc-list-servers to add servers.')
+            await interaction.editReply('*No Registered Servers, use /mc-add-server or /mc-list-servers to add servers.*')
             return;
         }
 
@@ -38,9 +39,9 @@ export const mcChangeServerIP = {
             return o["ip"] === ip;
         })) {
             await interaction.editReply(
-                "Server already registered, double check the IP or use **!renamemc** to change the name"
+                "*Server already registered, double check the IP or use **!renamemc** to change the name*"
             );
-            return console.log("Duplicate IP Detected");
+            return log.error("Duplicate IP Detected");
         }
 
         // make sure IP is a valid server IP by checking its status (server must be online for this to work)
@@ -48,8 +49,8 @@ export const mcChangeServerIP = {
             // @ts-ignore
             await status(ip)
         } catch (error) {
-            await interaction.editReply('Could not retrieve server status. Double check IP and make sure server is online.')
-            console.log('Invalid Server IP / Server Offline');
+            await interaction.editReply('*Could not retrieve server status. Double check IP and make sure server is online.*')
+            log.error('Invalid Server IP / Server Offline');
         }
 
         // create variables and generate options for select menu
@@ -93,14 +94,14 @@ export const mcChangeServerIP = {
 
         collector.on('end', async collected => {
             if (collected.size === 0) {
-                await interaction.editReply({content: 'Request Timeout', components: []});
-                console.log('Request Timeout')
+                await interaction.editReply({content: '*Request Timeout*', components: []});
+                log.error('Request Timeout')
             } else if (collected.first().customId !== 'change-ip-menu') {
-                await interaction.editReply({content: 'Avoid using multiple commands at once', components: []});
-                console.log('Command Collision Detected')
+                await interaction.editReply({content: '*Avoid using multiple commands at once*', components: []});
+                log.error('Command Collision Detected')
             } else if (collected.first().customId === 'change-ip-menu') {
-                await interaction.editReply({content: serverName + ' IP changed successfully', components: []});
-                console.log('Server IP changed Successfully')
+                await interaction.editReply({content:`**${serverName}**  IP changed successfully`, components: []});
+                log.info('Server IP changed Successfully')
             }
         });
     }

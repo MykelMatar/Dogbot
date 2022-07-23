@@ -14,6 +14,7 @@ let cmdStatus = 0;
 
 import {CommandInteraction, SlashCommandBuilder} from "discord.js";
 import {newClient} from "../../dependencies/myTypes";
+import {log} from "../../dependencies/logger";
 
 export const tictactoe = {
     data: new SlashCommandBuilder() 
@@ -30,7 +31,6 @@ export const tictactoe = {
 
         // @ts-ignore
         let opponent = interaction.options.data[0].member.user.username;
-        console.log(opponent)
 
         // generate buttons
         const row1 = new ActionRowBuilder<ButtonBuilder>()
@@ -93,7 +93,7 @@ export const tictactoe = {
         // start game
         collector.on('collect', async i => {
             await i.deferUpdate() // prevents "this interaction failed" message from appearing
-                .catch(error => console.log(error));
+                .catch(error => log.error(error));
 
             // interaction handling
             switch (i.customId) {

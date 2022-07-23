@@ -18,11 +18,13 @@ export async function fetchHTML(url: string) {
                 "--no-sandbox",
             ],
             headless: true,
-            'ignoreHTTPSErrors': true,
+            ignoreHTTPSErrors: true,
         })
         .then(async browser => {
             const page = await browser.newPage();
             await page.goto(url)
+            
+            // if (await page.waitForResponse(reponse => reponse.status() === 404))
             return [await page.content(), await browser.close()]
         })
     

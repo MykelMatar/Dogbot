@@ -11,11 +11,8 @@ export const clearRoleAutoEnlist = {
                 .setRequired(false)),
         
     async execute(client: newClient, interaction: CommandInteraction, guildData){
-        
         guildData.ServerData.roles.autoenlist = null;
         await guildData.save()
-
-        await interaction.reply({ephemeral: true, content: 'Role Cleared Successfully'})
-        console.log('Role cleared'); 
+        await interaction.reply({ephemeral: true, content: '*Role cleared successfully*'})
     }
 }

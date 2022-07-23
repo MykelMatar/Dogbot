@@ -9,6 +9,7 @@ import {
 } from "discord.js";
 import {status} from "minecraft-server-util";
 import {newClient} from "../../dependencies/myTypes";
+import {log} from "../../dependencies/logger";
 
 export const mcSingleServerStatus = {
     data: new SlashCommandBuilder()
@@ -40,7 +41,7 @@ export const mcSingleServerStatus = {
 
         status(ip.toString(), 25565, options)
             .then(async (response) => {
-                console.log('server online')
+                log.info('Server Online')
 
                 // create Embed w/ server info (use console.log(response) for extra information about server)
                 const embed = new EmbedBuilder()
@@ -93,7 +94,7 @@ export const mcSingleServerStatus = {
                 });
             })
             .catch(async () => {
-                console.log('Server Offline')
+                log.error('Server Offline')
 
                 // create embed to display server offline (its an embed to allow for editing during server info refresh)
                 const embed = new EmbedBuilder()

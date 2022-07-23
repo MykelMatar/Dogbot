@@ -1,6 +1,7 @@
 import {CommandInteraction, GuildMember} from "discord.js";
 import {newClient} from "../../dependencies/myTypes";
 import guilds from "../../dependencies/schemas/guild-schema";
+import {log} from "../../dependencies/logger";
 
 export async function interactionCreate(client: newClient, interaction: CommandInteraction) {
     if (!interaction.isChatInputCommand()) return
@@ -25,12 +26,12 @@ export async function interactionCreate(client: newClient, interaction: CommandI
 
     try {
         if (!(!(interaction.member instanceof GuildMember) )) {
-            console.log(`${interaction.commandName} requested by ${interaction.member.user.username} in ${interaction.member.guild.name}`)
+            log.info(`${interaction.commandName} requested by ${interaction.member.user.username} in ${interaction.member.guild.name}`)
         }
         let guildData = await guilds.findOne({guildId: interaction.guildId})
         await command.execute(client, interaction, guildData, guildName);
     } catch (error) {
-        console.error(error);
+        log.error(error)
         await interaction.reply({content: 'There was an error while executing this command!', ephemeral: true});
     }
 }

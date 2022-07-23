@@ -11,7 +11,7 @@ export const speak = {
                 .setRequired(true)),
         
     async execute(client: newClient, interaction: CommandInteraction){
-        await interaction.reply({  ephemeral: true , content: 'message sent'});
+        await interaction.reply({  ephemeral: true , content: '*message sent*'});
         interaction.channel.send(`${interaction.options.data[0].value}`)
     }
 }

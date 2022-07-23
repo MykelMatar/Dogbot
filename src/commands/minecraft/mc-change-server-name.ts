@@ -8,6 +8,7 @@ import {
 } from "discord.js";
 import {generateMCMenuOptions} from "../../dependencies/helpers/generateMCMenuOptions";
 import {newClient} from "../../dependencies/myTypes";
+import {log} from "../../dependencies/logger";
 
 export const mcChangeServerName = {
     data: new SlashCommandBuilder()
@@ -25,14 +26,14 @@ export const mcChangeServerName = {
 
         // make sure there is at least 1 server
         if (serverListSize === 0) {
-            await interaction.editReply('No Registered Servers, use /mc-add-server or /mc-list-servers to add servers.')
+            await interaction.editReply('*No Registered Servers, use /mc-add-server or /mc-list-servers to add servers.*')
             return
         }
 
         // retrieve new name from user input
         let newName = interaction.options.data[0].value
         if (newName.toString().length > 30) {
-            await interaction.editReply('Please keep server name below 30 characters')
+            await interaction.editReply('*Please keep server name below 30 characters*')
             return
         }
 
@@ -41,7 +42,7 @@ export const mcChangeServerName = {
             return o["name"] === newName;
         })) {
             await interaction.editReply(
-                "Cannot have duplicate server names, please choose a different name or use /mc-change-server-ip to change the IP of the existing server"
+                "*Cannot have duplicate server names, please choose a different name or use /mc-change-server-ip to change the IP of the existing server*"
             );
             return;
         }
@@ -89,16 +90,16 @@ export const mcChangeServerName = {
 
         collector.on('end', async collected => {
             if (collected.size === 0) {
-                await interaction.editReply({content: 'Request Timeout', components: []});
-                console.log('Request Timeout')
+                await interaction.editReply({content: '*Request Timeout*', components: []});
+                log.error('Request Timeout')
             } else if (collected.first().customId !== 'change-server-menu') {
-                await interaction.editReply({content: 'Avoid using multiple commands at once', components: []});
-                console.log('Command Collision Detected')
+                await interaction.editReply({content: '*Avoid using multiple commands at once*', components: []});
+                log.error('Command Collision Detected')
             } else if (collected.first().customId === 'change-server-menu') {
                 await interaction.editReply({
-                    content: ` ${serverName} renamed successfully to ${newName}`, components: []
-                });
-                console.log('Server Renamed Successfully')
+                    content: ` **${serverName}** renamed successfully to **${newName}**`, components: []
+                })
+                log.info('Server Renamed Successfully')
             }
         });
     }

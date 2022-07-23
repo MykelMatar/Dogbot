@@ -1,6 +1,7 @@
 import {generateMCMenuOptions} from "../../dependencies/helpers/generateMCMenuOptions";
 import {ActionRowBuilder, ComponentType, SelectMenuBuilder, CommandInteraction, SlashCommandBuilder} from "discord.js";
 import {newClient} from "../../dependencies/myTypes";
+import {log} from "../../dependencies/logger";
 
 export const mcChangeServer = {
     data: new SlashCommandBuilder()
@@ -60,7 +61,7 @@ export const mcChangeServer = {
                 collector.stop()
             });
         } catch (e) {
-            console.log(e)
+            log.error(e)
         }
 
         // check whether a user responded or not, and edit embed accordingly

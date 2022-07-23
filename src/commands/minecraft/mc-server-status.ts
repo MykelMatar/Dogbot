@@ -2,6 +2,7 @@ import {ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, CommandInter
 import {status} from "minecraft-server-util";
 import {runMCButtonCollector} from "../../dependencies/helpers/runMCButtonCollector";
 import {newClient} from "../../dependencies/myTypes";
+import {log} from "../../dependencies/logger";
 
 export const mcServerStatus = {
     data: new SlashCommandBuilder() 
@@ -21,7 +22,7 @@ export const mcServerStatus = {
         const serverList = MCServerData.serverList
 
         if (serverList.length === 0) {
-            return interaction.editReply('No Registered Servers, use !addmc or !listmc to add servers.')
+            return interaction.editReply('*No Registered Servers, use !addmc or !listmc to add servers.*')
         }
 
         // retrieve title and IP from mongoDB
@@ -55,7 +56,7 @@ export const mcServerStatus = {
         const options = { timeout: 3000 }
         status(MCServerIP.replace(/"+/g, ''), 25565, options)
             .then(async (response) => {
-                console.log('Server Online')
+                log.info('Server Online')
 
                 const embed = new EmbedBuilder()
                     .setTitle(title.replace(/["]+/g, ''))
@@ -90,7 +91,7 @@ export const mcServerStatus = {
                 await runMCButtonCollector(client, interaction, guildData, guildName)
             })
             .catch(async () => {
-                console.log('Server Offline')
+                log.error('Server Offline')
 
                 const embed = new EmbedBuilder()
                     .setTitle(title.replace(/["]+/g, ''))

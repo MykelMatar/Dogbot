@@ -8,6 +8,7 @@
     "minecraft-server-util": "^5.2.5",
     "mongoose": "^6.3.3",
     "nodemon": "^2.0.19",
+    "pino": "^8.3.0",
     "puppeteer": "^15.3.2",
     "puppeteer-extra": "^3.3.4",
     "puppeteer-extra-plugin-adblocker": "^2.13.4",
@@ -20,7 +21,7 @@
   "scripts": {
     "start": "NODE_PATH=./build node build/index.js",
     "build": "tsc -p .",
-    "bot": "ts-node src/index.ts"
+    "bot": "ts-node src/index.ts | pino-pretty -i pid,hostname -t 'yyyy-mm-dd HH:MM:ss'"
   },
   "repository": {
     "type": "git",

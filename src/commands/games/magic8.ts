@@ -9,6 +9,7 @@ export const magic8 = {
             option.setName('prompt')
                 .setDescription('prompt you want Dogbot to predict')
                 .setRequired(true)),
+    
     async execute(client: newClient, interaction) {
         let responses: string[] = ['yes', 'no', 'perhaps', 'definitely not', 'absolutely', 'how would I know?', 'shut up bitch', 'lol no']
         let response = responses[Math.floor(Math.random() * responses.length)]

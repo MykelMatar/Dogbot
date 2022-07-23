@@ -2,6 +2,7 @@ import {CommandInteraction, PermissionFlagsBits, SlashCommandBuilder} from "disc
 import {status} from 'minecraft-server-util'
 import {promptResponse} from "../../dependencies/helpers/promptResponse"
 import {newClient} from "../../dependencies/myTypes";
+import {log} from "../../dependencies/logger";
 
 export const mcAddServer = {
     data: new SlashCommandBuilder()
@@ -47,7 +48,7 @@ export const mcAddServer = {
             await interaction.editReply(
                 "Server already registered, double check the IP or use **/mc-change-server-name** to change its name"
             );
-            return console.log("Duplicate IP Detected");
+            return log.error("Duplicate IP Detected");
         }
 
         // make sure IP is a valid server IP by checking its status (server must be online for this to work)
@@ -64,11 +65,11 @@ export const mcAddServer = {
             await guildData.save();
             await interaction.editReply("Server added sucessfully");
         } catch (error) {
-            console.log(error);
+            log.error(error)
             await interaction.editReply(
-                "Could not retrieve server status. Double check IP and make sure server is online."
+                "*Could not retrieve server status. Double check IP and make sure server is online.*"
             );
-            console.log("Invalid Server IP / Server Offline");
+            log.error('Invalid Server IP / Server Offline')
         }
     }
 }
