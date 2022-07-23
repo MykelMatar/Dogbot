@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/Dogbot_512_Full.png" width="50%">
+  <img src="https://github.com/MykelMatar/Dogbot/tree/Discord.js14/src/dependencies/images/Dogbot_512_Full.png" width="50%">
 </p>
 
   ### Dogbot is your Discord gaming companion. Track your favorite minecraft servers, get your Valorant stats, enlist fellow gamers for your event, and more! View the [Commands](#all-commands) section below to check whether a command if working or not, or view the [Wiki](https://github.com/MykelMatar/Dogbot/wiki) more information about the commands. 
@@ -19,17 +19,17 @@
 
 ## Images Gallery
 **Minecraft Commands**  
-<img src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/mc-server-status.png" width="30%"></img>
-<img src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/mc-list-servers.png" width="36%"></img>  
+<img src="https://github.com/MykelMatar/Dogbot/tree/Discord.js14/src/dependencies/images/mc-server-status.png" width="30%"></img>
+<img src="https://github.com/MykelMatar/Dogbot/tree/Discord.js14/src/dependencies/images/mc-list-servers.png" width="36%"></img>  
 
 **Enlist Commands**  
-<img src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/autoenlist.png" width="33%"></img>
-<img src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/enlist-users.png" width="31%"></img>
-<img src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/enlist-stats.png" width="32%"></img>
+<img src="https://github.com/MykelMatar/Dogbot/tree/Discord.js14/src/dependencies/images/autoenlist.png" width="33%"></img>
+<img src="https://github.com/MykelMatar/Dogbot/tree/Discord.js14/src/dependencies/images/enlist-users.png" width="31%"></img>
+<img src="https://github.com/MykelMatar/Dogbot/tree/Discord.js14/src/dependencies/images/enlist-stats.png" width="32%"></img>
 
 **Other Commands**  
-<img src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/get-stats-valorant.png" width="35%"></img> 
-<img src="https://github.com/MykelMatar/Dogbot/blob/main/src/dependencies/images/server-stats.png" width="60%"></img>
+<img src="https://github.com/MykelMatar/Dogbot/tree/Discord.js14/src/dependencies/images/get-stats-valorant.png" width="35%"></img> 
+<img src="https://github.com/MykelMatar/Dogbot/tree/Discord.js14/src/dependencies/images/server-stats.png" width="60%"></img>
 
 
 ## All Commands
