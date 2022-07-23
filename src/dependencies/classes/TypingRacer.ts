@@ -9,7 +9,7 @@ export class TypingRacer {
     isWinner: boolean
 
     public async updateUserData(message, statName: StatName) {
-        let trStats = [this.WPM, this.rawWPM, this.accuracy, this.isWinner]
+        let trStats: [number, number, number, boolean] = [this.WPM, this.rawWPM, this.accuracy, this.isWinner]
         await updateUserData(message, [this.id], statName, trStats)
     }
 

@@ -1,14 +1,16 @@
-import {Command} from "../../dependencies/classes/Command";
-import {CommandInteractionOption, MessageEmbed} from "discord.js";
+import {CommandInteraction, CommandInteractionOption, EmbedBuilder, SlashCommandBuilder} from "discord.js";
+import {newClient} from "../../dependencies/myTypes";
 
-
-// TODO: add command for users who 'enlist' but never attend (admin controlled)
-// TODO: give commendations for users (frequent gamer, infrequent gamer, liar, etc)
-export const enlistStats = new Command(
-    'enlist-stats',
-    'shows how many times a user enlisted and rejected the Enlist prompt',
-    async (client, interaction) => {
-
+export const enlistStats = {
+    data: new SlashCommandBuilder() 
+        .setName('enlist-stats')
+        .setDescription('Displays users enlist stats')
+        .addBooleanOption(option =>
+            option.setName('hide')
+                .setDescription('Whether to hide the response or not')
+                .setRequired(false)),
+        
+    async execute(client: newClient, interaction: CommandInteraction, guildData?){
         // set user whose data is being retrieved
         let username: string, userId: string
         let user: CommandInteractionOption = (interaction.options.data.find(option => option.name === 'user'));
@@ -21,7 +23,7 @@ export const enlistStats = new Command(
         }
 
         // retrieve user data from mongo
-        let userData = enlistStats.guildData.UserData.find(user => user.id === userId)
+        let userData = guildData.UserData.find(user => user.id === userId)
         if (userData === undefined) {
             return interaction.reply({
                 ephemeral: true,
@@ -79,7 +81,7 @@ export const enlistStats = new Command(
             commendation = '?'
         }
 
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle(`${username}'s Enlist Stats`)
             .addFields([
                 {name: 'Enlists ✓', value: enlistValue.toString(), inline: true},
@@ -106,4 +108,4 @@ export const enlistStats = new Command(
 
         await interaction.reply({ephemeral: ephemeralSetting, embeds: [embed]})
     }
-)
+}

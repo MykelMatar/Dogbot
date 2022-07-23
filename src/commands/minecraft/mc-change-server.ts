@@ -1,13 +1,14 @@
-import {Command} from "../../dependencies/classes/Command";
 import {generateMCMenuOptions} from "../../dependencies/helpers/generateMCMenuOptions";
-import {MessageActionRow, MessageSelectMenu} from "discord.js";
+import {ActionRowBuilder, ComponentType, SelectMenuBuilder, CommandInteraction, SlashCommandBuilder} from "discord.js";
+import {newClient} from "../../dependencies/myTypes";
 
-export const mcChangeServer = new Command(
-    'mc-change-server',
-    'changes server being tracked by mc-server-status',
-    async (client, interaction, guildName?) => {
+export const mcChangeServer = {
+    data: new SlashCommandBuilder()
+        .setName('mc-change-server')
+        .setDescription('changes the server being tracked by mc-server-status'),
 
-        const MCServerData = mcChangeServer.guildData.MCServerData
+    async execute(client: newClient, interaction: CommandInteraction, guildData?, guildName?: string) {
+        const MCServerData = guildData.MCServerData
         let serverListSize = MCServerData.serverList.length
 
         // make sure there are at least 2 servers
@@ -26,9 +27,9 @@ export const mcChangeServer = new Command(
         let description = options[3]
 
         // generate select menu
-        let row = new MessageActionRow()
+        let row = new ActionRowBuilder<SelectMenuBuilder>()
             .addComponents(
-                new MessageSelectMenu()
+                new SelectMenuBuilder()
                     .setCustomId('change-menu')
                     .setPlaceholder('Nothing selected')
                     .addOptions(option),
@@ -41,22 +42,26 @@ export const mcChangeServer = new Command(
         const filter = i => i.user.id === interaction.member.user.id
         const collector = interaction.channel.createMessageComponentCollector({
             filter,
-            componentType: 'SELECT_MENU',
+            componentType: ComponentType.SelectMenu,
             time: 15000
         });
 
-        collector.on('collect', async i => {
-            // find user selection and change mongo doc info
-            if (i.customId !== 'change-menu') return collector.stop()
-            for (let j = 0; j < serverListSize; j++) {
-                if (i.values[0] === `selection${j}`) {
-                    MCServerData.selectedServer.name = label[j];
-                    MCServerData.selectedServer.ip = description[j];
+        try {
+            collector.on('collect', async i => {
+                // find user selection and change mongo doc info
+                if (i.customId !== 'change-menu') return collector.stop()
+                for (let j = 0; j < serverListSize; j++) {
+                    if (i.values[0] === `selection${j}`) {
+                        MCServerData.selectedServer.name = label[j];
+                        MCServerData.selectedServer.ip = description[j];
+                    }
                 }
-            }
-            await mcChangeServer.guildData.save() // write to mongo
-            collector.stop()
-        });
+                await guildData.save() // write to mongo
+                collector.stop()
+            });
+        } catch (e) {
+            console.log(e)
+        }
 
         // check whether a user responded or not, and edit embed accordingly
         collector.on('end', async collected => {
@@ -69,7 +74,8 @@ export const mcChangeServer = new Command(
                     content: `Server Updated, now Tracking ${MCServerData.selectedServer.name}. Retrieving server status...`,
                     components: []
                 })
-                await client.commands.get('mc-server-status').execute(client, interaction, guildName);
+                await client.commands.get('mc-server-status').execute(client, interaction, guildData, guildName);
             }
         });
-    })
+    }
+}

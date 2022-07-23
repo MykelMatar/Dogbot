@@ -1,5 +1,5 @@
 import guilds from "../schemas/guild-schema";
-import {MessageActionRow, MessageButton} from "discord.js";
+import {ActionRowBuilder, ButtonBuilder, ButtonStyle} from "discord.js";
 
 export async function autoDetectRole(client, message) {
 
@@ -12,16 +12,16 @@ export async function autoDetectRole(client, message) {
     else if (message.content.includes(`${selectedRole}`)) {
         console.log('autoenlist role detected');
         // generate buttons
-        const row = new MessageActionRow()
+        const row = new ActionRowBuilder<ButtonBuilder>()
             .addComponents(
-                new MessageButton()
+                new ButtonBuilder()
                     .setCustomId('Yes')
                     .setLabel('Yes')
-                    .setStyle('SUCCESS'),
-                new MessageButton()
+                    .setStyle(ButtonStyle.Success),
+                new ButtonBuilder()
                     .setCustomId('No')
                     .setLabel('No')
-                    .setStyle('DANGER'),
+                    .setStyle(ButtonStyle.Danger),
             );
 
         let sent = await message.reply({ content: 'Would you like to enlist members for your event?', components: [row] })

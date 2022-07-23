@@ -1,8 +1,12 @@
-import {Command} from "../../dependencies/classes/Command";
+import {SlashCommandBuilder} from "discord.js";
+import {newClient} from "../../dependencies/myTypes";
 
-export const simleave = new Command(
-    'simleave',
-    'simulates user leaving',
-    async (client, message) => {
+export const simLeave = {
+    data: new SlashCommandBuilder() 
+        .setName('simleave')
+        .setDescription('simulates user leaving'),
+        
+    async execute(client: newClient, message){
         client.emit('guildMemberRemove', message.member)
-    })
+    }
+}

@@ -1,17 +1,21 @@
-import {Command} from "../../dependencies/classes/Command";
-import {MessageEmbed} from "discord.js";
+import {EmbedBuilder, SlashCommandBuilder} from "discord.js";
+import {newClient} from "../../dependencies/myTypes";
 
-export const magic8 = new Command(
-    'magic8',
-    'Predicts via a maigc 8-ball',
-    async (client, interaction) => {
-
+export const magic8 = {
+    data: new SlashCommandBuilder()
+        .setName('magic8')
+        .setDescription('Predicts via a magic8 ball')
+        .addStringOption(option =>
+            option.setName('prompt')
+                .setDescription('prompt you want Dogbot to predict')
+                .setRequired(true)),
+    async execute(client: newClient, interaction) {
         let responses: string[] = ['yes', 'no', 'perhaps', 'definitely not', 'absolutely', 'how would I know?', 'shut up bitch', 'lol no']
         let response = responses[Math.floor(Math.random() * responses.length)]
-        let responseEmbed = new MessageEmbed()
+        let responseEmbed = new EmbedBuilder()
             .setTitle(response)
             .setColor("#8570C1")
 
         await interaction.reply({content: `Question: ${interaction.options.data[0].value}`, embeds: [responseEmbed]})
     }
-)
+}

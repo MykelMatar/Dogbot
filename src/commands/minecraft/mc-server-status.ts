@@ -1,44 +1,53 @@
-import {Command} from "../../dependencies/classes/Command";
-import {MessageActionRow, MessageButton, MessageEmbed} from "discord.js";
+import {ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, CommandInteraction, SlashCommandBuilder} from "discord.js";
 import {status} from "minecraft-server-util";
 import {runMCButtonCollector} from "../../dependencies/helpers/runMCButtonCollector";
+import {newClient} from "../../dependencies/myTypes";
 
-export const mcServerStatus = new Command(
-    'mc-server-status',
-    'retrieves status of selected MC server',
-    async (client, interaction, guildName?) => {
-
-        const MCServerData = mcServerStatus.guildData.MCServerData
-        const serverList = MCServerData.serverList
+export const mcServerStatus = {
+    data: new SlashCommandBuilder() 
+        .setName('mc-server-status')
+        .setDescription('Retrieves status of a selected MC server. Can also check if a user is online.')
+        .addStringOption(option =>
+            option.setName('username')
+                .setDescription('Who to check is online in the server')
+                .setRequired(false))
+        .addBooleanOption(option =>
+            option.setName('hide')
+                .setDescription('Whether to display response or not')
+                .setRequired(false)),
         
+    async execute(client: newClient, interaction: CommandInteraction, guildData, guildName?: string){
+        const MCServerData = guildData.MCServerData
+        const serverList = MCServerData.serverList
+
         if (serverList.length === 0) {
             return interaction.editReply('No Registered Servers, use !addmc or !listmc to add servers.')
         }
-        
+
         // retrieve title and IP from mongoDB
         let title = JSON.stringify(MCServerData.selectedServer.name)
         let MCServerIP = JSON.stringify(MCServerData.selectedServer.ip)
-        
+
         let row; // variable amount of buttons to reflect doable actions
         if (serverList.length === 1) {
-            row = new MessageActionRow()
+            row = new ActionRowBuilder<ButtonBuilder>()
                 .addComponents(
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setCustomId('List')
                         .setLabel('Server List')
-                        .setStyle('SECONDARY'),
+                        .setStyle(ButtonStyle.Secondary),
                 )
         } else {
-            row = new MessageActionRow()
+            row = new ActionRowBuilder<ButtonBuilder>()
                 .addComponents(
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setCustomId('Change')
                         .setLabel('Change')
-                        .setStyle('PRIMARY'),
-                    new MessageButton()
+                        .setStyle(ButtonStyle.Primary),
+                    new ButtonBuilder()
                         .setCustomId('List')
                         .setLabel('Server List')
-                        .setStyle('SECONDARY'),
+                        .setStyle(ButtonStyle.Secondary),
                 )
         }
 
@@ -47,8 +56,8 @@ export const mcServerStatus = new Command(
         status(MCServerIP.replace(/"+/g, ''), 25565, options)
             .then(async (response) => {
                 console.log('Server Online')
-                
-                const embed = new MessageEmbed()
+
+                const embed = new EmbedBuilder()
                     .setTitle(title.replace(/["]+/g, ''))
                     .addFields(
                         {name: 'Server IP', value: `>  ${MCServerIP.replace(/["]+/g, '')}`},
@@ -64,31 +73,32 @@ export const mcServerStatus = new Command(
                 let searchedPlayer = interaction.options.data.find(option => option.name === 'username')
                 let onlinePlayers = response.players.sample
                 let foundPlayer = false;
-                
+
                 if (searchedPlayer !== undefined) {
                     onlinePlayers.forEach(player => {
                         if (player.name === searchedPlayer.value) {
-                            embed.addField('Searched User', `>  ${player.name} is online`)
+                            embed.addFields({name: 'Searched User',value: `>  ${player.name} is online`})
                             foundPlayer = true;
                         }
                     })
                     if (foundPlayer === false) {
-                        embed.addField('Searched User', `>  ${searchedPlayer.value} is offline`)
+                        embed.addFields({name: 'Searched User',value: `>  ${searchedPlayer.value} is offline`})
                     }
                 }
 
                 await interaction.editReply({embeds: [embed], components: [row]})
-                await runMCButtonCollector(client, interaction, guildName)
+                await runMCButtonCollector(client, interaction, guildData, guildName)
             })
             .catch(async () => {
                 console.log('Server Offline')
-                
-                const embed = new MessageEmbed()
+
+                const embed = new EmbedBuilder()
                     .setTitle(title.replace(/["]+/g, ''))
-                    .addField("Server Offline", "all good")   // ? add cmd to change server offline interaction ?
+                    .addFields({name: 'Server Offline', value: 'all good'})
                     .setColor("#8570C1")
-                
+
                 await interaction.editReply({embeds: [embed], components: [row]})
-                await runMCButtonCollector(client, interaction, guildName)
+                await runMCButtonCollector(client, interaction, guildData, guildName)
             });
-    })
+    }
+}

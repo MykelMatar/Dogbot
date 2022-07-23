@@ -1,6 +1,6 @@
 import guilds from "../schemas/guild-schema";
 
-export async function updateUserData(message, userIdArray: string[], statName: StatName, trStats?: (number | boolean)[]) {
+export async function updateUserData(message, userIdArray: string[], statName: StatName, trStats?: [number, number, number, boolean]) {
     if (userIdArray.length === 0) return console.log(`User Id Array is empty, skipping user data check`)
     console.log('Valid User Id Array')
 
@@ -37,8 +37,9 @@ export async function updateUserData(message, userIdArray: string[], statName: S
 
             // check which stat needs to be added
             switch (statName) {
-                case 'tttWins' || 'tttLosses':
-                    if (UserData.tttWins == null) {
+                case StatName.tttWins:
+                case StatName.tttLosses:
+                    if (UserData[index].tttStats == null) {
                         UserData.push({
                             username: username,
                             id: userIdArray[index],
@@ -49,8 +50,10 @@ export async function updateUserData(message, userIdArray: string[], statName: S
                         })
                     }
                     break;
-                case 'enlist' || 'reject' || 'ignore':
-                    if (UserData.enlistStats == null) {
+                case StatName.enlist:
+                case StatName.reject:
+                case StatName.ignore:
+                    if (UserData[index].enlistStats == null) {
                         UserData.push({
                             username: username,
                             id: userIdArray[index],
@@ -62,8 +65,9 @@ export async function updateUserData(message, userIdArray: string[], statName: S
                         })
                     }
                     break;
-                case 'trWins' || 'trLosses':
-                    if (UserData.enlistStats == null) {
+                case StatName.trWins:
+                case StatName.trLosses:
+                    if (UserData[index].typingRaceStats == null) {
                         UserData.push({
                             username: username,
                             id: userIdArray[index],
@@ -83,21 +87,21 @@ export async function updateUserData(message, userIdArray: string[], statName: S
             let user = UserData.find(user => user.id === userId)
             // check if the corresponding stat exists within the user data: if it doesn't exist, make it, if it exists, update it
             switch (statName) {
-                case 'tttWins':
+                case StatName.tttWins:
                     console.log(user.tttStats)
                     if (user.tttStats == '{}') {
                         user.tttStats.wins = 1
                         user.tttStats.losses = 0
                     } else user.tttStats.wins++;
                     break;
-                case 'tttLosses':
+                case StatName.tttLosses:
                     console.log(user.tttStats)
                     if (user.tttStats == '{}') {
                         user.tttStats.wins = 0
                         user.tttStats.losses = 1
                     } else user.tttStats.losses++;
                     break;
-                case 'enlist':
+                case StatName.enlist:
                     console.log(user.enlistStats)
                     if (user.enlistStats == '{}') {
                         user.enlistStats.enlists = 1
@@ -105,7 +109,7 @@ export async function updateUserData(message, userIdArray: string[], statName: S
                         user.enlistStats.ignores = 0
                     } else user.enlistStats.enlists++;
                     break;
-                case 'reject':
+                case StatName.reject:
                     console.log(user.enlistStats)
                     if (user.enlistStats == '{}') {
                         user.enlistStats.enlists = 0
@@ -113,7 +117,7 @@ export async function updateUserData(message, userIdArray: string[], statName: S
                         user.enlistStats.ignores = 0
                     } else user.enlistStats.rejects++
                     break;
-                case 'ignore':
+                case StatName.ignore:
                     console.log(user.enlistStats)
                     if (user.enlistStats == '{}') {
                         user.enlistStats.enlists = 0
@@ -121,20 +125,20 @@ export async function updateUserData(message, userIdArray: string[], statName: S
                         user.enlistStats.ignores = 1
                     } else user.enlistStats.ignores++
                     break;
-                case 'trWins': // fall-through (like saying trWins || trLosses)
-                case 'trLosses':
+                case StatName.trWins: // fall-through (like saying trWins || trLosses)
+                case StatName.trLosses:
                     console.log(user.typingRaceStats == '{}')
                     if (user.typingRaceStats == '{}') {
                         user.typingRaceStats.AverageWPM = trStats[0]
                         user.typingRaceStats.AverageRawWPM = trStats[1]
                         user.typingRaceStats.AverageAccuracy = trStats[2]
-                        if (statName == 'trWins') user.typingRaceStats.FirstPlaceWins = 1
+                        if (statName == StatName.trWins) user.typingRaceStats.FirstPlaceWins = 1
                         else user.typingRaceStats.FirstPlaceWins = 0
                     } else {
                         user.typingRaceStats.AverageWPM = parseFloat(((user.typingRaceStats.AverageWPM + trStats[0]) / 2).toFixed(2))
                         user.typingRaceStats.AverageRawWPM = parseFloat(((user.typingRaceStats.AverageRawWPM + trStats[1]) / 2).toFixed(2))
                         user.typingRaceStats.AverageAccuracy = parseFloat(((user.typingRaceStats.AverageAccuracy + trStats[2]) / 2).toFixed(4))
-                        if (statName == 'trWins') user.typingRaceStats.FirstPlaceWins++
+                        if (statName == StatName.trWins) user.typingRaceStats.FirstPlaceWins++
                     }
                     break;
             }

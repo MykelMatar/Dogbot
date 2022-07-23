@@ -1,5 +1,5 @@
-import {Command} from "../../dependencies/classes/Command";
-import {MessageEmbed} from "discord.js";
+import {CommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js";
+import {newClient, leaderboardUser} from "../../dependencies/myTypes";
 
 //TODO if user changes username, does it affect any commands?
 /*
@@ -20,13 +20,17 @@ import {MessageEmbed} from "discord.js";
             3. max: normalize weight by max logic, then multiply
 
 */
+export const enlistLeaderboard = {
+    data: new SlashCommandBuilder()
+        .setName('enlist-leaderboard')
+        .setDescription('Displays top 3 and bottom 3 gamers')
+        .addBooleanOption(option =>
+            option.setName('hide')
+                .setDescription('Whether to display the leaderboard or not')
+                .setRequired(false)),
 
-export const enlistLeaderboard = new Command(
-    'enlist-leaderboard',
-    'retrieves top 3 gamers and top 3 cringe lords',
-    async (client, interaction) => {
-
-        let userData = enlistLeaderboard.guildData.UserData
+    async execute(client: newClient, interaction: CommandInteraction, guildData?) {
+        let userData = guildData.UserData
 
         if (userData.length === 0) {
             await interaction.reply({content: 'This server does not have any user data. User data is created upon interacting with the enlist prompt or playing a game'})
@@ -50,7 +54,7 @@ export const enlistLeaderboard = new Command(
             enlistWeight = 1,
             ignoreWeight = .75
 
-        let tempUsers: User[] = []
+        let tempUsers: leaderboardUser[] = []
         for (const user of userData) {
             let enlistPercentage, rejectPercentage, ignorePercentage
             let enlists: number = user.enlistStats.enlists,
@@ -73,10 +77,11 @@ export const enlistLeaderboard = new Command(
             let adjustedEnlistPercentage = enlistPercentage * percentageWeight,
                 adjustedRejectPercentage = rejectPercentage * percentageWeight,
                 adjustedEnlistValue = normalizedEnlistValue * enlistWeight,
+                adjustedRejectValue = normalizedRejectValue * enlistWeight,
                 adjustedIgnoreValue = ignorePercentage * ignoreWeight
 
             let adjustedEnlistRank: number = adjustedEnlistPercentage + adjustedEnlistValue - adjustedIgnoreValue
-            let adjustedRejectRank: number = adjustedRejectPercentage + adjustedEnlistValue - adjustedIgnoreValue
+            let adjustedRejectRank: number = adjustedRejectPercentage + adjustedRejectValue - adjustedIgnoreValue
 
             if (isNaN(adjustedEnlistRank)) {
                 adjustedEnlistRank = 0
@@ -85,7 +90,7 @@ export const enlistLeaderboard = new Command(
                 adjustedRejectRank = 0
             }
 
-            let tempUser: User = {
+            let tempUser: leaderboardUser = {
                 name: user.username,
                 enlists: enlists,
                 rejects: rejects,
@@ -106,14 +111,14 @@ export const enlistLeaderboard = new Command(
             top3Losers = [names2, percentages2, totals2]
 
         // have to seperate rankings into 2 loops because of issue declaring both rankings as tempUsers.sort()
-        let enlistRankings: User[] = tempUsers.sort((a, b) => (b.adjustedEnlistRankValue - a.adjustedEnlistRankValue))
+        let enlistRankings: leaderboardUser[] = tempUsers.sort((a, b) => (b.adjustedEnlistRankValue - a.adjustedEnlistRankValue))
         for (let i = 0; i < 3; i++) {
             top3Gamers[0].push(`**${i + 1}.** ${enlistRankings[i].name}\n`,)
             top3Gamers[1].push(`**${i + 1}.** ${(enlistRankings[i].enlistPercentage * 100).toFixed(2)}\n`)
             top3Gamers[2].push(`**${i + 1}.** ${enlistRankings[i].enlists + enlistRankings[i].rejects}\n`)
         }
 
-        let rejectRankings: User[] = tempUsers.sort((a, b) => (a.adjustedRejectRankValue < b.adjustedRejectRankValue ? 1 : -1))
+        let rejectRankings: leaderboardUser[] = tempUsers.sort((a, b) => (a.adjustedRejectRankValue < b.adjustedRejectRankValue ? 1 : -1))
         console.log(rejectRankings)
         for (let i = 0; i < 3; i++) {
             top3Losers[0].push(`**${i + 1}.** ${rejectRankings[i].name}\n`)
@@ -122,7 +127,7 @@ export const enlistLeaderboard = new Command(
         }
 
 
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle(`Enlist Leaderboard`)
             .addFields([
                 {name: 'Top 3 Gamers⠀⠀⠀⠀⠀', value: top3Gamers[0].join(''), inline: true},
@@ -142,15 +147,5 @@ export const enlistLeaderboard = new Command(
 
         await interaction.reply({ephemeral: ephemeralSetting, embeds: [embed]})
     }
-)
-
-interface User {
-    name: string,
-    enlists: number,
-    rejects: number,
-    enlistPercentage: number
-    rejectPercentage: number
-    adjustedEnlistRankValue: number
-    adjustedRejectRankValue: number
-
+    
 }

@@ -1,32 +1,49 @@
-import {Command} from "../../dependencies/classes/Command";
-import {MessageActionRow, MessageButton, MessageEmbed} from "discord.js";
+import {
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    ComponentType,
+    EmbedBuilder,
+    CommandInteraction,
+    SlashCommandBuilder
+} from "discord.js";
 import {status} from "minecraft-server-util";
+import {newClient} from "../../dependencies/myTypes";
 
-export const mcSingleServerStatus = new Command(
-    'mc-single-server-status',
-    'get the status of a mc server 1 time (quick check)',
-    async (client, interaction) => {
+export const mcSingleServerStatus = {
+    data: new SlashCommandBuilder()
+        .setName('mc-single-server-stats')
+        .setDescription('Get the status of a mc server not registered in the list')
+        .addStringOption(option =>
+            option.setName('ip')
+                .setDescription('IP of the server to check')
+                .setRequired(true))
+        .addBooleanOption(option =>
+            option.setName('hide')
+                .setDescription('Whether to display response or not')
+                .setRequired(false)),
 
-        const serverList = mcSingleServerStatus.guildData.MCServerData.serverList
-        
+    async execute(client: newClient, interaction: CommandInteraction, guildData?) {
+        const serverList = guildData.MCServerData.serverList
+
         // Generate buttons
-        const row = new MessageActionRow()
+        const row = new ActionRowBuilder<ButtonBuilder>()
             .addComponents(
-                new MessageButton()
+                new ButtonBuilder()
                     .setCustomId('SingleAdd')
                     .setLabel('Add To List')
-                    .setStyle('PRIMARY'),
+                    .setStyle(ButtonStyle.Primary),
             )
-        
+
         let ip = interaction.options.data[0].value;
-        const options = { timeout: 3000 }
-        
+        const options = {timeout: 3000}
+
         status(ip.toString(), 25565, options)
             .then(async (response) => {
                 console.log('server online')
 
                 // create Embed w/ server info (use console.log(response) for extra information about server)
-                const embed = new MessageEmbed()
+                const embed = new EmbedBuilder()
                     .setTitle('Server Status')
                     .addFields(
                         {name: 'Server IP', value: `>  ${ip}`},
@@ -36,20 +53,20 @@ export const mcSingleServerStatus = new Command(
                     )
                     .setColor("#8570C1")
                     .setFooter({text: 'Server Online'})
-                
+
                 if (serverList.length === 10 || serverList.some(o => o["ip"] === ip)) {
                     return interaction.editReply({embeds: [embed]})
                 } else {
                     await interaction.editReply({embeds: [embed], components: [row]})
                 }
-                
+
                 let server = {name: ip, ip: ip}; // setup variable to push to mongo
-                
+
                 // create collector
                 const filter = i => i.user.id === interaction.member.user.id;
                 const collector = interaction.channel.createMessageComponentCollector({
                     filter,
-                    componentType: 'BUTTON',
+                    componentType: ComponentType.Button,
                     time: 10000
                 }); // only message author can interact, 10s timer
 
@@ -59,7 +76,7 @@ export const mcSingleServerStatus = new Command(
                     if (i.customId === 'SingleAdd') {
                         await i.update({embeds: [embed], content: 'Adding Server (if possible)', components: []});
                         serverList.push(server);
-                        await mcSingleServerStatus.guildData.save();
+                        await guildData.save();
                         collector.stop()
                     }
                 });
@@ -68,21 +85,24 @@ export const mcSingleServerStatus = new Command(
                     if (collected.size === 0)
                         await interaction.editReply({embeds: [embed], components: []}) // remove buttons & embed
                     else if (collected.first().customId === 'SingleAdd')
-                        await interaction.editReply({content: 'server added successfully', embeds: [embed], components: []})   // remove buttons & embed
+                        await interaction.editReply({
+                            content: 'server added successfully',
+                            embeds: [embed],
+                            components: []
+                        })   // remove buttons & embed
                 });
-        })
+            })
             .catch(async () => {
                 console.log('Server Offline')
 
                 // create embed to display server offline (its an embed to allow for editing during server info refresh)
-                const embed = new MessageEmbed()
+                const embed = new EmbedBuilder()
                     .setTitle('Server Status')
-                    .addField("Server Offline", "all good")   // ? add cmd to change server offline interaction ?
+                    .addFields({name: 'Server Offline', value: 'all good'})
                     .setColor("#8570C1")
 
                 // send embed and collect response
                 await interaction.editReply({embeds: [embed]})
             })
-        
     }
-)
+}

@@ -1,8 +1,8 @@
-import {CommandInteraction} from "discord.js";
+import {CommandInteraction, ComponentType} from "discord.js";
 
-export async function runMCButtonCollector(client, interaction: CommandInteraction, guildName: string){
+export async function runMCButtonCollector(client, interaction: CommandInteraction, guildData, guildName: string){
     const filter = i => i.user.id === interaction.member.user.id;
-    const collector = interaction.channel.createMessageComponentCollector({ filter, componentType: 'BUTTON', time: 10000 }); // only message author can interact, 1 response, 10s timer 
+    const collector = interaction.channel.createMessageComponentCollector({ filter, componentType: ComponentType.Button, time: 10000 }); // only message author can interact, 1 response, 10s timer 
 
     const command1 = client.commands.get('mc-change-server');
     const command2 = client.commands.get('mc-list-servers');
@@ -11,12 +11,12 @@ export async function runMCButtonCollector(client, interaction: CommandInteracti
         let update, execute;
         if (i.customId === 'Change') {
             update = i.update({ content: 'Server Change Requested', components: [] });
-            execute = command1.execute(client, interaction, guildName);
+            execute = command1.execute(client, interaction, guildData, guildName);
             collector.stop()
         }
         else if (i.customId === 'List') {
             update = i.update({ content: 'Server List Requested', components: [] });
-            execute = command2.execute(client, interaction, guildName);
+            execute = command2.execute(client, interaction, guildData, guildName);
             collector.stop()
         }
         await Promise.all([update, execute])

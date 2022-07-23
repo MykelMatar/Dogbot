@@ -1,11 +1,11 @@
-const {Client, Collection} = require('discord.js');
-import express from 'express';
+const {Client, Collection, GatewayIntentBits} = require('discord.js');
 import 'dotenv/config'
+import {newClient} from "./dependencies/myTypes";
 
-console.clear()
+// console.clear()
 
-const client = new Client({
-    intents: ['GUILDS', 'GUILD_MEMBERS', 'GUILD_MESSAGES', 'GUILD_PRESENCES'],
+const client: newClient = new Client({
+    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildPresences,],
     sweepers: {
         messages: {
             lifetime: 60,
@@ -13,6 +13,7 @@ const client = new Client({
         }
     }
 })
+    
 client.commands = new Collection(); // create commands property for Client so commands can be passed around 
 
 ['command_handler', 'event_handler'].forEach(handler => {
@@ -21,9 +22,4 @@ client.commands = new Collection(); // create commands property for Client so co
 
 client.login(process.env.BOT_TOKEN).catch(console.error)
 
-// express server on port 8080 for docker
-// const app = express();
-// app.listen(8080, () => {
-//     console.log(`server running on port 8080`);
-// });
 //console.log(process.memoryUsage().heapUsed / 1024 / 1024) check mb of mem usage

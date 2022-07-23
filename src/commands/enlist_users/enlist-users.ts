@@ -1,38 +1,52 @@
-import {Command} from "../../dependencies/classes/Command";
-import {Message, MessageActionRow, MessageButton, MessageEmbed, MessageAttachment} from "discord.js";
+import {
+    ActionRowBuilder,
+    AttachmentBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    CommandInteraction,
+    ComponentType,
+    EmbedBuilder,
+    Message,
+    SlashCommandBuilder
+} from "discord.js";
+import {newClient} from "../../dependencies/myTypes";
 import {updateEnlistUserArrays} from "../../dependencies/helpers/updateEnlistUserArrays";
 import {StatName, updateUserData} from "../../dependencies/helpers/updateUserData";
 
-export const enlistUsers = new Command(
-    'enlist-users',
-    'creates message embed with buttons to enlist other users for event/group',
-    async (client, message) => {
+export const enlistUsers = {
+    data: new SlashCommandBuilder()
+        .setName('enlist-users')
+        .setDescription('creates prompt that allows users to RSVP for events')
+        .addStringOption(option =>
+            option.setName('description')
+                .setDescription('Description of the event')
+                .setRequired(false)),
 
-        const userData = enlistUsers.guildData.UserData
-        
-        const row = new MessageActionRow()
+    async execute(client: newClient, message: CommandInteraction, guildData?) {
+        const userData = guildData.UserData
+
+        const row = new ActionRowBuilder<ButtonBuilder>()
             .addComponents(
-                new MessageButton()
+                new ButtonBuilder()
                     .setCustomId('Gamer')
                     .setLabel('Be Gamer')
-                    .setStyle('SUCCESS'),
-                new MessageButton()
+                    .setStyle(ButtonStyle.Success),
+                new ButtonBuilder()
                     .setCustomId('Perhaps')
                     .setLabel('Perhaps')
-                    .setStyle('PRIMARY'),
-                new MessageButton()
+                    .setStyle(ButtonStyle.Primary),
+                new ButtonBuilder()
                     .setCustomId('Cringe')
                     .setLabel('Be Cringe')
-                    .setStyle('DANGER'),
+                    .setStyle(ButtonStyle.Danger),
             );
-        
+
         // generate embed
-        const file = new MessageAttachment('./src/dependencies/images/Dogbot_Logo_512.png')
-        const file2 = new MessageAttachment('./src/dependencies/images/Dogbot.png')
-        const embed = new MessageEmbed()
-            .setTitle('Registered Gamers')
+        const file = new AttachmentBuilder('./src/dependencies/images/Dogbot.png')
+        const file2 = new AttachmentBuilder('./src/dependencies/images/Dogbot_Logo_512_Single.png')
+        const embed = new EmbedBuilder()
+            // .setTitle('Registered Gamers')
             .setThumbnail('attachment://Dogbot.png')
-            // .setImage('attachment://Dogbot_Logo_512.png')
             .addFields(
                 {name: 'Gaming⠀⠀⠀', value: '-', inline: true},
                 {name: 'Perhaps', value: '-', inline: true},
@@ -41,12 +55,12 @@ export const enlistUsers = new Command(
             .setColor("#8570C1")
             .setFooter({text: 'Selecting the "Perhaps" option will not count towards your enlist stats',})
 
-        let sent: Message = await message.channel.send({embeds: [embed], files: [file2], components: [row]})
+        let sent: Message = await message.channel.send({embeds: [embed], files: [file, file2], components: [row]})
 
         const collector = message.channel.createMessageComponentCollector({
-            componentType: 'BUTTON',
+            componentType: ComponentType.Button,
             time: 1.08e+7 // 3 hour (1.08e+7) timer
-        }); 
+        });
 
 
         let enlistedUsers: string[] = ['-'],
@@ -58,17 +72,21 @@ export const enlistUsers = new Command(
             ignoredUserIds: string[] = []
         let userArrays = [enlistedUsers, enlistedUserIds, rejectedUsers, rejectedUserIds, potentialUsers, potentialUserIds] // makes it easier to pass to 'update' function   
 
-        collector.on('collect', async i => {
-            if (i.customId === 'Gamer' || i.customId === 'Cringe' || i.customId === 'Perhaps') {
-                await i.deferUpdate(); // prevents "this message failed" message from appearing
-                await updateEnlistUserArrays(i, userArrays)
+        try {
+            collector.on('collect', async i => {
+                if (i.customId === 'Gamer' || i.customId === 'Cringe' || i.customId === 'Perhaps') {
+                    await i.deferUpdate(); // prevents "this message failed" message from appearing
+                    await updateEnlistUserArrays(i, userArrays)
 
-                embed.fields[0].value = enlistedUsers.join('');
-                embed.fields[1].value = potentialUsers.join('');
-                embed.fields[2].value = rejectedUsers.join('');
-                await sent.edit({embeds: [embed], components: [row]});
-            }
-        });
+                    embed.data.fields[0].value = enlistedUsers.join('');
+                    embed.data.fields[1].value = potentialUsers.join('');
+                    embed.data.fields[2].value = rejectedUsers.join('');
+                    await sent.edit({embeds: [embed], components: [row]});
+                }
+            });
+        } catch (e) {
+            console.log(e)
+        }
 
         collector.on('end', async collected => {
             await sent.edit({content: '⚠ ***ENLISTING ENDED*** ⚠', embeds: [embed], components: []})
@@ -79,15 +97,16 @@ export const enlistUsers = new Command(
             for (const user of userData) {
                 allUserIds.push(user.id)
             }
-            
+
             enlistedUserIds.forEach(id => allRegisteredUserIds.push(id))
             rejectedUserIds.forEach(id => allRegisteredUserIds.push(id))
             potentialUserIds.forEach(id => allRegisteredUserIds.push(id))
-            
+
             ignoredUserIds = allUserIds.filter(id => !(allRegisteredUserIds.includes(id)))
-            
+
             await updateUserData(message, enlistedUserIds, StatName.enlist);
             await updateUserData(message, rejectedUserIds, StatName.reject);
             await updateUserData(message, ignoredUserIds, StatName.ignore);
         });
-    })
+    }
+}

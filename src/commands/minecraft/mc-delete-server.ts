@@ -1,13 +1,22 @@
-import {Command} from "../../dependencies/classes/Command";
+import {
+    ActionRowBuilder,
+    ComponentType,
+    PermissionFlagsBits,
+    SelectMenuBuilder,
+    CommandInteraction,
+    SlashCommandBuilder
+} from "discord.js";
 import {generateMCMenuOptions} from "../../dependencies/helpers/generateMCMenuOptions";
-import {MessageActionRow, MessageSelectMenu} from "discord.js";
+import {newClient} from "../../dependencies/myTypes";
 
-export const mcDeleteServer = new Command(
-    'mc-delete-server',
-    'deletes registered server',
-    async (client, interaction, guildName?) => {
+export const mcDeleteServer = {
+    data: new SlashCommandBuilder()
+        .setName('mc-delete-server')
+        .setDescription('Deletes a registered MC server')
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
-        const MCServerData = mcDeleteServer.guildData.MCServerData
+    async execute(client: newClient, interaction: CommandInteraction, guildData?, guildName?: string) {
+        const MCServerData = guildData.MCServerData
         let serverListSize = MCServerData.serverList.length
 
         // ensures command does not execute if 0 or 1 server exists
@@ -21,14 +30,14 @@ export const mcDeleteServer = new Command(
             )
             return
         }
-        
+
         let options = await generateMCMenuOptions(interaction, guildName, serverListSize);
         let option = options[0];
 
         // generate select menu
-        const row = new MessageActionRow()
+        const row = new ActionRowBuilder<SelectMenuBuilder>()
             .addComponents(
-                new MessageSelectMenu()
+                new SelectMenuBuilder()
                     .setCustomId('delete-menu')
                     .setPlaceholder('Nothing selected')
                     .addOptions(option),
@@ -39,34 +48,38 @@ export const mcDeleteServer = new Command(
         const filter = i => i.user.id === interaction.member.user.id
         const collector = interaction.channel.createMessageComponentCollector({
             filter,
-            componentType: 'SELECT_MENU',
+            componentType: ComponentType.SelectMenu,
             time: 15000
         });
 
         let serverName;
 
-        collector.on('collect', async i => {
-            if (i.customId !== 'delete-menu') return collector.stop() // check for correct menu interaction
-            let selectedServerIP, serverIP
+        try {
+            collector.on('collect', async i => {
+                if (i.customId !== 'delete-menu') return collector.stop() // check for correct menu interaction
+                let selectedServerIP, serverIP
 
-            for (let j = 0; j < serverListSize; j++) {
-                if (i.values[0] === `selection${j}`) {
-                    // delete server and if its selectedServer, delete it from there
-                    selectedServerIP = MCServerData.selectedServer.ip // selectedServer ip
-                    serverIP = MCServerData.serverList[j].ip // server selected for deletion's ip
-                    serverName = MCServerData.serverList[j].name // server selected for deletion's name
+                for (let j = 0; j < serverListSize; j++) {
+                    if (i.values[0] === `selection${j}`) {
+                        // delete server and if its selectedServer, delete it from there
+                        selectedServerIP = MCServerData.selectedServer.ip // selectedServer ip
+                        serverIP = MCServerData.serverList[j].ip // server selected for deletion's ip
+                        serverName = MCServerData.serverList[j].name // server selected for deletion's name
 
-                    MCServerData.serverList.splice(j, 1) // delete selected server from array
+                        MCServerData.serverList.splice(j, 1) // delete selected server from array
+                    }
                 }
-            }
-            // set a new selected server if the current one was deleted 
-            if (selectedServerIP === serverIP) {
-                MCServerData.selectedServer.ip = MCServerData.serverList[0].ip
-                MCServerData.selectedServer.name = MCServerData.serverList[0].name
-            }
-            await mcDeleteServer.guildData.save() // save changes to mongo
-            collector.stop()
-        });
+                // set a new selected server if the current one was deleted 
+                if (selectedServerIP === serverIP) {
+                    MCServerData.selectedServer.ip = MCServerData.serverList[0].ip
+                    MCServerData.selectedServer.name = MCServerData.serverList[0].name
+                }
+                await guildData.save() // save changes to mongo
+                collector.stop()
+            });
+        } catch (e) {
+            console.log(e)
+        }
 
         collector.on('end', async collected => {
             if (collected.size === 0) {
@@ -80,6 +93,5 @@ export const mcDeleteServer = new Command(
                 console.log('Server Deleted Successfully')
             }
         });
-    })
-
-mcDeleteServer.requiresAdmin = true;
+    }
+}

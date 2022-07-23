@@ -1,13 +1,22 @@
-import {Command} from "../../dependencies/classes/Command";
-import {MessageActionRow, MessageButton, MessageEmbed} from "discord.js";
+import {
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    ComponentType,
+    EmbedBuilder,
+    CommandInteraction,
+    SlashCommandBuilder
+} from "discord.js";
+import {newClient} from "../../dependencies/myTypes";
 
 //TODO check if it is feasible to get the status of every server on the list
-export const mcListServers = new Command(
-    'mc-list-servers',
-    'lists all registered MC server',
-    async (client, interaction, guildName?) => {
+export const mcListServers = {
+    data: new SlashCommandBuilder()
+        .setName('mc-list-servers')
+        .setDescription('Lists all registered MC servers'),
 
-        const MCServerData = mcListServers.guildData.MCServerData
+    async execute(client: newClient, interaction: CommandInteraction, guildData?, guildName?: string) {
+        const MCServerData = guildData.MCServerData
 
         // retrieve server names and IPs
         let serverNameList: string[] = [], serverIPList: string[] = []
@@ -24,45 +33,45 @@ export const mcListServers = new Command(
 
         let row; // variable amount of buttons to reflect doable actions
         if (serverIPList.length === 10) {
-            row = new MessageActionRow()
+            row = new ActionRowBuilder<ButtonBuilder>()
                 .addComponents(
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setCustomId('ListRemove')
                         .setLabel('Remove')
-                        .setStyle('DANGER'),
-                    new MessageButton()
+                        .setStyle(ButtonStyle.Danger),
+                    new ButtonBuilder()
                         .setCustomId('ListChange')
                         .setLabel('Change')
-                        .setStyle('PRIMARY'),
+                        .setStyle(ButtonStyle.Primary),
                 );
         } else if (serverIPList.length === 1) {
-            row = new MessageActionRow()
+            row = new ActionRowBuilder<ButtonBuilder>()
                 .addComponents(
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setCustomId('ListAdd')
                         .setLabel('Add')
-                        .setStyle('SUCCESS'),
+                        .setStyle(ButtonStyle.Success),
                 );
         } else {
-            row = new MessageActionRow()
+            row = new ActionRowBuilder<ButtonBuilder>()
                 .addComponents(
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setCustomId('ListAdd')
                         .setLabel('Add')
-                        .setStyle('SUCCESS'),
-                    new MessageButton()
+                        .setStyle(ButtonStyle.Success),
+                    new ButtonBuilder()
                         .setCustomId('ListRemove')
                         .setLabel('Remove')
-                        .setStyle('DANGER'),
-                    new MessageButton()
+                        .setStyle(ButtonStyle.Danger),
+                    new ButtonBuilder()
                         .setCustomId('ListChange')
                         .setLabel('Change')
-                        .setStyle('PRIMARY'),
+                        .setStyle(ButtonStyle.Primary),
                 );
         }
 
         // generate embed
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle("Registered MC Servers")
             .addFields(
                 // join(' /n') removes commas and adds newline to array
@@ -78,7 +87,7 @@ export const mcListServers = new Command(
         const filter = i => i.user.id === interaction.member.user.id;
         const collector = interaction.channel.createMessageComponentCollector({
             filter,
-            componentType: 'BUTTON',
+            componentType: ComponentType.Button,
             time: 20000
         }); // only message author can interact, 20s timer 
 
@@ -87,25 +96,28 @@ export const mcListServers = new Command(
         const command2 = client.commands.get('mc-delete-server');
         const command3 = client.commands.get('mc-change-server');
 
-        // collect response
-        collector.on('collect', async i => {
-            let update, execute;
-            // interaction handling
-            if (i.customId === 'ListAdd') {
-                update = i.update({embeds: [], content: 'Adding Server (if possible)', components: []});
-                execute = command1.execute(client, interaction, guildName);
-                collector.stop()
-            } else if (i.customId === 'ListRemove') {
-                update = i.update({embeds: [], content: 'Removing Server', components: []});
-                execute = command2.execute(client, interaction, guildName);
-                collector.stop()
-            } else if (i.customId === 'ListChange') {
-                update = i.update({content: 'Changing Server', components: []});
-                execute = command3.execute(client, interaction, guildName);
-                collector.stop()
-            }
-            await Promise.all([update, execute])
-        });
+        try {
+            collector.on('collect', async i => {
+                let update, execute;
+                // interaction handling
+                if (i.customId === 'ListAdd') {
+                    update = i.update({embeds: [], content: 'Adding Server (if possible)', components: []});
+                    execute = command1.execute(client, interaction, guildData, guildName);
+                    collector.stop()
+                } else if (i.customId === 'ListRemove') {
+                    update = i.update({embeds: [], content: 'Removing Server', components: []});
+                    execute = command2.execute(client, interaction, guildData, guildName);
+                    collector.stop()
+                } else if (i.customId === 'ListChange') {
+                    update = i.update({content: 'Changing Server', components: []});
+                    execute = command3.execute(client, interaction, guildData, guildName);
+                    collector.stop()
+                }
+                await Promise.all([update, execute])
+            });
+        } catch (e) {
+            console.log(e)
+        }
 
         collector.on('end', async collected => {
             if (collected.size === 0)
@@ -113,5 +125,5 @@ export const mcListServers = new Command(
             else if (collected.first().customId === 'ListAdd' || collected.first().customId === 'ListRemove' || collected.first().customId === 'ListChange')
                 await interaction.editReply({content: 'Executing...', embeds: [], components: []})   // remove buttons & embed
         });
-
-    })
+    }
+}

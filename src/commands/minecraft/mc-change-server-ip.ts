@@ -1,15 +1,27 @@
-import {MessageActionRow, MessageSelectMenu} from "discord.js";
+import {
+    ActionRowBuilder,
+    ComponentType,
+    PermissionFlagsBits,
+    SelectMenuBuilder,
+    CommandInteraction,
+    SlashCommandBuilder
+} from "discord.js";
 import {status} from "minecraft-server-util";
-import {Command} from "../../dependencies/classes/Command";
 import {generateMCMenuOptions} from "../../dependencies/helpers/generateMCMenuOptions";
+import {newClient} from "../../dependencies/myTypes";
 
+export const mcChangeServerIP = {
+    data: new SlashCommandBuilder()
+        .setName('mc-change-server-ip')
+        .setDescription('Changes the IP address of an existing server')
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+        .addStringOption(option =>
+            option.setName('new-ip')
+                .setDescription('the new IP address')
+                .setRequired(true)),
 
-export const mcChangeServerIP = new Command(
-    'mc-change-server-ip',
-    'changes IP of registered server',
-    async (client, interaction, guildName?) => {
-
-        const MCServerData = mcChangeServerIP.guildData.MCServerData
+    async execute(client: newClient, interaction: CommandInteraction, guildData?, guildName?: string) {
+        const MCServerData = guildData.MCServerData
         let serverListSize = MCServerData.serverList.length
 
         // make sure there is at least 1 server
@@ -45,9 +57,9 @@ export const mcChangeServerIP = new Command(
         options = await generateMCMenuOptions(interaction, guildName, serverListSize);
 
         // generate select menu
-        let row = new MessageActionRow()
+        let row = new ActionRowBuilder<SelectMenuBuilder>()
             .addComponents(
-                new MessageSelectMenu()
+                new SelectMenuBuilder()
                     .setCustomId('change-ip-menu')
                     .setPlaceholder('Nothing selected')
                     .addOptions(options[0]),
@@ -60,7 +72,7 @@ export const mcChangeServerIP = new Command(
         let filter = i => i.user.id === interaction.member.user.id;
         const collector = interaction.channel.createMessageComponentCollector({
             filter,
-            componentType: 'SELECT_MENU',
+            componentType: ComponentType.SelectMenu,
             max: 1,
             time: 10000
         });
@@ -75,7 +87,7 @@ export const mcChangeServerIP = new Command(
                     serverName = MCServerData.serverList[j].name
                 }
             }
-            await mcChangeServerIP.guildData.save() // save changes to mongo
+            await guildData.save() // save changes to mongo
             collector.stop()
         });
 
@@ -91,7 +103,5 @@ export const mcChangeServerIP = new Command(
                 console.log('Server IP changed Successfully')
             }
         });
-
-    })
-
-mcChangeServerIP.requiresAdmin = true;
+    }
+}

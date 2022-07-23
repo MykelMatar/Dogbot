@@ -1,7 +1,8 @@
 // @ts-nocheck - compiler does not understand that the row components are message buttons
-import {MessageActionRow, MessageButton} from "discord.js";
-import {Command} from "../../dependencies/classes/Command";
+import {ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType} from "discord.js";
 import {StatName, updateUserData} from "../../dependencies/helpers/updateUserData";
+
+//TODO: create /endtictactoe command or timeout after 15s of nothing happening
 
 let selected = Array(9).fill(false)
 let color = 'SUCCESS';
@@ -11,11 +12,19 @@ let turn = 1;
 let winner, loser, user, selectedRow, index
 let cmdStatus = 0;
 
-//TODO: create /endtictactoe command or timeout after 15s of nothing happening
-export const tictactoe = new Command(
-    'tictactoe',
-    'starts a tic tac toe game against another member',
-    async (client, interaction) => {
+import {CommandInteraction, SlashCommandBuilder} from "discord.js";
+import {newClient} from "../../dependencies/myTypes";
+
+export const tictactoe = {
+    data: new SlashCommandBuilder() 
+        .setName('tictactoe')
+        .setDescription('Starts a game of tic-tac-toe against another user')
+        .addUserOption(option =>
+            option.setName('user')
+                .setDescription('user to play against')
+                .setRequired(true)),
+        
+    async execute(client: newClient, interaction: CommandInteraction){
         if (cmdStatus === 1) await interaction.editReply('please wait for current game to finish')
         cmdStatus = 1;
 
@@ -24,52 +33,52 @@ export const tictactoe = new Command(
         console.log(opponent)
 
         // generate buttons
-        const row1 = new MessageActionRow()
+        const row1 = new ActionRowBuilder<ButtonBuilder>()
             .addComponents(
-                new MessageButton()
+                new ButtonBuilder()
                     .setCustomId('TL')
                     .setLabel(' ')
-                    .setStyle('SECONDARY'),
-                new MessageButton()
+                    .setStyle(ButtonStyle.Secondary),
+                new ButtonBuilder()
                     .setCustomId('TM')
                     .setLabel('  ')
-                    .setStyle('SECONDARY'),
-                new MessageButton()
+                    .setStyle(ButtonStyle.Secondary),
+                new ButtonBuilder()
                     .setCustomId('TR')
                     .setLabel('   ')
-                    .setStyle('SECONDARY'),
-            );
-        
-        const row2 = new MessageActionRow()
-            .addComponents(
-                new MessageButton()
-                    .setCustomId('ML')
-                    .setLabel('    ')
-                    .setStyle('SECONDARY'),
-                new MessageButton()
-                    .setCustomId('MM')
-                    .setLabel('     ')
-                    .setStyle('SECONDARY'),
-                new MessageButton()
-                    .setCustomId('MR')
-                    .setLabel('      ')
-                    .setStyle('SECONDARY'),
+                    .setStyle(ButtonStyle.Secondary),
             );
 
-        const row3 = new MessageActionRow()
+        const row2 = new ActionRowBuilder<ButtonBuilder>()
             .addComponents(
-                new MessageButton()
+                new ButtonBuilder()
+                    .setCustomId('ML')
+                    .setLabel('    ')
+                    .setStyle(ButtonStyle.Secondary),
+                new ButtonBuilder()
+                    .setCustomId('MM')
+                    .setLabel('     ')
+                    .setStyle(ButtonStyle.Secondary),
+                new ButtonBuilder()
+                    .setCustomId('MR')
+                    .setLabel('      ')
+                    .setStyle(ButtonStyle.Secondary),
+            );
+
+        const row3 = new ActionRowBuilder<ButtonBuilder>()
+            .addComponents(
+                new ButtonBuilder()
                     .setCustomId('BL')
                     .setLabel('      ')
-                    .setStyle('SECONDARY'),
-                new MessageButton()
+                    .setStyle(ButtonStyle.Secondary),
+                new ButtonBuilder()
                     .setCustomId('BM')
                     .setLabel('       ')
-                    .setStyle('SECONDARY'),
-                new MessageButton()
+                    .setStyle(ButtonStyle.Secondary),
+                new ButtonBuilder()
                     .setCustomId('BR')
                     .setLabel('        ')
-                    .setStyle('SECONDARY'),
+                    .setStyle(ButtonStyle.Secondary),
             );
 
         // create board
@@ -79,7 +88,7 @@ export const tictactoe = new Command(
         })
 
         const filter = i => i.user.id === interaction.member.user.id;
-        const collector = interaction.channel.createMessageComponentCollector({filter, componentType: 'BUTTON'});
+        const collector = interaction.channel.createMessageComponentCollector({filter, componentType: ComponentType.Button});
 
         // start game
         collector.on('collect', async i => {
@@ -157,18 +166,18 @@ export const tictactoe = new Command(
 
             collector.filter = i => i.user.id === user // change filter to only accept correct player's input
 
-            // win logic
-            if (row1.components[1].label === row2.components[1].label && // 3 in a row vertically left column
-                row1.components[1].label === row3.components[1].label) {
+
+            if (row1.data.components[1].label === row2.components[1].label && // 3 in a row vertically left column
+                row1.data.components[1].label === row3.components[1].label) {
                 await endGame(interaction, collector)
-            } else if (row1.components[1].label === row2.components[1].label && // 3 in a row vertically middle column
-                row1.components[1].label === row3.components[1].label) {
+            } else if (row1.data.components[1].label === row2.components[1].label && // 3 in a row vertically middle column
+                row1.data.components[1].label === row3.components[1].label) {
                 await endGame(interaction, collector)
-            } else if (row1.components[2].label === row2.components[2].label && // 3 in a row vertically right column
+            } else if (row1.data.components[2].label === row2.components[2].label && // 3 in a row vertically right column
                 row2.components[2].label === row3.components[2].label) {
                 await endGame(interaction, collector)
-            } else if (row1.components[0].label === row1.components[1].label && // 3 in a row horizontally top row
-                row1.components[0].label === row1.components[2].label) {
+            } else if (row1.data.components[0].label === row1.data.components[1].label && // 3 in a row horizontally top row
+                row1.data.components[0].label === row1.data.components[2].label) {
                 await endGame(interaction, collector)
             } else if (row2.components[0].label === row2.components[1].label && // 3 in a row horizontally middle row
                 row2.components[0].label === row2.components[2].label) {
@@ -176,11 +185,11 @@ export const tictactoe = new Command(
             } else if (row3.components[0].label === row3.components[1].label && // 3 in a row horizontally bottom row
                 row3.components[0].label === row3.components[2].label) {
                 await endGame(interaction, collector)
-            } else if (row1.components[0].label === row2.components[1].label && // 3 in a row diagonally -slope
-                row1.components[0].label === row3.components[2].label) {
+            } else if (row1.data.components[0].label === row2.components[1].label && // 3 in a row diagonally -slope
+                row1.data.components[0].label === row3.components[2].label) {
                 await endGame(interaction, collector)
-            } else if (row1.components[2].label === row2.components[1].label && // 3 in a row diagonally +slope
-                row1.components[2].label === row3.components[0].label) {
+            } else if (row1.data.components[2].label === row2.components[1].label && // 3 in a row diagonally +slope
+                row1.data.components[2].label === row3.components[0].label) {
                 await endGame(interaction, collector)
             }
         });
@@ -190,8 +199,7 @@ export const tictactoe = new Command(
                 await interaction.editReply({content: 'Tie!'})
         });
     }
-)
-
+}
 
 // helper functions
 async function changeTurn(interaction, client) {

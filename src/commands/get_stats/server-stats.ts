@@ -1,19 +1,24 @@
-import {Command} from "../../dependencies/classes/Command";
-import {Guild, GuildMember, MessageEmbed} from "discord.js";
+import {Guild, GuildMember, EmbedBuilder, CommandInteraction, SlashCommandBuilder} from "discord.js";
+import {newClient} from "../../dependencies/myTypes";
 
-export const serverStats = new Command(
-    'server-stats',
-    'displays relevant discord server stats',
-    async (client, interaction) => {
+export const serverStats = {
+    data: new SlashCommandBuilder() 
+        .setName('server-stats')
+        .setDescription('Displays some stats of the discord server')
+        .addStringOption(option =>
+            option.setName('hide')
+                .setDescription('Whether to hide the response or not')
+                .setRequired(false)),
         
+    async execute(client: newClient, interaction: CommandInteraction){
         const guild: Guild = interaction.guild
         let owner: GuildMember = await guild.members.fetch(guild.ownerId)
         let verification: string
-        
+
         if (guild.verified) verification = 'Verified ✅'
         else verification = 'Not Verified';
-        
-        const embed = new MessageEmbed()
+
+        const embed = new EmbedBuilder()
             .setTitle(`${interaction.guild.name}'s Stats`)
             .addFields(
                 {name: `Owner` , value: `${owner}`, inline: true},
@@ -24,7 +29,7 @@ export const serverStats = new Command(
                 {name: 'Premium Tier', value: `${guild.premiumTier}`, inline: true},
             )
             .setColor("#8570C1")
-        
+
         await interaction.editReply({embeds: [embed]})
     }
-)
+}

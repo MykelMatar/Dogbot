@@ -1,38 +1,46 @@
-import {Command} from "../../dependencies/classes/Command";
 import {TypingRacer} from "../../dependencies/classes/TypingRacer";
-import {MessageActionRow, MessageButton, MessageEmbed} from "discord.js";
+import {ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, EmbedBuilder, CommandInteraction, SlashCommandBuilder} from "discord.js";
 import {Actions, updateTypeRaceUserArray} from "../../dependencies/helpers/updateTypeRaceUserArray"
 import {StatName} from "../../dependencies/helpers/updateUserData";
+import {newClient} from "../../dependencies/myTypes";
 
-export const typingrace = new Command(
-    'typing-race',
-    'creates a typing race between different users',
-    async (client, message) => {
 
-        // create sign up prompt
+export const typingrace = {
+    data: new SlashCommandBuilder()
+        .setName('typing-race')
+        .setDescription('Starts a typing race for users to participate in'),
+
+    async execute(client: newClient, message: CommandInteraction) {
         // generate buttons
-        const row = new MessageActionRow()
+        const row = new ActionRowBuilder<ButtonBuilder>()
             .addComponents(
-                new MessageButton()
+                new ButtonBuilder()
                     .setCustomId('signup')
                     .setLabel('Sign Up')
-                    .setStyle('SUCCESS'),
-                new MessageButton()
+                    .setStyle(ButtonStyle.Success),
+                new ButtonBuilder()
                     .setCustomId('undo')
                     .setLabel('Undo Sign Up')
-                    .setStyle('DANGER'),
+                    .setStyle(ButtonStyle.Danger),
             );
 
         // generate embed
-        const signUpEmbed = new MessageEmbed()
+        const signUpEmbed = new EmbedBuilder()
             .setTitle('Typing Race')
-            .addField('Racers', '-')
+            .addFields({name: 'Racers', value: '-'})
             .setColor("#8570C1")
 
-        let sent = await message.channel.send({content:'Race will begin in 20 seconds' , embeds: [signUpEmbed], components: [row]})
+        let sent = await message.channel.send({
+            content: 'Race will begin in 20 seconds',
+            embeds: [signUpEmbed],
+            components: [row]
+        })
 
         // create collector
-        const signUpCollector = message.channel.createMessageComponentCollector({componentType: 'BUTTON', time: 20000});
+        const signUpCollector = message.channel.createMessageComponentCollector({
+            componentType: ComponentType.Button,
+            time: 20000
+        });
 
         // collect response
         let racers: string[] = ['-'];
@@ -46,11 +54,11 @@ export const typingrace = new Command(
                 await updateTypeRaceUserArray(i, racers, racerIds, Actions.remove)
             }
 
-            signUpEmbed.fields[0].value = racers.join('');
+            signUpEmbed.data.fields[0].value = racers.join('');
             await sent.edit({embeds: [signUpEmbed], components: [row]});
         });
 
-        signUpCollector.on('end', async collected => {
+        signUpCollector.on('end', async () => {
             await sent.edit({content: 'race starting', embeds: [signUpEmbed]})   // remove buttons
             if (racers[0] == '-') {
                 await sent.edit({content: 'no racers signed up', embeds: [], components: []})
@@ -63,9 +71,8 @@ export const typingrace = new Command(
                 prompt += ' ' + (words[Math.floor(Math.random() * words.length)])
             }
 
-            const promptEmbed = new MessageEmbed()
-                // @ts-ignore
-                .addField('Prompt', prompt)
+            const promptEmbed = new EmbedBuilder()
+                .addFields({name: 'Prompt', value: prompt})
                 .setColor("#8570C1")
 
             await sent.edit({content: 'sign-up ended', embeds: [signUpEmbed, promptEmbed], components: []})   // remove buttons
@@ -89,7 +96,7 @@ export const typingrace = new Command(
                 accuracy = similarity(prompt, m.content)
                 characterCount = m.content.length
                 errors = Math.round((1 - accuracy) * prompt.length)
-                
+
                 if (submissionTime < .27 && accuracy > .98) { // if user submission is faster than 16.2 seconds
                     rawWPM = 0
                     netWPM = 0
@@ -108,7 +115,7 @@ export const typingrace = new Command(
                     // netWPM = rawWPM - (uncorrected errors / time (min))
                     netWPM = parseFloat((rawWPM - (errors / submissionTime)).toFixed(2))
 
-                    const statsEmbed = new MessageEmbed()
+                    const statsEmbed = new EmbedBuilder()
                         .setTitle(`${m.author.username}'s stats`)
                         .addFields(
                             {name: 'WPM', value: netWPM.toString(), inline: true},
@@ -128,24 +135,24 @@ export const typingrace = new Command(
                 if (!(collectedUsers.includes(m.author.id))) {
                     collectedUsers.push(m.author.id)
                 }
-                
+
                 // check if every user has submitted something
                 // racerIds.sort().every((element, index) => {
                 //     if (element == (collectedUsers.sort())[index]) return endRace = true;
                 // })
                 // if (endRace === true) promptCollector.stop()
 
-                 promptCollector.filter = m => !(m.author.bot) && !(collectedUsers.includes(m.author.id))
+                promptCollector.filter = m => !(m.author.bot) && !(collectedUsers.includes(m.author.id))
 
             })
 
-            promptCollector.on('end', async collected => {
+            promptCollector.on('end', async () => {
                 let highestWPM: number = 0;
                 console.log(typingRacers)
                 typingRacers.forEach(racer => {
                     if (racer.WPM > highestWPM) highestWPM = racer.WPM
                 })
-                
+
                 let winner = typingRacers.find(racer => racer.WPM === highestWPM)
                 winner.isWinner = true;
                 for (const typingRacer of typingRacers) {
@@ -158,7 +165,8 @@ export const typingrace = new Command(
             })
         }); // end signUpCollector.on('end')
     }
-)
+}
+
 
 // top 200 most common words
 const words: string[] = ['the', 'be', 'of', 'and', 'a', 'to', 'in', 'he', 'have', 'it', 'that', 'for', 'they', 'I',

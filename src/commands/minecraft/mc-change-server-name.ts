@@ -1,13 +1,26 @@
-import {MessageActionRow, MessageSelectMenu} from "discord.js";
-import {Command} from "../../dependencies/classes/Command";
+import {
+    ActionRowBuilder,
+    ComponentType,
+    SelectMenuBuilder,
+    CommandInteraction,
+    SlashCommandBuilder,
+    PermissionFlagsBits
+} from "discord.js";
 import {generateMCMenuOptions} from "../../dependencies/helpers/generateMCMenuOptions";
+import {newClient} from "../../dependencies/myTypes";
 
-export const mcChangeServerName = new Command(
-    'mc-change-server-name',
-    'renames registered server',
-    async (client, interaction, guildName?) => {
+export const mcChangeServerName = {
+    data: new SlashCommandBuilder()
+        .setName('mc-change-server-name')
+        .setDescription('Renames an existing server')
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+        .addStringOption(option =>
+            option.setName('new-name')
+                .setDescription('The new server name')
+                .setRequired(true)),
 
-        const MCServerData = mcChangeServerName.guildData.MCServerData
+    async execute(client: newClient, interaction: CommandInteraction, guildData?, guildName?: string) {
+        const MCServerData = guildData.MCServerData
         let serverListSize = MCServerData.serverList.length
 
         // make sure there is at least 1 server
@@ -38,9 +51,9 @@ export const mcChangeServerName = new Command(
         options = await generateMCMenuOptions(interaction, guildName, serverListSize);
 
         // generate select menu
-        let row = new MessageActionRow()
+        let row = new ActionRowBuilder<SelectMenuBuilder>()
             .addComponents(
-                new MessageSelectMenu()
+                new SelectMenuBuilder()
                     .setCustomId('change-server-menu')
                     .setPlaceholder('Nothing selected')
                     .addOptions(options[0]),
@@ -53,7 +66,7 @@ export const mcChangeServerName = new Command(
         let filter = i => i.user.id === interaction.member.user.id;
         const collector = interaction.channel.createMessageComponentCollector({
             filter,
-            componentType: 'SELECT_MENU',
+            componentType: ComponentType.SelectMenu,
             time: 10000
         });
         let serverName
@@ -70,7 +83,7 @@ export const mcChangeServerName = new Command(
             if (MCServerData.selectedServer.name === serverName)
                 MCServerData.selectedServer.name = newName
 
-            await mcChangeServerName.guildData.save() // save changes to mongo
+            await guildData.save() // save changes to mongo
             collector.stop()
         });
 
@@ -88,5 +101,5 @@ export const mcChangeServerName = new Command(
                 console.log('Server Renamed Successfully')
             }
         });
-    })
-mcChangeServerName.requiresAdmin = true
+    }
+}

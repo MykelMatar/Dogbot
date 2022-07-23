@@ -1,14 +1,15 @@
-import {Client, GuildMember, CommandInteraction, GuildCacheMessage, CacheType} from "discord.js";
+import {GuildMember, CommandInteraction, GuildCacheMessage, CacheType} from "discord.js";
 import guilds from '../schemas/guild-schema'
+import {newClient} from "../myTypes";
 
 export class Command {
     name: string
     description: string
     requiresAdmin?: boolean
-    executeCallback: (client: Client, interaction: CommandInteraction, guildName?: string) => void
+    executeCallback: (client: newClient, interaction: CommandInteraction, guildName?: string) => void
     guildData: any // mongoDB document
 
-    public async execute(client: Client, interaction: CommandInteraction, guildName?: string): Promise<GuildCacheMessage<CacheType>> {
+    public async execute(client: newClient, interaction: CommandInteraction, guildName?: string): Promise<GuildCacheMessage<CacheType>> {
         try {
             if (!(!(interaction.member instanceof GuildMember) || interaction.member.partial)) {
                 console.log(`${this.name} requested by ${interaction.member.user.username} in ${interaction.member.guild.name}`)

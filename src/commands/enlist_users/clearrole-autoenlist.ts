@@ -1,14 +1,21 @@
-import {Command} from "../../dependencies/classes/Command";
-import {Client, CommandInteraction} from "discord.js";
+import {CommandInteraction, SlashCommandBuilder} from "discord.js";
+import {newClient} from "../../dependencies/myTypes";
 
-export const clearroleAutoenlist = new Command(
-    'clearrole-autoenlist', 
-    'clears role used to trigger auto enlist',
-    async (client: Client, interaction: CommandInteraction) => {
-    // clear role id and push to mongo
-    clearroleAutoenlist.guildData.ServerData.roles.autoenlist = null;
-    await clearroleAutoenlist.guildData.save()
+export const clearRoleAutoEnlist = {
+    data: new SlashCommandBuilder() 
+        .setName('clearrole-autoenlist')
+        .setDescription('Clears role used to automate /enlist-users')
+        .addStringOption(option =>
+            option.setName('description')
+                .setDescription('details about event')
+                .setRequired(false)),
+        
+    async execute(client: newClient, interaction: CommandInteraction, guildData?){
+        
+        guildData.ServerData.roles.autoenlist = null;
+        await guildData.save()
 
-    await interaction.reply({ephemeral: true, content: 'Role Cleared Successfully'})
-    console.log("Role cleared");
-})
+        await interaction.reply({ephemeral: true, content: 'Role Cleared Successfully'})
+        console.log('Role cleared'); 
+    }
+}

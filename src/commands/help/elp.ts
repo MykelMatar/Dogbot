@@ -1,25 +1,39 @@
-import {Command} from "../../dependencies/classes/Command";
-import {MessageActionRow, MessageButton, MessageEmbed} from "discord.js";
+import {
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    ComponentType,
+    EmbedBuilder,
+    CommandInteraction,
+    SlashCommandBuilder
+} from "discord.js";
+import {newClient} from "../../dependencies/myTypes";
 
-export const elp = new Command(
-    'elp',
-    'lists all commands and relevant information',
-    async (client, interaction) => {
+export const elp = {
+    data: new SlashCommandBuilder()
+        .setName('elp')
+        .setDescription('lists all commands and relevant information')
+        .addBooleanOption(option =>
+            option.setName('hide')
+                .setDescription('Whether to hide response or not')
+                .setRequired(false)),
+
+    async execute(client: newClient, interaction: CommandInteraction) {
         // Generate buttons
-        const row = new MessageActionRow()
+        const row = new ActionRowBuilder<ButtonBuilder>()
             .addComponents(
-                new MessageButton()
+                new ButtonBuilder()
                     .setCustomId('prev')
                     .setLabel('Prev')
-                    .setStyle('PRIMARY'),
-                new MessageButton()
+                    .setStyle(ButtonStyle.Primary),
+                new ButtonBuilder()
                     .setCustomId('next')
                     .setLabel('Next')
-                    .setStyle('SECONDARY'),
+                    .setStyle(ButtonStyle.Secondary),
             )
 
         // embed for mc commands
-        const mcEmbed = new MessageEmbed()
+        const mcEmbed = new EmbedBuilder()
             .setTitle("minecraft commands")
             .setDescription(
                 '**Use the buttons to navigate between command pages. Visit [github](https://github.com/MykelMatar/Dogbot) ' +
@@ -56,7 +70,7 @@ export const elp = new Command(
             .setFooter({text: 'Page 1'})
 
         // embed for enlist commands
-        const enlistEmbed = new MessageEmbed()
+        const enlistEmbed = new EmbedBuilder()
             .setTitle("enlist commands")
             .setDescription(
                 '**Use the buttons to navigate between command pages. Visit [github](https://github.com/MykelMatar/Dogbot) ' +
@@ -86,7 +100,7 @@ export const elp = new Command(
             .setFooter({text: 'Page 2'})
 
         // embed for get_stats commands
-        const statsEmbed = new MessageEmbed()
+        const statsEmbed = new EmbedBuilder()
             .setTitle("get-stats commands")
             .setDescription(
                 '**Use the buttons to navigate between command pages. Visit [github](https://github.com/MykelMatar/Dogbot) ' +
@@ -112,7 +126,7 @@ export const elp = new Command(
             .setFooter({text: 'Page 3'})
 
         // embed for get_stats commands
-        const gamesEmbed = new MessageEmbed()
+        const gamesEmbed = new EmbedBuilder()
             .setTitle("game commands")
             .setDescription(
                 '**Use the buttons to navigate between command pages. Visit [github](https://github.com/MykelMatar/Dogbot) ' +
@@ -146,7 +160,10 @@ export const elp = new Command(
 
         // create collector
         const filter = i => i.user.id === interaction.member.user.id;
-        const collector = interaction.channel.createMessageComponentCollector({filter, componentType: 'BUTTON'}); // only message author can interact, 5s timer
+        const collector = interaction.channel.createMessageComponentCollector({
+            filter,
+            componentType: ComponentType.Button
+        }); // only message author can interact, 5s timer
 
         // collect response
         collector.on('collect', async i => {
@@ -161,4 +178,5 @@ export const elp = new Command(
                 await interaction.editReply({embeds: [embeds[pageNumber]], components: [row]}); // send mc embed as home page
             }
         });
-    })
+    }
+}

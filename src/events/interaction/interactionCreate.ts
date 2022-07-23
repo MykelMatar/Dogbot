@@ -1,30 +1,37 @@
-import {CommandInteraction} from "discord.js";
+import {CommandInteraction, GuildMember} from "discord.js";
+import {newClient} from "../../dependencies/myTypes";
+import guilds from "../../dependencies/schemas/guild-schema";
 
-export async function interactionCreate(client, interaction: CommandInteraction) {
-    if (!interaction.isCommand()) return
+export async function interactionCreate(client: newClient, interaction: CommandInteraction) {
+    if (!interaction.isChatInputCommand()) return
 
-    let commands = client.commands
-    let guildName = interaction.guild.name.replace(/\s+/g, "");
-    let ephemeralSetting
-    let hideCommands: string[] = ['mc', 'get-stats', 'server-stats']
-    const {commandName} = interaction
+    const command = client.commands.get(interaction.commandName)
+    if (!command) return;
     
-    // Slash Command Event Listener
-    for (let command of commands) {
-        if (commandName == command[1].name) {
-            let hideOption = interaction.options.data.find(option => option.name === 'hide')
-            if (hideOption === undefined) ephemeralSetting = true
-            else ephemeralSetting = hideOption.value
-            
-            if (hideCommands.some(com => command[1].name.startsWith(com))) {
-                await interaction.deferReply({ephemeral: ephemeralSetting})
-            }
-            if (command[1].name === 'enlist-users' && interaction.options.data.length !== 0) {
-                await interaction.reply({content: `${interaction.options.data[0].value}`})
-            }
+    let guildName = interaction.guild.name.replace(/\s+/g, "")
+    let hideCommands: string[] = ['mc', 'get-stats', 'server-stats']
+    let ephemeralSetting
 
-            await commands.get(command[1].name).execute(client, interaction, guildName)
-            break
-        }
+    let hideOption = interaction.options.data.find(option => option.name === 'hide')
+    if (hideOption === undefined) ephemeralSetting = true
+    else ephemeralSetting = hideOption.value
+    
+    if (hideCommands.some(com => command.data.name.startsWith(com))) {
+        await interaction.deferReply({ephemeral: ephemeralSetting})
     }
+    if (command.name === 'enlist-users' && interaction.options.data.length !== 0) {
+        await interaction.reply({content: `${interaction.options.data[0].value}`})
+    }
+
+    try {
+        if (!(!(interaction.member instanceof GuildMember) )) {
+            console.log(`${interaction.commandName} requested by ${interaction.member.user.username} in ${interaction.member.guild.name}`)
+        }
+        let guildData = await guilds.findOne({guildId: interaction.guildId})
+        await command.execute(client, interaction, guildData, guildName);
+    } catch (error) {
+        console.error(error);
+        await interaction.reply({content: 'There was an error while executing this command!', ephemeral: true});
+    }
+    
 }

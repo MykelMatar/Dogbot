@@ -1,13 +1,28 @@
-import {Client, CommandInteraction, MessageEmbed} from "discord.js";
+import {CommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js";
 import {fetchHTML} from "../../dependencies/helpers/fetchHTML";
-import {Command} from "../../dependencies/classes/Command";
 import {CheerioAPI} from "cheerio";
+import {newClient} from "../../dependencies/myTypes";
 
 //TODO fix error handling
-export const getStatsValorant = new Command(
-    'get-stats-valorant',
-    'retrieves valorant stats from tracker.gg',
-    async (client: Client, interaction: CommandInteraction) => {
+
+export const getStatsValorant = {
+    data: new SlashCommandBuilder() 
+        .setName('get-stats-valorant')
+        .setDescription('Retrieves player stats from Tracker.gg')
+        .addStringOption(option =>
+            option.setName('username')
+                .setDescription('username of player, case-sensitive')
+                .setRequired(true))
+        .addStringOption(option =>
+            option.setName('tag')
+                .setDescription('tag of player, case-sensitive')
+                .setRequired(true))
+        .addBooleanOption(option =>
+        option.setName('hide')
+            .setDescription('Whether to hide response or not')
+            .setRequired(false)),
+        
+    async execute(client: newClient, interaction: CommandInteraction){
         // retrieve username and tag
         let user: string = interaction.options.data[0].value.toString()
         let tag: string = interaction.options.data[1].value.toString()
@@ -20,10 +35,7 @@ export const getStatsValorant = new Command(
             const $: CheerioAPI = await fetchHTML(`https://tracker.gg/valorant/profile/riot/${uriUser}%23${uriTag}/overview`);
             // create arrays to hold stats
             let stats: string[] = [],
-                topMaps: string[] = [],
-                statsRank: string[] = [],
-                topAgents: string[] = [],
-                topWeapons: string[] = [];
+                statsRank: string[] = []
 
             let statHeaderClass = $('span.stat__value') // stats found in the large header
             let rank: string = statHeaderClass.first().text();
@@ -37,7 +49,7 @@ export const getStatsValorant = new Command(
             });
 
             // create Embed w/ user info and stats
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
                 .setTitle(`${user}'s Valorant Stats`)
                 .addFields(
                     {name: 'Rank ', value: rank, inline: true},
@@ -80,4 +92,5 @@ export const getStatsValorant = new Command(
             } else console.log(error)
         }
     }
-)
+}
+

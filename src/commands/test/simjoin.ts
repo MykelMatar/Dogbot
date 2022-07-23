@@ -1,8 +1,12 @@
-import {Command} from "../../dependencies/classes/Command";
+import {SlashCommandBuilder} from "discord.js";
+import {newClient} from "../../dependencies/myTypes";
 
-export const simjoin = new Command(
-    'simjoin',
-    'simulates user joining',
-    async (client, message) => {
+export const simJoin = {
+    data: new SlashCommandBuilder()
+        .setName('simjoin')
+        .setDescription('simulates user joining'),
+
+    async execute(client: newClient, message) {
         client.emit('guildMemberAdd', message.member)
-    })
+    }
+}
