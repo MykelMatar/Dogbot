@@ -20,12 +20,12 @@
 ## Images Gallery
 **Minecraft Commands**  
 <img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/mc-server-status.png" width="30%"></img>
-<img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/" width="36%"></img>  
+<img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/mc-list-servers.png" width="36%"></img>  
 
 **Enlist Commands**  
-<img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/autoenlist.png" width="33%"></img>
-<img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/enlist-users.png" width="31%"></img>
-<img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/enlist-stats.png" width="32%"></img>
+<img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/autoenlist.png" width="40%"></img>
+<img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/enlist-users.png" width="50%"></img>  
+<img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/enlist-stats.png" width="50%"></img>
 
 **Other Commands**  
 <img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/get-stats-valorant.png" width="35%"></img> 
