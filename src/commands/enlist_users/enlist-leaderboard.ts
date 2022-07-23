@@ -29,7 +29,7 @@ export const enlistLeaderboard = {
                 .setDescription('Whether to display the leaderboard or not')
                 .setRequired(false)),
 
-    async execute(client: newClient, interaction: CommandInteraction, guildData?) {
+    async execute(client: newClient, interaction: CommandInteraction, guildData) {
         let userData = guildData.UserData
 
         if (userData.length === 0) {
@@ -74,21 +74,31 @@ export const enlistLeaderboard = {
             let normalizedEnlistValue: number = enlists / totalEnlistValue,
                 normalizedRejectValue: number = rejects / totalEnlistValue
 
+            // ensures no values return NaN (in case of 0 values)
+            if (isNaN(enlistPercentage)) {
+                enlistPercentage = 0
+            }
+            if (isNaN(rejectPercentage)) {
+                rejectPercentage = 0
+            }
+            if (isNaN(normalizedEnlistValue)) {
+                normalizedEnlistValue = 0
+            }
+            if (isNaN(normalizedRejectValue)) {
+                normalizedRejectValue = 0
+            }
+            if (isNaN(ignorePercentage)) {
+                ignorePercentage = 0
+            }
+            
             let adjustedEnlistPercentage = enlistPercentage * percentageWeight,
                 adjustedRejectPercentage = rejectPercentage * percentageWeight,
                 adjustedEnlistValue = normalizedEnlistValue * enlistWeight,
                 adjustedRejectValue = normalizedRejectValue * enlistWeight,
                 adjustedIgnoreValue = ignorePercentage * ignoreWeight
-
+            
             let adjustedEnlistRank: number = adjustedEnlistPercentage + adjustedEnlistValue - adjustedIgnoreValue
             let adjustedRejectRank: number = adjustedRejectPercentage + adjustedRejectValue - adjustedIgnoreValue
-
-            if (isNaN(adjustedEnlistRank)) {
-                adjustedEnlistRank = 0
-            }
-            if (isNaN(adjustedRejectRank)) {
-                adjustedRejectRank = 0
-            }
 
             let tempUser: leaderboardUser = {
                 name: user.username,
@@ -119,7 +129,6 @@ export const enlistLeaderboard = {
         }
 
         let rejectRankings: leaderboardUser[] = tempUsers.sort((a, b) => (a.adjustedRejectRankValue < b.adjustedRejectRankValue ? 1 : -1))
-        console.log(rejectRankings)
         for (let i = 0; i < 3; i++) {
             top3Losers[0].push(`**${i + 1}.** ${rejectRankings[i].name}\n`)
             top3Losers[1].push(`**${i + 1}.** ${(rejectRankings[i].rejectPercentage * 100).toFixed(2)}\n`,)

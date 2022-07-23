@@ -10,7 +10,7 @@ export const enlistStats = {
                 .setDescription('Whether to hide the response or not')
                 .setRequired(false)),
         
-    async execute(client: newClient, interaction: CommandInteraction, guildData?){
+    async execute(client: newClient, interaction: CommandInteraction, guildData){
         // set user whose data is being retrieved
         let username: string, userId: string
         let user: CommandInteractionOption = (interaction.options.data.find(option => option.name === 'user'));

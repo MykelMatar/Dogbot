@@ -15,7 +15,7 @@ export const mcDeleteServer = {
         .setDescription('Deletes a registered MC server')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
-    async execute(client: newClient, interaction: CommandInteraction, guildData?, guildName?: string) {
+    async execute(client: newClient, interaction: CommandInteraction, guildData, guildName: string) {
         const MCServerData = guildData.MCServerData
         let serverListSize = MCServerData.serverList.length
 

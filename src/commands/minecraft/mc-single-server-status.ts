@@ -23,7 +23,7 @@ export const mcSingleServerStatus = {
                 .setDescription('Whether to display response or not')
                 .setRequired(false)),
 
-    async execute(client: newClient, interaction: CommandInteraction, guildData?) {
+    async execute(client: newClient, interaction: CommandInteraction, guildData) {
         const serverList = guildData.MCServerData.serverList
 
         // Generate buttons

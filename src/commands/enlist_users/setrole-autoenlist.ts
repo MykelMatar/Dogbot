@@ -10,7 +10,7 @@ export const setroleAutoenlist = {
                 .setDescription('The role to be detected by Dogbot')
                 .setRequired(true)),
         
-    async execute(client: newClient, interaction: CommandInteraction, guildData?){
+    async execute(client: newClient, interaction: CommandInteraction, guildData){
         guildData.ServerData.roles.autoenlist = interaction.options.data[0].value
         await guildData.save()
 

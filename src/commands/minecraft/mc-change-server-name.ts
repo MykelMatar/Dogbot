@@ -19,7 +19,7 @@ export const mcChangeServerName = {
                 .setDescription('The new server name')
                 .setRequired(true)),
 
-    async execute(client: newClient, interaction: CommandInteraction, guildData?, guildName?: string) {
+    async execute(client: newClient, interaction: CommandInteraction, guildData, guildName: string) {
         const MCServerData = guildData.MCServerData
         let serverListSize = MCServerData.serverList.length
 

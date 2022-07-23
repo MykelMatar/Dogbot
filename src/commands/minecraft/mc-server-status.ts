@@ -16,7 +16,7 @@ export const mcServerStatus = {
                 .setDescription('Whether to display response or not')
                 .setRequired(false)),
         
-    async execute(client: newClient, interaction: CommandInteraction, guildData, guildName?: string){
+    async execute(client: newClient, interaction: CommandInteraction, guildData, guildName: string){
         const MCServerData = guildData.MCServerData
         const serverList = MCServerData.serverList
 

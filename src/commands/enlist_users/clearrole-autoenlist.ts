@@ -10,7 +10,7 @@ export const clearRoleAutoEnlist = {
                 .setDescription('details about event')
                 .setRequired(false)),
         
-    async execute(client: newClient, interaction: CommandInteraction, guildData?){
+    async execute(client: newClient, interaction: CommandInteraction, guildData){
         
         guildData.ServerData.roles.autoenlist = null;
         await guildData.save()

@@ -22,7 +22,7 @@ export const enlistUsers = {
                 .setDescription('Description of the event')
                 .setRequired(false)),
 
-    async execute(client: newClient, message: CommandInteraction, guildData?) {
+    async execute(client: newClient, message: CommandInteraction, guildData) {
         const userData = guildData.UserData
 
         const row = new ActionRowBuilder<ButtonBuilder>()
@@ -43,7 +43,6 @@ export const enlistUsers = {
 
         // generate embed
         const file = new AttachmentBuilder('./src/dependencies/images/Dogbot.png')
-        const file2 = new AttachmentBuilder('./src/dependencies/images/Dogbot_Logo_512_Single.png')
         const embed = new EmbedBuilder()
             // .setTitle('Registered Gamers')
             .setThumbnail('attachment://Dogbot.png')
@@ -55,7 +54,7 @@ export const enlistUsers = {
             .setColor("#8570C1")
             .setFooter({text: 'Selecting the "Perhaps" option will not count towards your enlist stats',})
 
-        let sent: Message = await message.channel.send({embeds: [embed], files: [file, file2], components: [row]})
+        let sent: Message = await message.channel.send({embeds: [embed], files: [file], components: [row]})
 
         const collector = message.channel.createMessageComponentCollector({
             componentType: ComponentType.Button,

@@ -15,7 +15,7 @@ export const mcListServers = {
         .setName('mc-list-servers')
         .setDescription('Lists all registered MC servers'),
 
-    async execute(client: newClient, interaction: CommandInteraction, guildData?, guildName?: string) {
+    async execute(client: newClient, interaction: CommandInteraction, guildData, guildName: string) {
         const MCServerData = guildData.MCServerData
 
         // retrieve server names and IPs

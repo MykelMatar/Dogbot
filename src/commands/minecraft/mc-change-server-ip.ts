@@ -20,7 +20,7 @@ export const mcChangeServerIP = {
                 .setDescription('the new IP address')
                 .setRequired(true)),
 
-    async execute(client: newClient, interaction: CommandInteraction, guildData?, guildName?: string) {
+    async execute(client: newClient, interaction: CommandInteraction, guildData, guildName: string) {
         const MCServerData = guildData.MCServerData
         let serverListSize = MCServerData.serverList.length
 

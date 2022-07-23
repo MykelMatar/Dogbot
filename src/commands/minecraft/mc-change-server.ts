@@ -7,7 +7,7 @@ export const mcChangeServer = {
         .setName('mc-change-server')
         .setDescription('changes the server being tracked by mc-server-status'),
 
-    async execute(client: newClient, interaction: CommandInteraction, guildData?, guildName?: string) {
+    async execute(client: newClient, interaction: CommandInteraction, guildData, guildName: string) {
         const MCServerData = guildData.MCServerData
         let serverListSize = MCServerData.serverList.length
 
