@@ -1,15 +1,16 @@
 import guilds from "../schemas/guild-schema";
-import {ActionRowBuilder, ButtonBuilder, ButtonStyle} from "discord.js";
+import {ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, Message} from "discord.js";
+import {newClient} from "../myTypes";
 
-export async function autoDetectRole(client, message) {
-
-    // Create button interaction to enlist members of a specific role (role can be set with /setrole-autoenlist)
+export async function autoDetectRole(client: newClient, message: Message) {
     const currentGuild = await guilds.findOne({guildId: message.guildId})
     if (!currentGuild) return
     let selectedRole = currentGuild.ServerData.roles.autoenlist
+    console.log(message)
 
     if (selectedRole == null) return; // return if no selected roll
     else if (message.content.includes(`${selectedRole}`)) {
+        console.log(selectedRole)
         console.log('autoenlist role detected');
         // generate buttons
         const row = new ActionRowBuilder<ButtonBuilder>()
@@ -28,14 +29,14 @@ export async function autoDetectRole(client, message) {
 
         // create collector
         const filter = i => i.user.id === message.author.id;
-        const collector = message.channel.createMessageComponentCollector({ filter, componentType: 'BUTTON', time: 10000 }); // only message author can interact, 1 response, 10s timer 
+        const collector = message.channel.createMessageComponentCollector({ filter, componentType: ComponentType.Button, time: 10000 }); // only message author can interact, 1 response, 10s timer 
         const command = client.commands.get('enlist-users'); // retrieve command for button
 
         // collect response and handle interaction
         collector.on('collect', async i => {
             if (i.customId === 'No') return collector.stop()
             if (i.customId === 'Yes') {
-                await command.execute(client, message);
+                await command.execute(client, message, currentGuild);
                 return collector.stop()
             }
         });

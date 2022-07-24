@@ -1,14 +1,5 @@
-import {
-    ActionRowBuilder,
-    AttachmentBuilder,
-    ButtonBuilder,
-    ButtonStyle,
-    CommandInteraction,
-    ComponentType,
-    EmbedBuilder,
-    Message,
-    SlashCommandBuilder
-} from "discord.js";
+import { ActionRowBuilder, AttachmentBuilder, ButtonBuilder, ButtonStyle,
+    CommandInteraction, ComponentType, EmbedBuilder, Message, SlashCommandBuilder} from "discord.js";
 import {newClient} from "../../dependencies/myTypes";
 import {updateEnlistUserArrays} from "../../dependencies/helpers/updateEnlistUserArrays";
 import {StatName, updateUserData} from "../../dependencies/helpers/updateUserData";
@@ -23,7 +14,7 @@ export const enlistUsers = {
                 .setDescription('Description of the event')
                 .setRequired(false)),
 
-    async execute(client: newClient, message: CommandInteraction, guildData) {
+    async execute(client: newClient, message: CommandInteraction | Message, guildData) {
         const userData = guildData.UserData
 
         const row = new ActionRowBuilder<ButtonBuilder>()
@@ -55,6 +46,7 @@ export const enlistUsers = {
             .setColor("#8570C1")
             .setFooter({text: 'Selecting the "Perhaps" option will not count towards your enlist stats',})
 
+        await message.reply({content: '*Prompt sent*', ephemeral: true})
         let sent: Message = await message.channel.send({embeds: [embed], files: [file], components: [row]})
 
         const collector = message.channel.createMessageComponentCollector({

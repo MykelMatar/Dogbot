@@ -98,7 +98,7 @@ export const enlistLeaderboard = {
                 adjustedIgnoreValue = ignorePercentage * ignoreWeight
             
             let adjustedEnlistRank: number = adjustedEnlistPercentage + adjustedEnlistValue - adjustedIgnoreValue
-            let adjustedRejectRank: number = adjustedRejectPercentage + adjustedRejectValue - adjustedIgnoreValue
+            let adjustedRejectRank: number = adjustedRejectPercentage + adjustedRejectValue + adjustedIgnoreValue
 
             let tempUser: leaderboardUser = {
                 name: user.username,

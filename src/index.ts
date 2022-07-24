@@ -1,17 +1,17 @@
-const {Client, Collection, GatewayIntentBits} = require('discord.js');
+import {Client, Collection, GatewayIntentBits} from "discord.js";
 import 'dotenv/config'
 import {newClient} from "./dependencies/myTypes";
 
-const client: newClient = new Client({
-    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildPresences,],
+const client = new Client({
+    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildPresences, GatewayIntentBits.MessageContent],
     sweepers: {
         messages: {
             lifetime: 60,
             interval: 120
         }
     }
-})
-    
+}) as Client & newClient
+
 client.commands = new Collection(); // create commands property for Client so commands can be passed around 
 
 ['command_handler', 'event_handler'].forEach(handler => {
