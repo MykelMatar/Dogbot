@@ -67,7 +67,7 @@ export const mcServerStatus = {
                         {name: 'Version', value: `>  ${response.version.name.toString()}`},
                         {name: 'Online Players', value: `>  ${response.players.online.toString()}`},
                     )
-                    .setColor("#8570C1")
+                    .setColor("#b8cad1")
                     .setFooter({text: 'Server Online'})
 
                 // searched Player embed field 

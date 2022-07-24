@@ -1,17 +1,16 @@
 import guilds from "../schemas/guild-schema";
 import {ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, Message} from "discord.js";
 import {newClient} from "../myTypes";
+import {log} from "../logger";
 
 export async function autoDetectRole(client: newClient, message: Message) {
     const currentGuild = await guilds.findOne({guildId: message.guildId})
     if (!currentGuild) return
     let selectedRole = currentGuild.ServerData.roles.autoenlist
-    console.log(message)
 
     if (selectedRole == null) return; // return if no selected roll
     else if (message.content.includes(`${selectedRole}`)) {
-        console.log(selectedRole)
-        console.log('autoenlist role detected');
+        log.info('autoenlist role detected');
         // generate buttons
         const row = new ActionRowBuilder<ButtonBuilder>()
             .addComponents(
