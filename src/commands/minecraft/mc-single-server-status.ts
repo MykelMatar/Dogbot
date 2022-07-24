@@ -52,7 +52,7 @@ export const mcSingleServerStatus = {
                         {name: 'Version', value: `>  ${response.version.name.toString()}`},
                         {name: 'Online Players', value: `>  ${response.players.online.toString()}`},
                     )
-                    .setColor("#8570C1")
+                    .setColor('#B8CAD1')
                     .setFooter({text: 'Server Online'})
 
                 if (serverList.length === 10 || serverList.some(o => o["ip"] === ip)) {
@@ -100,7 +100,7 @@ export const mcSingleServerStatus = {
                 const embed = new EmbedBuilder()
                     .setTitle('Server Status')
                     .addFields({name: 'Server Offline', value: 'all good'})
-                    .setColor("#8570C1")
+                    .setColor('#B8CAD1')
 
                 // send embed and collect response
                 await interaction.editReply({embeds: [embed]})

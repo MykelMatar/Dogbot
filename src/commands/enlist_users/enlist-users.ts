@@ -43,7 +43,7 @@ export const enlistUsers = {
                 {name: 'Perhaps', value: '-', inline: true},
                 {name: 'Not Gaming', value: '-', inline: true},
             )
-            .setColor("#8570C1")
+            .setColor('#B8CAD1')
             .setFooter({text: 'Selecting the "Perhaps" option will not count towards your enlist stats',})
 
         await message.reply({content: '*Prompt sent*', ephemeral: true})

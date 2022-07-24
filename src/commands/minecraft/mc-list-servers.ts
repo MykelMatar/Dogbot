@@ -79,7 +79,7 @@ export const mcListServers = {
                 {name: 'Server Name', value: serverNameList.join(' \n'), inline: true},
                 {name: 'IP', value: serverIPList.join(' \n '), inline: true},
             )
-            .setColor("#8570C1")
+            .setColor('#B8CAD1')
             .setFooter({text: MCServerData.serverList.length + ' / 10 Servers Registered'})
 
         await interaction.editReply({embeds: [embed], components: [row]})

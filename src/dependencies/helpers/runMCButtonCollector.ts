@@ -1,8 +1,10 @@
 import {CommandInteraction, ComponentType} from "discord.js";
+import {newClient} from "../myTypes";
+import {log} from "../logger";
 
-export async function runMCButtonCollector(client, interaction: CommandInteraction, guildData, guildName: string){
+export async function runMCButtonCollector(client: newClient, interaction: CommandInteraction, guildData, guildName: string){
     const filter = i => i.user.id === interaction.member.user.id;
-    const collector = interaction.channel.createMessageComponentCollector({ filter, componentType: ComponentType.Button, time: 10000 }); // only message author can interact, 1 response, 10s timer 
+    const collector = interaction.channel.createMessageComponentCollector({ filter, componentType: ComponentType.Button, time: 10000 }); 
 
     const command1 = client.commands.get('mc-change-server');
     const command2 = client.commands.get('mc-list-servers');
@@ -23,7 +25,7 @@ export async function runMCButtonCollector(client, interaction: CommandInteracti
     });
 
     collector.on('end', async collected => {
-        console.log(`mc collected ${collected.size} button presses`)
+        log.info(`mc collected ${collected.size} button presses`)
         if (collected.size === 0) await interaction.editReply({ components: [] })  // remove buttons
     });
 }

@@ -146,7 +146,7 @@ export const enlistLeaderboard = {
                 {name: 'Reject Percentage', value: top3Losers[1].join(''), inline: true},
                 {name: 'Total Interactions', value: top3Losers[2].join(''), inline: true},
             ])
-            .setColor("#8570C1")
+            .setColor('#B8CAD1')
             .setFooter({text: 'Users with less than 5 interactions are not included on this leaderboard'})
 
         let ephemeralSetting

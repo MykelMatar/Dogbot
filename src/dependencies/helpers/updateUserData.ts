@@ -1,38 +1,40 @@
 import guilds from "../schemas/guild-schema";
+import {log} from "../logger";
+import {CommandInteraction, Message} from "discord.js";
 
-export async function updateUserData(message, userIdArray: string[], statName: StatName, trStats?: [number, number, number, boolean]) {
-    if (userIdArray.length === 0) return console.log(`User Id Array is empty, skipping user data check`)
-    console.log('Valid User Id Array')
+export async function updateUserData(message: CommandInteraction | Message, userIdArray: string[], statName: StatName, trStats?: [number, number, number, boolean]) {
+    if (userIdArray.length === 0) return log.info(`User Id Array is empty, skipping user data check`)
+    log.info('Valid user ID array provided')
 
     const currentGuild = await guilds.findOne({guildId: message.guildId})
     const UserData = currentGuild.UserData
 
     let statsArray: number[] = []; // statsArray Format: [tttwins, tttlosses, enlists, rejects, ignores] 
     switch (statName) { // default values for creating user data
-        case 'tttWins':
+        case StatName.tttWins:
             statsArray = [1, 0, 0, 0, 0];
             break;
-        case 'tttLosses':
+        case StatName.tttLosses:
             statsArray = [0, 1, 0, 0, 0];
             break;
-        case 'enlist':
+        case StatName.enlist:
             statsArray = [0, 0, 1, 0, 0];
             break;
-        case 'reject':
+        case StatName.reject:
             statsArray = [0, 0, 0, 1, 0];
             break;
-        case 'ignore':
+        case StatName.ignore:
             statsArray = [0, 0, 0, 0, 1];
             break;
     }
 
-    console.log('checking for user data...')
+    log.info('checking for user data...')
     for (const userId of userIdArray) { // for of instead of for each so await can be used
         const index = userIdArray.indexOf(userId);
 
         let guildMember = await message.guild.members.fetch(userId)
         if (!(UserData.some(user => user.id === userIdArray[index]))) { // if user data doesnt exist, create data
-            console.log(`creating user data for ${guildMember.user.username}...`)
+            log.info(`creating user data for ${guildMember.user.username}...`)
             let username = message.guild.members.cache.get(`${userIdArray[index]}`).user.username
 
             // check which stat needs to be added
@@ -81,28 +83,28 @@ export async function updateUserData(message, userIdArray: string[], statName: S
                     }
                     break;
             }
-            console.log('Done!')
+            log.info('Done!')
         } else {
-            console.log(`updating user data for ${guildMember.user.username}...`)
+            log.info(`updating user data for ${guildMember.user.username}...`)
             let user = UserData.find(user => user.id === userId)
             // check if the corresponding stat exists within the user data: if it doesn't exist, make it, if it exists, update it
             switch (statName) {
                 case StatName.tttWins:
-                    console.log(user.tttStats)
+                    log.info(user.tttStats)
                     if (user.tttStats == '{}') {
                         user.tttStats.wins = 1
                         user.tttStats.losses = 0
                     } else user.tttStats.wins++;
                     break;
                 case StatName.tttLosses:
-                    console.log(user.tttStats)
+                    log.info(user.tttStats)
                     if (user.tttStats == '{}') {
                         user.tttStats.wins = 0
                         user.tttStats.losses = 1
                     } else user.tttStats.losses++;
                     break;
                 case StatName.enlist:
-                    console.log(user.enlistStats)
+                    log.info(user.enlistStats)
                     if (user.enlistStats == '{}') {
                         user.enlistStats.enlists = 1
                         user.enlistStats.rejects = 0
@@ -110,7 +112,7 @@ export async function updateUserData(message, userIdArray: string[], statName: S
                     } else user.enlistStats.enlists++;
                     break;
                 case StatName.reject:
-                    console.log(user.enlistStats)
+                    log.info(user.enlistStats)
                     if (user.enlistStats == '{}') {
                         user.enlistStats.enlists = 0
                         user.enlistStats.rejects = 1
@@ -118,7 +120,7 @@ export async function updateUserData(message, userIdArray: string[], statName: S
                     } else user.enlistStats.rejects++
                     break;
                 case StatName.ignore:
-                    console.log(user.enlistStats)
+                    log.info(user.enlistStats)
                     if (user.enlistStats == '{}') {
                         user.enlistStats.enlists = 0
                         user.enlistStats.rejects = 0
@@ -127,7 +129,7 @@ export async function updateUserData(message, userIdArray: string[], statName: S
                     break;
                 case StatName.trWins: // fall-through (like saying trWins || trLosses)
                 case StatName.trLosses:
-                    console.log(user.typingRaceStats == '{}')
+                    log.info(user.typingRaceStats == '{}')
                     if (user.typingRaceStats == '{}') {
                         user.typingRaceStats.AverageWPM = trStats[0]
                         user.typingRaceStats.AverageRawWPM = trStats[1]
@@ -145,7 +147,7 @@ export async function updateUserData(message, userIdArray: string[], statName: S
         }
     }
     await currentGuild.save()
-    console.log('Done!')
+    log.info('Done!')
 }
 
 export const enum StatName {

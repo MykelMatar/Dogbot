@@ -28,7 +28,7 @@ export const typingrace = {
         const signUpEmbed = new EmbedBuilder()
             .setTitle('Typing Race')
             .addFields({name: 'Racers', value: '-'})
-            .setColor("#8570C1")
+            .setColor('#B8CAD1')
 
         let sent = await message.channel.send({
             content: 'Race will begin in 20 seconds',
@@ -73,7 +73,7 @@ export const typingrace = {
 
             const promptEmbed = new EmbedBuilder()
                 .addFields({name: 'Prompt', value: prompt})
-                .setColor("#8570C1")
+                .setColor('#B8CAD1')
 
             await sent.edit({content: 'sign-up ended', embeds: [signUpEmbed, promptEmbed], components: []})   // remove buttons
 
@@ -125,7 +125,7 @@ export const typingrace = {
                             {name: 'errors', value: errors.toString(), inline: true},
                             {name: 'characters', value: `${characterCount} / ${prompt.length}`, inline: true},
                         )
-                        .setColor("#8570C1")
+                        .setColor('#B8CAD1')
                     await m.channel.send({content: `submission received`, embeds: [statsEmbed]})
 
                     typingRacers.push(new TypingRacer(m.author.username, m.author.id, netWPM, rawWPM, accuracy))

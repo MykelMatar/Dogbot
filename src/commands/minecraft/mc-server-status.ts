@@ -67,7 +67,7 @@ export const mcServerStatus = {
                         {name: 'Version', value: `>  ${response.version.name.toString()}`},
                         {name: 'Online Players', value: `>  ${response.players.online.toString()}`},
                     )
-                    .setColor("#b8cad1")
+                    .setColor('#B8CAD1')
                     .setFooter({text: 'Server Online'})
 
                 // searched Player embed field 
@@ -96,7 +96,7 @@ export const mcServerStatus = {
                 const embed = new EmbedBuilder()
                     .setTitle(title.replace(/["]+/g, ''))
                     .addFields({name: 'Server Offline', value: 'all good'})
-                    .setColor("#8570C1")
+                    .setColor('#B8CAD1')
 
                 await interaction.editReply({embeds: [embed], components: [row]})
                 await runMCButtonCollector(client, interaction, guildData, guildName)

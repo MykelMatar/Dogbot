@@ -15,7 +15,7 @@ export const magic8 = {
         let response = responses[Math.floor(Math.random() * responses.length)]
         let responseEmbed = new EmbedBuilder()
             .setTitle(response)
-            .setColor("#8570C1")
+            .setColor('#B8CAD1')
 
         await interaction.reply({content: `Question: ${interaction.options.data[0].value}`, embeds: [responseEmbed]})
     }

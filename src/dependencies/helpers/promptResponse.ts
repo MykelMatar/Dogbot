@@ -8,7 +8,7 @@ export const promptResponse = async (interaction: CommandInteraction, request: s
         .then(collected => {
             let response = collected.first().content;
             if (response !== null) {
-                console.log('user interaction response:' + response);
+                console.log(`user interaction response: ${response}`);
                 return response;
             }
         })

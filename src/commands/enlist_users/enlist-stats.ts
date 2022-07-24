@@ -99,7 +99,7 @@ export const enlistStats = {
                 {name: 'Cool or Cringe?⠀⠀', value: socialStatus, inline: true},
                 {name: 'Commendation', value: commendation, inline: true}
             ])
-            .setColor("#8570C1")
+            .setColor('#B8CAD1')
 
         let ephemeralSetting
         let hideOption = interaction.options.data.find(option => option.name === 'hide')

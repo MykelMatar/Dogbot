@@ -1,5 +1,12 @@
 import {generateMCMenuOptions} from "../../dependencies/helpers/generateMCMenuOptions";
-import {ActionRowBuilder, ComponentType, SelectMenuBuilder, CommandInteraction, SlashCommandBuilder} from "discord.js";
+import {
+    ActionRowBuilder,
+    ComponentType,
+    SelectMenuBuilder,
+    CommandInteraction,
+    SlashCommandBuilder,
+    APISelectMenuOption
+} from "discord.js";
 import {newClient} from "../../dependencies/myTypes";
 import {log} from "../../dependencies/logger";
 
@@ -10,7 +17,7 @@ export const mcChangeServer = {
 
     async execute(client: newClient, interaction: CommandInteraction, guildData, guildName: string) {
         const MCServerData = guildData.MCServerData
-        let serverListSize = MCServerData.serverList.length
+        let serverListSize: number = MCServerData.serverList.length
 
         // make sure there are at least 2 servers
         if (serverListSize === 0) {
@@ -23,7 +30,7 @@ export const mcChangeServer = {
 
         // create variables and generate options for select menu
         let options = await generateMCMenuOptions(interaction, guildName, serverListSize);
-        let option = options[0];
+        let option = options[0]
         let label = options[1];
         let description = options[3]
 

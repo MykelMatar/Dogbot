@@ -1,7 +1,7 @@
 import {Dirent} from "fs";
 import * as fs from 'node:fs'
 
-const getFiles = (dir: string, suffix: string): string[] => {
+export const getFiles = (dir: string, suffix: string): string[] => {
     const files: Dirent[] = fs.readdirSync(dir, {
         withFileTypes: true,
     })
@@ -9,7 +9,6 @@ const getFiles = (dir: string, suffix: string): string[] => {
     let commandFiles: string[] = []
 
     for (const file of files) {
-        //console.log(file)
         if (file.isDirectory()) {
             commandFiles = [
                 ...commandFiles,
@@ -21,5 +20,3 @@ const getFiles = (dir: string, suffix: string): string[] => {
     }
     return commandFiles
 }
-
-export {getFiles}
