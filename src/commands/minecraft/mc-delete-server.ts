@@ -72,6 +72,7 @@ export const mcDeleteServer = {
                 // set a new selected server if the current one was deleted 
                 if (selectedServerIP === serverIP) {
                     MCServerData.selectedServer.ip = MCServerData.serverList[0].ip
+                    MCServerData.selectedServer.port = MCServerData.serverList[0].port
                     MCServerData.selectedServer.name = MCServerData.serverList[0].name
                 }
                 await guildData.save() // save changes to mongo

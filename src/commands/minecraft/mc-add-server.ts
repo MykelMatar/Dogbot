@@ -1,4 +1,4 @@
-import {CommandInteraction, PermissionFlagsBits, SlashCommandBuilder} from "discord.js";
+import {CommandInteraction, CommandInteractionOption, PermissionFlagsBits, SlashCommandBuilder} from "discord.js";
 import {status} from 'minecraft-server-util'
 import {promptResponse} from "../../dependencies/helpers/promptResponse"
 import {newClient} from "../../dependencies/myTypes";
@@ -16,7 +16,11 @@ export const mcAddServer = {
         .addStringOption(option =>
             option.setName('name')
                 .setDescription('name of the server. Can be changed later via mc-change-server-name')
-                .setRequired(true)),
+                .setRequired(true))
+    .addNumberOption(option =>
+        option.setName('port')
+            .setDescription('Port of your server.')
+            .setRequired(false)),
 
     async execute(client: newClient, interaction: CommandInteraction, guildData) {
         const serverList = guildData.MCServerData.serverList
@@ -26,11 +30,15 @@ export const mcAddServer = {
         }
 
         // retrieve server IP and name
-        let ip, name;
+        let ip, name, port
         try {
             // if slash command is used
             ip = interaction.options.data[0].value;
             name = interaction.options.data[1].value;
+            let portOption: CommandInteractionOption = (interaction.options.data.find(option => option.name === 'port'));
+            if (portOption === undefined) {
+                port = 25565
+            } else port = portOption.value as number // value is guaranteed to be number
         } catch {
             // if button on /mc-list-servers is used
             ip = await promptResponse(interaction, "Input server IP (server must be online)", "Request Timeout");
@@ -39,9 +47,10 @@ export const mcAddServer = {
                 await interaction.editReply('Please keep server name below 30 characters')
                 return
             }
+            port = await promptResponse(interaction, "Input Server Port. If you are not sure, the default is 25565.", "Request Timeout");
             // not using Promise.all bc 1 response must be collected before the other / not simultaneous
         }
-        let server = {name: name, ip: ip}; // setup variable to push to mongo
+        let server = {name: name, ip: ip, port: port}; // setup variable to push to mongo
 
         // verify that IP is not already registered
         if (serverList.some(o => o["ip"] === ip)) {
@@ -53,11 +62,12 @@ export const mcAddServer = {
 
         // make sure IP is a valid server IP by checking its status (server must be online for this to work)
         try {
-            await status(ip);
+            await status(ip, port);
 
             // if server is the first added server, make it the selected server to track in !mc-server-status
             if (serverList.length === 0) {
                 guildData.MCServerData.selectedServer.ip = ip;
+                guildData.MCServerData.selectedServer.port = port;
                 guildData.MCServerData.selectedServer.name = name;
             }
 

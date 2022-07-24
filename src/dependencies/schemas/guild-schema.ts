@@ -36,11 +36,13 @@ const guildSchema = new mongoose.Schema({
             {
                 name: String,
                 ip: String,
+                port: Number
             },
         ],
         selectedServer: {
             name: String,
             ip: String,
+            port: Number
         },
     },
 });

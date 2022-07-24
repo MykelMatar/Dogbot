@@ -4,7 +4,7 @@ import {
     PermissionFlagsBits,
     SelectMenuBuilder,
     CommandInteraction,
-    SlashCommandBuilder
+    SlashCommandBuilder, CommandInteractionOption
 } from "discord.js";
 import {status} from "minecraft-server-util";
 import {generateMCMenuOptions} from "../../dependencies/helpers/generateMCMenuOptions";
@@ -19,7 +19,11 @@ export const mcChangeServerIP = {
         .addStringOption(option =>
             option.setName('new-ip')
                 .setDescription('the new IP address')
-                .setRequired(true)),
+                .setRequired(true))
+    .addNumberOption(option =>
+        option.setName('new-port')
+            .setDescription('the new port')
+            .setRequired(false)),
 
     async execute(client: newClient, interaction: CommandInteraction, guildData, guildName: string) {
         const MCServerData = guildData.MCServerData
@@ -32,8 +36,13 @@ export const mcChangeServerIP = {
         }
 
         // retrieve server IP from user input
-        let ip = interaction.options.data[0].value
-
+        let ip = interaction.options.data[0].value as string
+        let portOption: CommandInteractionOption = (interaction.options.data.find(option => option.name === 'port'));
+        let port: number
+        if (portOption === undefined) {
+            port = 25565
+        } else port = portOption.value as number // value is guaranteed to be number
+        
         // verify that IP is not already registered
         if (MCServerData.serverList.some(function (o) {
             return o["ip"] === ip;
@@ -46,8 +55,7 @@ export const mcChangeServerIP = {
 
         // make sure IP is a valid server IP by checking its status (server must be online for this to work)
         try {
-            // @ts-ignore
-            await status(ip)
+            await status(ip, port)
         } catch (error) {
             await interaction.editReply('*Could not retrieve server status. Double check IP and make sure server is online.*')
             log.error('Invalid Server IP / Server Offline');
@@ -85,6 +93,7 @@ export const mcChangeServerIP = {
             for (let j = 0; j < serverListSize; j++) {
                 if (i.values[0] === `selection${j}`) {
                     MCServerData.serverList[j].ip = ip
+                    MCServerData.serverList[j].port = port
                     serverName = MCServerData.serverList[j].name
                 }
             }

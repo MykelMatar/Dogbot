@@ -14,13 +14,18 @@ import {log} from "../../dependencies/logger";
 export const mcListServers = {
     data: new SlashCommandBuilder()
         .setName('mc-list-servers')
-        .setDescription('Lists all registered MC servers'),
+        .setDescription('Lists all registered MC servers')
+        .addBooleanOption(option =>
+            option.setName('hide')
+                .setDescription('Whether to display the leaderboard or not')
+                .setRequired(false)),
 
     async execute(client: newClient, interaction: CommandInteraction, guildData, guildName: string) {
         const MCServerData = guildData.MCServerData
 
         // retrieve server names and IPs
-        let serverNameList: string[] = [], serverIPList: string[] = []
+        let serverNameList: string[] = [], 
+            serverIPList: string[] = []
         for (let i = 0; i < MCServerData.serverList.length; i++) {
             serverNameList.push(MCServerData.serverList[i].name)
             serverIPList.push(MCServerData.serverList[i].ip)
@@ -76,7 +81,7 @@ export const mcListServers = {
             .setTitle("Registered MC Servers")
             .addFields(
                 // join(' /n') removes commas and adds newline to array
-                {name: 'Server Name', value: serverNameList.join(' \n'), inline: true},
+                {name: 'Server Name⠀⠀', value: serverNameList.join(' \n'), inline: true},
                 {name: 'IP', value: serverIPList.join(' \n '), inline: true},
             )
             .setColor('#B8CAD1')

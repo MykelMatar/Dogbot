@@ -5,6 +5,10 @@ export const enlistStats = {
     data: new SlashCommandBuilder() 
         .setName('enlist-stats')
         .setDescription('Displays users enlist stats')
+        .addStringOption(option =>
+            option.setName('user')
+                .setDescription("User's stats to display. Default is yourself. ")
+                .setRequired(false))
         .addBooleanOption(option =>
             option.setName('hide')
                 .setDescription('Whether to hide the response or not')

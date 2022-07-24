@@ -10,7 +10,7 @@ export async function interactionCreate(client: newClient, interaction: CommandI
     if (!command) return;
     
     let guildName = interaction.guild.name.replace(/\s+/g, "")
-    let hideCommands: string[] = ['mc', 'get-stats', 'server-stats']
+    let hideCommands: string[] = ['mc', 'get-stats', 'server-stats', 'help']
     let ephemeralSetting
 
     let hideOption = interaction.options.data.find(option => option.name === 'hide')

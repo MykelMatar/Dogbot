@@ -74,6 +74,6 @@
 | command | description                                  | Status |
 |:-------:|----------------------------------------------|:------:|
 |  [/speak](https://github.com/MykelMatar/Dogbot/wiki#speak)   | send a message through Dogbot                |   ✅  |
-| [/elp](https://github.com/MykelMatar/Dogbot/wiki#elp)    | lists all commands and relevant information  |   ✅  |
+| [/help](https://github.com/MykelMatar/Dogbot/wiki#elp)    | lists all commands and relevant information  |   ✅  |
 
 

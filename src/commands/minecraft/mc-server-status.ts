@@ -28,6 +28,7 @@ export const mcServerStatus = {
         // retrieve title and IP from mongoDB
         let title = JSON.stringify(MCServerData.selectedServer.name)
         let MCServerIP = JSON.stringify(MCServerData.selectedServer.ip)
+        let MCServerPort = MCServerData.selectedServer.port
 
         let row; // variable amount of buttons to reflect doable actions
         if (serverList.length === 1) {
@@ -54,7 +55,7 @@ export const mcServerStatus = {
 
         // Check Server Status
         const options = { timeout: 3000 }
-        status(MCServerIP.replace(/"+/g, ''), 25565, options)
+        status(MCServerIP.replace(/"+/g, ''), MCServerPort, options)
             .then(async (response) => {
                 log.info('Server Online')
 
@@ -92,10 +93,9 @@ export const mcServerStatus = {
             })
             .catch(async () => {
                 log.error('Server Offline')
-
+                
                 const embed = new EmbedBuilder()
-                    .setTitle(title.replace(/["]+/g, ''))
-                    .addFields({name: 'Server Offline', value: 'all good'})
+                    .addFields({name: `${title.replace(/"+/g, '')} Offline`, value: '*all good*'})
                     .setColor('#B8CAD1')
 
                 await interaction.editReply({embeds: [embed], components: [row]})
