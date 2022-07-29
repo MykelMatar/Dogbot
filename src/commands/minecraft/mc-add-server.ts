@@ -1,4 +1,9 @@
-import {CommandInteraction, CommandInteractionOption, PermissionFlagsBits, SlashCommandBuilder} from "discord.js";
+import {
+    CommandInteraction,
+    CommandInteractionOption,
+    PermissionFlagsBits,
+    SlashCommandBuilder
+} from "discord.js";
 import {status} from 'minecraft-server-util'
 import {promptResponse} from "../../dependencies/helpers/promptResponse"
 import {newClient} from "../../dependencies/myTypes";
@@ -42,10 +47,13 @@ export const mcAddServer = {
         } catch {
             // if button on /mc-list-servers is used
             ip = await promptResponse(interaction, "Input server IP (server must be online)", "Request Timeout");
+            if (ip == null) return await interaction.editReply('*Invalid Server IP*');
             name = await promptResponse(interaction, "Input Name", "Request Timeout");
             if (name.toString().length > 30) {
-                await interaction.editReply('Please keep server name below 30 characters')
-                return
+                return await interaction.editReply('Please keep server name below 30 characters')
+            }
+            if (name.toString().length < 1) {
+                return await interaction.editReply('*Invalid server name input.* ')
             }
             port = await promptResponse(interaction, "Input Server Port. If you are not sure, the default is 25565.", "Request Timeout");
             // not using Promise.all bc 1 response must be collected before the other / not simultaneous

@@ -1,4 +1,5 @@
 import {CommandInteraction} from "discord.js";
+import {log} from "../logger";
 
 export const promptResponse = async (interaction: CommandInteraction, request: string, requestFailMessage: string): Promise<any> => {
     await interaction.editReply(request)
@@ -8,12 +9,12 @@ export const promptResponse = async (interaction: CommandInteraction, request: s
         .then(collected => {
             let response = collected.first().content;
             if (response !== null) {
-                console.log(`user interaction response: ${response}`);
+                log.info(`mc-add-server user interaction response: ${response}`);
                 return response;
             }
         })
         .catch(() => {
-            console.log(requestFailMessage)
+            log.error(requestFailMessage)
             return interaction.editReply(requestFailMessage)
         })
 }

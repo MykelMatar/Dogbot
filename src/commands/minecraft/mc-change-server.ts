@@ -76,10 +76,10 @@ export const mcChangeServer = {
             if (collected.size === 0)
                 await interaction.editReply({content: 'Request Timeout', components: []})
             else if (collected.first().customId !== 'change-menu')
-                await interaction.editReply({content: 'Avoid using multiple commands at once', components: []})
+                await interaction.editReply({content: '*Avoid using multiple commands at once*', components: []})
             else if (collected.first().customId === 'change-menu') {
                 await interaction.editReply({
-                    content: `Server Updated, now Tracking ${MCServerData.selectedServer.name}. Retrieving server status...`,
+                    content: `*Now tracking *${MCServerData.selectedServer.name}*. Retrieving server status...*`,
                     components: []
                 })
                 await client.commands.get('mc-server-status').execute(client, interaction, guildData, guildName);

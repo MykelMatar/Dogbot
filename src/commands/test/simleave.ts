@@ -1,9 +1,10 @@
-import {SlashCommandBuilder} from "discord.js";
+import {PermissionFlagsBits, SlashCommandBuilder} from "discord.js";
 import {newClient} from "../../dependencies/myTypes";
 
 export const simLeave = {
     data: new SlashCommandBuilder() 
         .setName('simleave')
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .setDescription('simulates user leaving'),
         
     async execute(client: newClient, message){

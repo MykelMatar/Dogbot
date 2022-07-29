@@ -78,10 +78,10 @@ export const mcListServers = {
 
         // generate embed
         const embed = new EmbedBuilder()
-            .setTitle("Registered MC Servers")
+            .setTitle('Registered MC Servers')
             .addFields(
                 // join(' /n') removes commas and adds newline to array
-                {name: 'Server Name⠀⠀', value: serverNameList.join(' \n'), inline: true},
+                {name: 'Server Name', value: serverNameList.join(' \n'), inline: true},
                 {name: 'IP', value: serverIPList.join(' \n '), inline: true},
             )
             .setColor('#B8CAD1')
@@ -107,15 +107,15 @@ export const mcListServers = {
                 let update, execute;
                 // interaction handling
                 if (i.customId === 'ListAdd') {
-                    update = i.update({embeds: [], content: 'Adding Server (if possible)', components: []});
+                    update = i.update({embeds: [], content: '*Adding Server...*', components: []});
                     execute = command1.execute(client, interaction, guildData, guildName); 
                     collector.stop()
                 } else if (i.customId === 'ListRemove') {
-                    update = i.update({embeds: [], content: 'Removing Server', components: []});
+                    update = i.update({embeds: [], content: '*Removing Server...*', components: []});
                     execute = command2.execute(client, interaction, guildData, guildName);
                     collector.stop()
                 } else if (i.customId === 'ListChange') {
-                    update = i.update({content: 'Changing Server', components: []});
+                    update = i.update({content: '*Changing Server...*', components: []});
                     execute = command3.execute(client, interaction, guildData, guildName);
                     collector.stop()
                 }
@@ -129,7 +129,7 @@ export const mcListServers = {
             if (collected.size === 0)
                 await interaction.editReply({embeds: [embed], components: []}) // remove buttons & embed
             else if (collected.first().customId === 'ListAdd' || collected.first().customId === 'ListRemove' || collected.first().customId === 'ListChange')
-                await interaction.editReply({content: '*Executing...*', embeds: [], components: []})   // remove buttons & embed
+                await interaction.editReply({embeds: [], components: []})   // remove buttons & embed
         });
     }
 }

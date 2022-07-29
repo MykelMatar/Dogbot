@@ -7,10 +7,10 @@ import {log} from "../../dependencies/logger";
 export const mcServerStatus = {
     data: new SlashCommandBuilder() 
         .setName('mc-server-status')
-        .setDescription('Retrieves status of a selected MC server. Can also check if a user is online.')
+        .setDescription('Retrieves status of a selected MC server. Only supports Java Servers')
         .addStringOption(option =>
             option.setName('username')
-                .setDescription('Who to check is online in the server')
+                .setDescription('Check if a player is online')
                 .setRequired(false))
         .addBooleanOption(option =>
             option.setName('hide')

@@ -15,7 +15,7 @@ import {singleStatusCollectResponse} from "../../dependencies/helpers/singleStat
 export const mcSingleServerStatus = {
     data: new SlashCommandBuilder()
         .setName('mc-single-server-stats')
-        .setDescription('Get the status of a mc server not registered in the list')
+        .setDescription('Get the status of a mc server not registered in the list. Supports Java and Bedrock servers.')
         .addStringOption(option =>
             option.setName('ip')
                 .setDescription('IP of the server to check')

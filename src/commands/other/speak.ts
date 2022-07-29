@@ -1,10 +1,11 @@
-import {CommandInteraction, SlashCommandBuilder} from "discord.js";
+import {CommandInteraction, PermissionFlagsBits, SlashCommandBuilder} from "discord.js";
 import {newClient} from "../../dependencies/myTypes";
 
 export const speak = {
     data: new SlashCommandBuilder() 
         .setName('speak')
         .setDescription('sends a message via Dogbot')
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator) // prevents members from saying bad things
         .addStringOption(option =>
             option.setName('message')
                 .setDescription('message you want Dogbot to say (Dogbot is not held accountable)')

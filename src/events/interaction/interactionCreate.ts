@@ -16,7 +16,7 @@ export async function interactionCreate(client: newClient, interaction: CommandI
     let hideOption = interaction.options.data.find(option => option.name === 'hide')
     if (hideOption === undefined) ephemeralSetting = true
     else ephemeralSetting = hideOption.value
-    
+
     if (hideCommands.some(com => command.data.name.startsWith(com))) {
         await interaction.deferReply({ephemeral: ephemeralSetting})
     }
