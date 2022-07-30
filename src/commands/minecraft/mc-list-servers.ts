@@ -10,12 +10,17 @@ import {
 import {newClient} from "../../dependencies/myTypes";
 import {log} from "../../dependencies/logger";
 import {terminationListener} from "../../dependencies/helpers/terminationListener";
+import {status} from "minecraft-server-util";
 
 //TODO check if it is feasible to get the status of every server on the list
 export const mcListServers = {
     data: new SlashCommandBuilder()
         .setName('mc-list-servers')
         .setDescription('Lists all registered MC servers')
+        .addBooleanOption(option =>
+            option.setName('get-status')
+                .setDescription('Retrieves the status of every server on the list. This may take a while...')
+                .setRequired(false))
         .addBooleanOption(option =>
             option.setName('hide')
                 .setDescription('Whether to display the leaderboard or not')
@@ -25,11 +30,24 @@ export const mcListServers = {
         const MCServerData = guildData.MCServerData
 
         // retrieve server names and IPs
-        let serverNameList: string[] = [], 
-            serverIPList: string[] = []
+        let serverNameList: string[] = [],
+            serverIPList: string[] = [],
+            serverStatusList: string[] = []
+
+        let statusOption = interaction.options.data.find(option => option.name === 'get-status')
+
         for (let i = 0; i < MCServerData.serverList.length; i++) {
             serverNameList.push(MCServerData.serverList[i].name)
             serverIPList.push(MCServerData.serverList[i].ip)
+            if (statusOption != undefined) {
+               await status(MCServerData.serverList[i].ip, MCServerData.serverList[i].port, {timeout: 2000})
+                   .then(() => {
+                       serverStatusList.push('*Online*')
+                   })
+                   .catch(() => {
+                       serverStatusList.push('*Offline*')
+                   })
+            }
         }
 
         // ensure list is never empty; embeds cannot receive empty values
@@ -88,6 +106,10 @@ export const mcListServers = {
             .setColor('#B8CAD1')
             .setFooter({text: MCServerData.serverList.length + ' / 10 Servers Registered'})
 
+        if (statusOption != undefined) {
+            embed.addFields({name: 'Status', value: serverStatusList.join(' \n '), inline: true})
+        }
+        
         await interaction.editReply({embeds: [embed], components: [row]})
 
         // create collector
@@ -96,7 +118,7 @@ export const mcListServers = {
             filter,
             componentType: ComponentType.Button,
             time: 20000
-        }); // only message author can interact, 20s timer 
+        }); 
 
         // retrieve commands for button
         const command1 = client.commands.get('mc-add-server');
@@ -109,7 +131,7 @@ export const mcListServers = {
                 // interaction handling
                 if (i.customId === 'ListAdd') {
                     update = i.update({embeds: [], content: '*Adding Server...*', components: []});
-                    execute = command1.execute(client, interaction, guildData, guildName); 
+                    execute = command1.execute(client, interaction, guildData, guildName);
                     collector.stop()
                 } else if (i.customId === 'ListRemove') {
                     update = i.update({embeds: [], content: '*Removing Server...*', components: []});

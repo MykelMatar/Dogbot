@@ -1,10 +1,11 @@
-import {CommandInteraction, SlashCommandBuilder} from "discord.js";
+import {CommandInteraction, PermissionFlagsBits, SlashCommandBuilder} from "discord.js";
 import {newClient} from "../../dependencies/myTypes";
 
 export const setroleAutoenlist = {
     data: new SlashCommandBuilder() 
         .setName('setrole-autoenlist')
         .setDescription('sets role for automatic role detection and enlist prompt')
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .addRoleOption(option =>
             option.setName('role')
                 .setDescription('The role to be detected by Dogbot')
