@@ -3,8 +3,8 @@ import {log} from "../logger";
 import {CommandInteraction, Message} from "discord.js";
 
 export async function updateUserData(message: CommandInteraction | Message, userIdArray: string[], statName: StatName, trStats?: [number, number, number, boolean]) {
-    if (userIdArray.length === 0) return log.info(`User Id Array is empty, skipping user data check`)
-    log.info('Valid user ID array provided')
+    if (userIdArray.length === 0) return log.info(`${statName} user Id Array is empty, skipping user data check`)
+    log.info(`Valid ${statName} user ID array provided`)
 
     const currentGuild = await guilds.findOne({guildId: message.guildId})
     const UserData = currentGuild.UserData
@@ -85,26 +85,23 @@ export async function updateUserData(message: CommandInteraction | Message, user
             }
             log.info('Done!')
         } else {
-            log.info(`updating user data for ${guildMember.user.username}...`)
+            log.info(`updating user data for ${guildMember.user.username} in ${message.guild.name}...`)
             let user = UserData.find(user => user.id === userId)
             // check if the corresponding stat exists within the user data: if it doesn't exist, make it, if it exists, update it
             switch (statName) {
                 case StatName.tttWins:
-                    log.info(user.tttStats)
                     if (user.tttStats == '{}') {
                         user.tttStats.wins = 1
                         user.tttStats.losses = 0
                     } else user.tttStats.wins++;
                     break;
                 case StatName.tttLosses:
-                    log.info(user.tttStats)
                     if (user.tttStats == '{}') {
                         user.tttStats.wins = 0
                         user.tttStats.losses = 1
                     } else user.tttStats.losses++;
                     break;
                 case StatName.enlist:
-                    log.info(user.enlistStats)
                     if (user.enlistStats == '{}') {
                         user.enlistStats.enlists = 1
                         user.enlistStats.rejects = 0
@@ -112,7 +109,6 @@ export async function updateUserData(message: CommandInteraction | Message, user
                     } else user.enlistStats.enlists++;
                     break;
                 case StatName.reject:
-                    log.info(user.enlistStats)
                     if (user.enlistStats == '{}') {
                         user.enlistStats.enlists = 0
                         user.enlistStats.rejects = 1
@@ -120,7 +116,6 @@ export async function updateUserData(message: CommandInteraction | Message, user
                     } else user.enlistStats.rejects++
                     break;
                 case StatName.ignore:
-                    log.info(user.enlistStats)
                     if (user.enlistStats == '{}') {
                         user.enlistStats.enlists = 0
                         user.enlistStats.rejects = 0
@@ -129,7 +124,6 @@ export async function updateUserData(message: CommandInteraction | Message, user
                     break;
                 case StatName.trWins: // fall-through (like saying trWins || trLosses)
                 case StatName.trLosses:
-                    log.info(user.typingRaceStats == '{}')
                     if (user.typingRaceStats == '{}') {
                         user.typingRaceStats.AverageWPM = trStats[0]
                         user.typingRaceStats.AverageRawWPM = trStats[1]
