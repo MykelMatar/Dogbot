@@ -9,6 +9,7 @@ import {
 import {generateMCMenuOptions} from "../../dependencies/helpers/generateMCMenuOptions";
 import {newClient} from "../../dependencies/myTypes";
 import {log} from "../../dependencies/logger";
+import {terminationListener} from "../../dependencies/helpers/terminationListener";
 
 export const mcChangeServerName = {
     data: new SlashCommandBuilder()
@@ -102,5 +103,8 @@ export const mcChangeServerName = {
                 log.info('Server Renamed Successfully')
             }
         });
+
+        let terminate: boolean = false
+        await terminationListener(client, collector, terminate)
     }
 }

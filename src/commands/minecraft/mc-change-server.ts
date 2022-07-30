@@ -9,6 +9,7 @@ import {
 } from "discord.js";
 import {newClient} from "../../dependencies/myTypes";
 import {log} from "../../dependencies/logger";
+import {terminationListener} from "../../dependencies/helpers/terminationListener";
 
 export const mcChangeServer = {
     data: new SlashCommandBuilder()
@@ -85,5 +86,8 @@ export const mcChangeServer = {
                 await client.commands.get('mc-server-status').execute(client, interaction, guildData, guildName);
             }
         });
+
+        let terminate: boolean = false
+        await terminationListener(client, collector, terminate)
     }
 }

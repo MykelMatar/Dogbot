@@ -1,6 +1,7 @@
 import {CommandInteraction, ComponentType} from "discord.js";
 import {newClient} from "../myTypes";
 import {log} from "../logger";
+import {terminationListener} from "./terminationListener";
 
 export async function runMCButtonCollector(client: newClient, interaction: CommandInteraction, guildData, guildName: string){
     const filter = i => i.user.id === interaction.member.user.id;
@@ -28,4 +29,7 @@ export async function runMCButtonCollector(client: newClient, interaction: Comma
         log.info(`mc collected ${collected.size} button presses`)
         if (collected.size === 0) await interaction.editReply({ components: [] })  // remove buttons
     });
+
+    let terminate: boolean = false
+    await terminationListener(client, collector, terminate)
 }

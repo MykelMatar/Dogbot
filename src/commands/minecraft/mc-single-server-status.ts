@@ -72,7 +72,7 @@ export const mcSingleServerStatus = {
                     await interaction.editReply({embeds: [embed], components: [row]})
                 }
                 
-                await singleStatusCollectResponse(interaction, embed, server, guildData)
+                await singleStatusCollectResponse(client, interaction, embed, server, guildData)
             })
             .catch(async () => {
                 // check if server is Bedrock 

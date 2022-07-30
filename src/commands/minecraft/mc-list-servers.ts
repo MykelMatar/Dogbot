@@ -9,6 +9,7 @@ import {
 } from "discord.js";
 import {newClient} from "../../dependencies/myTypes";
 import {log} from "../../dependencies/logger";
+import {terminationListener} from "../../dependencies/helpers/terminationListener";
 
 //TODO check if it is feasible to get the status of every server on the list
 export const mcListServers = {
@@ -131,5 +132,8 @@ export const mcListServers = {
             else if (collected.first().customId === 'ListAdd' || collected.first().customId === 'ListRemove' || collected.first().customId === 'ListChange')
                 await interaction.editReply({embeds: [], components: []})   // remove buttons & embed
         });
+
+        let terminate: boolean = false
+        await terminationListener(client, collector, terminate)
     }
 }

@@ -1,6 +1,9 @@
 import {Client, Collection, GatewayIntentBits} from "discord.js";
 import 'dotenv/config'
 import {newClient} from "./dependencies/myTypes";
+import {log} from "./dependencies/logger";
+
+console.clear()
 
 const client = new Client({
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildPresences, GatewayIntentBits.MessageContent],
@@ -18,6 +21,6 @@ client.commands = new Collection(); // create commands property for Client so co
     require(`./handlers/${handler}`).default(client)
 });
 
-client.login(process.env.BOT_TOKEN).catch(console.error)
+client.login(process.env.BOT_TOKEN).catch(e => log.error(e))
 
 //console.log(process.memoryUsage().heapUsed / 1024 / 1024) check mb of mem usage

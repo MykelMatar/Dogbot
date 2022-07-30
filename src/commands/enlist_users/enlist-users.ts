@@ -4,6 +4,7 @@ import {newClient} from "../../dependencies/myTypes";
 import {updateEnlistUserArrays} from "../../dependencies/helpers/updateEnlistUserArrays";
 import {StatName, updateUserData} from "../../dependencies/helpers/updateUserData";
 import {log} from "../../dependencies/logger";
+import {terminationListener} from "../../dependencies/helpers/terminationListener";
 
 export const enlistUsers = {
     data: new SlashCommandBuilder()
@@ -105,5 +106,8 @@ export const enlistUsers = {
             await updateUserData(message, rejectedUserIds, StatName.reject);
             await updateUserData(message, ignoredUserIds, StatName.ignore);
         });
+
+        let terminate: boolean = false
+        await terminationListener(client, collector, terminate)
     }
 }

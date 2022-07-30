@@ -9,6 +9,7 @@ import {
 import {generateMCMenuOptions} from "../../dependencies/helpers/generateMCMenuOptions";
 import {newClient} from "../../dependencies/myTypes";
 import {log} from "../../dependencies/logger";
+import {terminationListener} from "../../dependencies/helpers/terminationListener";
 
 
 export const mcDeleteServer = {
@@ -94,5 +95,8 @@ export const mcDeleteServer = {
                 log.info('Server Deleted Successfully')
             }
         });
+
+        let terminate: boolean = false
+        await terminationListener(client, collector, terminate)
     }
 }

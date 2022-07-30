@@ -1,6 +1,8 @@
 import {CommandInteraction, ComponentType, EmbedBuilder} from "discord.js";
+import {terminationListener} from "./terminationListener";
+import {newClient} from "../myTypes";
 
-export async function singleStatusCollectResponse(interaction: CommandInteraction, embed: EmbedBuilder, server: object, guildData){
+export async function singleStatusCollectResponse(client: newClient, interaction: CommandInteraction, embed: EmbedBuilder, server: object, guildData){
     const serverList = guildData.MCServerData.serverList
 
     // create collector
@@ -36,4 +38,7 @@ export async function singleStatusCollectResponse(interaction: CommandInteractio
                 components: []
             })
     });
+
+    let terminate: boolean = false
+    await terminationListener(client, collector, terminate)
 }
