@@ -13,7 +13,7 @@ export async function terminationListener(client: newClient, collector: Interact
         terminate = true
         log.info('Shutting down collectors...')
         collector.stop()
-        log.info('Press Ctrl+C again to shutdown when complete')
+        log.info('Press Ctrl+C again to shutdown')
     })
     process.on('SIGTERM', () => {
         log.info('SIGTERM detected')

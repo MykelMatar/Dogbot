@@ -12,7 +12,8 @@ import {log} from "../../dependencies/logger";
 import {terminationListener} from "../../dependencies/helpers/terminationListener";
 import {status} from "minecraft-server-util";
 
-//TODO check if it is feasible to get the status of every server on the list
+//TODO check add server button, might not be working
+//TODO button collision if same command gets sent more than once
 export const mcListServers = {
     data: new SlashCommandBuilder()
         .setName('mc-list-servers')
@@ -36,17 +37,17 @@ export const mcListServers = {
 
         let statusOption = interaction.options.data.find(option => option.name === 'get-status')
 
-        for (let i = 0; i < MCServerData.serverList.length; i++) {
-            serverNameList.push(MCServerData.serverList[i].name)
-            serverIPList.push(MCServerData.serverList[i].ip)
+        for (const MCServer of MCServerData.serverList) {
+            serverNameList.push(MCServer.name)
+            serverIPList.push(MCServer.ip)
             if (statusOption != undefined) {
-               await status(MCServerData.serverList[i].ip, MCServerData.serverList[i].port, {timeout: 2000})
-                   .then(() => {
-                       serverStatusList.push('*Online*')
-                   })
-                   .catch(() => {
-                       serverStatusList.push('*Offline*')
-                   })
+                await status(MCServer.ip, MCServer.port, {timeout: 2000})
+                    .then(() => {
+                        serverStatusList.push('*Online*')
+                    })
+                    .catch(() => {
+                        serverStatusList.push('*Offline*')
+                    })
             }
         }
 
@@ -109,7 +110,7 @@ export const mcListServers = {
         if (statusOption != undefined) {
             embed.addFields({name: 'Status', value: serverStatusList.join(' \n '), inline: true})
         }
-        
+
         await interaction.editReply({embeds: [embed], components: [row]})
 
         // create collector
@@ -118,7 +119,7 @@ export const mcListServers = {
             filter,
             componentType: ComponentType.Button,
             time: 20000
-        }); 
+        });
 
         // retrieve commands for button
         const command1 = client.commands.get('mc-add-server');
@@ -144,18 +145,19 @@ export const mcListServers = {
                 }
                 await Promise.all([update, execute])
             });
+
+            collector.on('end', async collected => {
+                if (collected.size === 0)
+                    await interaction.editReply({embeds: [embed], components: []}) // remove buttons & embed
+                else if (collected.first().customId === 'ListAdd' || collected.first().customId === 'ListRemove' || collected.first().customId === 'ListChange')
+                    await interaction.editReply({embeds: [], components: []})   // remove buttons & embed
+            });
+
+            let terminate: boolean = false
+            await terminationListener(client, collector, terminate)
         } catch (e) {
             log.error(e)
+            await interaction.editReply({content: 'Refrain from using the same command multiple times'})
         }
-
-        collector.on('end', async collected => {
-            if (collected.size === 0)
-                await interaction.editReply({embeds: [embed], components: []}) // remove buttons & embed
-            else if (collected.first().customId === 'ListAdd' || collected.first().customId === 'ListRemove' || collected.first().customId === 'ListChange')
-                await interaction.editReply({embeds: [], components: []})   // remove buttons & embed
-        });
-
-        let terminate: boolean = false
-        await terminationListener(client, collector, terminate)
     }
 }

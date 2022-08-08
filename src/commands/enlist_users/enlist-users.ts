@@ -46,8 +46,7 @@ export const enlistUsers = {
             )
             .setColor('#B8CAD1')
             .setFooter({text: 'Selecting the "Perhaps" option will not count towards your enlist stats',})
-
-        await message.reply({content: '*Prompt sent*', ephemeral: true})
+        
         let sent: Message = await message.channel.send({embeds: [embed], files: [file], components: [row]})
 
         const collector = message.channel.createMessageComponentCollector({
