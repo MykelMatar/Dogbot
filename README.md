@@ -23,7 +23,6 @@
 <img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/mc-list-servers.png" width="41%"></img>  
 
 **Enlist Commands**  
-<img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/autoenlist.png" width="40%"></img>
 <img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/enlist-users.png" width="50%"></img>  
 <img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/enlist-stats.png" width="40%"></img>
 
@@ -50,8 +49,11 @@
 |-----------------------|---------------------------------------------------------------------|:------:|
 | [/enlist-users](https://github.com/MykelMatar/Dogbot/wiki#enlist-users)         | Creates interaction to enlist other users for event/group           |   ✅   |
 | [/enlist-stats](https://github.com/MykelMatar/Dogbot/wiki#enlist-stats)         | Shows how many times a user enlisted and rejected the Enlist prompt |   ✅   |
-| [/setrole-autoenlist](https://github.com/MykelMatar/Dogbot/wiki#setrole-autoenlist)   | Changes the role used to enlist (for automated enlisting)     |   ✅   |
-| [/clearrole-autoenlist](https://github.com/MykelMatar/Dogbot/wiki#clearrole-autoenlist) | Clears role used to automate /enlist-users                  |   ✅   |
+| [/enlist-leaderboard](https://github.com/MykelMatar/Dogbot/wiki#enlist-leaderboard) | Displays enlist rankings                 |   ✅   |
+| [/enlist-set-role](https://github.com/MykelMatar/Dogbot/wiki#enlist-set-role)| Changes the role mentioned during to enlist (for automated enlisting)|   ✅ |
+| [/enlist-clear-role](https://github.com/MykelMatar/Dogbot/wiki#enlist-clear-role) | Clears role used to mentioned during to enlist                |   ✅   |
+| [/enlist-check-role](https://github.com/MykelMatar/Dogbot/wiki#enlist-check-role) | Checks role used to mentioned during to enlist                 |   ✅   |
+
 
 ### get-stats commands
 | command             | description                              | Status |
