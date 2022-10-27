@@ -1,0 +1,42 @@
+{
+  "dependencies": {
+    "@discordjs/rest": "^1.0.0",
+    "cheerio": "^1.0.0-rc.10",
+    "discord.js": "^14.0.3",
+    "dotenv": "^10.0.0",
+    "minecraft-server-util": "^5.2.5",
+    "mongoose": "^6.3.3",
+    "nodemon": "^2.0.19",
+    "pino": "^8.3.0",
+    "puppeteer": "^15.3.2",
+    "puppeteer-extra": "^3.3.4",
+    "puppeteer-extra-plugin-adblocker": "^2.13.4",
+    "puppeteer-extra-plugin-stealth": "^2.11.0"
+  },
+  "name": "dogbot",
+  "version": "1.1.0",
+  "description": "Discord gamer bot",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "NODE_PATH=./build node build/index.js",
+    "build": "tsc -p .",
+    "bot": "ts-node src/index.ts | pino-pretty -i pid,hostname -t 'yyyy-mm-dd HH:MM:ss'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MykelMatar/Dogbot.git"
+  },
+  "author": "MykelMatar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MykelMatar/Dogbot/issues"
+  },
+  "homepage": "https://github.com/MykelMatar/Dogbot#readme",
+  "keywords": [],
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/node": "^17.0.35",
+    "ts-node": "^10.8.0",
+    "typescript": "^4.7.2"
+  }
+}
