@@ -4,7 +4,7 @@ import {CheerioAPI} from "cheerio";
 import {newClient} from "../../dependencies/myTypes";
 import {log} from "../../dependencies/logger";
 
-
+// TODO make resistant to tracker.gg website changes
 export const getStatsValorant = {
     data: new SlashCommandBuilder()
         .setName('get-stats-valorant')
@@ -60,19 +60,34 @@ export const getStatsValorant = {
             
             // if no errors, proceed. create arrays to hold stats
             let stats: string[] = [],
-                statsRank: string[] = []
+                statsRank: string[] = [],
+                topAgents = [], 
+                playtime_span = [], 
+                topGuns = []
 
             let statHeaderClass = $('span.stat__value') // stats found in the large header
             let rank: string = statHeaderClass.first().text();
-            let kad: string = statHeaderClass.last().text();
-
+            
+            // retrieve all values needed for embed
             $('span.value').each(function (i) { // overview stats section
                 stats[i] = $(this).text();
             });
             $('span.rank').each(function (i) { // top% for the stats
                 statsRank[i] = $(this).text();
             });
-
+            $('div.st').each(function (i) { // top% for the stats
+                topAgents[i] = $(this).text();
+            });
+            $('div.weapon').each(function (i) { // top% for the stats
+                topGuns[i] = $(this).text();
+            });
+            $('span.playtime').each(function (i) { // top% for the stats
+                playtime_span[i] = $(this).text();
+            });
+            
+            let topAgent:string = topAgents[0].split(' ')[22]
+            let playtime = `${playtime_span[0].split(' ')[10]} ${playtime_span[0].split(' ')[11]}`
+            
             // create Embed w/ user info and stats
             const embed = new EmbedBuilder()
                 .setTitle(`${user}'s Valorant Stats`)
@@ -81,16 +96,16 @@ export const getStatsValorant = {
                     {name: 'K/D ', value: `${stats[4]}⠀_(${statsRank[1]})_`, inline: true},
                     {name: 'Headshot %', value: `${stats[5]}⠀_(${statsRank[2]})_`, inline: true},
                     {name: 'Win %', value: stats[6], inline: true},
-                    {name: 'KA/D', value: kad, inline: true},
+                    {name: 'KA/D', value: stats[12], inline: true},
                     {name: 'ADR', value: `${stats[3]}⠀_(${statsRank[0]})_`, inline: true},
                     {name: 'Score/Round⠀⠀⠀⠀⠀', value: stats[12], inline: true}, // + "⠀" = braille blank space, the only white space discord doesn't delete
                     {name: 'Kills/Rounds⠀⠀⠀⠀⠀', value: stats[13], inline: true},
-                    {name: 'First Bloods', value: stats[14], inline: true},
-                    {name: 'Aces', value: stats[15], inline: true},
-                    {name: 'Clutches', value: stats[16], inline: true},
-                    {name: 'Most Kills (Match)', value: stats[17], inline: true},
+                    {name: 'First Bloods', value: stats[15], inline: true},
+                    {name: 'Top Agent', value: topAgent, inline: true},
+                    {name: 'Top Weapon', value: topGuns[0].split(' ')[1], inline: true},
+                    {name: 'Season Playtime ', value: playtime, inline: true},
                 )
-                .setColor("#8570C1")
+                .setColor("#B8CAD1")
                 .setFooter({text: 'via Tracker.gg, visit the website for more info'})
 
             await interaction.editReply({embeds: [embed]})
