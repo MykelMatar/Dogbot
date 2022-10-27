@@ -111,7 +111,7 @@ export const enlistUsers = {
                     embed.data.fields[0].value = enlistedUsers.join('');
                     embed.data.fields[1].value = potentialUsers.join('');
                     embed.data.fields[2].value = rejectedUsers.join('');
-                    await sent.edit({content: '', embeds: [embed], components: [row]});
+                    await sent.edit({content: `${role}`, embeds: [embed], components: [row]});
                 }
             }); // collector 
         } catch (e) {
