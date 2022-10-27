@@ -1,5 +1,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/node,phpstorm,dotenv
 # Edit at https://www.toptal.com/developers/gitignore?templates=node,phpstorm,dotenv
+### Others ###
+src/commands/test
+build
+.idea
 
 ### dotenv ###
 .env
