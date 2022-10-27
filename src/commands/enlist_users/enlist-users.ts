@@ -23,7 +23,7 @@ export const enlistUsers = {
                 .setDescription('Role to @ when sending this prompt. Can be set automatically via the /enlist-set-role')
                 .setRequired(false)
         ),
-    cooldown: 1.08e+7,
+    cooldown: 60,
     async execute(client: newClient, interaction: CommandInteraction, guildData) {
         await interaction.reply({content: '*prompt sent*', ephemeral: true}) // give user feedback and prevent 'interaction failed' message
         const userData = guildData.UserData
