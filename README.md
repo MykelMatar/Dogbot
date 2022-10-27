@@ -5,7 +5,7 @@
   ### Dogbot is your Discord gaming companion. Track your favorite minecraft servers, get your Valorant stats, enlist fellow gamers for your event, and more! View the [Commands](#all-commands) section below to check whether a command if working or not, or view the [Wiki](https://github.com/MykelMatar/Dogbot/wiki) more information about the commands. 
 [Click to add Dogbot to your server](https://discord.com/api/oauth2/authorize?client_id=848283770041532425&permissions=8&scope=bot%20applications.commands)
 <p align="left">
-  <img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/magic8.png" width="30%"></img>
+  <img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/magic8.png" width="25%"></img>
 </p>
 
 
@@ -19,14 +19,14 @@
 
 ## Image Gallery
 **Minecraft Commands**  
-<img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/mc-server-status.png" width="20%"></img>
+<img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/mc-server-status.png" width="25%"></img>
 <img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/mc-list-servers.png" width="25%"></img>
 <img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/mc-list-servers-status.png" width="28%"></img>  
 
 **Enlist Commands**  
 <img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/enlist-users.png" width="30%"></img>  
 <img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/enlist-stats.png" width="20%"></img>
-<img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/enlist-leaderboard.png" width="20%"></img>
+<img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/enlist-leaderboard.png" width="33%"></img>
 
 **Other Commands**  
 <img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/get-stats-valorant.png" width="50%"></img>   
@@ -60,10 +60,9 @@
 ### get-stats commands
 | command             | description                              | Status |
 |---------------------|------------------------------------------|:------:|
-| [/get-stats-valorant](https://github.com/MykelMatar/Dogbot/wiki#get-stats-valorant) | Retrieves valorant stats from tracker.gg |   ❌   |
+| [/get-stats-valorant](https://github.com/MykelMatar/Dogbot/wiki#get-stats-valorant) | Retrieves valorant stats from tracker.gg |   ✅   |
 | [/server-stats](https://github.com/MykelMatar/Dogbot/wiki#server-stats)       | displays relevant server stats           |   ✅   |
 
-    Dogbot has been blocked by tracker.gg. Currently working on solutions.
 
 ### game commands
 | command      | description                             | Status |
