@@ -1,4 +1,3 @@
-
 # Created by https://www.toptal.com/developers/gitignore/api/node,phpstorm,dotenv
 # Edit at https://www.toptal.com/developers/gitignore?templates=node,phpstorm,dotenv
 
@@ -257,4 +256,4 @@ fabric.properties
 # https://plugins.jetbrains.com/plugin/8053-azure-toolkit-for-intellij
 .idea/**/azureSettings.xml
 
-# End of https://www.toptal.com/developers/gitignore/api/node,phpstorm,dotenv
+# End of https://www.toptal.com/developers/gitignore/api/node,phpstorm,dotenv!/src/commands/test/
