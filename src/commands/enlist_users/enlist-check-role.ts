@@ -2,9 +2,9 @@ import {CommandInteraction, SlashCommandBuilder} from "discord.js";
 import {newClient} from "../../dependencies/myTypes";
 import guilds from "../../dependencies/schemas/guild-schema";
 
-export const checkroleAutoenlist = {
+export const enlistCheckRole = {
     data: new SlashCommandBuilder() 
-        .setName('checkrole-autoenlist')
+        .setName('enlist-check-role')
         .setDescription('Returns the role currently being used to auto enlist')
         .addBooleanOption(option =>
             option.setName('hide')

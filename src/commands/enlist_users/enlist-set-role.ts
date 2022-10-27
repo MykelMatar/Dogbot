@@ -1,9 +1,9 @@
 import {CommandInteraction, PermissionFlagsBits, SlashCommandBuilder} from "discord.js";
 import {newClient} from "../../dependencies/myTypes";
 
-export const setroleAutoenlist = {
+export const enlistSetRole = {
     data: new SlashCommandBuilder() 
-        .setName('setrole-autoenlist')
+        .setName('enlist-set-role')
         .setDescription('sets role for automatic role detection and enlist prompt')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .addRoleOption(option =>

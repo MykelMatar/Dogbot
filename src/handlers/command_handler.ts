@@ -3,6 +3,7 @@ import {newClient} from "../dependencies/myTypes";
 import {REST} from "@discordjs/rest";
 import {Routes} from "discord.js"
 
+
 export default (client: newClient) => {
     const commandFiles = getFiles('./src/commands', '.ts')
     
@@ -15,7 +16,7 @@ export default (client: newClient) => {
             commands.push(commandList[command].data.toJSON())
         }
     }
-
+    
     const rest = new REST({version: '10'}).setToken(process.env.BOT_TOKEN);
     (async () => {
         await rest.put(

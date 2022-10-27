@@ -3,8 +3,6 @@ import 'dotenv/config'
 import {newClient} from "./dependencies/myTypes";
 import {log} from "./dependencies/logger";
 
-console.clear()
-
 const client = new Client({
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildPresences, GatewayIntentBits.MessageContent],
     sweepers: {
@@ -13,7 +11,7 @@ const client = new Client({
             interval: 120
         }
     }
-}) as Client & newClient
+}) as newClient
 
 client.commands = new Collection(); // create commands property for Client so commands can be passed around 
 

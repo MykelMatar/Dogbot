@@ -1,9 +1,9 @@
 import {CommandInteraction, PermissionFlagsBits, SlashCommandBuilder} from "discord.js";
 import {newClient} from "../../dependencies/myTypes";
 
-export const clearRoleAutoEnlist = {
+export const enlistClearRole = {
     data: new SlashCommandBuilder() 
-        .setName('clearrole-autoenlist')
+        .setName('enlist-clear-role')
         .setDescription('Clears role used to automate /enlist-users')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .addStringOption(option =>

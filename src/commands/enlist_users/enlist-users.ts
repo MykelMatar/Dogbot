@@ -1,28 +1,38 @@
-import { ActionRowBuilder, AttachmentBuilder, ButtonBuilder, ButtonStyle,
-    CommandInteraction, ComponentType, EmbedBuilder, Message, SlashCommandBuilder} from "discord.js";
+import {
+    ActionRowBuilder, AttachmentBuilder, ButtonBuilder, ButtonStyle,
+    CommandInteraction, CommandInteractionOption, ComponentType, EmbedBuilder, Message, Role, SlashCommandBuilder
+} from "discord.js";
 import {newClient} from "../../dependencies/myTypes";
 import {updateEnlistUserArrays} from "../../dependencies/helpers/updateEnlistUserArrays";
 import {StatName, updateUserData} from "../../dependencies/helpers/updateUserData";
 import {log} from "../../dependencies/logger";
 import {terminationListener} from "../../dependencies/helpers/terminationListener";
+import guilds from "../../dependencies/schemas/guild-schema";
+
 
 export const enlistUsers = {
     data: new SlashCommandBuilder()
         .setName('enlist-users')
         .setDescription('creates prompt that allows users to RSVP for events')
         .addStringOption(option =>
-            option.setName('description')
-                .setDescription('Description of the event')
-                .setRequired(false)),
-
-    async execute(client: newClient, message: CommandInteraction | Message, guildData) {
+            option.setName('title')
+                .setDescription('Title of the event')
+                .setRequired(false))
+        .addRoleOption(option => 
+            option.setName('role')
+                .setDescription('Role to @ when sending this prompt. Can be set automatically via the /enlist-set-role')
+                .setRequired(false)
+        ),
+    cooldown: 10,
+    async execute(client: newClient, interaction: CommandInteraction, guildData) {
+        await interaction.reply({content: '*prompt sent*', ephemeral: true}) // give user feedback and prevent 'interaction failed' message
         const userData = guildData.UserData
-
+        
         const row = new ActionRowBuilder<ButtonBuilder>()
             .addComponents(
                 new ButtonBuilder()
                     .setCustomId('Gamer')
-                    .setLabel('Be Gamer')
+                    .setLabel('Gaming')
                     .setStyle(ButtonStyle.Success),
                 new ButtonBuilder()
                     .setCustomId('Perhaps')
@@ -30,31 +40,47 @@ export const enlistUsers = {
                     .setStyle(ButtonStyle.Primary),
                 new ButtonBuilder()
                     .setCustomId('Cringe')
-                    .setLabel('Be Cringe')
+                    .setLabel('Disappointment')
                     .setStyle(ButtonStyle.Danger),
             );
-
+        
         // generate embed
+        let title: string, role: Role | string
+        const defaultTitle: string = `Gamer Time`
+        let titleOption: CommandInteractionOption = interaction.options.data.find(option => option.name === 'title')
+        let roleOption: CommandInteractionOption = interaction.options.data.find(option => option.name === 'role')
+        
+        if (titleOption != undefined){
+            title = titleOption.value as string
+        } else {
+            title = defaultTitle
+        }
+        if (roleOption != undefined){
+            role = roleOption.value as string | Role
+        } else {
+            const currentGuild = await guilds.findOne({guildId: interaction.guildId})
+            let selectedRole = currentGuild.ServerData.roles.autoenlist
+            role = interaction.guild.roles.cache.find(r => r.id === selectedRole)
+            if (role == undefined) {
+                role = ''
+            }
+        }
         const file = new AttachmentBuilder('./src/dependencies/images/Dogbot.png')
         const embed = new EmbedBuilder()
-            // .setTitle('Registered Gamers')
+            .setTitle(title)
             .setThumbnail('attachment://Dogbot.png')
             .addFields(
-                {name: 'Gaming⠀⠀⠀', value: '-', inline: true},
+                {name: 'Gaming', value: '-', inline: true},
                 {name: 'Perhaps', value: '-', inline: true},
                 {name: 'Not Gaming', value: '-', inline: true},
             )
             .setColor('#B8CAD1')
             .setFooter({text: 'Selecting the "Perhaps" option will not count towards your enlist stats',})
         
-        let sent: Message = await message.channel.send({embeds: [embed], files: [file], components: [row]})
-
-        const collector = message.channel.createMessageComponentCollector({
-            componentType: ComponentType.Button,
-            time: 1.08e+7 // 3 hour (1.08e+7) timer
-        });
-
-
+        // send prompt. Not an interaction reply bc interactions are only editable for 15 min
+        let sent: Message = await interaction.channel.send({content: `${role}`, embeds: [embed], files: [file], components: [row]})
+        
+        // arrays for collecting user data 
         let enlistedUsers: string[] = ['-'],
             enlistedUserIds: string[] = [], // for pushing user data to mongoDB
             rejectedUsers: string[] = ['-'],
@@ -63,28 +89,40 @@ export const enlistUsers = {
             potentialUserIds: string[] = [],
             ignoredUserIds: string[] = []
         let userArrays = [enlistedUsers, enlistedUserIds, rejectedUsers, rejectedUserIds, potentialUsers, potentialUserIds] // makes it easier to pass to 'update' function   
-
+        
+        // create collector and run
+        const collector = interaction.channel.createMessageComponentCollector({
+            componentType: ComponentType.Button,
+            time: 1.08e+7 // 3 hour (1.08e+7) timer
+        });
+        
         try {
+            //@ts-ignore (typescipt thinks .custom_id property does not exist)
+            let button1CustomId = row.components[0].data.custom_id
+            //@ts-ignore
+            let button2CustomId = row.components[1].data.custom_id
+            //@ts-ignore
+            let button3CustomId = row.components[2].data.custom_id
             collector.on('collect', async i => {
-                if (i.customId === 'Gamer' || i.customId === 'Cringe' || i.customId === 'Perhaps') {
-                    await i.deferUpdate(); // prevents "this message failed" message from appearing
+                if (i.customId === button1CustomId || i.customId === button2CustomId || i.customId === button3CustomId) {
+                    await i.deferUpdate(); // prevents "this interaction failed" interaction from appearing
                     await updateEnlistUserArrays(i, userArrays)
 
                     embed.data.fields[0].value = enlistedUsers.join('');
                     embed.data.fields[1].value = potentialUsers.join('');
                     embed.data.fields[2].value = rejectedUsers.join('');
-                    await sent.edit({embeds: [embed], components: [row]});
+                    await sent.edit({content: '', embeds: [embed], components: [row]});
                 }
-            });
+            }); // collector 
         } catch (e) {
             await sent.edit({
                 content: '*error while collecting responses, please try again*',
                 embeds: [embed],
-                components: []
+                components: [],
             });
             log.error(e)
         }
-
+        
         collector.on('end', async collected => {
             await sent.edit({content: '⚠ ***ENLISTING ENDED*** ⚠', embeds: [embed], components: []})
             if (collected.size === 0) return // make sure users were collected
@@ -101,9 +139,9 @@ export const enlistUsers = {
 
             ignoredUserIds = allUserIds.filter(id => !(allRegisteredUserIds.includes(id)))
 
-            await updateUserData(message, enlistedUserIds, StatName.enlist);
-            await updateUserData(message, rejectedUserIds, StatName.reject);
-            await updateUserData(message, ignoredUserIds, StatName.ignore);
+            await updateUserData(interaction, enlistedUserIds, StatName.enlist);
+            await updateUserData(interaction, rejectedUserIds, StatName.reject);
+            await updateUserData(interaction, ignoredUserIds, StatName.ignore);
         });
 
         let terminate: boolean = false
