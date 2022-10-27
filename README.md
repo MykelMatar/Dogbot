@@ -68,7 +68,6 @@
 | command      | description                             | Status |
 |--------------|-----------------------------------------|:------:|
 | [/tictactoe](https://github.com/MykelMatar/Dogbot/wiki#tictactoe)   | Play tic tac toe against another user   |   ✅*  |
-| [/typing-race](https://github.com/MykelMatar/Dogbot/wiki#typing-race) | Start a typing race against other users |   ✅*  |
 | [/magic8](https://github.com/MykelMatar/Dogbot/wiki#magic8)      | Predicts via a Magic 8 ball             |   ✅*  |
 
     *implemented but not thoroughly tested, typeracer cheat detection may be broken
