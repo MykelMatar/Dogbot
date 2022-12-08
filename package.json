@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@discordjs/rest": "^1.0.0",
+    "call-of-duty-api": "^3.4.0",
     "cheerio": "^1.0.0-rc.10",
     "discord.js": "^14.0.3",
     "dotenv": "^10.0.0",

@@ -32,14 +32,6 @@ export const enlistLeaderboard = {
     async execute(client: newClient, interaction: CommandInteraction, guildData) {
         let userData = guildData.UserData
 
-        if (userData.length === 0) {
-            await interaction.reply({content: 'This server does not have any user data. User data is created upon interacting with the enlist prompt or playing a game'})
-        } else if (userData.length === 1) {
-            await interaction.reply({content: 'Cannot create a leaderboard with only 1 user, there must be at least 3 users. User data is created upon interacting with the enlist prompt or playing a game'})
-        } else if (userData.length === 2) {
-            await interaction.reply({content: 'Cannot create a leaderboard with only 2 users, there must be at least 3 users. User data is created upon interacting with the enlist prompt or playing a game'})
-        }
-
         // get total amount of enlists for normalization later
         let totalEnlistValue: number = 0
         for (const user of userData) {

@@ -1,4 +1,4 @@
-import {CommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js";
+import {CommandInteraction, CommandInteractionOption, EmbedBuilder, SlashCommandBuilder} from "discord.js";
 import {fetchHTML} from "../../dependencies/helpers/fetchHTML";
 import {CheerioAPI} from "cheerio";
 import {newClient} from "../../dependencies/myTypes";
@@ -24,8 +24,10 @@ export const getStatsValorant = {
 
     async execute(client: newClient, interaction: CommandInteraction) {
         // retrieve username and tag
-        let user: string = interaction.options.data[0].value.toString()
-        let tag: string = interaction.options.data[1].value.toString()
+        let userOption: CommandInteractionOption = interaction.options.data.find(option => option.name === 'username')
+        let tagOption: CommandInteractionOption = interaction.options.data.find(option => option.name === 'tag')
+        let user:string = userOption.value as string
+        let tag:string = tagOption.value as string
         let uriUser = encodeURIComponent(user.trim()) // encode string to have URI value for URL
         let uriTag = encodeURIComponent(tag.trim())
 

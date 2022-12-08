@@ -1,12 +1,13 @@
 import guilds from "../schemas/guild-schema";
 import {log} from "../logger";
 import {CommandInteraction, Message} from "discord.js";
+import {platforms} from "call-of-duty-api";
 
-export async function updateUserData(message: CommandInteraction | Message, userIdArray: string[], statName: StatName, trStats?: [number, number, number, boolean]) {
+export async function updateUserData(interaction: CommandInteraction, userIdArray: string[], statName: StatName, wzProfile?: [string, platforms]) {
     if (userIdArray.length === 0) return log.info(`${statName} user Id Array is empty, skipping user data check`)
     log.info(`Valid ${statName} user ID array provided`)
 
-    const currentGuild = await guilds.findOne({guildId: message.guildId})
+    const currentGuild = await guilds.findOne({guildId: interaction.guildId})
     const UserData = currentGuild.UserData
 
     let statsArray: number[] = []; // statsArray Format: [tttwins, tttlosses, enlists, rejects, ignores] 
@@ -29,13 +30,13 @@ export async function updateUserData(message: CommandInteraction | Message, user
     }
 
     log.info('checking for user data...')
-    for (const userId of userIdArray) { // for of instead of for each so await can be used
+    for (const userId of userIdArray) { // 'for of' instead of 'for each' so await can be used
         const index = userIdArray.indexOf(userId);
 
-        let guildMember = await message.guild.members.fetch(userId)
+        let guildMember = await interaction.guild.members.fetch(userId)
         if (!(UserData.some(user => user.id === userIdArray[index]))) { // if user data doesnt exist, create data
             log.info(`creating user data for ${guildMember.user.username}...`)
-            let username = message.guild.members.cache.get(`${userIdArray[index]}`).user.username
+            let username = interaction.guild.members.cache.get(`${userIdArray[index]}`).user.username
 
             // check which stat needs to be added
             switch (statName) {
@@ -67,17 +68,14 @@ export async function updateUserData(message: CommandInteraction | Message, user
                         })
                     }
                     break;
-                case StatName.trWins:
-                case StatName.trLosses:
-                    if (UserData[index].typingRaceStats == null) {
+                case StatName.wzProfile:
+                    if (UserData[index].warzoneProfile == null) {
                         UserData.push({
                             username: username,
                             id: userIdArray[index],
-                            typingRaceStats: {
-                                AverageWPM: trStats[0],
-                                AverageRawWPM: trStats[1],
-                                AverageAccuracy: trStats[2],
-                                FirstPlaceWins: trStats[3] ? 1 : 0,
+                            warzoneProfile: {
+                                username: wzProfile[0],
+                                platform: wzProfile[1],
                             }
                         })
                     }
@@ -85,7 +83,7 @@ export async function updateUserData(message: CommandInteraction | Message, user
             }
             log.info('Done!')
         } else {
-            log.info(`updating user data for ${guildMember.user.username} in ${message.guild.name}...`)
+            log.info(`updating user data for ${guildMember.user.username} in ${interaction.guild.name}...`)
             let user = UserData.find(user => user.id === userId)
             // check if the corresponding stat exists within the user data: if it doesn't exist, make it, if it exists, update it
             switch (statName) {
@@ -122,20 +120,9 @@ export async function updateUserData(message: CommandInteraction | Message, user
                         user.enlistStats.ignores = 1
                     } else user.enlistStats.ignores++
                     break;
-                case StatName.trWins: // fall-through (like saying trWins || trLosses)
-                case StatName.trLosses:
-                    if (user.typingRaceStats == '{}') {
-                        user.typingRaceStats.AverageWPM = trStats[0]
-                        user.typingRaceStats.AverageRawWPM = trStats[1]
-                        user.typingRaceStats.AverageAccuracy = trStats[2]
-                        if (statName == StatName.trWins) user.typingRaceStats.FirstPlaceWins = 1
-                        else user.typingRaceStats.FirstPlaceWins = 0
-                    } else {
-                        user.typingRaceStats.AverageWPM = parseFloat(((user.typingRaceStats.AverageWPM + trStats[0]) / 2).toFixed(2))
-                        user.typingRaceStats.AverageRawWPM = parseFloat(((user.typingRaceStats.AverageRawWPM + trStats[1]) / 2).toFixed(2))
-                        user.typingRaceStats.AverageAccuracy = parseFloat(((user.typingRaceStats.AverageAccuracy + trStats[2]) / 2).toFixed(4))
-                        if (statName == StatName.trWins) user.typingRaceStats.FirstPlaceWins++
-                    }
+                case StatName.wzProfile:
+                    user.warzoneProfile.username = wzProfile[0]
+                    user.warzoneProfile.platform = wzProfile[1]
                     break;
             }
         }
@@ -150,6 +137,5 @@ export const enum StatName {
     enlist = 'enlist',
     reject = 'reject',
     ignore = 'ignore',
-    trWins = 'trWins',
-    trLosses = 'trLosses'
+    wzProfile = 'wzProfile',
 }

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import {platforms} from "call-of-duty-api";
 
 const guildSchema = new mongoose.Schema({
     guild: String,
@@ -23,11 +24,13 @@ const guildSchema = new mongoose.Schema({
                 wins: Number,
                 losses: Number,
             },
-            typingRaceStats: {
-                AverageWPM: Number,
-                AverageRawWPM: Number,
-                AverageAccuracy: Number,
-                FirstPlaceWins: Number,
+            warzoneProfile: {
+                username: String,
+                platform: typeof platforms,
+            },
+            valorantProfile: {
+                username: String,
+                tag: String,
             }
         },
     ],
