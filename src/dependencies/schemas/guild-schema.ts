@@ -1,7 +1,7 @@
-import mongoose from "mongoose";
+import {Schema, model} from "mongoose";
 import {platforms} from "call-of-duty-api";
 
-const guildSchema = new mongoose.Schema({
+const guildSchema = new Schema({
     guild: String,
     guildId: String,
     ServerData: {
@@ -50,4 +50,4 @@ const guildSchema = new mongoose.Schema({
     },
 });
 
-export default mongoose.model("Guilds", guildSchema);
+export default model("Guilds", guildSchema);

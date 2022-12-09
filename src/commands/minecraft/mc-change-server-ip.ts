@@ -9,7 +9,7 @@ import {
 import {status} from "minecraft-server-util";
 import {generateMCMenuOptions} from "../../dependencies/helpers/generateMCMenuOptions";
 import {newClient} from "../../dependencies/myTypes";
-import {log} from "../../dependencies/logger";
+import log from "../../dependencies/logger";
 import {terminationListener} from "../../dependencies/helpers/terminationListener";
 
 export const mcChangeServerIP = {

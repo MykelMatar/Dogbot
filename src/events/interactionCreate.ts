@@ -1,7 +1,7 @@
 import DiscordJS, {CommandInteraction, GuildMember} from "discord.js";
-import {newClient} from "../../dependencies/myTypes";
-import guilds from "../../dependencies/schemas/guild-schema";
-import {log} from "../../dependencies/logger";
+import {newClient} from "../dependencies/myTypes";
+import guilds from "../dependencies/schemas/guild-schema";
+import log from "../dependencies/logger";
 
 const cooldowns = new Map()
 
@@ -43,8 +43,9 @@ export async function interactionCreate(client: newClient, interaction: CommandI
     if (hideCommands.some(com => command.data.name.startsWith(com))) {
         await interaction.deferReply({ephemeral: ephemeralSetting})
     }
-    if (command.name === 'enlist-users' && interaction.options.data.length !== 0) {
-        await interaction.reply({content: `${interaction.options.data[0].value}`})
+    let titleOption = interaction.options.data.find(option => option.name === 'title')
+    if (command.name === 'enlist-users' && titleOption != undefined) {
+        await interaction.reply({content: `${titleOption.value}`})
     }
 
     // execute command

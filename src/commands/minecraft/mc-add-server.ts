@@ -7,7 +7,7 @@ import {
 import {status} from 'minecraft-server-util'
 import {promptResponse} from "../../dependencies/helpers/promptResponse"
 import {newClient} from "../../dependencies/myTypes";
-import {log} from "../../dependencies/logger";
+import log from "../../dependencies/logger";
 
 export const mcAddServer = {
     data: new SlashCommandBuilder()
@@ -22,10 +22,10 @@ export const mcAddServer = {
             option.setName('name')
                 .setDescription('name of the server. Can be changed later via mc-change-server-name')
                 .setRequired(true))
-    .addNumberOption(option =>
-        option.setName('port')
-            .setDescription('Port of your server.')
-            .setRequired(false)),
+        .addNumberOption(option =>
+            option.setName('port')
+                .setDescription('Port of your server.')
+                .setRequired(false)),
 
     async execute(client: newClient, interaction: CommandInteraction, guildData) {
         const serverList = guildData.MCServerData.serverList
@@ -35,11 +35,11 @@ export const mcAddServer = {
         }
 
         // retrieve server IP and name
-        let ip, name, port
+        let ip: string, name: string, port: number
         try {
             // if slash command is used
-            ip = interaction.options.data[0].value;
-            name = interaction.options.data[1].value;
+            ip = interaction.options.data[0].value as string;
+            name = interaction.options.data[1].value as string;
             let portOption: CommandInteractionOption = (interaction.options.data.find(option => option.name === 'port'));
             if (portOption === undefined) {
                 port = 25565

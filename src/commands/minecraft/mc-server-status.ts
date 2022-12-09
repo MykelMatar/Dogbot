@@ -2,7 +2,7 @@ import {ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, CommandInter
 import {status} from "minecraft-server-util";
 import {runMCButtonCollector} from "../../dependencies/helpers/runMCButtonCollector";
 import {newClient} from "../../dependencies/myTypes";
-import {log} from "../../dependencies/logger";
+import log from "../../dependencies/logger";
 
 export const mcServerStatus = {
     data: new SlashCommandBuilder() 

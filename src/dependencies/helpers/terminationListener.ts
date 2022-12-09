@@ -1,5 +1,5 @@
 import {InteractionCollector} from "discord.js";
-import {log} from "../logger";
+import log from "../logger";
 import {newClient} from "../myTypes";
 
 export async function terminationListener(client: newClient, collector: InteractionCollector<any>, terminate?: boolean) {

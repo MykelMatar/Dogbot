@@ -1,5 +1,5 @@
 import {CommandInteraction} from "discord.js";
-import {log} from "../logger";
+import log from "../logger";
 
 export const promptResponse = async (interaction: CommandInteraction, request: string, requestFailMessage: string): Promise<any> => {
     await interaction.editReply(request)

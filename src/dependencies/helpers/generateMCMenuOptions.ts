@@ -1,5 +1,5 @@
 import guilds from '../schemas/guild-schema'
-import {log} from "../logger";
+import log from "../logger";
 import {APISelectMenuOption, CommandInteraction} from "discord.js";
 
 export async function generateMCMenuOptions(interaction: CommandInteraction, guildName: string, listSize: number): Promise<any>{

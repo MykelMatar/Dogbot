@@ -1,13 +1,14 @@
 import {Client, Guild} from "discord.js";
 import guilds from '../../dependencies/schemas/guild-schema'
+import log from "../../dependencies/logger";
 
 export async function guildDelete (client: Client, guild: Guild) {
-    console.log(`Dogbot added to ${guild.name}`);
+    log.info(`Dogbot added to ${guild.name}`);
 
     // delete user data from mongo
-    console.log('removing server data...')
+    log.info('removing server data...')
     guilds.findOne({guildId: guild.id})
         .deleteOne()
-        .catch(err => console.log(err))
-    console.log('done!')
+        .catch(err => log.info(err))
+    log.info('done!')
 }

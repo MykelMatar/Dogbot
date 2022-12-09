@@ -1,7 +1,7 @@
 import {CommandInteraction, CommandInteractionOption, EmbedBuilder, SlashCommandBuilder} from "discord.js";
 import {newClient} from "../../dependencies/myTypes";
 import {Warzone, platforms, login} from "call-of-duty-api";
-import {log} from "../../dependencies/logger";
+import log from "../../dependencies/logger";
 
 // TODO: set username command so that people dont have to type their username all the time. store in mongo
 export const getStatsWarzone = {
@@ -41,7 +41,6 @@ export const getStatsWarzone = {
             if (userData === undefined) {
                 return interaction.editReply({content: 'User does not have any data. Please use the input options for the command'})
             }
-            log.info(userData.warzoneProfile)
             if (userData.warzoneProfile == '{}'){
                 return interaction.editReply({content: 'Unknown user. Use set-profile-warzone to set your profile or use the command parameters to find a player'})
             }

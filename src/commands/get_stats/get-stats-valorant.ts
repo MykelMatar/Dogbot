@@ -2,7 +2,7 @@ import {CommandInteraction, CommandInteractionOption, EmbedBuilder, SlashCommand
 import {fetchHTML} from "../../dependencies/helpers/fetchHTML";
 import {CheerioAPI} from "cheerio";
 import {newClient} from "../../dependencies/myTypes";
-import {log} from "../../dependencies/logger";
+import log from "../../dependencies/logger";
 
 // TODO make resistant to tracker.gg website changes
 export const getStatsValorant = {
@@ -12,22 +12,42 @@ export const getStatsValorant = {
         .addStringOption(option =>
             option.setName('username')
                 .setDescription('username of player, case-sensitive')
-                .setRequired(true))
+                .setRequired(false))
         .addStringOption(option =>
             option.setName('tag')
                 .setDescription('tag of player, case-sensitive')
-                .setRequired(true))
+                .setRequired(false))
         .addBooleanOption(option =>
             option.setName('hide')
                 .setDescription('Whether to hide response or not')
                 .setRequired(false)),
 
-    async execute(client: newClient, interaction: CommandInteraction) {
+    async execute(client: newClient, interaction: CommandInteraction, guildData) {
         // retrieve username and tag
         let userOption: CommandInteractionOption = interaction.options.data.find(option => option.name === 'username')
         let tagOption: CommandInteractionOption = interaction.options.data.find(option => option.name === 'tag')
-        let user:string = userOption.value as string
-        let tag:string = tagOption.value as string
+        let userData, user:string,  tag:string
+        
+        if (tagOption != undefined && userOption != undefined){ // if the options are used
+            tag = tagOption.value as string
+            user = userOption.value as string
+        }
+        else if (tagOption == undefined && userOption == undefined){ // if the options are not used
+            userData = guildData.UserData.find(user => user.id === interaction.user.id)
+            if (userData === undefined) {
+                return interaction.editReply({content: 'User does not have any data. Please use the input options for the command'})
+            }
+            if (userData.valorantProfile == '{}'){
+                return interaction.editReply({content: 'Unknown user. Use set-profile-warzone to set your profile or use the command parameters to find a player'})
+            }
+            tag = userData.valorantProfile.tag
+            user = userData.valorantProfile.username
+        }
+        else if ((tagOption != undefined && userOption == undefined) || // if one option is used without the other
+            (tagOption == undefined && userOption != undefined)){
+            return interaction.editReply({content: `must input both a username and platform. `})
+        }
+        
         let uriUser = encodeURIComponent(user.trim()) // encode string to have URI value for URL
         let uriTag = encodeURIComponent(tag.trim())
 
@@ -35,8 +55,7 @@ export const getStatsValorant = {
         try {
             // get webpages
             const $: CheerioAPI = await fetchHTML(`https://tracker.gg/valorant/profile/riot/${uriUser}%23${uriTag}/overview`);
-
-            // catch errors before scraping information
+            
             let status, privateProfile, error
             $('h1').each(function () { // h1 is defined if an error code is present
                 status = $(this).text()

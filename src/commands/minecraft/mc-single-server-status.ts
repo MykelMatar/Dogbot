@@ -9,7 +9,7 @@ import {
 } from "discord.js";
 import {status, statusBedrock} from "minecraft-server-util";
 import {newClient} from "../../dependencies/myTypes";
-import {log} from "../../dependencies/logger";
+import log from "../../dependencies/logger";
 import {singleStatusCollectResponse} from "../../dependencies/helpers/singleStatusCollectResponse";
 
 export const mcSingleServerStatus = {

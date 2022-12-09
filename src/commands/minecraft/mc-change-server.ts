@@ -8,7 +8,7 @@ import {
     APISelectMenuOption
 } from "discord.js";
 import {newClient} from "../../dependencies/myTypes";
-import {log} from "../../dependencies/logger";
+import log from "../../dependencies/logger";
 import {terminationListener} from "../../dependencies/helpers/terminationListener";
 
 export const mcChangeServer = {

@@ -1,6 +1,6 @@
 import {CommandInteraction, ComponentType} from "discord.js";
 import {newClient} from "../myTypes";
-import {log} from "../logger";
+import log from "../logger";
 import {terminationListener} from "./terminationListener";
 
 export async function runMCButtonCollector(client: newClient, interaction: CommandInteraction, guildData, guildName: string){

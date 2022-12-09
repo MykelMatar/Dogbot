@@ -1,13 +1,13 @@
 import guilds from "../schemas/guild-schema";
-import {log} from "../logger";
-import {CommandInteraction, Message} from "discord.js";
+import log from "../logger";
+import {CommandInteraction} from "discord.js";
 import {platforms} from "call-of-duty-api";
 
-export async function updateUserData(interaction: CommandInteraction, userIdArray: string[], statName: StatName, wzProfile?: [string, platforms]) {
+export async function updateUserData(interaction: CommandInteraction, userIdArray: string[], statName: StatName, profile?: [string, platforms | string]) {
     if (userIdArray.length === 0) return log.info(`${statName} user Id Array is empty, skipping user data check`)
     log.info(`Valid ${statName} user ID array provided`)
 
-    const currentGuild = await guilds.findOne({guildId: interaction.guildId})
+    const currentGuild= await guilds.findOne({guildId: interaction.guildId})
     const UserData = currentGuild.UserData
 
     let statsArray: number[] = []; // statsArray Format: [tttwins, tttlosses, enlists, rejects, ignores] 
@@ -74,8 +74,20 @@ export async function updateUserData(interaction: CommandInteraction, userIdArra
                             username: username,
                             id: userIdArray[index],
                             warzoneProfile: {
-                                username: wzProfile[0],
-                                platform: wzProfile[1],
+                                username: profile[0],
+                                platform: profile[1] as platforms,
+                            }
+                        })
+                    }
+                    break;
+                case StatName.valProfile:
+                    if (UserData[index].valorantProfile == null) {
+                        UserData.push({
+                            username: username,
+                            id: userIdArray[index],
+                            valorantProfile: {
+                                username: profile[0],
+                                tag: profile[1] as string,
                             }
                         })
                     }
@@ -121,8 +133,12 @@ export async function updateUserData(interaction: CommandInteraction, userIdArra
                     } else user.enlistStats.ignores++
                     break;
                 case StatName.wzProfile:
-                    user.warzoneProfile.username = wzProfile[0]
-                    user.warzoneProfile.platform = wzProfile[1]
+                    user.warzoneProfile.username = profile[0]
+                    user.warzoneProfile.platform = profile[1] as platforms
+                    break;
+                case StatName.valProfile:
+                    user.valorantProfile.username = profile[0]
+                    user.valorantProfile.tag = profile[1] as string
                     break;
             }
         }
@@ -138,4 +154,5 @@ export const enum StatName {
     reject = 'reject',
     ignore = 'ignore',
     wzProfile = 'wzProfile',
+    valProfile = 'valProfile',
 }

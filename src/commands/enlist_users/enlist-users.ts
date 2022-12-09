@@ -5,7 +5,7 @@ import {
 import {newClient} from "../../dependencies/myTypes";
 import {updateEnlistUserArrays} from "../../dependencies/helpers/updateEnlistUserArrays";
 import {StatName, updateUserData} from "../../dependencies/helpers/updateUserData";
-import {log} from "../../dependencies/logger";
+import log from "../../dependencies/logger";
 import {terminationListener} from "../../dependencies/helpers/terminationListener";
 import guilds from "../../dependencies/schemas/guild-schema";
 
