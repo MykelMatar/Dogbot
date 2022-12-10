@@ -54,7 +54,8 @@ export const getStatsValorant = {
         // GET web page for user
         try {
             // get webpages
-            const $: CheerioAPI = await fetchHTML(`https://tracker.gg/valorant/profile/riot/${uriUser}%23${uriTag}/overview`);
+            const url = `https://tracker.gg/valorant/profile/riot/${uriUser}%23${uriTag}/overview`
+            const $: CheerioAPI = await fetchHTML(url);
             
             let status, privateProfile, error
             $('h1').each(function () { // h1 is defined if an error code is present
@@ -126,6 +127,7 @@ export const getStatsValorant = {
                     {name: 'Top Weapon', value: topGuns[0].split(' ')[1], inline: true},
                     {name: 'Season Playtime ', value: playtime, inline: true},
                 )
+                .setURL(url)
                 .setColor("#B8CAD1")
                 .setFooter({text: 'via Tracker.gg, visit the website for more info'})
 

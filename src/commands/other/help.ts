@@ -24,7 +24,7 @@ export const help = {
             .setImage('attachment://Dogbot_Logo_512.png')
             .setURL('https://github.com/MykelMatar/Dogbot/wiki')
             .setFooter({text: 'This bot is created and maintained by Dogbert'})
-            .setColor('#B8CAD1')
+            .setColor("#B8CAD1")
         
         await interaction.editReply({embeds: [embed], files: [file]})
     }

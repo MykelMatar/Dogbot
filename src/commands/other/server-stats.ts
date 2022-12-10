@@ -28,7 +28,7 @@ export const serverStats = {
                 {name: `Server Verification⠀⠀` , value: verification, inline: true},
                 {name: 'Premium Tier', value: `${guild.premiumTier}`, inline: true},
             )
-            .setColor("#8570C1")
+            .setColor("#B8CAD1")
 
         await interaction.editReply({embeds: [embed]})
     }
