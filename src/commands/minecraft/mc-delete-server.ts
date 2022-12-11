@@ -1,13 +1,14 @@
 import {
     ActionRowBuilder,
+    CommandInteraction,
     ComponentType,
+    Message,
     PermissionFlagsBits,
     SelectMenuBuilder,
-    CommandInteraction,
     SlashCommandBuilder
 } from "discord.js";
-import {generateMCMenuOptions} from "../../dependencies/helpers/generateMCMenuOptions";
-import {newClient} from "../../dependencies/myTypes";
+import {McMenuOptionGenerator} from "../../dependencies/helpers/mcMenuOptionGenerator";
+import {MenuGeneratorReturnValues, newClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 import {terminationListener} from "../../dependencies/helpers/terminationListener";
 
@@ -32,8 +33,7 @@ export const mcDeleteServer = {
             )
         }
 
-        let options = await generateMCMenuOptions(interaction, guildName, serverListSize);
-        let option = options[0];
+        let optionGenerator: MenuGeneratorReturnValues = await McMenuOptionGenerator(interaction, guildName, serverListSize);
 
         // generate select menu
         const row = new ActionRowBuilder<SelectMenuBuilder>()
@@ -41,10 +41,10 @@ export const mcDeleteServer = {
                 new SelectMenuBuilder()
                     .setCustomId('delete-menu')
                     .setPlaceholder('Nothing selected')
-                    .addOptions(option),
+                    .addOptions(optionGenerator.optionsArray),
             );
 
-        await interaction.editReply({content: 'Select a Server to Delete', components: [row]});
+        let sent: Message = await interaction.editReply({content: 'Select a Server to Delete', components: [row]});
 
         const filter = i => i.user.id === interaction.member.user.id
         const collector = interaction.channel.createMessageComponentCollector({
@@ -54,29 +54,38 @@ export const mcDeleteServer = {
         });
 
         let serverName;
-
         try {
             collector.on('collect', async i => {
+                if (i.message.id != sent.id) return
                 if (i.customId !== 'delete-menu') return collector.stop() // check for correct menu interaction
                 let selectedServerIP, serverIP
 
+                // let serverList = MCServerData.serverList
+                // for (const server of serverList) {
+                //     if (i.values[0] === server.name) {
+                //         selectedServerIP = MCServerData.selectedServer.ip
+                //         serverIP = server.ip
+                //         serverName = server.name
+                //
+                //         serverList.splice(j, 1)
+                //     }
+                // }
+
                 for (let j = 0; j < serverListSize; j++) {
                     if (i.values[0] === `selection${j}`) {
-                        // delete server and if its selectedServer, delete it from there
-                        selectedServerIP = MCServerData.selectedServer.ip // selectedServer ip
-                        serverIP = MCServerData.serverList[j].ip // server selected for deletion's ip
-                        serverName = MCServerData.serverList[j].name // server selected for deletion's name
+                        selectedServerIP = MCServerData.selectedServer.ip
+                        serverIP = MCServerData.serverList[j].ip
+                        serverName = MCServerData.serverList[j].name
 
-                        MCServerData.serverList.splice(j, 1) // delete selected server from array
+                        MCServerData.serverList.splice(j, 1)
                     }
                 }
-                // set a new selected server if the current one was deleted 
                 if (selectedServerIP === serverIP) {
                     MCServerData.selectedServer.ip = MCServerData.serverList[0].ip
                     MCServerData.selectedServer.port = MCServerData.serverList[0].port
                     MCServerData.selectedServer.name = MCServerData.serverList[0].name
                 }
-                await guildData.save() // save changes to mongo
+                await guildData.save()
                 collector.stop()
             });
         } catch (e) {

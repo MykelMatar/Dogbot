@@ -3,6 +3,14 @@ import log from "../logger";
 import {CommandInteraction} from "discord.js";
 import {platforms} from "call-of-duty-api";
 
+/**
+ * updates mongoDB UserData
+ * 
+ * @param interaction
+ * @param userIdArray
+ * @param statName
+ * @param profile
+ */
 export async function updateUserData(interaction: CommandInteraction, userIdArray: string[], statName: StatName, profile?: [string, platforms | string]) {
     if (userIdArray.length === 0) return log.info(`${statName} user Id Array is empty, skipping user data check`)
     log.info(`Valid ${statName} user ID array provided`)

@@ -1,5 +1,5 @@
 import {CommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js";
-import {newClient, leaderboardUser} from "../../dependencies/myTypes";
+import {newClient, LeaderboardUser} from "../../dependencies/myTypes";
 
 //TODO if user changes username, does it affect any commands?
 /*
@@ -46,7 +46,7 @@ export const enlistLeaderboard = {
             enlistWeight = 1,
             ignoreWeight = .75
 
-        let tempUsers: leaderboardUser[] = []
+        let tempUsers: LeaderboardUser[] = []
         for (const user of userData) {
             let enlistPercentage, rejectPercentage, ignorePercentage
             let enlists: number = user.enlistStats.enlists,
@@ -92,7 +92,7 @@ export const enlistLeaderboard = {
             let adjustedEnlistRank: number = adjustedEnlistPercentage + adjustedEnlistValue - adjustedIgnoreValue
             let adjustedRejectRank: number = adjustedRejectPercentage + adjustedRejectValue + adjustedIgnoreValue
 
-            let tempUser: leaderboardUser = {
+            let tempUser: LeaderboardUser = {
                 name: user.username,
                 enlists: enlists,
                 rejects: rejects,
@@ -113,14 +113,14 @@ export const enlistLeaderboard = {
             top3Losers = [names2, percentages2, totals2]
 
         // have to seperate rankings into 2 loops because of issue declaring both rankings as tempUsers.sort()
-        let enlistRankings: leaderboardUser[] = tempUsers.sort((a, b) => (b.adjustedEnlistRankValue - a.adjustedEnlistRankValue))
+        let enlistRankings: LeaderboardUser[] = tempUsers.sort((a, b) => (b.adjustedEnlistRankValue - a.adjustedEnlistRankValue))
         for (let i = 0; i < 3; i++) {
             top3Gamers[0].push(`**${i + 1}.** ${enlistRankings[i].name}\n`,)
             top3Gamers[1].push(`**${i + 1}.** ${(enlistRankings[i].enlistPercentage * 100).toFixed(2)}\n`)
             top3Gamers[2].push(`**${i + 1}.** ${enlistRankings[i].enlists + enlistRankings[i].rejects}\n`)
         }
 
-        let rejectRankings: leaderboardUser[] = tempUsers.sort((a, b) => (a.adjustedRejectRankValue < b.adjustedRejectRankValue ? 1 : -1))
+        let rejectRankings: LeaderboardUser[] = tempUsers.sort((a, b) => (a.adjustedRejectRankValue < b.adjustedRejectRankValue ? 1 : -1))
         for (let i = 0; i < 3; i++) {
             top3Losers[0].push(`**${i + 1}.** ${rejectRankings[i].name}\n`)
             top3Losers[1].push(`**${i + 1}.** ${(rejectRankings[i].rejectPercentage * 100).toFixed(2)}\n`,)

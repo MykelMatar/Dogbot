@@ -2,6 +2,13 @@ import {InteractionCollector} from "discord.js";
 import log from "../logger";
 import {newClient} from "../myTypes";
 
+/**
+ * graceful shutdown function. ends collectors to collect data
+ * 
+ * @param client
+ * @param collector
+ * @param terminate
+ */
 export async function terminationListener(client: newClient, collector: InteractionCollector<any>, terminate?: boolean) {
     process.on('SIGINT', () => {
         if (terminate === true){ // not required for npm scripts 

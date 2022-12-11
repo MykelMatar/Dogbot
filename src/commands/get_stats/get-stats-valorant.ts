@@ -5,6 +5,7 @@ import {newClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 
 // TODO make resistant to tracker.gg website changes
+// TODO add buttons to get map stats and weapon stats and stuff
 export const getStatsValorant = {
     data: new SlashCommandBuilder()
         .setName('get-stats-valorant')

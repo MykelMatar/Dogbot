@@ -1,13 +1,13 @@
-import {generateMCMenuOptions} from "../../dependencies/helpers/generateMCMenuOptions";
+import {McMenuOptionGenerator} from "../../dependencies/helpers/mcMenuOptionGenerator";
 import {
     ActionRowBuilder,
     ComponentType,
     SelectMenuBuilder,
     CommandInteraction,
     SlashCommandBuilder,
-    APISelectMenuOption
+    APISelectMenuOption, Message
 } from "discord.js";
-import {newClient} from "../../dependencies/myTypes";
+import {MenuGeneratorReturnValues, newClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 import {terminationListener} from "../../dependencies/helpers/terminationListener";
 
@@ -30,10 +30,10 @@ export const mcChangeServer = {
         }
 
         // create variables and generate options for select menu
-        let options = await generateMCMenuOptions(interaction, guildName, serverListSize);
-        let option = options[0]
-        let label = options[1];
-        let description = options[3]
+        let optionGenerator: MenuGeneratorReturnValues = await McMenuOptionGenerator(interaction, guildName, serverListSize);
+        let optionsArray = optionGenerator.optionsArray
+        let label = optionGenerator.options.label
+        let description = optionGenerator.options.description
 
         // generate select menu
         let row = new ActionRowBuilder<SelectMenuBuilder>()
@@ -41,11 +41,11 @@ export const mcChangeServer = {
                 new SelectMenuBuilder()
                     .setCustomId('change-menu')
                     .setPlaceholder('Nothing selected')
-                    .addOptions(option),
+                    .addOptions(optionsArray),
             );
 
         // send embed and store in variable to edit later
-        await interaction.editReply({content: 'Select a Different Server to Check', components: [row], embeds: []});
+        let sent: Message = await interaction.editReply({content: 'Select a Different Server to Check', components: [row], embeds: []});
 
         // Response collection and handling
         const filter = i => i.user.id === interaction.member.user.id
@@ -58,6 +58,7 @@ export const mcChangeServer = {
         try {
             collector.on('collect', async i => {
                 // find user selection and change mongo doc info
+                if (i.message.id != sent.id) return
                 if (i.customId !== 'change-menu') return collector.stop()
                 for (let j = 0; j < serverListSize; j++) {
                     if (i.values[0] === `selection${j}`) {

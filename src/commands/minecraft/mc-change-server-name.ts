@@ -1,13 +1,14 @@
 import {
     ActionRowBuilder,
-    ComponentType,
-    SelectMenuBuilder,
     CommandInteraction,
-    SlashCommandBuilder,
-    PermissionFlagsBits
+    ComponentType,
+    Message,
+    PermissionFlagsBits,
+    SelectMenuBuilder,
+    SlashCommandBuilder
 } from "discord.js";
-import {generateMCMenuOptions} from "../../dependencies/helpers/generateMCMenuOptions";
-import {newClient} from "../../dependencies/myTypes";
+import {McMenuOptionGenerator} from "../../dependencies/helpers/mcMenuOptionGenerator";
+import {MenuGeneratorReturnValues, newClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 import {terminationListener} from "../../dependencies/helpers/terminationListener";
 
@@ -35,22 +36,19 @@ export const mcChangeServerName = {
         let newName = interaction.options.data[0].value
         if (newName.toString().length > 30) {
             await interaction.editReply('*Please keep server name below 30 characters*')
-            return
+            return log.error("name greater than 30 char");
         }
 
         // verify that name is not already registered under a different IP
-        if (MCServerData.serverList.some(function (o) {
-            return o["name"] === newName;
-        })) {
+        if (MCServerData.serverList.some(server => server["name"] === newName)) {
             await interaction.editReply(
                 "*Cannot have duplicate server names, please choose a different name or use /mc-change-server-ip to change the IP of the existing server*"
             );
-            return;
+            return log.error("Duplicate Name Detected");
         }
 
         // create variables and generate options for select menu
-        let options: any[];
-        options = await generateMCMenuOptions(interaction, guildName, serverListSize);
+        let optionGenerator: MenuGeneratorReturnValues = await McMenuOptionGenerator(interaction, guildName, serverListSize);
 
         // generate select menu
         let row = new ActionRowBuilder<SelectMenuBuilder>()
@@ -58,11 +56,14 @@ export const mcChangeServerName = {
                 new SelectMenuBuilder()
                     .setCustomId('change-server-menu')
                     .setPlaceholder('Nothing selected')
-                    .addOptions(options[0]),
+                    .addOptions(optionGenerator.optionsArray),
             );
 
         // send embed
-        await interaction.editReply({content: 'Select the server you want to rename', components: [row]});
+        let sent: Message = await interaction.editReply({
+            content: 'Select the server you want to rename',
+            components: [row]
+        });
 
         // Response collection and handling
         let filter = i => i.user.id === interaction.member.user.id;
@@ -71,9 +72,10 @@ export const mcChangeServerName = {
             componentType: ComponentType.SelectMenu,
             time: 10000
         });
-        let serverName
 
+        let serverName
         collector.on('collect', async i => {
+            if (i.message.id != sent.id) return
             if (i.customId !== 'change-server-menu') return collector.stop()
             for (let j = 0; j < serverListSize; j++) {
                 if (i.values[0] === `selection${j}`) {

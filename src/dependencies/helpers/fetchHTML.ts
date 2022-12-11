@@ -4,6 +4,11 @@ import puppeteer from 'puppeteer-extra'
 import StealthPlugin from 'puppeteer-extra-plugin-stealth'
 import Adblocker from 'puppeteer-extra-plugin-adblocker'
 
+/**
+ * use puppeteer to get html screenshot of a url
+ * 
+ * @param url
+ */
 export async function fetchHTML(url: string) {
     const data = await puppeteer
         .use(Adblocker({blockTrackers: true}))

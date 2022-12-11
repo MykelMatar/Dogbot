@@ -1,6 +1,14 @@
-import {ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, CommandInteraction, SlashCommandBuilder} from "discord.js";
+import {
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    EmbedBuilder,
+    CommandInteraction,
+    SlashCommandBuilder,
+    Message
+} from "discord.js";
 import {status} from "minecraft-server-util";
-import {runMCButtonCollector} from "../../dependencies/helpers/runMCButtonCollector";
+import {McServerCollector} from "../../dependencies/helpers/mcServerCollector";
 import {newClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 
@@ -88,8 +96,8 @@ export const mcServerStatus = {
                     }
                 }
 
-                await interaction.editReply({embeds: [embed], components: [row]})
-                await runMCButtonCollector(client, interaction, guildData, guildName)
+                let sent: Message = await interaction.editReply({embeds: [embed], components: [row]})
+                await McServerCollector(client, interaction, guildData, guildName, sent)
             })
             .catch(async () => {
                 log.error('Server Offline')
@@ -98,8 +106,8 @@ export const mcServerStatus = {
                     .addFields({name: `${title.replace(/"+/g, '')} Offline`, value: '*all good*'})
                     .setColor('#B8CAD1')
 
-                await interaction.editReply({embeds: [embed], components: [row]})
-                await runMCButtonCollector(client, interaction, guildData, guildName)
+                let sent: Message = await interaction.editReply({embeds: [embed], components: [row]})
+                await McServerCollector(client, interaction, guildData, guildName, sent)
             });
     }
 }

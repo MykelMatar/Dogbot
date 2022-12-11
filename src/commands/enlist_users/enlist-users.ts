@@ -1,14 +1,22 @@
 import {
-    ActionRowBuilder, AttachmentBuilder, ButtonBuilder, ButtonStyle,
-    CommandInteraction, CommandInteractionOption, ComponentType, EmbedBuilder, Message, Role, SlashCommandBuilder
+    ActionRowBuilder,
+    AttachmentBuilder,
+    ButtonBuilder, ButtonInteraction,
+    ButtonStyle,
+    CommandInteraction,
+    CommandInteractionOption,
+    ComponentType,
+    EmbedBuilder, InteractionCollector,
+    Message,
+    Role,
+    SlashCommandBuilder
 } from "discord.js";
-import {newClient} from "../../dependencies/myTypes";
+import {newClient, EnlistUserInfoArrays} from "../../dependencies/myTypes";
 import {updateEnlistUserArrays} from "../../dependencies/helpers/updateEnlistUserArrays";
 import {StatName, updateUserData} from "../../dependencies/helpers/updateUserData";
 import log from "../../dependencies/logger";
 import {terminationListener} from "../../dependencies/helpers/terminationListener";
 import guilds from "../../dependencies/schemas/guild-schema";
-
 
 export const enlistUsers = {
     data: new SlashCommandBuilder()
@@ -23,28 +31,12 @@ export const enlistUsers = {
                 .setDescription('Role to @ when sending this prompt. Can be set automatically via the /enlist-set-role')
                 .setRequired(false)
         ),
-    cooldown: 10800, // 3 hour cooldown to match the 3 hour enlist timer
+    // cooldown: 10800, // 3 hour cooldown to match the 3 hour enlist timer
     async execute(client: newClient, interaction: CommandInteraction, guildData) {
-        await interaction.reply({content: '*prompt sent*', ephemeral: true}) // give user feedback and prevent 'interaction failed' message
+        await interaction.reply({content: '*prompt sent*', ephemeral: true})
         const userData = guildData.UserData
         
-        const row = new ActionRowBuilder<ButtonBuilder>()
-            .addComponents(
-                new ButtonBuilder()
-                    .setCustomId('Gamer')
-                    .setLabel('Gaming')
-                    .setStyle(ButtonStyle.Success),
-                new ButtonBuilder()
-                    .setCustomId('Perhaps')
-                    .setLabel('Perhaps')
-                    .setStyle(ButtonStyle.Primary),
-                new ButtonBuilder()
-                    .setCustomId('Cringe')
-                    .setLabel('Disappointment')
-                    .setStyle(ButtonStyle.Danger),
-            );
-        
-        // generate embed
+        // retrieve parameters
         let title: string, role: Role | string
         const defaultTitle: string = `Gamer Time`
         let titleOption: CommandInteractionOption = interaction.options.data.find(option => option.name === 'title')
@@ -65,6 +57,23 @@ export const enlistUsers = {
                 role = ''
             }
         }
+        
+        // create buttons and embed
+        const row = new ActionRowBuilder<ButtonBuilder>()
+            .addComponents(
+                new ButtonBuilder()
+                    .setCustomId('Gamer')
+                    .setLabel('Gaming')
+                    .setStyle(ButtonStyle.Success),
+                new ButtonBuilder()
+                    .setCustomId('Perhaps')
+                    .setLabel('Perhaps')
+                    .setStyle(ButtonStyle.Primary),
+                new ButtonBuilder()
+                    .setCustomId('Cringe')
+                    .setLabel('Disappointment')
+                    .setStyle(ButtonStyle.Danger),
+            );
         const file = new AttachmentBuilder('./src/dependencies/images/Dogbot.png')
         const embed = new EmbedBuilder()
             .setTitle(title)
@@ -78,20 +87,20 @@ export const enlistUsers = {
             .setFooter({text: 'Selecting the "Perhaps" option will not count towards your enlist stats',})
         
         // send prompt. Not an interaction reply bc interactions are only editable for 15 min
-        let sent: Message = await interaction.channel.send({content: `${role}`, embeds: [embed], files: [file], components: [row]})
+        let enlistPrompt: Message = await interaction.channel.send({content: `${role}`, embeds: [embed], files: [file], components: [row]})
         
-        // arrays for collecting user data 
-        let enlistedUsers: string[] = ['-'],
-            enlistedUserIds: string[] = [], // for pushing user data to mongoDB
-            rejectedUsers: string[] = ['-'],
-            rejectedUserIds: string[] = [],
-            potentialUsers: string[] = ['-'],
-            potentialUserIds: string[] = [],
-            ignoredUserIds: string[] = []
-        let userArrays = [enlistedUsers, enlistedUserIds, rejectedUsers, rejectedUserIds, potentialUsers, potentialUserIds] // makes it easier to pass to 'update' function   
+        let userArrays: EnlistUserInfoArrays = {
+            enlistedUsers: ['-'],
+            enlistedUserIds: [], // for pushing user data to mongoDB
+            rejectedUsers: ['-'],
+            rejectedUserIds: [],
+            potentialUsers:['-'] ,
+            potentialUserIds: [],
+            ignoredUserIds: [],
+        }
         
         // create collector and run
-        const collector = interaction.channel.createMessageComponentCollector({
+        const collector: InteractionCollector<ButtonInteraction> = interaction.channel.createMessageComponentCollector({
             componentType: ComponentType.Button,
             time: 1.08e+7 // 3 hour (1.08e+7) timer
         });
@@ -104,18 +113,19 @@ export const enlistUsers = {
             //@ts-ignore
             let button3CustomId = row.components[2].data.custom_id
             collector.on('collect', async i => {
+                if (i.message.id != enlistPrompt.id) return // prevent simultaneous prompt from affecting each other
                 if (i.customId === button1CustomId || i.customId === button2CustomId || i.customId === button3CustomId) {
                     await i.deferUpdate(); // prevents "this interaction failed" interaction from appearing
                     await updateEnlistUserArrays(i, userArrays)
 
-                    embed.data.fields[0].value = enlistedUsers.join('');
-                    embed.data.fields[1].value = potentialUsers.join('');
-                    embed.data.fields[2].value = rejectedUsers.join('');
-                    await sent.edit({content: `${role}`, embeds: [embed], components: [row]});
+                    embed.data.fields[0].value = userArrays.enlistedUsers.join('');
+                    embed.data.fields[1].value = userArrays.potentialUsers.join('');
+                    embed.data.fields[2].value = userArrays.rejectedUsers.join('');
+                    await enlistPrompt.edit({content: `${role}`, embeds: [embed], components: [row]});
                 }
             }); // collector 
         } catch (e) {
-            await sent.edit({
+            await enlistPrompt.edit({
                 content: '*error while collecting responses, please try again*',
                 embeds: [embed],
                 components: [],
@@ -124,7 +134,7 @@ export const enlistUsers = {
         }
         
         collector.on('end', async collected => {
-            await sent.edit({content: '⚠ ***ENLISTING ENDED*** ⚠', embeds: [embed], components: []})
+            await enlistPrompt.edit({content: '⚠ ***ENLISTING ENDED*** ⚠', embeds: [embed], components: []})
             if (collected.size === 0) return // make sure users were collected
 
             let allUserIds: string[] = [],
@@ -133,17 +143,16 @@ export const enlistUsers = {
                 allUserIds.push(user.id)
             }
 
-            enlistedUserIds.forEach(id => allRegisteredUserIds.push(id))
-            rejectedUserIds.forEach(id => allRegisteredUserIds.push(id))
-            potentialUserIds.forEach(id => allRegisteredUserIds.push(id))
+            userArrays.enlistedUserIds.forEach(id => allRegisteredUserIds.push(id))
+            userArrays.rejectedUserIds.forEach(id => allRegisteredUserIds.push(id))
+            userArrays.potentialUserIds.forEach(id => allRegisteredUserIds.push(id))
+            userArrays.ignoredUserIds = allUserIds.filter(id => !(allRegisteredUserIds.includes(id)))
 
-            ignoredUserIds = allUserIds.filter(id => !(allRegisteredUserIds.includes(id)))
-
-            await updateUserData(interaction, enlistedUserIds, StatName.enlist);
-            await updateUserData(interaction, rejectedUserIds, StatName.reject);
-            await updateUserData(interaction, ignoredUserIds, StatName.ignore);
+            await updateUserData(interaction, userArrays.enlistedUserIds, StatName.enlist);
+            await updateUserData(interaction, userArrays.rejectedUserIds, StatName.reject);
+            await updateUserData(interaction, userArrays.ignoredUserIds, StatName.ignore);
         });
-
+        
         let terminate: boolean = false
         await terminationListener(client, collector, terminate)
     }

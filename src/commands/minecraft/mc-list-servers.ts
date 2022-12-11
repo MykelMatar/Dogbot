@@ -5,7 +5,7 @@ import {
     ComponentType,
     EmbedBuilder,
     CommandInteraction,
-    SlashCommandBuilder
+    SlashCommandBuilder, Message
 } from "discord.js";
 import {newClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
@@ -13,7 +13,6 @@ import {terminationListener} from "../../dependencies/helpers/terminationListene
 import {status} from "minecraft-server-util";
 
 //TODO check add server button, might not be working
-//TODO button collision if same command gets sent more than once
 export const mcListServers = {
     data: new SlashCommandBuilder()
         .setName('mc-list-servers')
@@ -111,7 +110,7 @@ export const mcListServers = {
             embed.addFields({name: 'Status', value: serverStatusList.join(' \n '), inline: true})
         }
 
-        await interaction.editReply({embeds: [embed], components: [row]})
+        let sent: Message = await interaction.editReply({embeds: [embed], components: [row]})
 
         // create collector
         const filter = i => i.user.id === interaction.member.user.id;
@@ -128,6 +127,7 @@ export const mcListServers = {
 
         try {
             collector.on('collect', async i => {
+                if (i.message.id != sent.id) return
                 let update, execute;
                 // interaction handling
                 if (i.customId === 'ListAdd') {

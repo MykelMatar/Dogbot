@@ -1,14 +1,16 @@
 import {
     ActionRowBuilder,
+    CommandInteraction,
+    CommandInteractionOption,
     ComponentType,
+    Message,
     PermissionFlagsBits,
     SelectMenuBuilder,
-    CommandInteraction,
-    SlashCommandBuilder, CommandInteractionOption
+    SlashCommandBuilder
 } from "discord.js";
 import {status} from "minecraft-server-util";
-import {generateMCMenuOptions} from "../../dependencies/helpers/generateMCMenuOptions";
-import {newClient} from "../../dependencies/myTypes";
+import {McMenuOptionGenerator} from "../../dependencies/helpers/mcMenuOptionGenerator";
+import {MenuGeneratorReturnValues, MinecraftServer, newClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 import {terminationListener} from "../../dependencies/helpers/terminationListener";
 
@@ -21,14 +23,14 @@ export const mcChangeServerIP = {
             option.setName('new-ip')
                 .setDescription('the new IP address')
                 .setRequired(true))
-    .addNumberOption(option =>
-        option.setName('new-port')
-            .setDescription('the new port')
-            .setRequired(false)),
+        .addNumberOption(option =>
+            option.setName('new-port')
+                .setDescription('the new port')
+                .setRequired(false)),
 
     async execute(client: newClient, interaction: CommandInteraction, guildData, guildName: string) {
         const MCServerData = guildData.MCServerData
-        let serverListSize = MCServerData.serverList.length
+        let serverListSize: number = MCServerData.serverList.length
 
         // make sure there is at least 1 server
         if (serverListSize === 0) {
@@ -36,35 +38,35 @@ export const mcChangeServerIP = {
             return;
         }
 
-        // retrieve server IP from user input
-        let ip = interaction.options.data[0].value as string
+        // retrieve server info
+        let server: MinecraftServer = { // setup object to push to mongoDB
+            name: undefined,
+            ip: interaction.options.data[0].value as string,
+            port: undefined
+        };
         let portOption: CommandInteractionOption = (interaction.options.data.find(option => option.name === 'port'));
-        let port: number
         if (portOption === undefined) {
-            port = 25565
-        } else port = portOption.value as number // value is guaranteed to be number
-        
+            server.port = 25565
+        } else server.port = portOption.value as number // value is guaranteed to be number
+
         // verify that IP is not already registered
-        if (MCServerData.serverList.some(function (o) {
-            return o["ip"] === ip;
-        })) {
+        if (MCServerData.serverList.some(server => server["ip"] === server.ip)) {
             await interaction.editReply(
                 "*Server already registered, double check the IP or use **!renamemc** to change the name*"
             );
             return log.error("Duplicate IP Detected");
         }
 
-        // make sure IP is a valid server IP by checking its status (server must be online for this to work)
+        // validate server status
         try {
-            await status(ip, port)
+            await status(server.ip, server.port)
         } catch (error) {
             await interaction.editReply('*Could not retrieve server status. Double check IP and make sure server is online.*')
             log.error('Invalid Server IP / Server Offline');
         }
 
         // create variables and generate options for select menu
-        let options: any[];
-        options = await generateMCMenuOptions(interaction, guildName, serverListSize);
+        let optionGenerator: MenuGeneratorReturnValues = await McMenuOptionGenerator(interaction, guildName, serverListSize);
 
         // generate select menu
         let row = new ActionRowBuilder<SelectMenuBuilder>()
@@ -72,11 +74,14 @@ export const mcChangeServerIP = {
                 new SelectMenuBuilder()
                     .setCustomId('change-ip-menu')
                     .setPlaceholder('Nothing selected')
-                    .addOptions(options[0]),
+                    .addOptions(optionGenerator.optionsArray),
             );
 
         // send embed
-        await interaction.editReply({content: 'Select the server you want to change the IP of', components: [row]});
+        let sent: Message = await interaction.editReply({
+            content: 'Select the server you want to change the IP of',
+            components: [row]
+        });
 
         // Response collection and handling
         let filter = i => i.user.id === interaction.member.user.id;
@@ -86,15 +91,16 @@ export const mcChangeServerIP = {
             max: 1,
             time: 10000
         });
-        let serverName;
 
+        let serverName;
         collector.on('collect', async i => {
+            if (i.message.id != sent.id) return
             if (i.customId !== 'change-ip-menu') return collector.stop()
             // find selection and replace corresponding ip in mongo
             for (let j = 0; j < serverListSize; j++) {
                 if (i.values[0] === `selection${j}`) {
-                    MCServerData.serverList[j].ip = ip
-                    MCServerData.serverList[j].port = port
+                    MCServerData.serverList[j].ip = server.ip
+                    MCServerData.serverList[j].port = server.port
                     serverName = MCServerData.serverList[j].name
                 }
             }
@@ -110,7 +116,7 @@ export const mcChangeServerIP = {
                 await interaction.editReply({content: '*Avoid using multiple commands at once*', components: []});
                 log.error('Command Collision Detected')
             } else if (collected.first().customId === 'change-ip-menu') {
-                await interaction.editReply({content:`**${serverName}**  IP changed successfully`, components: []});
+                await interaction.editReply({content: `**${serverName}**  IP changed successfully`, components: []});
                 log.info('Server IP changed Successfully')
             }
         });

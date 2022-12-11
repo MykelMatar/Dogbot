@@ -1,8 +1,18 @@
-import {CommandInteraction, ComponentType, EmbedBuilder} from "discord.js";
+import {CommandInteraction, ComponentType, EmbedBuilder, Message} from "discord.js";
 import {terminationListener} from "./terminationListener";
 import {newClient} from "../myTypes";
 
-export async function singleStatusCollectResponse(client: newClient, interaction: CommandInteraction, embed: EmbedBuilder, server: object, guildData){
+/**
+ * button collector for mc-single-server-status
+ *
+ * @param client
+ * @param interaction
+ * @param embed
+ * @param server
+ * @param guildData
+ * @param statusPrompt
+ */
+export async function McSingleServerCollector(client: newClient, interaction: CommandInteraction, embed: EmbedBuilder, server: object, guildData, statusPrompt: Message){
     const serverList = guildData.MCServerData.serverList
 
     // create collector
@@ -15,7 +25,7 @@ export async function singleStatusCollectResponse(client: newClient, interaction
 
     // collect response
     collector.on('collect', async i => {
-        // interaction handling
+        if (i.message.id != statusPrompt.id) return
         if (i.customId === 'SingleAdd') {
             await i.update({
                 embeds: [embed],

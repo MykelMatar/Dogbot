@@ -1,29 +1,39 @@
-export async function updateEnlistUserArrays(interaction, userArrays) {
+import {EnlistUserInfoArrays} from "../myTypes";
+import {ButtonInteraction} from "discord.js";
+
+/**
+ * updates the arrays used to display names in the enlist prompt. Also updates the ID arrays used 
+ * to update info in MongoDB
+ * 
+ * @param interaction button interaction
+ * @param userArrays object that stores all the user info arrays
+ */
+export async function updateEnlistUserArrays(interaction: ButtonInteraction, userArrays: EnlistUserInfoArrays) {
     let selectedUserArray, selectedUserIdArray, otherUserArray, otherUserIdArray, lastUserArray, lastUserIdArray
 
     if (interaction.customId === 'Gamer') {
-        selectedUserArray = userArrays[0]
-        selectedUserIdArray = userArrays[1]
-        otherUserArray = userArrays[2]
-        otherUserIdArray = userArrays[3]
-        lastUserArray = userArrays[4]
-        lastUserIdArray = userArrays[5]
+        selectedUserArray = userArrays.enlistedUsers
+        selectedUserIdArray = userArrays.enlistedUserIds
+        otherUserArray = userArrays.rejectedUsers
+        otherUserIdArray = userArrays.rejectedUserIds
+        lastUserArray = userArrays.potentialUsers
+        lastUserIdArray = userArrays.potentialUserIds
     }
     if (interaction.customId === 'Cringe') {
-        selectedUserArray = userArrays[2]
-        selectedUserIdArray = userArrays[3]
-        otherUserArray = userArrays[0]
-        otherUserIdArray = userArrays[1]
-        lastUserArray = userArrays[4]
-        lastUserIdArray = userArrays[5]
+        selectedUserArray = userArrays.rejectedUsers
+        selectedUserIdArray = userArrays.rejectedUserIds
+        otherUserArray = userArrays.enlistedUsers
+        otherUserIdArray = userArrays.enlistedUserIds
+        lastUserArray = userArrays.potentialUsers
+        lastUserIdArray = userArrays.potentialUserIds
     }
     if (interaction.customId === 'Perhaps') {
-        selectedUserArray = userArrays[4]
-        selectedUserIdArray = userArrays[5]
-        otherUserArray = userArrays[0]
-        otherUserIdArray = userArrays[1]
-        lastUserArray = userArrays[2]
-        lastUserIdArray = userArrays[3]
+        selectedUserArray = userArrays.potentialUsers
+        selectedUserIdArray = userArrays.potentialUserIds
+        otherUserArray = userArrays.enlistedUsers
+        otherUserIdArray = userArrays.enlistedUserIds
+        lastUserArray = userArrays.rejectedUsers
+        lastUserIdArray = userArrays.rejectedUserIds
     }
 
     if (!selectedUserArray.includes('> ' + interaction.user.username + '\n')) { // checks if user is in array 1 before adding them

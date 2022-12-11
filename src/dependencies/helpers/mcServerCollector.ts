@@ -1,9 +1,18 @@
-import {CommandInteraction, ComponentType} from "discord.js";
+import {CommandInteraction, ComponentType, Message} from "discord.js";
 import {newClient} from "../myTypes";
 import log from "../logger";
 import {terminationListener} from "./terminationListener";
 
-export async function runMCButtonCollector(client: newClient, interaction: CommandInteraction, guildData, guildName: string){
+/**
+ * button collector for minecraft commands
+ *
+ * @param client
+ * @param interaction
+ * @param guildData
+ * @param guildName
+ * @param statusPrompt
+ */
+export async function McServerCollector(client: newClient, interaction: CommandInteraction, guildData, guildName: string, statusPrompt: Message){
     const filter = i => i.user.id === interaction.member.user.id;
     const collector = interaction.channel.createMessageComponentCollector({ filter, componentType: ComponentType.Button, time: 10000 }); 
 
@@ -11,6 +20,7 @@ export async function runMCButtonCollector(client: newClient, interaction: Comma
     const command2 = client.commands.get('mc-list-servers');
 
     collector.on('collect', async i => {
+        if (i.message.id != statusPrompt.id) return
         let update, execute;
         if (i.customId === 'Change') {
             update = i.update({ content: 'Server Change Requested', components: [] });
