@@ -1,8 +1,8 @@
 import {CommandInteraction, CommandInteractionOption, EmbedBuilder, SlashCommandBuilder} from "discord.js";
-import {newClient} from "../../dependencies/myTypes";
+import {NewClient} from "../../dependencies/myTypes";
 
 export const enlistStats = {
-    data: new SlashCommandBuilder() 
+    data: new SlashCommandBuilder()
         .setName('enlist-stats')
         .setDescription('Displays users enlist stats')
         .addUserOption(option =>
@@ -13,8 +13,8 @@ export const enlistStats = {
             option.setName('hide')
                 .setDescription('Whether to hide the response or not')
                 .setRequired(false)),
-        
-    async execute(client: newClient, interaction: CommandInteraction, guildData){
+
+    async execute(client: NewClient, interaction: CommandInteraction, guildData) {
         // set user whose data is being retrieved
         let username: string, userId: string
         let user: CommandInteractionOption = (interaction.options.data.find(option => option.name === 'user'));

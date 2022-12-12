@@ -10,7 +10,7 @@ import {
 } from "discord.js";
 import {status} from "minecraft-server-util";
 import {McMenuOptionGenerator} from "../../dependencies/helpers/mcMenuOptionGenerator";
-import {MenuGeneratorReturnValues, MinecraftServer, newClient} from "../../dependencies/myTypes";
+import {MenuGeneratorReturnValues, MinecraftServer, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 import {terminationListener} from "../../dependencies/helpers/terminationListener";
 
@@ -28,7 +28,7 @@ export const mcChangeServerIP = {
                 .setDescription('the new port')
                 .setRequired(false)),
 
-    async execute(client: newClient, interaction: CommandInteraction, guildData, guildName: string) {
+    async execute(client: NewClient, interaction: CommandInteraction, guildData, guildName: string) {
         const MCServerData = guildData.MCServerData
         let serverListSize: number = MCServerData.serverList.length
 

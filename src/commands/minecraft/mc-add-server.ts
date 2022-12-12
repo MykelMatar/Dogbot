@@ -1,12 +1,7 @@
-import {
-    CommandInteraction,
-    CommandInteractionOption,
-    PermissionFlagsBits,
-    SlashCommandBuilder
-} from "discord.js";
+import {CommandInteraction, CommandInteractionOption, PermissionFlagsBits, SlashCommandBuilder} from "discord.js";
 import {status} from 'minecraft-server-util'
 import {McAddServerInteraction} from "../../dependencies/helpers/mcAddServerInteraction"
-import {MinecraftServer, newClient} from "../../dependencies/myTypes";
+import {MinecraftServer, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 
 export const mcAddServer = {
@@ -27,19 +22,19 @@ export const mcAddServer = {
                 .setDescription('Port of your server.')
                 .setRequired(false)),
 
-    async execute(client: newClient, interaction: CommandInteraction, guildData) {
+    async execute(client: NewClient, interaction: CommandInteraction, guildData) {
         const serverList = guildData.MCServerData.serverList
         if (serverList.length === 10) {
             await interaction.editReply("Max number of servers reached (Limit of 10).");
             return
         }
-        
+
         let server: MinecraftServer = {
             name: undefined,
             ip: undefined,
             port: undefined
-        }; 
-        
+        };
+
         try {
             // if slash command is used
             server.ip = interaction.options.data[0].value as string;
@@ -50,19 +45,19 @@ export const mcAddServer = {
             } else server.port = portOption.value as number // value is guaranteed to be number
         } catch {
             // if button on /mc-list-servers is used
-            server.ip = await McAddServerInteraction(interaction, "Input server IP (server must be online)", "Request Timeout");
+            server.ip = await McAddServerInteraction(interaction, "Input server IP (server must be online)", "Request Timeout") as string;
             if (server.ip == null) return await interaction.editReply('*Invalid Server IP*');
-            server.name = await McAddServerInteraction(interaction, "Input Name", "Request Timeout");
+            server.name = await McAddServerInteraction(interaction, "Input Name", "Request Timeout") as string;
             if (server.name.toString().length > 30) {
                 return await interaction.editReply('Please keep server name below 30 characters')
             }
             if (server.name.toString().length < 1) {
                 return await interaction.editReply('*Invalid server name input.* ')
             }
-            server.port = await McAddServerInteraction(interaction, "Input Server Port. If you are not sure, the default is 25565.", "Request Timeout");
+            server.port = await McAddServerInteraction(interaction, "Input Server Port. If you are not sure, the default is 25565.", "Request Timeout") as number;
             // not using Promise.all bc 1 response must be collected before the other / not simultaneous
         }
-        
+
         // verify that IP is not already registered
         if (serverList.some(o => o["ip"] === server.ip)) {
             await interaction.editReply(

@@ -1,5 +1,5 @@
 import {CommandInteraction, ComponentType, Message} from "discord.js";
-import {newClient} from "../myTypes";
+import {NewClient} from "../myTypes";
 import log from "../logger";
 import {terminationListener} from "./terminationListener";
 
@@ -12,9 +12,13 @@ import {terminationListener} from "./terminationListener";
  * @param guildName
  * @param statusPrompt
  */
-export async function McServerCollector(client: newClient, interaction: CommandInteraction, guildData, guildName: string, statusPrompt: Message){
+export async function McServerCollector(client: NewClient, interaction: CommandInteraction, guildData, guildName: string, statusPrompt: Message) {
     const filter = i => i.user.id === interaction.member.user.id;
-    const collector = interaction.channel.createMessageComponentCollector({ filter, componentType: ComponentType.Button, time: 10000 }); 
+    const collector = interaction.channel.createMessageComponentCollector({
+        filter,
+        componentType: ComponentType.Button,
+        time: 10000
+    });
 
     const command1 = client.commands.get('mc-change-server');
     const command2 = client.commands.get('mc-list-servers');
@@ -23,12 +27,11 @@ export async function McServerCollector(client: newClient, interaction: CommandI
         if (i.message.id != statusPrompt.id) return
         let update, execute;
         if (i.customId === 'Change') {
-            update = i.update({ content: 'Server Change Requested', components: [] });
+            update = i.update({content: 'Server Change Requested', components: []});
             execute = command1.execute(client, interaction, guildData, guildName);
             collector.stop()
-        }
-        else if (i.customId === 'List') {
-            update = i.update({ content: 'Server List Requested', components: [] });
+        } else if (i.customId === 'List') {
+            update = i.update({content: 'Server List Requested', components: []});
             execute = command2.execute(client, interaction, guildData, guildName);
             collector.stop()
         }
@@ -37,7 +40,7 @@ export async function McServerCollector(client: newClient, interaction: CommandI
 
     collector.on('end', async collected => {
         log.info(`mc collected ${collected.size} button presses`)
-        if (collected.size === 0) await interaction.editReply({ components: [] })  // remove buttons
+        if (collected.size === 0) await interaction.editReply({components: []})  // remove buttons
     });
 
     let terminate: boolean = false

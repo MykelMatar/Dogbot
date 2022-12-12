@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio'
+import {CheerioAPI} from 'cheerio'
 import 'dotenv/config'
 import puppeteer from 'puppeteer-extra'
 import StealthPlugin from 'puppeteer-extra-plugin-stealth'
@@ -6,15 +7,16 @@ import Adblocker from 'puppeteer-extra-plugin-adblocker'
 
 /**
  * use puppeteer to get html screenshot of a url
- * 
+ *
  * @param url
  */
-export async function fetchHTML(url: string) {
+export async function fetchHTML(url: string): Promise<CheerioAPI> {
     const data = await puppeteer
         .use(Adblocker({blockTrackers: true}))
         .use(StealthPlugin())
         .launch({
             headless: true,
+            // executablePath: '/usr/bin/chromium-browser', // for raspi deployment
             ignoreHTTPSErrors: true,
             args: settings,
         })

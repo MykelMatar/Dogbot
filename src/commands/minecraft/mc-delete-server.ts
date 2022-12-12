@@ -8,7 +8,7 @@ import {
     SlashCommandBuilder
 } from "discord.js";
 import {McMenuOptionGenerator} from "../../dependencies/helpers/mcMenuOptionGenerator";
-import {MenuGeneratorReturnValues, newClient} from "../../dependencies/myTypes";
+import {MenuGeneratorReturnValues, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 import {terminationListener} from "../../dependencies/helpers/terminationListener";
 
@@ -19,7 +19,7 @@ export const mcDeleteServer = {
         .setDescription('Deletes a registered MC server')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
-    async execute(client: newClient, interaction: CommandInteraction, guildData, guildName: string) {
+    async execute(client: NewClient, interaction: CommandInteraction, guildData, guildName: string) {
         const MCServerData = guildData.MCServerData
         let serverListSize = MCServerData.serverList.length
 

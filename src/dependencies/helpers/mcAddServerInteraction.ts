@@ -1,14 +1,14 @@
-import {CommandInteraction} from "discord.js";
+import {CommandInteraction, Message} from "discord.js";
 import log from "../logger";
 
 /**
  * prompts user and gets response
- * 
+ *
  * @param interaction
  * @param request
  * @param requestFailMessage
  */
-export const McAddServerInteraction = async (interaction: CommandInteraction, request: string, requestFailMessage: string): Promise<any> => {
+export const McAddServerInteraction = async (interaction: CommandInteraction, request: string, requestFailMessage: string): Promise<Message | string | number> => {
     await interaction.editReply(request)
     let filter = m => m.author.id === interaction.member.user.id
 

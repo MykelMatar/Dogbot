@@ -1,5 +1,5 @@
 import {CommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js";
-import {newClient, LeaderboardUser} from "../../dependencies/myTypes";
+import {LeaderboardUser, NewClient} from "../../dependencies/myTypes";
 
 //TODO if user changes username, does it affect any commands?
 /*
@@ -29,7 +29,7 @@ export const enlistLeaderboard = {
                 .setDescription('Whether to display the leaderboard or not')
                 .setRequired(false)),
 
-    async execute(client: newClient, interaction: CommandInteraction, guildData) {
+    async execute(client: NewClient, interaction: CommandInteraction, guildData) {
         let userData = guildData.UserData
 
         // get total amount of enlists for normalization later
@@ -82,13 +82,13 @@ export const enlistLeaderboard = {
             if (isNaN(ignorePercentage)) {
                 ignorePercentage = 0
             }
-            
+
             let adjustedEnlistPercentage = enlistPercentage * percentageWeight,
                 adjustedRejectPercentage = rejectPercentage * percentageWeight,
                 adjustedEnlistValue = normalizedEnlistValue * enlistWeight,
                 adjustedRejectValue = normalizedRejectValue * enlistWeight,
                 adjustedIgnoreValue = ignorePercentage * ignoreWeight
-            
+
             let adjustedEnlistRank: number = adjustedEnlistPercentage + adjustedEnlistValue - adjustedIgnoreValue
             let adjustedRejectRank: number = adjustedRejectPercentage + adjustedRejectValue + adjustedIgnoreValue
 
@@ -148,5 +148,5 @@ export const enlistLeaderboard = {
 
         await interaction.reply({ephemeral: ephemeralSetting, embeds: [embed]})
     }
-    
+
 }

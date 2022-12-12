@@ -1,13 +1,14 @@
 import {McMenuOptionGenerator} from "../../dependencies/helpers/mcMenuOptionGenerator";
 import {
     ActionRowBuilder,
-    ComponentType,
-    SelectMenuBuilder,
+    APISelectMenuOption,
     CommandInteraction,
-    SlashCommandBuilder,
-    APISelectMenuOption, Message
+    ComponentType,
+    Message,
+    SelectMenuBuilder,
+    SlashCommandBuilder
 } from "discord.js";
-import {MenuGeneratorReturnValues, newClient} from "../../dependencies/myTypes";
+import {MenuGeneratorReturnValues, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 import {terminationListener} from "../../dependencies/helpers/terminationListener";
 
@@ -16,7 +17,7 @@ export const mcChangeServer = {
         .setName('mc-change-server')
         .setDescription('changes the server being tracked by mc-server-status'),
 
-    async execute(client: newClient, interaction: CommandInteraction, guildData, guildName: string) {
+    async execute(client: NewClient, interaction: CommandInteraction, guildData, guildName: string) {
         const MCServerData = guildData.MCServerData
         let serverListSize: number = MCServerData.serverList.length
 
@@ -45,7 +46,11 @@ export const mcChangeServer = {
             );
 
         // send embed and store in variable to edit later
-        let sent: Message = await interaction.editReply({content: 'Select a Different Server to Check', components: [row], embeds: []});
+        let sent: Message = await interaction.editReply({
+            content: 'Select a Different Server to Check',
+            components: [row],
+            embeds: []
+        });
 
         // Response collection and handling
         const filter = i => i.user.id === interaction.member.user.id

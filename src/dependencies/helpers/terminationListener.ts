@@ -1,17 +1,17 @@
 import {InteractionCollector} from "discord.js";
 import log from "../logger";
-import {newClient} from "../myTypes";
+import {NewClient} from "../myTypes";
 
 /**
  * graceful shutdown function. ends collectors to collect data
- * 
+ *
  * @param client
  * @param collector
  * @param terminate
  */
-export async function terminationListener(client: newClient, collector: InteractionCollector<any>, terminate?: boolean) {
+export async function terminationListener(client: NewClient, collector: InteractionCollector<any>, terminate?: boolean) {
     process.on('SIGINT', () => {
-        if (terminate === true){ // not required for npm scripts 
+        if (terminate === true) { // not required for npm scripts 
             log.info('Terminating Dogbot...')
             client.destroy()
             log.info('Done')

@@ -1,7 +1,7 @@
 import {CommandInteraction, CommandInteractionOption, EmbedBuilder, SlashCommandBuilder} from "discord.js";
 import {fetchHTML} from "../../dependencies/helpers/fetchHTML";
 import {CheerioAPI} from "cheerio";
-import {newClient} from "../../dependencies/myTypes";
+import {NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 
 // TODO make resistant to tracker.gg website changes
@@ -23,32 +23,30 @@ export const getStatsValorant = {
                 .setDescription('Whether to hide response or not')
                 .setRequired(false)),
 
-    async execute(client: newClient, interaction: CommandInteraction, guildData) {
+    async execute(client: NewClient, interaction: CommandInteraction, guildData) {
         // retrieve username and tag
         let userOption: CommandInteractionOption = interaction.options.data.find(option => option.name === 'username')
         let tagOption: CommandInteractionOption = interaction.options.data.find(option => option.name === 'tag')
-        let userData, user:string,  tag:string
-        
-        if (tagOption != undefined && userOption != undefined){ // if the options are used
+        let userData, user: string, tag: string
+
+        if (tagOption != undefined && userOption != undefined) { // if the options are used
             tag = tagOption.value as string
             user = userOption.value as string
-        }
-        else if (tagOption == undefined && userOption == undefined){ // if the options are not used
+        } else if (tagOption == undefined && userOption == undefined) { // if the options are not used
             userData = guildData.UserData.find(user => user.id === interaction.user.id)
             if (userData === undefined) {
                 return interaction.editReply({content: 'User does not have any data. Please use the input options for the command'})
             }
-            if (userData.valorantProfile == '{}'){
+            if (userData.valorantProfile == '{}') {
                 return interaction.editReply({content: 'Unknown user. Use set-profile-warzone to set your profile or use the command parameters to find a player'})
             }
             tag = userData.valorantProfile.tag
             user = userData.valorantProfile.username
-        }
-        else if ((tagOption != undefined && userOption == undefined) || // if one option is used without the other
-            (tagOption == undefined && userOption != undefined)){
+        } else if ((tagOption != undefined && userOption == undefined) || // if one option is used without the other
+            (tagOption == undefined && userOption != undefined)) {
             return interaction.editReply({content: `must input both a username and platform. `})
         }
-        
+
         let uriUser = encodeURIComponent(user.trim()) // encode string to have URI value for URL
         let uriTag = encodeURIComponent(tag.trim())
 
@@ -57,7 +55,7 @@ export const getStatsValorant = {
             // get webpages
             const url = `https://tracker.gg/valorant/profile/riot/${uriUser}%23${uriTag}/overview`
             const $: CheerioAPI = await fetchHTML(url);
-            
+
             let status, privateProfile, error
             $('h1').each(function () { // h1 is defined if an error code is present
                 status = $(this).text()
@@ -80,17 +78,17 @@ export const getStatsValorant = {
             } else if (status != undefined) {
                 return interaction.editReply(`*unknown error response. Please open an issue in the github issues page, or check if one already exists. The github page can be accessed by using /elp*`)
             }
-            
+
             // if no errors, proceed. create arrays to hold stats
             let stats: string[] = [],
                 statsRank: string[] = [],
-                topAgents = [], 
-                playtime_span = [], 
+                topAgents = [],
+                playtime_span = [],
                 topGuns = []
 
             let statHeaderClass = $('span.stat__value') // stats found in the large header
             let rank: string = statHeaderClass.first().text();
-            
+
             // retrieve all values needed for embed
             $('span.value').each(function (i) { // overview stats section
                 stats[i] = $(this).text();
@@ -107,10 +105,10 @@ export const getStatsValorant = {
             $('span.playtime').each(function (i) { // top% for the stats
                 playtime_span[i] = $(this).text();
             });
-            
-            let topAgent:string = topAgents[0].split(' ')[22]
+
+            let topAgent: string = topAgents[0].split(' ')[22]
             let playtime = `${playtime_span[0].split(' ')[10]} ${playtime_span[0].split(' ')[11]}`
-            
+
             // create Embed w/ user info and stats
             const embed = new EmbedBuilder()
                 .setTitle(`${user}'s Valorant Stats`)

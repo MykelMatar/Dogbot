@@ -2,12 +2,13 @@ import {
     ActionRowBuilder,
     ButtonBuilder,
     ButtonStyle,
+    CommandInteraction,
     ComponentType,
     EmbedBuilder,
-    CommandInteraction,
-    SlashCommandBuilder, Message
+    Message,
+    SlashCommandBuilder
 } from "discord.js";
-import {newClient} from "../../dependencies/myTypes";
+import {NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 import {terminationListener} from "../../dependencies/helpers/terminationListener";
 import {status} from "minecraft-server-util";
@@ -26,7 +27,7 @@ export const mcListServers = {
                 .setDescription('Whether to display the leaderboard or not')
                 .setRequired(false)),
 
-    async execute(client: newClient, interaction: CommandInteraction, guildData, guildName: string) {
+    async execute(client: NewClient, interaction: CommandInteraction, guildData, guildName: string) {
         const MCServerData = guildData.MCServerData
 
         // retrieve server names and IPs

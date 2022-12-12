@@ -1,8 +1,14 @@
-import DiscordJS, {APISelectMenuOption} from "discord.js";
+import DiscordJS, {APISelectMenuOption, CommandInteraction, SlashCommandBuilder} from "discord.js";
 import {platforms} from "call-of-duty-api";
 
-export type newClient = DiscordJS.Client & {
-    commands: DiscordJS.Collection<string,any> // allows commands to be bound to the client instance for global retrieval
+export type NewClient = DiscordJS.Client & {
+    commands: DiscordJS.Collection<string, SlashCommand> // allows commands to be bound to the client instance for global retrieval
+}
+
+export type SlashCommand = {
+    data: SlashCommandBuilder
+    cooldown: number
+    execute(client: NewClient, interaction: CommandInteraction, guildData, guildName: string): Promise<void>
 }
 
 export type MenuGeneratorReturnValues = {

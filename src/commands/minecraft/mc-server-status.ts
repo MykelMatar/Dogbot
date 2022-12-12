@@ -2,18 +2,18 @@ import {
     ActionRowBuilder,
     ButtonBuilder,
     ButtonStyle,
-    EmbedBuilder,
     CommandInteraction,
-    SlashCommandBuilder,
-    Message
+    EmbedBuilder,
+    Message,
+    SlashCommandBuilder
 } from "discord.js";
 import {status} from "minecraft-server-util";
 import {McServerCollector} from "../../dependencies/helpers/mcServerCollector";
-import {newClient} from "../../dependencies/myTypes";
+import {NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 
 export const mcServerStatus = {
-    data: new SlashCommandBuilder() 
+    data: new SlashCommandBuilder()
         .setName('mc-server-status')
         .setDescription('Retrieves status of a selected MC server. Only supports Java Servers')
         .addStringOption(option =>
@@ -24,8 +24,8 @@ export const mcServerStatus = {
             option.setName('hide')
                 .setDescription('Whether to display response or not')
                 .setRequired(false)),
-        
-    async execute(client: newClient, interaction: CommandInteraction, guildData, guildName: string){
+
+    async execute(client: NewClient, interaction: CommandInteraction, guildData, guildName: string) {
         const MCServerData = guildData.MCServerData
         const serverList = MCServerData.serverList
 
@@ -62,7 +62,7 @@ export const mcServerStatus = {
         }
 
         // Check Server Status
-        const options = { timeout: 3000 }
+        const options = {timeout: 3000}
         status(MCServerIP.replace(/"+/g, ''), MCServerPort, options)
             .then(async (response) => {
                 log.info('Server Online')
@@ -87,12 +87,12 @@ export const mcServerStatus = {
                 if (searchedPlayer !== undefined) {
                     onlinePlayers.forEach(player => {
                         if (player.name === searchedPlayer.value) {
-                            embed.addFields({name: 'Searched User',value: `>  ${player.name} is online`})
+                            embed.addFields({name: 'Searched User', value: `>  ${player.name} is online`})
                             foundPlayer = true;
                         }
                     })
                     if (foundPlayer === false) {
-                        embed.addFields({name: 'Searched User',value: `>  ${searchedPlayer.value} is offline`})
+                        embed.addFields({name: 'Searched User', value: `>  ${searchedPlayer.value} is offline`})
                     }
                 }
 
@@ -101,7 +101,7 @@ export const mcServerStatus = {
             })
             .catch(async () => {
                 log.error('Server Offline')
-                
+
                 const embed = new EmbedBuilder()
                     .addFields({name: `${title.replace(/"+/g, '')} Offline`, value: '*all good*'})
                     .setColor('#B8CAD1')

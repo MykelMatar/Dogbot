@@ -2,13 +2,15 @@ import {
     ActionRowBuilder,
     ButtonBuilder,
     ButtonStyle,
+    CommandInteraction,
+    CommandInteractionOption,
     ComponentType,
     EmbedBuilder,
-    CommandInteraction,
-    SlashCommandBuilder, CommandInteractionOption, Message,
+    Message,
+    SlashCommandBuilder,
 } from "discord.js";
 import {status, statusBedrock} from "minecraft-server-util";
-import {MinecraftServer, newClient} from "../../dependencies/myTypes";
+import {MinecraftServer, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 import {McSingleServerCollector} from "../../dependencies/helpers/mcSingleServerCollector";
 
@@ -29,14 +31,14 @@ export const mcSingleServerStatus = {
                 .setDescription('Whether to display response or not')
                 .setRequired(false)),
 
-    async execute(client: newClient, interaction: CommandInteraction, guildData) {
+    async execute(client: NewClient, interaction: CommandInteraction, guildData): Promise<void> {
         const serverList = guildData.MCServerData.serverList
-        
+
         let server: MinecraftServer = { // setup object to push to mongoDB
-            name: undefined, 
-            ip: undefined, 
+            name: undefined,
+            ip: undefined,
             port: undefined
-        }; 
+        };
         let portOption: CommandInteractionOption = (interaction.options.data.find(option => option.name === 'port'));
         if (portOption === undefined) {
             server.port = 25565
@@ -44,12 +46,11 @@ export const mcSingleServerStatus = {
 
         server.ip = interaction.options.data[0].value as string; // value is guaranteed to be string
         const options = {timeout: 3000}
-        
+
         status(server.ip, server.port, options)
             .then(async (response) => {
                 log.info('Server Online')
 
-                // Generate buttons
                 const row = new ActionRowBuilder<ButtonBuilder>()
                     .addComponents(
                         new ButtonBuilder()
@@ -57,7 +58,7 @@ export const mcSingleServerStatus = {
                             .setLabel('Add To List')
                             .setStyle(ButtonStyle.Primary),
                     );
-                
+
                 const embed = new EmbedBuilder()
                     .addFields(
                         {name: 'Server IP', value: `>  ${server.ip}`},
@@ -67,10 +68,10 @@ export const mcSingleServerStatus = {
                     )
                     .setColor('#B8CAD1')
                     .setFooter({text: 'Server Online'})
-                
+
                 // give button to add server only if server list is not full
                 let sent: Message
-                if (serverList.length === 10 || serverList.some(ipList => ipList["ip"] === server.ip)) {
+                if (serverList.length === 10 || serverList.some(servers => servers["ip"] === server.ip)) {
                     return interaction.editReply({embeds: [embed]})
                 } else {
                     sent = await interaction.editReply({embeds: [embed], components: [row]})
@@ -82,7 +83,7 @@ export const mcSingleServerStatus = {
                 statusBedrock(server.ip, server.port, options)
                     .then(async response => {
                         log.info('Server Online')
-                        
+
                         const embed = new EmbedBuilder()
                             .addFields(
                                 {name: 'Server IP', value: `>  ${server.ip}`},
@@ -93,8 +94,8 @@ export const mcSingleServerStatus = {
                             )
                             .setColor('#B8CAD1')
                             .setFooter({text: 'Server Online'})
-                        
-                            return interaction.editReply({embeds: [embed]})
+
+                        return interaction.editReply({embeds: [embed]})
                     })
                     .catch(async () => {
                         log.error('Server Offline')

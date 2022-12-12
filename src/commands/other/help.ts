@@ -1,9 +1,5 @@
-import {
-    EmbedBuilder,
-    CommandInteraction,
-    SlashCommandBuilder, AttachmentBuilder
-} from "discord.js";
-import {newClient} from "../../dependencies/myTypes";
+import {AttachmentBuilder, CommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js";
+import {NewClient} from "../../dependencies/myTypes";
 
 export const help = {
     data: new SlashCommandBuilder()
@@ -14,10 +10,10 @@ export const help = {
                 .setDescription('Whether to hide response or not')
                 .setRequired(false)),
 
-    async execute(client: newClient, interaction: CommandInteraction) {
+    async execute(client: NewClient, interaction: CommandInteraction) {
 
         const file = new AttachmentBuilder('./src/dependencies/images/Dogbot_Logo_512.png')
-        
+
         const embed = new EmbedBuilder()
             .setTitle('Dogbot Wiki')
             .setDescription('Please visit the [wiki](https://github.com/MykelMatar/Dogbot/wiki) for a comprehensive list of every command')
@@ -25,7 +21,7 @@ export const help = {
             .setURL('https://github.com/MykelMatar/Dogbot/wiki')
             .setFooter({text: 'This bot is created and maintained by Dogbert'})
             .setColor("#B8CAD1")
-        
+
         await interaction.editReply({embeds: [embed], files: [file]})
     }
 }

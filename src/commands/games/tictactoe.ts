@@ -1,6 +1,15 @@
 // @ts-nocheck - compiler does not understand that the row components are message buttons
-import {ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType} from "discord.js";
+import {
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    CommandInteraction,
+    ComponentType,
+    SlashCommandBuilder
+} from "discord.js";
 import {StatName, updateUserData} from "../../dependencies/helpers/updateUserData";
+import {NewClient} from "../../dependencies/myTypes";
+import {log} from "../../dependencies/logger";
 
 //TODO: create /endtictactoe command or timeout after 15s of nothing happening
 
@@ -12,20 +21,16 @@ let turn = 1;
 let winner, loser, user, selectedRow, index
 let cmdStatus = 0;
 
-import {CommandInteraction, SlashCommandBuilder} from "discord.js";
-import {newClient} from "../../dependencies/myTypes";
-import {log} from "../../dependencies/logger";
-
 export const tictactoe = {
-    data: new SlashCommandBuilder() 
+    data: new SlashCommandBuilder()
         .setName('tictactoe')
         .setDescription('Starts a game of tic-tac-toe against another user')
         .addUserOption(option =>
             option.setName('user')
                 .setDescription('user to play against')
                 .setRequired(true)),
-        
-    async execute(client: newClient, interaction: CommandInteraction){
+
+    async execute(client: NewClient, interaction: CommandInteraction) {
         if (cmdStatus === 1) await interaction.editReply('please wait for current game to finish')
         cmdStatus = 1;
 
@@ -88,7 +93,10 @@ export const tictactoe = {
         })
 
         const filter = i => i.user.id === interaction.member.user.id;
-        const collector = interaction.channel.createMessageComponentCollector({filter, componentType: ComponentType.Button});
+        const collector = interaction.channel.createMessageComponentCollector({
+            filter,
+            componentType: ComponentType.Button
+        });
 
         // start game
         collector.on('collect', async i => {
