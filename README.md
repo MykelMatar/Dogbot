@@ -39,6 +39,7 @@
 | command                                                                                   | description                                              | Status |
 |:------------------------------------------------------------------------------------------|:---------------------------------------------------------|:------:|
 | [/mc-server-status](https://github.com/MykelMatar/Dogbot/wiki#mc-server-status)           | Gets status of selected minecraft server                 |   ✅    |
+| [/mc-single-server-status](https://github.com/MykelMatar/Dogbot/wiki#mc-server-status)    | Gets status of any minecraft server (supports bedrock)   |   ✅    |
 | [/mc-change-server](https://github.com/MykelMatar/Dogbot/wiki#mc-change-server)           | Changes Server that is being tracked by mc-server-status |   ✅    |
 | [/mc-list-servers](https://github.com/MykelMatar/Dogbot/wiki#mc-list-servers)             | Lists registered mc servers                              |   ✅    |
 | [/mc-add-server](https://github.com/MykelMatar/Dogbot/wiki#mc-add-server)                 | Adds a new IP to the server list                         |   ✅    |
@@ -61,6 +62,9 @@
 | command             | description                              | Status |
 |---------------------|------------------------------------------|:------:|
 | [/get-stats-valorant](https://github.com/MykelMatar/Dogbot/wiki#get-stats-valorant) | Retrieves valorant stats from tracker.gg |   ✅   |
+| [/get-stats-warzone](https://github.com/MykelMatar/Dogbot/wiki#get-stats-valorant) | Retrieves warzone stats  |   X   |
+| [/set-profile-valorant](https://github.com/MykelMatar/Dogbot/wiki#get-stats-valorant) | sets your valorant profile |   ✅   |
+| [/set-profile-warzone](https://github.com/MykelMatar/Dogbot/wiki#get-stats-valorant) | sets your warzone profile |   ✅   |
 | [/server-stats](https://github.com/MykelMatar/Dogbot/wiki#server-stats)       | displays relevant server stats           |   ✅   |
 
 
@@ -68,9 +72,9 @@
 | command      | description                             | Status |
 |--------------|-----------------------------------------|:------:|
 | [/tictactoe](https://github.com/MykelMatar/Dogbot/wiki#tictactoe)   | Play tic tac toe against another user   |   ✅*  |
-| [/magic8](https://github.com/MykelMatar/Dogbot/wiki#magic8)      | Predicts via a Magic 8 ball             |   ✅*  |
+| [/magic8](https://github.com/MykelMatar/Dogbot/wiki#magic8)      | Predicts via a Magic 8 ball             |   ✅  |
 
-    *implemented but not thoroughly tested, typeracer cheat detection may be broken
+    *implemented but not thoroughly tested
 
 ### other commands
 | command | description                                  | Status |
