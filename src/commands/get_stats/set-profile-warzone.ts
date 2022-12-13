@@ -1,5 +1,5 @@
 import {CommandInteraction, CommandInteractionOption, SlashCommandBuilder} from "discord.js";
-import {NewClient} from "../../dependencies/myTypes";
+import {GuildSchema, NewClient} from "../../dependencies/myTypes";
 import {platforms} from "call-of-duty-api";
 import {StatName, updateUserData} from "../../dependencies/helpers/updateUserData";
 
@@ -27,10 +27,10 @@ export const setProfileWarzone = {
                 .setDescription('Whether to hide response or not')
                 .setRequired(false)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData) {
-        let userData: Array<object> = guildData.UserData
+    async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema) {
+        let userData: object[] = guildData.UserData
         if (userData.length === 0) {
-            await interaction.reply({content: 'This server does not have any user data. User data is created upon interacting with the enlist prompt or playing a game'})
+            return interaction.reply({content: 'This server does not have any user data. User data is created upon interacting with the enlist prompt or playing a game'})
         }
 
         let platformOption: CommandInteractionOption = interaction.options.data.find(option => option.name === 'platform')
@@ -41,7 +41,7 @@ export const setProfileWarzone = {
         await updateUserData(interaction, [interaction.user.id], StatName.wzProfile, [username, platform])
 
         await interaction.reply({
-            content: `*profile saved. You can now use get-stats-warzone without inputting your information.*`,
+            content: `profile saved. You can now use get-stats-warzone without inputting your information.`,
             ephemeral: true
         })
     }

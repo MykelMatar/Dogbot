@@ -1,5 +1,5 @@
 import {CommandInteraction, CommandInteractionOption, SlashCommandBuilder} from "discord.js";
-import {NewClient} from "../../dependencies/myTypes";
+import {GuildSchema, NewClient} from "../../dependencies/myTypes";
 import {StatName, updateUserData} from "../../dependencies/helpers/updateUserData";
 
 export const setProfileValorant = {
@@ -19,7 +19,7 @@ export const setProfileValorant = {
                 .setDescription('Whether to hide response or not')
                 .setRequired(false)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData) {
+    async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema) {
         let userData: object[] = guildData.UserData
         if (userData.length === 0) {
             await interaction.reply({content: 'This server does not have any user data. User data is created upon interacting with the enlist prompt or playing a game'})
@@ -33,7 +33,7 @@ export const setProfileValorant = {
         await updateUserData(interaction, [interaction.user.id], StatName.valProfile, [username, tag])
 
         await interaction.reply({
-            content: `*profile saved. You can now use get-stats-valorant without inputting your information.*`,
+            content: `profile saved. You can now use get-stats-valorant without inputting your information.`,
             ephemeral: true
         })
     }

@@ -13,7 +13,7 @@ import {
     Role,
     SlashCommandBuilder
 } from "discord.js";
-import {embedColor, EnlistUserInfoArrays, NewClient} from "../../dependencies/myTypes";
+import {embedColor, EnlistUserInfoArrays, GuildSchema, NewClient} from "../../dependencies/myTypes";
 import {updateEnlistUserArrays} from "../../dependencies/helpers/updateEnlistUserArrays";
 import {StatName, updateUserData} from "../../dependencies/helpers/updateUserData";
 import log from "../../dependencies/logger";
@@ -34,7 +34,7 @@ export const enlistUsers = {
                 .setRequired(false)
         ),
     // cooldown: 10800, // 3 hour cooldown to match the 3 hour enlist timer
-    async execute(client: NewClient, interaction: CommandInteraction, guildData) {
+    async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema) {
         await interaction.reply({content: '*prompt sent*', ephemeral: true})
         const userData = guildData.UserData
 
@@ -132,7 +132,7 @@ export const enlistUsers = {
             });
         } catch (e) {
             await enlistPrompt.edit({
-                content: '*error while collecting responses, please try again*',
+                content: 'error while collecting responses, please try again',
                 embeds: [embed],
                 components: [],
             });

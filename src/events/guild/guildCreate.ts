@@ -1,8 +1,9 @@
-import {Client, Guild} from "discord.js";
+import {Guild} from "discord.js";
 import guilds from '../../dependencies/schemas/guild-schema'
 import log from "../../dependencies/logger";
+import {NewClient} from "../../dependencies/myTypes";
 
-export async function guildCreate (client: Client, guild: Guild) {
+export async function guildCreate(client: NewClient, guild: Guild) {
     log.info(`Dogbot added to ${guild.name}`)
 
     const guildName = guild.name.replace(/\s+/g, ""); //removes whitespace from string

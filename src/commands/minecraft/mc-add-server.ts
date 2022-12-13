@@ -1,7 +1,7 @@
 import {CommandInteraction, CommandInteractionOption, PermissionFlagsBits, SlashCommandBuilder} from "discord.js";
 import {status} from 'minecraft-server-util'
 import {McAddServerInteraction} from "../../dependencies/helpers/mcAddServerInteraction"
-import {MinecraftServer, NewClient} from "../../dependencies/myTypes";
+import {GuildSchema, MinecraftServer, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 
 export const mcAddServer = {
@@ -22,65 +22,63 @@ export const mcAddServer = {
                 .setDescription('Port of your server.')
                 .setRequired(false)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData) {
-        const serverList = guildData.MCServerData.serverList
+    async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema) {
+        const serverList: object[] = guildData.MCServerData.serverList
         if (serverList.length === 10) {
             await interaction.editReply("Max number of servers reached (Limit of 10).");
             return
         }
 
-        let server: MinecraftServer = {
+        let mcServer: MinecraftServer = {
             name: undefined,
             ip: undefined,
             port: undefined
         };
 
         try { // if slash command is used
-            server.ip = interaction.options.data[0].value as string;
-            server.name = interaction.options.data[1].value as string;
+            mcServer.ip = interaction.options.data[0].value as string;
+            mcServer.name = interaction.options.data[1].value as string;
             let portOption: CommandInteractionOption = (interaction.options.data.find(option => option.name === 'port'));
             if (portOption === undefined) {
-                server.port = 25565
-            } else server.port = portOption.value as number // value is guaranteed to be number
+                mcServer.port = 25565
+            } else mcServer.port = portOption.value as number // value is guaranteed to be number
         } catch { // if button on /mc-list-servers is used
-            server.ip = await McAddServerInteraction(interaction, "Input server IP (server must be online)", "Request Timeout") as string;
-            if (server.ip == null) return await interaction.editReply('*Invalid Server IP*');
-            server.name = await McAddServerInteraction(interaction, "Input Name", "Request Timeout") as string;
-            if (server.name.toString().length > 30) {
+            mcServer.ip = await McAddServerInteraction(interaction, "Input server IP (server must be online)", "Request Timeout") as string;
+            if (mcServer.ip == null) return await interaction.editReply('Invalid Server IP');
+            mcServer.name = await McAddServerInteraction(interaction, "Input Name", "Request Timeout") as string;
+            if (mcServer.name.toString().length > 30) {
                 return await interaction.editReply('Please keep server name below 30 characters')
             }
-            if (server.name.toString().length < 1) {
-                return await interaction.editReply('*Invalid server name input.* ')
+            if (mcServer.name.toString().length < 1) {
+                return await interaction.editReply('Invalid server name input. ')
             }
-            server.port = await McAddServerInteraction(interaction, "Input Server Port. If you are not sure, the default is 25565.", "Request Timeout") as number;
+            mcServer.port = await McAddServerInteraction(interaction, "Input Server Port. If you are not sure, the default is 25565.", "Request Timeout") as number;
             // not using Promise.all bc 1 response must be collected before the other / not simultaneous
         }
 
-        if (serverList.some(servers => servers["ip"] === server.ip)) {
+        if (serverList.some(server => server["ip"] === mcServer.ip)) {
             await interaction.editReply(
-                "Server already registered, double check the IP or use **/mc-change-server-name** to change its name"
+                "Server already registered, double check the IP or use /mc-change-server-name to change its name"
             );
             return log.error("Duplicate IP Detected");
         }
 
         // make sure IP is a valid server IP by checking its status (server must be online for this to work)
         try {
-            await status(server.ip, server.port);
-
+            await status(mcServer.ip, mcServer.port);
             // if server is the first added server, make it the selected server to track in !mc-server-status
             if (serverList.length === 0) {
-                guildData.MCServerData.selectedServer.ip = server.ip;
-                guildData.MCServerData.selectedServer.port = server.port;
-                guildData.MCServerData.selectedServer.name = server.name;
+                guildData.MCServerData.selectedServer.ip = mcServer.ip;
+                guildData.MCServerData.selectedServer.port = mcServer.port;
+                guildData.MCServerData.selectedServer.name = mcServer.name;
             }
-
-            serverList.push(server);
+            serverList.push(mcServer);
             await guildData.save();
             await interaction.editReply("Server added sucessfully");
         } catch (error) {
             log.error(error)
             await interaction.editReply(
-                "*Could not retrieve server status. Double check IP and make sure server is online.*"
+                "Could not retrieve server status. Double check IP and make sure server is online."
             );
             log.error('Invalid Server IP / Server Offline')
         }

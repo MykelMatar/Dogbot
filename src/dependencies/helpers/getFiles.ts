@@ -3,7 +3,7 @@ import * as fs from 'node:fs'
 
 /**
  * gets all files of a certain type in a given directory and its subdirectories
- * 
+ *
  * @param dir
  * @param suffix
  */
@@ -11,7 +11,6 @@ export const getFiles = (dir: string, suffix: string): string[] => {
     const files: Dirent[] = fs.readdirSync(dir, {
         withFileTypes: true,
     })
-
     let commandFiles: string[] = []
 
     for (const file of files) {

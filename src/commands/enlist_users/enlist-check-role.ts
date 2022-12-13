@@ -1,5 +1,5 @@
 import {CommandInteraction, SlashCommandBuilder} from "discord.js";
-import {NewClient} from "../../dependencies/myTypes";
+import {GuildSchema, NewClient} from "../../dependencies/myTypes";
 
 export const enlistCheckRole = {
     data: new SlashCommandBuilder()
@@ -10,7 +10,7 @@ export const enlistCheckRole = {
                 .setDescription('Whether to display the response or not')
                 .setRequired(false)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData): Promise<void> {
+    async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema): Promise<void> {
         let enlistRole = guildData.ServerData.roles.autoenlist
         let role = interaction.guild.roles.cache.find(r => r.id === enlistRole)
         let ephemeralSetting: boolean

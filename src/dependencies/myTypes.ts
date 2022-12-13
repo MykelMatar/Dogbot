@@ -1,5 +1,6 @@
 import DiscordJS, {APISelectMenuOption, CommandInteraction, SlashCommandBuilder} from "discord.js";
 import {platforms} from "call-of-duty-api";
+import {Document} from "mongoose";
 
 export const embedColor = '#B8CAD1'
 
@@ -10,7 +11,7 @@ export type NewClient = DiscordJS.Client & {
 export type SlashCommand = {
     data: SlashCommandBuilder
     cooldown: number
-    execute(client: NewClient, interaction: CommandInteraction, guildData, guildName: string): Promise<void>
+    execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema, guildName: string): Promise<void>
 }
 
 export type MenuGeneratorReturnValues = {
@@ -34,12 +35,6 @@ export interface EnlistLeaderboardUser {
     adjustedRejectRankValue: number
 }
 
-export interface Leaderboard {
-    names: string[]
-    statPercentages: string[]
-    statTotals: string[]
-}
-
 export interface EnlistUserInfoArrays {
     enlistedUsers: string[]
     enlistedUserIds: string[] // for pushing user data to mongoDB
@@ -56,7 +51,7 @@ export interface MinecraftServer {
     port: number
 }
 
-export interface GuildSchema {
+export type GuildSchema = Document & {
     guild: string
     guildId: string
     ServerData: {
@@ -81,7 +76,7 @@ export interface GuildSchema {
             }
             warzoneProfile: {
                 username: string
-                platform: typeof platforms
+                platform: platforms
             }
             valorantProfile: {
                 username: string

@@ -1,4 +1,4 @@
-import {EmbedBuilder, SlashCommandBuilder} from "discord.js";
+import {CommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js";
 import {embedColor, NewClient} from "../../dependencies/myTypes";
 
 export const magic8 = {
@@ -10,7 +10,7 @@ export const magic8 = {
                 .setDescription('prompt you want Dogbot to predict')
                 .setRequired(true)),
 
-    async execute(client: NewClient, interaction) {
+    async execute(client: NewClient, interaction: CommandInteraction) {
         let responses: string[] = ['yes', 'no', 'perhaps', 'definitely not', 'absolutely', 'how would I know?', 'shut up bitch', 'lol no']
         let response = responses[Math.floor(Math.random() * responses.length)]
         let responseEmbed = new EmbedBuilder()

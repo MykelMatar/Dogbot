@@ -1,5 +1,5 @@
 import {CommandInteraction, PermissionFlagsBits, SlashCommandBuilder} from "discord.js";
-import {NewClient} from "../../dependencies/myTypes";
+import {GuildSchema, NewClient} from "../../dependencies/myTypes";
 
 export const enlistClearRole = {
     data: new SlashCommandBuilder()
@@ -11,9 +11,9 @@ export const enlistClearRole = {
                 .setDescription('details about event')
                 .setRequired(false)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData) {
+    async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema) {
         guildData.ServerData.roles.autoenlist = null;
         await guildData.save()
-        await interaction.reply({ephemeral: true, content: '*Role cleared successfully*'})
+        await interaction.reply({ephemeral: true, content: 'Role cleared successfully'})
     }
 }

@@ -9,7 +9,7 @@ import {
 } from "discord.js";
 import {status} from "minecraft-server-util";
 import {McServerStatusCollector} from "../../dependencies/helpers/mcServerStatusCollector";
-import {embedColor, NewClient} from "../../dependencies/myTypes";
+import {embedColor, GuildSchema, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 
 export const mcServerStatus = {
@@ -25,9 +25,9 @@ export const mcServerStatus = {
                 .setDescription('Whether to display response or not')
                 .setRequired(false)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData, guildName: string) {
+    async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema, guildName: string) {
         const MCServerData = guildData.MCServerData
-        const serverList = MCServerData.serverList
+        const serverList: object[] = MCServerData.serverList
         if (serverList.length === 0) {
             return interaction.editReply('*No Registered Servers, use !addmc or !listmc to add servers.*')
         }

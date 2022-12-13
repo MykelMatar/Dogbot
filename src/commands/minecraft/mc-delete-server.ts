@@ -8,7 +8,7 @@ import {
     SlashCommandBuilder
 } from "discord.js";
 import {McMenuOptionGenerator} from "../../dependencies/helpers/mcMenuOptionGenerator";
-import {MenuGeneratorReturnValues, NewClient} from "../../dependencies/myTypes";
+import {GuildSchema, MenuGeneratorReturnValues, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 import {terminationListener} from "../../dependencies/helpers/terminationListener";
 
@@ -19,23 +19,19 @@ export const mcDeleteServer = {
         .setDescription('Deletes a registered MC server')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData, guildName: string) {
+    async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema, guildName: string) {
         const MCServerData = guildData.MCServerData
-        let serverListSize = MCServerData.serverList.length
-
-        // ensures command does not execute if 0 or 1 server exists
+        let serverListSize: number = MCServerData.serverList.length
         if (serverListSize === 0) {
-            return await interaction.editReply('*No Registered Servers, use /mc-add-server or /mc-list-servers to add servers.*')
+            return await interaction.editReply('No Registered Servers, use /mc-add-server or /mc-list-servers to add servers.')
         }
         if (serverListSize === 1) {
             return await interaction.editReply(
-                `*Cannot remove the only existing server, use /mc-add-server or /mc-list-servers to add servers, or change server information with /mc-change-server-name and /mc-change-server-ip.*`
+                `Cannot remove the only existing server, use /mc-add-server or /mc-list-servers to add servers, or change server information with /mc-change-server-name and /mc-change-server-ip.`
             )
         }
 
         let optionGenerator: MenuGeneratorReturnValues = await McMenuOptionGenerator(interaction, guildName, serverListSize);
-
-        // generate select menu
         const row = new ActionRowBuilder<SelectMenuBuilder>()
             .addComponents(
                 new SelectMenuBuilder()
@@ -43,7 +39,6 @@ export const mcDeleteServer = {
                     .setPlaceholder('Nothing selected')
                     .addOptions(optionGenerator.optionsArray),
             );
-
         let sent: Message = await interaction.editReply({content: 'Select a Server to Delete', components: [row]});
 
         const filter = i => i.user.id === interaction.member.user.id
@@ -57,26 +52,14 @@ export const mcDeleteServer = {
         try {
             collector.on('collect', async i => {
                 if (i.message.id != sent.id) return
-                if (i.customId !== 'delete-menu') return collector.stop() // check for correct menu interaction
+                if (i.customId !== 'delete-menu') return collector.stop()
                 let selectedServerIP, serverIP
-
-                // let serverList = MCServerData.serverList
-                // for (const server of serverList) {
-                //     if (i.values[0] === server.name) {
-                //         selectedServerIP = MCServerData.selectedServer.ip
-                //         serverIP = server.ip
-                //         serverName = server.name
-                //
-                //         serverList.splice(j, 1)
-                //     }
-                // }
 
                 for (let j = 0; j < serverListSize; j++) {
                     if (i.values[0] === `selection${j}`) {
                         selectedServerIP = MCServerData.selectedServer.ip
                         serverIP = MCServerData.serverList[j].ip
                         serverName = MCServerData.serverList[j].name
-
                         MCServerData.serverList.splice(j, 1)
                     }
                 }

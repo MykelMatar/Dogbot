@@ -1,5 +1,5 @@
 import {Collection, CommandInteraction, GuildMember} from "discord.js";
-import {NewClient, SlashCommand} from "../dependencies/myTypes";
+import {GuildSchema, NewClient, SlashCommand} from "../dependencies/myTypes";
 import guilds from "../dependencies/schemas/guild-schema";
 import log from "../dependencies/logger";
 
@@ -36,8 +36,7 @@ export async function interactionCreate(client: NewClient, interaction: CommandI
     let guildName = interaction.guild.name.replace(/\s+/g, "")
     let hideCommands: string[] = ['mc', 'get-stats', 'server-stats', 'help']
     let ephemeralSetting
-
-    // universal ephemeral option for commands
+    
     let hideOption = interaction.options.data.find(option => option.name === 'hide')
     if (hideOption === undefined) ephemeralSetting = true
     else ephemeralSetting = hideOption.value
@@ -50,7 +49,7 @@ export async function interactionCreate(client: NewClient, interaction: CommandI
         if (!(!(interaction.member instanceof GuildMember))) {
             log.info(`${interaction.commandName} requested by ${interaction.member.user.username} in ${interaction.member.guild.name}`)
         }
-        let guildData = await guilds.findOne({guildId: interaction.guildId})
+        let guildData: GuildSchema = await guilds.findOne({guildId: interaction.guildId})
         await command.execute(client, interaction, guildData, guildName);
     } catch (error) {
         log.error(error)

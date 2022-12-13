@@ -8,7 +8,7 @@ import {
     SlashCommandBuilder
 } from "discord.js";
 import {McMenuOptionGenerator} from "../../dependencies/helpers/mcMenuOptionGenerator";
-import {MenuGeneratorReturnValues, NewClient} from "../../dependencies/myTypes";
+import {GuildSchema, MenuGeneratorReturnValues, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 import {terminationListener} from "../../dependencies/helpers/terminationListener";
 
@@ -22,35 +22,29 @@ export const mcChangeServerName = {
                 .setDescription('The new server name')
                 .setRequired(true)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData, guildName: string) {
+    async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema, guildName: string) {
         const MCServerData = guildData.MCServerData
-        let serverListSize = MCServerData.serverList.length
-
-        // make sure there is at least 1 server
+        let serverListSize: number = MCServerData.serverList.length
         if (serverListSize === 0) {
             await interaction.editReply('*No Registered Servers, use /mc-add-server or /mc-list-servers to add servers.*')
             return
         }
 
-        // retrieve new name from user input
-        let newName = interaction.options.data[0].value
+        let newName = interaction.options.data[0].value as string
         if (newName.toString().length > 30) {
-            await interaction.editReply('*Please keep server name below 30 characters*')
+            await interaction.editReply('Please keep server name below 30 characters')
             return log.error("name greater than 30 char");
         }
 
         // verify that name is not already registered under a different IP
         if (MCServerData.serverList.some(server => server["name"] === newName)) {
             await interaction.editReply(
-                "*Cannot have duplicate server names, please choose a different name or use /mc-change-server-ip to change the IP of the existing server*"
+                "Cannot have duplicate server names, please choose a different name or use /mc-change-server-ip to change the IP of the existing server"
             );
             return log.error("Duplicate Name Detected");
         }
 
-        // create variables and generate options for select menu
         let optionGenerator: MenuGeneratorReturnValues = await McMenuOptionGenerator(interaction, guildName, serverListSize);
-
-        // generate select menu
         let row = new ActionRowBuilder<SelectMenuBuilder>()
             .addComponents(
                 new SelectMenuBuilder()
@@ -59,13 +53,11 @@ export const mcChangeServerName = {
                     .addOptions(optionGenerator.optionsArray),
             );
 
-        // send embed
         let sent: Message = await interaction.editReply({
             content: 'Select the server you want to rename',
             components: [row]
         });
 
-        // Response collection and handling
         let filter = i => i.user.id === interaction.member.user.id;
         const collector = interaction.channel.createMessageComponentCollector({
             filter,
@@ -83,11 +75,10 @@ export const mcChangeServerName = {
                     MCServerData.serverList[j].name = newName
                 }
             }
-            // change selected server name if it was changed
-            if (MCServerData.selectedServer.name === serverName)
+            if (MCServerData.selectedServer.name === serverName) {
                 MCServerData.selectedServer.name = newName
-
-            await guildData.save() // save changes to mongo
+            }
+            await guildData.save()
             collector.stop()
         });
 
@@ -96,7 +87,7 @@ export const mcChangeServerName = {
                 await interaction.editReply({content: '*Request Timeout*', components: []});
                 log.error('Request Timeout')
             } else if (collected.first().customId !== 'change-server-menu') {
-                await interaction.editReply({content: '*Avoid using multiple commands at once*', components: []});
+                await interaction.editReply({content: 'Avoid using multiple commands at once', components: []});
                 log.error('Command Collision Detected')
             } else if (collected.first().customId === 'change-server-menu') {
                 await interaction.editReply({
@@ -105,7 +96,6 @@ export const mcChangeServerName = {
                 log.info('Server Renamed Successfully')
             }
         });
-
         let terminate: boolean = false
         await terminationListener(client, collector, terminate)
     }

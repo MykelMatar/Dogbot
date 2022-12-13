@@ -1,5 +1,5 @@
 import {CommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js";
-import {embedColor, EnlistLeaderboardUser, NewClient} from "../../dependencies/myTypes";
+import {embedColor, EnlistLeaderboardUser, GuildSchema, NewClient} from "../../dependencies/myTypes";
 
 //TODO if user changes username, does it affect any commands?
 /*
@@ -29,13 +29,17 @@ export const enlistLeaderboard = {
                 .setDescription('Whether to display the leaderboard or not')
                 .setRequired(false)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData) {
-        let userData = guildData.UserData
-        let percentageWeight: number = .8,
-            enlistWeight: number = 1,
-            ignoreWeight: number = .75
+    async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema) {
+        let ephemeralSetting
+        let hideOption = interaction.options.data.find(option => option.name === 'hide')
+        if (hideOption === undefined) ephemeralSetting = true
+        else ephemeralSetting = hideOption.value
 
-        // get total amount of enlists for normalization later
+        let userData = guildData.UserData
+        let percentageWeight: number = .9,
+            enlistWeight: number = 1,
+            ignoreWeight: number = 0 // using ignore values in rank calculations generated very odd leaderboards
+
         let totalEnlistValue: number = 0
         for (const user of userData) {
             let enlists: number = user.enlistStats.enlists
@@ -51,16 +55,16 @@ export const enlistLeaderboard = {
                 enlists: number = user.enlistStats.enlists,
                 rejects: number = user.enlistStats.rejects,
                 ignores: number = user.enlistStats.ignores
-            let userTotalValue: number = enlists + rejects
+            let totalOfValues: number = enlists + rejects + ignores
 
             if (rejects === 0) enlistPercentage = 1
-            else enlistPercentage = (enlists / userTotalValue)
+            else enlistPercentage = (enlists / totalOfValues)
 
             if (enlists === 0) rejectPercentage = 1
-            else rejectPercentage = (rejects / userTotalValue)
+            else rejectPercentage = (rejects / totalOfValues)
 
             if (enlists === 0 && rejects === 0) ignorePercentage = 100
-            else ignorePercentage = (ignores / user) * 100
+            else ignorePercentage = (ignores / totalOfValues) * 100
 
             let normalizedEnlistValue: number = enlists / totalEnlistValue,
                 normalizedRejectValue: number = rejects / totalEnlistValue
@@ -85,11 +89,11 @@ export const enlistLeaderboard = {
             let adjustedEnlistPercentage: number = enlistPercentage * percentageWeight,
                 adjustedRejectPercentage: number = rejectPercentage * percentageWeight,
                 adjustedEnlistValue: number = normalizedEnlistValue * enlistWeight,
-                adjustedRejectValue: number = normalizedRejectValue * enlistWeight,
-                adjustedIgnoreValue: number = ignorePercentage * ignoreWeight
+                adjustedRejectValue: number = normalizedRejectValue * enlistWeight
+            // adjustedIgnoreValue: number = ignorePercentage * ignoreWeight
 
-            let adjustedEnlistRank: number = adjustedEnlistPercentage + adjustedEnlistValue - adjustedIgnoreValue
-            let adjustedRejectRank: number = adjustedRejectPercentage + adjustedRejectValue + adjustedIgnoreValue
+            let adjustedEnlistRank: number = adjustedEnlistPercentage + adjustedEnlistValue
+            let adjustedRejectRank: number = adjustedRejectPercentage + adjustedRejectValue
 
             let leaderboardUser: EnlistLeaderboardUser = {
                 name: user.username,
@@ -102,7 +106,18 @@ export const enlistLeaderboard = {
             }
             userArray.push(leaderboardUser)
         }
-        userArray = userArray.filter(user => (user.enlists + user.rejects >= 5)) // reduce outliers
+        userArray = userArray.filter(user => (user.enlists + user.rejects >= 10)) // reduce outliers
+        if (userArray.length == 0) {
+            return interaction.reply({
+                content: 'No users have enlisted more than 10 times.',
+                ephemeral: ephemeralSetting
+            })
+        } else if (userArray.length < 3) {
+            return interaction.reply({
+                content: 'Not enough users have enlisted more than 10 times (need at least 3).',
+                ephemeral: ephemeralSetting
+            })
+        }
 
         // 2d arrays that store names, percentages, and total enlist values
         let topNames: string[] = [], topPercentages = [], topTotals = []
@@ -135,12 +150,7 @@ export const enlistLeaderboard = {
                 {name: 'Total Interactions', value: top3Losers[2].join(''), inline: true},
             ])
             .setColor(embedColor)
-            .setFooter({text: 'Users with less than 5 interactions are not included on this leaderboard'})
-
-        let ephemeralSetting
-        let hideOption = interaction.options.data.find(option => option.name === 'hide')
-        if (hideOption === undefined) ephemeralSetting = true
-        else ephemeralSetting = hideOption.value
+            .setFooter({text: 'Users with less than 10 interactions are not included on this leaderboard'})
 
         await interaction.reply({ephemeral: ephemeralSetting, embeds: [embed]})
     }

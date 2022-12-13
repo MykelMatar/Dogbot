@@ -1,5 +1,5 @@
 import {CommandInteraction, PermissionFlagsBits, SlashCommandBuilder} from "discord.js";
-import {NewClient} from "../../dependencies/myTypes";
+import {GuildSchema, NewClient} from "../../dependencies/myTypes";
 
 export const enlistSetRole = {
     data: new SlashCommandBuilder()
@@ -11,8 +11,8 @@ export const enlistSetRole = {
                 .setDescription('The role to be detected by Dogbot')
                 .setRequired(true)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData) {
-        guildData.ServerData.roles.autoenlist = interaction.options.data[0].value
+    async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema) {
+        guildData.ServerData.roles.autoenlist = interaction.options.data[0].value as string
         await guildData.save()
         await interaction.reply({ephemeral: true, content: 'Autoenlist role set sucessfully'})
     }

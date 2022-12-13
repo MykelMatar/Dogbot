@@ -3,12 +3,13 @@ import {
     ButtonBuilder,
     ButtonStyle,
     CommandInteraction,
+    CommandInteractionOption,
     ComponentType,
     EmbedBuilder,
     Message,
     SlashCommandBuilder
 } from "discord.js";
-import {embedColor, NewClient} from "../../dependencies/myTypes";
+import {embedColor, GuildSchema, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 import {terminationListener} from "../../dependencies/helpers/terminationListener";
 import {status} from "minecraft-server-util";
@@ -27,15 +28,12 @@ export const mcListServers = {
                 .setDescription('Whether to display the leaderboard or not')
                 .setRequired(false)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData, guildName: string) {
+    async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema, guildName: string) {
         const MCServerData = guildData.MCServerData
-
-        // retrieve server names and IPs
         let serverNameList: string[] = [],
             serverIPList: string[] = [],
             serverStatusList: string[] = []
-
-        let statusOption = interaction.options.data.find(option => option.name === 'get-status')
+        let statusOption: CommandInteractionOption = interaction.options.data.find(option => option.name === 'get-status')
 
         for (const MCServer of MCServerData.serverList) {
             serverNameList.push(MCServer.name)
@@ -50,7 +48,6 @@ export const mcListServers = {
                     })
             }
         }
-
         // ensure list is never empty; embeds cannot receive empty values
         if (serverIPList.length === 0) {   // using server IP List ensures a nameless IP is not overwritten
             serverNameList = ["N/A"]
@@ -96,11 +93,9 @@ export const mcListServers = {
                 );
         }
 
-        // generate embed
         const embed = new EmbedBuilder()
             .setTitle('Registered MC Servers')
             .addFields(
-                // join(' /n') removes commas and adds newline to array
                 {name: 'Server Name', value: serverNameList.join(' \n'), inline: true},
                 {name: 'IP', value: serverIPList.join(' \n '), inline: true},
             )
@@ -113,7 +108,6 @@ export const mcListServers = {
 
         let sent: Message = await interaction.editReply({embeds: [embed], components: [row]})
 
-        // create collector
         const filter = i => i.user.id === interaction.member.user.id;
         const collector = interaction.channel.createMessageComponentCollector({
             filter,
@@ -121,16 +115,13 @@ export const mcListServers = {
             time: 20000
         });
 
-        // retrieve commands for button
-        const command1 = client.commands.get('mc-add-server');
-        const command2 = client.commands.get('mc-delete-server');
-        const command3 = client.commands.get('mc-change-server');
-
         try {
+            const command1 = client.commands.get('mc-add-server');
+            const command2 = client.commands.get('mc-delete-server');
+            const command3 = client.commands.get('mc-change-server');
             collector.on('collect', async i => {
                 if (i.message.id != sent.id) return
                 let update, execute;
-                // interaction handling
                 if (i.customId === 'ListAdd') {
                     update = i.update({embeds: [], content: '*Adding Server...*', components: []});
                     execute = command1.execute(client, interaction, guildData, guildName);

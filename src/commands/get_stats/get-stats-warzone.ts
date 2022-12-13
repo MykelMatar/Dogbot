@@ -1,5 +1,5 @@
 import {CommandInteraction, CommandInteractionOption, EmbedBuilder, SlashCommandBuilder} from "discord.js";
-import {embedColor, NewClient} from "../../dependencies/myTypes";
+import {embedColor, GuildSchema, NewClient} from "../../dependencies/myTypes";
 import {login, platforms, Warzone} from "call-of-duty-api";
 import log from "../../dependencies/logger";
 
@@ -27,7 +27,7 @@ export const getStatsWarzone = {
             option.setName('hide')
                 .setDescription('hides stats from others')),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData) {
+    async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema) {
         let platformOption: CommandInteractionOption = interaction.options.data.find(option => option.name === 'platform')
         let usernameOption: CommandInteractionOption = interaction.options.data.find(option => option.name === 'username')
         let userData, platform: platforms, username: string
@@ -50,7 +50,7 @@ export const getStatsWarzone = {
             return interaction.editReply({content: `must input both a username and platform. `})
         }
 
-        login(process.env.SSO_TOKEN); // login to call of duty API
+        login(process.env.SSO_TOKEN)
         try {
             let data = await Warzone.fullData(username, platform);
             log.info(data)

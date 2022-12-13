@@ -1,4 +1,4 @@
-import {getFiles} from "../dependencies/helpers/get-files";
+import {getFiles} from "../dependencies/helpers/getFiles";
 import {NewClient} from "../dependencies/myTypes";
 import {REST} from "@discordjs/rest";
 import {Routes} from "discord.js"

@@ -1,5 +1,5 @@
 import {CommandInteraction, CommandInteractionOption, EmbedBuilder, SlashCommandBuilder} from "discord.js";
-import {embedColor, NewClient} from "../../dependencies/myTypes";
+import {embedColor, GuildSchema, NewClient} from "../../dependencies/myTypes";
 
 export const enlistStats = {
     data: new SlashCommandBuilder()
@@ -14,8 +14,7 @@ export const enlistStats = {
                 .setDescription('Whether to hide the response or not')
                 .setRequired(false)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData) {
-        // set user whose data is being retrieved
+    async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema) {
         let username: string, userId: string
         let user: CommandInteractionOption = (interaction.options.data.find(option => option.name === 'user'));
         if (user == undefined) {
@@ -26,22 +25,19 @@ export const enlistStats = {
             userId = (user.value).toString()
         }
 
-        // retrieve user data from mongo
         let userData = guildData.UserData.find(user => user.id === userId)
         if (userData === undefined) {
             return interaction.reply({
                 ephemeral: true,
-                content: 'User does not have any data. Data is only created for users who have enlisted, rejected, or played a game'
+                content: 'User does not have any data. Data is only created for users who have enlisted, rejected, or retrieved game stats'
             })
         }
 
-        // get enlist stats
         let enlistRatio: string, socialStatus: string, commendation: string
         const enlistValue: number = userData.enlistStats.enlists
         const rejectValue: number = userData.enlistStats.rejects
         const ignoreValue: number = userData.enlistStats.ignores
 
-        // find enlist-to-reject ratio
         if (rejectValue !== 0) enlistRatio = (enlistValue / rejectValue).toFixed(2)
         else enlistRatio = enlistValue.toFixed(2)
 
@@ -56,7 +52,6 @@ export const enlistStats = {
 
         if (enlistValue === 0 && rejectValue === 0) ignorePercentage = 100
         else ignorePercentage = (ignoreValue / totalValue) * 100
-
 
         // determine social status and commendation
         if (ignoreValue > enlistValue + rejectValue) {
