@@ -13,7 +13,7 @@ const client = new Client({
     }
 }) as NewClient
 
-client.commands = new Collection(); // create commands property for Client so commands can be passed around 
+client.commands = new Collection();
 
 ['command_handler', 'event_handler'].forEach(handler => {
     require(`./handlers/${handler}`).default(client)
