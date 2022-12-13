@@ -1,5 +1,5 @@
 import {CommandInteraction, CommandInteractionOption, EmbedBuilder, SlashCommandBuilder} from "discord.js";
-import {NewClient} from "../../dependencies/myTypes";
+import {embedColor, NewClient} from "../../dependencies/myTypes";
 import {login, platforms, Warzone} from "call-of-duty-api";
 import log from "../../dependencies/logger";
 
@@ -63,7 +63,7 @@ export const getStatsWarzone = {
                     {name: 'Wins ', value: ``, inline: true},
                     {name: 'Top 10', value: ``, inline: true},
                 )
-                .setColor("#B8CAD1")
+                .setColor(embedColor)
                 .setFooter({text: 'via Tracker.gg, visit the website for more info'})
 
             await interaction.editReply({embeds: [embed]})

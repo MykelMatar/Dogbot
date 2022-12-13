@@ -14,6 +14,6 @@ export const enlistSetRole = {
     async execute(client: NewClient, interaction: CommandInteraction, guildData) {
         guildData.ServerData.roles.autoenlist = interaction.options.data[0].value
         await guildData.save()
-        await interaction.reply({ephemeral: true, content: '*Autoenlist role set sucessfully*'})
+        await interaction.reply({ephemeral: true, content: 'Autoenlist role set sucessfully'})
     }
 }

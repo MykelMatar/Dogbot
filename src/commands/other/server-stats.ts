@@ -1,5 +1,5 @@
 import {CommandInteraction, EmbedBuilder, Guild, GuildMember, SlashCommandBuilder} from "discord.js";
-import {NewClient} from "../../dependencies/myTypes";
+import {embedColor, NewClient} from "../../dependencies/myTypes";
 
 export const serverStats = {
     data: new SlashCommandBuilder()
@@ -28,7 +28,7 @@ export const serverStats = {
                 {name: `Server Verification⠀⠀`, value: verification, inline: true},
                 {name: 'Premium Tier', value: `${guild.premiumTier}`, inline: true},
             )
-            .setColor("#B8CAD1")
+            .setColor(embedColor)
 
         await interaction.editReply({embeds: [embed]})
     }

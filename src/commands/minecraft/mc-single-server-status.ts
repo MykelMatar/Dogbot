@@ -10,9 +10,9 @@ import {
     SlashCommandBuilder,
 } from "discord.js";
 import {status, statusBedrock} from "minecraft-server-util";
-import {MinecraftServer, NewClient} from "../../dependencies/myTypes";
+import {embedColor, MinecraftServer, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
-import {McSingleServerCollector} from "../../dependencies/helpers/mcSingleServerCollector";
+import {terminationListener} from "../../dependencies/helpers/terminationListener";
 
 export const mcSingleServerStatus = {
     data: new SlashCommandBuilder()
@@ -32,9 +32,7 @@ export const mcSingleServerStatus = {
                 .setRequired(false)),
 
     async execute(client: NewClient, interaction: CommandInteraction, guildData): Promise<void> {
-        const serverList = guildData.MCServerData.serverList
-
-        let server: MinecraftServer = { // setup object to push to mongoDB
+        let server: MinecraftServer = {
             name: undefined,
             ip: undefined,
             port: undefined
@@ -42,11 +40,12 @@ export const mcSingleServerStatus = {
         let portOption: CommandInteractionOption = (interaction.options.data.find(option => option.name === 'port'));
         if (portOption === undefined) {
             server.port = 25565
-        } else server.port = portOption.value as number // value is guaranteed to be number
+        } else {
+            server.port = portOption.value as number
+        }
+        server.ip = interaction.options.data[0].value as string
 
-        server.ip = interaction.options.data[0].value as string; // value is guaranteed to be string
         const options = {timeout: 3000}
-
         status(server.ip, server.port, options)
             .then(async (response) => {
                 log.info('Server Online')
@@ -66,20 +65,55 @@ export const mcSingleServerStatus = {
                         {name: 'Version', value: `> Java Edition - ${response.version.name.toString()}`},
                         {name: 'Online Players', value: `>  ${response.players.online.toString()}`},
                     )
-                    .setColor('#B8CAD1')
+                    .setColor(embedColor)
                     .setFooter({text: 'Server Online'})
 
-                // give button to add server only if server list is not full
-                let sent: Message
+                const serverList = guildData.MCServerData.serverList
                 if (serverList.length === 10 || serverList.some(servers => servers["ip"] === server.ip)) {
                     return interaction.editReply({embeds: [embed]})
                 } else {
-                    sent = await interaction.editReply({embeds: [embed], components: [row]})
+                    var statusMessage: Message = await interaction.editReply({embeds: [embed], components: [row]})
                 }
-                await McSingleServerCollector(client, interaction, embed, server, guildData, sent)
+
+                const filter = i => i.user.id === interaction.member.user.id;
+                const collector = interaction.channel.createMessageComponentCollector({
+                    filter,
+                    componentType: ComponentType.Button,
+                    time: 10000
+                });
+
+                collector.on('collect', async i => {
+                    if (i.message.id != statusMessage.id) return
+                    if (i.customId === 'SingleAdd') {
+                        await i.update({
+                            embeds: [embed],
+                            content: 'Adding Server',
+                            components: []
+                        });
+                        serverList.push(server);
+                        await guildData.save();
+                        collector.stop()
+                    }
+                });
+
+                collector.on('end', async collected => {
+                    if (collected.size === 0)
+                        await interaction.editReply({
+                            embeds: [embed],
+                            components: []
+                        })
+                    else if (collected.first().customId === 'SingleAdd')
+                        await interaction.editReply({
+                            content: 'Server added successfully',
+                            embeds: [embed],
+                            components: []
+                        })
+                });
+
+                let terminate: boolean = false
+                await terminationListener(client, collector, terminate)
             })
             .catch(async () => {
-                // check if server is Bedrock 
                 statusBedrock(server.ip, server.port, options)
                     .then(async response => {
                         log.info('Server Online')
@@ -102,7 +136,7 @@ export const mcSingleServerStatus = {
 
                         const embed = new EmbedBuilder()
                             .addFields({name: 'Server Offline', value: '*all good, try going outside*'})
-                            .setColor('#B8CAD1')
+                            .setColor(embedColor)
 
                         await interaction.editReply({embeds: [embed]})
                     })

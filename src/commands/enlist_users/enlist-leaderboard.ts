@@ -1,5 +1,5 @@
 import {CommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js";
-import {LeaderboardUser, NewClient} from "../../dependencies/myTypes";
+import {embedColor, EnlistLeaderboardUser, NewClient} from "../../dependencies/myTypes";
 
 //TODO if user changes username, does it affect any commands?
 /*
@@ -31,28 +31,27 @@ export const enlistLeaderboard = {
 
     async execute(client: NewClient, interaction: CommandInteraction, guildData) {
         let userData = guildData.UserData
+        let percentageWeight: number = .8,
+            enlistWeight: number = 1,
+            ignoreWeight: number = .75
 
         // get total amount of enlists for normalization later
         let totalEnlistValue: number = 0
         for (const user of userData) {
-            let enlists = user.enlistStats.enlists
-            let rejects = user.enlistStats.rejects
-
+            let enlists: number = user.enlistStats.enlists
+            let rejects: number = user.enlistStats.rejects
             totalEnlistValue += (enlists + rejects)
         }
 
-        // declare  weights (use 'as it is' / no normalization)
-        let percentageWeight = .8,
-            enlistWeight = 1,
-            ignoreWeight = .75
-
-        let tempUsers: LeaderboardUser[] = []
+        let userArray: EnlistLeaderboardUser[] = []
         for (const user of userData) {
-            let enlistPercentage, rejectPercentage, ignorePercentage
-            let enlists: number = user.enlistStats.enlists,
+            let enlistPercentage: number,
+                rejectPercentage: number,
+                ignorePercentage: number,
+                enlists: number = user.enlistStats.enlists,
                 rejects: number = user.enlistStats.rejects,
                 ignores: number = user.enlistStats.ignores
-            let userTotalValue = enlists + rejects
+            let userTotalValue: number = enlists + rejects
 
             if (rejects === 0) enlistPercentage = 1
             else enlistPercentage = (enlists / userTotalValue)
@@ -83,50 +82,47 @@ export const enlistLeaderboard = {
                 ignorePercentage = 0
             }
 
-            let adjustedEnlistPercentage = enlistPercentage * percentageWeight,
-                adjustedRejectPercentage = rejectPercentage * percentageWeight,
-                adjustedEnlistValue = normalizedEnlistValue * enlistWeight,
-                adjustedRejectValue = normalizedRejectValue * enlistWeight,
-                adjustedIgnoreValue = ignorePercentage * ignoreWeight
+            let adjustedEnlistPercentage: number = enlistPercentage * percentageWeight,
+                adjustedRejectPercentage: number = rejectPercentage * percentageWeight,
+                adjustedEnlistValue: number = normalizedEnlistValue * enlistWeight,
+                adjustedRejectValue: number = normalizedRejectValue * enlistWeight,
+                adjustedIgnoreValue: number = ignorePercentage * ignoreWeight
 
             let adjustedEnlistRank: number = adjustedEnlistPercentage + adjustedEnlistValue - adjustedIgnoreValue
             let adjustedRejectRank: number = adjustedRejectPercentage + adjustedRejectValue + adjustedIgnoreValue
 
-            let tempUser: LeaderboardUser = {
+            let leaderboardUser: EnlistLeaderboardUser = {
                 name: user.username,
                 enlists: enlists,
                 rejects: rejects,
                 enlistPercentage: enlistPercentage,
-                rejectPercentage: rejectPercentage, // this + all above properties are for printing in embed
+                rejectPercentage: rejectPercentage,
                 adjustedEnlistRankValue: adjustedEnlistRank,
                 adjustedRejectRankValue: adjustedRejectRank,
             }
-
-            tempUsers.push(tempUser)
+            userArray.push(leaderboardUser)
         }
-        tempUsers = tempUsers.filter(user => (user.enlists + user.rejects >= 5)) // only include users with > 5 enlists to reduce outliers
+        userArray = userArray.filter(user => (user.enlists + user.rejects >= 5)) // reduce outliers
 
         // 2d arrays that store names, percentages, and total enlist values
-        let names1 = [], percentages1 = [], totals1 = []
-        let names2 = [], percentages2 = [], totals2 = []
-        let top3Gamers = [names1, percentages1, totals1],
-            top3Losers = [names2, percentages2, totals2]
+        let topNames: string[] = [], topPercentages = [], topTotals = []
+        let bottomNames: string[] = [], bottomPercentages = [], bottomTotals = []
+        let top3Gamers: Array<string[]> = [topNames, topPercentages, topTotals],
+            top3Losers: Array<string[]> = [bottomNames, bottomPercentages, bottomTotals]
 
-        // have to seperate rankings into 2 loops because of issue declaring both rankings as tempUsers.sort()
-        let enlistRankings: LeaderboardUser[] = tempUsers.sort((a, b) => (b.adjustedEnlistRankValue - a.adjustedEnlistRankValue))
+        // have to separate rankings into 2 loops because userArray needs to be sorted differently for each Ranking
+        let enlistRankings: EnlistLeaderboardUser[] = userArray.sort((a, b) => (b.adjustedEnlistRankValue - a.adjustedEnlistRankValue))
         for (let i = 0; i < 3; i++) {
             top3Gamers[0].push(`**${i + 1}.** ${enlistRankings[i].name}\n`,)
             top3Gamers[1].push(`**${i + 1}.** ${(enlistRankings[i].enlistPercentage * 100).toFixed(2)}\n`)
             top3Gamers[2].push(`**${i + 1}.** ${enlistRankings[i].enlists + enlistRankings[i].rejects}\n`)
         }
-
-        let rejectRankings: LeaderboardUser[] = tempUsers.sort((a, b) => (a.adjustedRejectRankValue < b.adjustedRejectRankValue ? 1 : -1))
+        let rejectRankings: EnlistLeaderboardUser[] = userArray.sort((a, b) => (a.adjustedRejectRankValue < b.adjustedRejectRankValue ? 1 : -1))
         for (let i = 0; i < 3; i++) {
             top3Losers[0].push(`**${i + 1}.** ${rejectRankings[i].name}\n`)
             top3Losers[1].push(`**${i + 1}.** ${(rejectRankings[i].rejectPercentage * 100).toFixed(2)}\n`,)
             top3Losers[2].push(`**${i + 1}.** ${rejectRankings[i].enlists + rejectRankings[i].rejects}\n`)
         }
-
 
         const embed = new EmbedBuilder()
             .setTitle(`Enlist Leaderboard`)
@@ -138,7 +134,7 @@ export const enlistLeaderboard = {
                 {name: 'Reject Percentage', value: top3Losers[1].join(''), inline: true},
                 {name: 'Total Interactions', value: top3Losers[2].join(''), inline: true},
             ])
-            .setColor('#B8CAD1')
+            .setColor(embedColor)
             .setFooter({text: 'Users with less than 5 interactions are not included on this leaderboard'})
 
         let ephemeralSetting

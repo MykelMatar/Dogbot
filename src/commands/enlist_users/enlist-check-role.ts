@@ -1,6 +1,5 @@
 import {CommandInteraction, SlashCommandBuilder} from "discord.js";
 import {NewClient} from "../../dependencies/myTypes";
-import guilds from "../../dependencies/schemas/guild-schema";
 
 export const enlistCheckRole = {
     data: new SlashCommandBuilder()
@@ -11,18 +10,20 @@ export const enlistCheckRole = {
                 .setDescription('Whether to display the response or not')
                 .setRequired(false)),
 
-    async execute(client: NewClient, interaction: CommandInteraction): Promise<void> {
-        const currentGuild = await guilds.findOne({guildId: interaction.guildId})
-        if (!currentGuild) return
-        let selectedRole = currentGuild.ServerData.roles.autoenlist
-
-        let role = interaction.guild.roles.cache.find(r => r.id === selectedRole)
-
-        let ephemeralSetting
+    async execute(client: NewClient, interaction: CommandInteraction, guildData): Promise<void> {
+        let enlistRole = guildData.ServerData.roles.autoenlist
+        let role = interaction.guild.roles.cache.find(r => r.id === enlistRole)
+        let ephemeralSetting: boolean
         let hideOption = interaction.options.data
-        if (hideOption.length == 0) ephemeralSetting = true
-        else ephemeralSetting = interaction.options.data[0].value
-
-        await interaction.reply({content: `${role}`, ephemeral: ephemeralSetting})
+        if (hideOption.length == 0) {
+            ephemeralSetting = true
+        } else {
+            ephemeralSetting = interaction.options.data[0].value as boolean
+        }
+        if (role !== undefined) {
+            await interaction.reply({content: `${role}`, ephemeral: ephemeralSetting})
+        } else {
+            await interaction.reply({content: `No role selected`, ephemeral: ephemeralSetting})
+        }
     }
 }

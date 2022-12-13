@@ -1,6 +1,8 @@
 import DiscordJS, {APISelectMenuOption, CommandInteraction, SlashCommandBuilder} from "discord.js";
 import {platforms} from "call-of-duty-api";
 
+export const embedColor = '#B8CAD1'
+
 export type NewClient = DiscordJS.Client & {
     commands: DiscordJS.Collection<string, SlashCommand> // allows commands to be bound to the client instance for global retrieval
 }
@@ -22,8 +24,7 @@ export interface DiscordMenuOption {
     value: string[]
 }
 
-// Interface to hold stats for users displayed on the enlist-leaderboard
-export interface LeaderboardUser {
+export interface EnlistLeaderboardUser {
     name: string
     enlists: number
     rejects: number
@@ -33,7 +34,12 @@ export interface LeaderboardUser {
     adjustedRejectRankValue: number
 }
 
-// Interface to hold user information for updating user stats in enlist-users
+export interface Leaderboard {
+    names: string[]
+    statPercentages: string[]
+    statTotals: string[]
+}
+
 export interface EnlistUserInfoArrays {
     enlistedUsers: string[]
     enlistedUserIds: string[] // for pushing user data to mongoDB
@@ -50,7 +56,7 @@ export interface MinecraftServer {
     port: number
 }
 
-export interface Guild { // mongoose schema interface
+export interface GuildSchema {
     guild: string
     guildId: string
     ServerData: {

@@ -35,16 +35,14 @@ export const mcAddServer = {
             port: undefined
         };
 
-        try {
-            // if slash command is used
+        try { // if slash command is used
             server.ip = interaction.options.data[0].value as string;
             server.name = interaction.options.data[1].value as string;
             let portOption: CommandInteractionOption = (interaction.options.data.find(option => option.name === 'port'));
             if (portOption === undefined) {
                 server.port = 25565
             } else server.port = portOption.value as number // value is guaranteed to be number
-        } catch {
-            // if button on /mc-list-servers is used
+        } catch { // if button on /mc-list-servers is used
             server.ip = await McAddServerInteraction(interaction, "Input server IP (server must be online)", "Request Timeout") as string;
             if (server.ip == null) return await interaction.editReply('*Invalid Server IP*');
             server.name = await McAddServerInteraction(interaction, "Input Name", "Request Timeout") as string;
@@ -58,8 +56,7 @@ export const mcAddServer = {
             // not using Promise.all bc 1 response must be collected before the other / not simultaneous
         }
 
-        // verify that IP is not already registered
-        if (serverList.some(o => o["ip"] === server.ip)) {
+        if (serverList.some(servers => servers["ip"] === server.ip)) {
             await interaction.editReply(
                 "Server already registered, double check the IP or use **/mc-change-server-name** to change its name"
             );

@@ -1,5 +1,5 @@
 import {AttachmentBuilder, CommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js";
-import {NewClient} from "../../dependencies/myTypes";
+import {embedColor, NewClient} from "../../dependencies/myTypes";
 
 export const help = {
     data: new SlashCommandBuilder()
@@ -20,7 +20,7 @@ export const help = {
             .setImage('attachment://Dogbot_Logo_512.png')
             .setURL('https://github.com/MykelMatar/Dogbot/wiki')
             .setFooter({text: 'This bot is created and maintained by Dogbert'})
-            .setColor("#B8CAD1")
+            .setColor(embedColor)
 
         await interaction.editReply({embeds: [embed], files: [file]})
     }

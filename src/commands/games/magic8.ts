@@ -1,5 +1,5 @@
 import {EmbedBuilder, SlashCommandBuilder} from "discord.js";
-import {NewClient} from "../../dependencies/myTypes";
+import {embedColor, NewClient} from "../../dependencies/myTypes";
 
 export const magic8 = {
     data: new SlashCommandBuilder()
@@ -15,7 +15,7 @@ export const magic8 = {
         let response = responses[Math.floor(Math.random() * responses.length)]
         let responseEmbed = new EmbedBuilder()
             .setTitle(response)
-            .setColor('#B8CAD1')
+            .setColor(embedColor)
 
         await interaction.reply({content: `Question: ${interaction.options.data[0].value}`, embeds: [responseEmbed]})
     }

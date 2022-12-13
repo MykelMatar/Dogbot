@@ -1,5 +1,5 @@
 import {CommandInteraction, CommandInteractionOption, EmbedBuilder, SlashCommandBuilder} from "discord.js";
-import {NewClient} from "../../dependencies/myTypes";
+import {embedColor, NewClient} from "../../dependencies/myTypes";
 
 export const enlistStats = {
     data: new SlashCommandBuilder()
@@ -103,7 +103,7 @@ export const enlistStats = {
                 {name: 'Cool or Cringe?⠀⠀', value: socialStatus, inline: true},
                 {name: 'Commendation', value: commendation, inline: true}
             ])
-            .setColor('#B8CAD1')
+            .setColor(embedColor)
 
         let ephemeralSetting
         let hideOption = interaction.options.data.find(option => option.name === 'hide')

@@ -1,7 +1,7 @@
 import {CommandInteraction, CommandInteractionOption, EmbedBuilder, SlashCommandBuilder} from "discord.js";
 import {fetchHTML} from "../../dependencies/helpers/fetchHTML";
 import {CheerioAPI} from "cheerio";
-import {NewClient} from "../../dependencies/myTypes";
+import {embedColor, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 
 // TODO make resistant to tracker.gg website changes
@@ -24,7 +24,6 @@ export const getStatsValorant = {
                 .setRequired(false)),
 
     async execute(client: NewClient, interaction: CommandInteraction, guildData) {
-        // retrieve username and tag
         let userOption: CommandInteractionOption = interaction.options.data.find(option => option.name === 'username')
         let tagOption: CommandInteractionOption = interaction.options.data.find(option => option.name === 'tag')
         let userData, user: string, tag: string
@@ -46,21 +45,19 @@ export const getStatsValorant = {
             (tagOption == undefined && userOption != undefined)) {
             return interaction.editReply({content: `must input both a username and platform. `})
         }
-
-        let uriUser = encodeURIComponent(user.trim()) // encode string to have URI value for URL
+        let uriUser = encodeURIComponent(user.trim())
         let uriTag = encodeURIComponent(tag.trim())
 
         // GET web page for user
         try {
-            // get webpages
             const url = `https://tracker.gg/valorant/profile/riot/${uriUser}%23${uriTag}/overview`
             const $: CheerioAPI = await fetchHTML(url);
 
             let status, privateProfile, error
-            $('h1').each(function () { // h1 is defined if an error code is present
+            $('h1').each(function() { // h1 is defined if an error code is present
                 status = $(this).text()
             });
-            $('span.lead').each(function () { // span.lead returns private profile errors
+            $('span.lead').each(function() { // span.lead returns private profile errors
                 privateProfile = $(this).text()
                 error = $(this).text() // contains error info if profile is not private
             });
@@ -79,7 +76,7 @@ export const getStatsValorant = {
                 return interaction.editReply(`*unknown error response. Please open an issue in the github issues page, or check if one already exists. The github page can be accessed by using /elp*`)
             }
 
-            // if no errors, proceed. create arrays to hold stats
+            // if no errors, proceed
             let stats: string[] = [],
                 statsRank: string[] = [],
                 topAgents = [],
@@ -90,19 +87,19 @@ export const getStatsValorant = {
             let rank: string = statHeaderClass.first().text();
 
             // retrieve all values needed for embed
-            $('span.value').each(function (i) { // overview stats section
+            $('span.value').each(function(i) { // overview stats section
                 stats[i] = $(this).text();
             });
-            $('span.rank').each(function (i) { // top% for the stats
+            $('span.rank').each(function(i) { // top% for the stats
                 statsRank[i] = $(this).text();
             });
-            $('div.st').each(function (i) { // top% for the stats
+            $('div.st').each(function(i) { // top% for the stats
                 topAgents[i] = $(this).text();
             });
-            $('div.weapon').each(function (i) { // top% for the stats
+            $('div.weapon').each(function(i) { // top% for the stats
                 topGuns[i] = $(this).text();
             });
-            $('span.playtime').each(function (i) { // top% for the stats
+            $('span.playtime').each(function(i) { // top% for the stats
                 playtime_span[i] = $(this).text();
             });
 
@@ -127,7 +124,7 @@ export const getStatsValorant = {
                     {name: 'Season Playtime ', value: playtime, inline: true},
                 )
                 .setURL(url)
-                .setColor("#B8CAD1")
+                .setColor(embedColor)
                 .setFooter({text: 'via Tracker.gg, visit the website for more info'})
 
             await interaction.editReply({embeds: [embed]})

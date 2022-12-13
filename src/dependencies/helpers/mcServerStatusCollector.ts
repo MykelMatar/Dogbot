@@ -4,7 +4,7 @@ import log from "../logger";
 import {terminationListener} from "./terminationListener";
 
 /**
- * button collector for minecraft commands
+ * button collector for mc-server-status command. In a seperate function because it is used twice
  *
  * @param client
  * @param interaction
@@ -12,7 +12,7 @@ import {terminationListener} from "./terminationListener";
  * @param guildName
  * @param statusPrompt
  */
-export async function McServerCollector(client: NewClient, interaction: CommandInteraction, guildData, guildName: string, statusPrompt: Message) {
+export async function McServerStatusCollector(client: NewClient, interaction: CommandInteraction, guildData, guildName: string, statusPrompt: Message) {
     const filter = i => i.user.id === interaction.member.user.id;
     const collector = interaction.channel.createMessageComponentCollector({
         filter,

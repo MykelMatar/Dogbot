@@ -8,7 +8,7 @@ import {
     Message,
     SlashCommandBuilder
 } from "discord.js";
-import {NewClient} from "../../dependencies/myTypes";
+import {embedColor, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 import {terminationListener} from "../../dependencies/helpers/terminationListener";
 import {status} from "minecraft-server-util";
@@ -104,7 +104,7 @@ export const mcListServers = {
                 {name: 'Server Name', value: serverNameList.join(' \n'), inline: true},
                 {name: 'IP', value: serverIPList.join(' \n '), inline: true},
             )
-            .setColor('#B8CAD1')
+            .setColor(embedColor)
             .setFooter({text: MCServerData.serverList.length + ' / 10 Servers Registered'})
 
         if (statusOption != undefined) {

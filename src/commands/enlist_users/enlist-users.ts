@@ -13,7 +13,7 @@ import {
     Role,
     SlashCommandBuilder
 } from "discord.js";
-import {EnlistUserInfoArrays, NewClient} from "../../dependencies/myTypes";
+import {embedColor, EnlistUserInfoArrays, NewClient} from "../../dependencies/myTypes";
 import {updateEnlistUserArrays} from "../../dependencies/helpers/updateEnlistUserArrays";
 import {StatName, updateUserData} from "../../dependencies/helpers/updateUserData";
 import log from "../../dependencies/logger";
@@ -85,7 +85,7 @@ export const enlistUsers = {
                 {name: 'Perhaps', value: '-', inline: true},
                 {name: 'Not Gaming', value: '-', inline: true},
             )
-            .setColor('#B8CAD1')
+            .setColor(embedColor)
             .setFooter({text: 'Selecting the "Perhaps" option will not count towards your enlist stats',})
 
         // send prompt. Not an interaction reply bc interactions are only editable for 15 min
@@ -98,7 +98,7 @@ export const enlistUsers = {
 
         let userArrays: EnlistUserInfoArrays = {
             enlistedUsers: ['-'],
-            enlistedUserIds: [], // for pushing user data to mongoDB
+            enlistedUserIds: [],
             rejectedUsers: ['-'],
             rejectedUserIds: [],
             potentialUsers: ['-'],
@@ -106,7 +106,6 @@ export const enlistUsers = {
             ignoredUserIds: [],
         }
 
-        // create collector and run
         const collector: InteractionCollector<ButtonInteraction> = interaction.channel.createMessageComponentCollector({
             componentType: ComponentType.Button,
             time: 1.08e+7 // 3 hour (1.08e+7) timer
@@ -130,7 +129,7 @@ export const enlistUsers = {
                     embed.data.fields[2].value = userArrays.rejectedUsers.join('');
                     await enlistPrompt.edit({content: `${role}`, embeds: [embed], components: [row]});
                 }
-            }); // collector 
+            });
         } catch (e) {
             await enlistPrompt.edit({
                 content: '*error while collecting responses, please try again*',
@@ -142,24 +141,23 @@ export const enlistUsers = {
 
         collector.on('end', async collected => {
             await enlistPrompt.edit({content: '⚠ ***ENLISTING ENDED*** ⚠', embeds: [embed], components: []})
-            if (collected.size === 0) return // make sure users were collected
+            if (collected.size === 0) return
 
-            let allUserIds: string[] = [],
-                allRegisteredUserIds: string[] = []
+            // logic to get users who ignored the enlist prompt for ignore% stat
+            let guildMemberIds: string[] = [], // all users who have data in MongoDB
+                enlistPromptUserIds: string[] = [] // all users who interacted with enlist prompt
             for (const user of userData) {
-                allUserIds.push(user.id)
+                guildMemberIds.push(user.id)
             }
-
-            userArrays.enlistedUserIds.forEach(id => allRegisteredUserIds.push(id))
-            userArrays.rejectedUserIds.forEach(id => allRegisteredUserIds.push(id))
-            userArrays.potentialUserIds.forEach(id => allRegisteredUserIds.push(id))
-            userArrays.ignoredUserIds = allUserIds.filter(id => !(allRegisteredUserIds.includes(id)))
+            userArrays.enlistedUserIds.forEach(id => enlistPromptUserIds.push(id))
+            userArrays.rejectedUserIds.forEach(id => enlistPromptUserIds.push(id))
+            userArrays.potentialUserIds.forEach(id => enlistPromptUserIds.push(id))
+            userArrays.ignoredUserIds = guildMemberIds.filter(id => !(enlistPromptUserIds.includes(id)))
 
             await updateUserData(interaction, userArrays.enlistedUserIds, StatName.enlist);
             await updateUserData(interaction, userArrays.rejectedUserIds, StatName.reject);
             await updateUserData(interaction, userArrays.ignoredUserIds, StatName.ignore);
         });
-
         let terminate: boolean = false
         await terminationListener(client, collector, terminate)
     }
