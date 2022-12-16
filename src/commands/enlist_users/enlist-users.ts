@@ -51,6 +51,7 @@ export const enlistUsers = {
         }
         if (roleOption != undefined) {
             role = roleOption.value as string | Role
+            role = `<@&${role}>` // discord API format to @role
         } else {
             const currentGuild = await guilds.findOne({guildId: interaction.guildId})
             let selectedRole = currentGuild.ServerData.roles.autoenlist
