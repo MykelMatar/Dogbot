@@ -20,6 +20,7 @@ import log from "../../dependencies/logger";
 import {terminationListener} from "../../dependencies/helpers/terminationListener";
 import guilds from "../../dependencies/schemas/guild-schema";
 
+//TODO maybe add a Gaming Squad embed after the collector ends that displays everyone who registered
 export const enlistUsers = {
     data: new SlashCommandBuilder()
         .setName('enlist-users')
