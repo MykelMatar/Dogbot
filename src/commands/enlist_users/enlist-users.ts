@@ -36,7 +36,7 @@ export const enlistUsers = {
         ),
     // cooldown: 10800, // 3 hour cooldown to match the 3 hour enlist timer
     async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema) {
-        await interaction.reply({content: '*prompt sent*', ephemeral: true})
+        await interaction.reply({content: 'prompt sent', ephemeral: true})
         const userData = guildData.UserData
 
         // retrieve parameters

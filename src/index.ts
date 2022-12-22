@@ -19,6 +19,6 @@ client.commands = new Collection();
     require(`./handlers/${handler}`).default(client)
 });
 
-client.login(process.env.BOT_TOKEN).catch(e => log.error(e))
+client.login(process.env.BOT_TEST_TOKEN).catch(e => log.error(e))
 
 //console.log(process.memoryUsage().heapUsed / 1024 / 1024) check mb of mem usage
