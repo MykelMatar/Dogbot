@@ -6,6 +6,7 @@ export const embedColor = '#B8CAD1'
 
 export type NewClient = DiscordJS.Client & {
     commands: DiscordJS.Collection<string, SlashCommand> // allows commands to be bound to the client instance for global retrieval
+    testBot: boolean // whether it is the test bot or not
 }
 
 export type SlashCommand = {
