@@ -41,5 +41,14 @@
     "pino-pretty": "^9.1.1",
     "ts-node": "^10.8.0",
     "typescript": "^4.7.2"
+  },
+  "nodemonConfig": {
+    "verbose": true,
+    "watch": [
+      "src/**/*.ts"
+    ],
+    "execMap": {
+      "ts": "ts-node"
+    }
   }
 }
