@@ -21,13 +21,13 @@ const client = new Client({
 }) as NewClient
 
 client.commands = new Collection();
-client.testBot = true; // set false if deploying Dogbot
+client.isTestBot = true; // set false if deploying Dogbot
 
 ['command_handler', 'event_handler'].forEach(handler => {
     require(`./handlers/${handler}`).default(client)
 });
 
-if (client.testBot) {
+if (client.isTestBot) {
     client.login(process.env.BOT_TEST_TOKEN).catch(e => log.error(e))
 } else {
     client.login(process.env.BOT_TOKEN).catch(e => log.error(e))

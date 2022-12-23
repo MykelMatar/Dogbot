@@ -6,13 +6,35 @@ export const embedColor = '#B8CAD1'
 
 export type NewClient = DiscordJS.Client & {
     commands: DiscordJS.Collection<string, SlashCommand> // allows commands to be bound to the client instance for global retrieval
-    testBot: boolean // whether it is the test bot or not
+    isTestBot: boolean // whether it is the test bot or not
 }
 
 export type SlashCommand = {
     data: SlashCommandBuilder
     cooldown: number
     execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema, guildName: string): Promise<void>
+}
+
+export type GameProfile = ValorantProfile | WarzoneProfile
+
+export interface ValorantProfile {
+    username: string
+    tag: string
+}
+
+export interface WarzoneProfile {
+    username: string
+    platform: platforms
+}
+
+export enum UserStats {
+    tttWins = 'tttWins',
+    tttLosses = 'tttLosses',
+    enlist = 'enlist',
+    reject = 'reject',
+    ignore = 'ignore',
+    wzProfile = 'wzProfile',
+    valProfile = 'valProfile',
 }
 
 export type MenuGeneratorReturnValues = {

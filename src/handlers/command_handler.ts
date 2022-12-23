@@ -17,7 +17,7 @@ export default (client: NewClient) => {
     }
 
     // slash command registration
-    if (client.testBot) { // Guild bound commands using testing bot
+    if (client.isTestBot) { // Guild bound commands using testing bot
         let testingServer = '715122900021149776'
         const rest = new REST({version: '10'}).setToken(process.env.BOT_TEST_TOKEN);
         (async () => {

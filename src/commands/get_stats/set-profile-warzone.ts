@@ -1,7 +1,7 @@
 import {CommandInteraction, CommandInteractionOption, SlashCommandBuilder} from "discord.js";
-import {GuildSchema, NewClient} from "../../dependencies/myTypes";
+import {GameProfile, NewClient, UserStats} from "../../dependencies/myTypes";
 import {platforms} from "call-of-duty-api";
-import {StatName, updateUserData} from "../../dependencies/helpers/updateUserData";
+import {updateUserData} from "../../dependencies/helpers/updateUserData";
 
 export const setProfileWarzone = {
     data: new SlashCommandBuilder()
@@ -27,19 +27,14 @@ export const setProfileWarzone = {
                 .setDescription('Whether to hide response or not')
                 .setRequired(false)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema) {
-        let userData: object[] = guildData.UserData
-        if (userData.length === 0) {
-            return interaction.reply({content: 'This server does not have any user data. User data is created upon interacting with the enlist prompt or playing a game'})
-        }
-
+    async execute(client: NewClient, interaction: CommandInteraction) {
         let platformOption: CommandInteractionOption = interaction.options.data.find(option => option.name === 'platform')
         let usernameOption: CommandInteractionOption = interaction.options.data.find(option => option.name === 'username')
-        let username = usernameOption.value as string
-        let platform = platformOption.value as platforms
-
-        await updateUserData(interaction, [interaction.user.id], StatName.wzProfile, [username, platform])
-
+        let profile: GameProfile = {
+            username: usernameOption.value as string,
+            platform: platformOption.value as platforms
+        }
+        await updateUserData(interaction, [interaction.user.id], UserStats.wzProfile, profile)
         await interaction.reply({
             content: `profile saved. You can now use get-stats-warzone without inputting your information.`,
             ephemeral: true

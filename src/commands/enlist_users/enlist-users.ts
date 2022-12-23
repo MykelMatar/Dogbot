@@ -13,9 +13,9 @@ import {
     Role,
     SlashCommandBuilder
 } from "discord.js";
-import {embedColor, EnlistUserInfoArrays, GuildSchema, NewClient} from "../../dependencies/myTypes";
+import {embedColor, EnlistUserInfoArrays, GuildSchema, NewClient, UserStats} from "../../dependencies/myTypes";
 import {updateEnlistUserArrays} from "../../dependencies/helpers/updateEnlistUserArrays";
-import {StatName, updateUserData} from "../../dependencies/helpers/updateUserData";
+import {updateUserData} from "../../dependencies/helpers/updateUserData";
 import log from "../../dependencies/logger";
 import {terminationListener} from "../../dependencies/helpers/terminationListener";
 import guilds from "../../dependencies/schemas/guild-schema";
@@ -97,7 +97,6 @@ export const enlistUsers = {
             files: [file],
             components: [row]
         })
-
         let userArrays: EnlistUserInfoArrays = {
             enlistedUsers: ['-'],
             enlistedUserIds: [],
@@ -112,14 +111,10 @@ export const enlistUsers = {
             componentType: ComponentType.Button,
             time: 1.08e+7 // 3 hour (1.08e+7) timer
         });
-
         try {
-            //@ts-ignore (typescipt thinks .custom_id property does not exist)
-            let button1CustomId = row.components[0].data.custom_id
-            //@ts-ignore
-            let button2CustomId = row.components[1].data.custom_id
-            //@ts-ignore
-            let button3CustomId = row.components[2].data.custom_id
+            let button1CustomId = row.components[0].data["custom_id"]
+            let button2CustomId = row.components[1].data["custom_id"]
+            let button3CustomId = row.components[2].data["custom_id"]
             collector.on('collect', async i => {
                 if (i.message.id != enlistPrompt.id) return // prevent simultaneous prompt from affecting each other
                 if (i.customId === button1CustomId || i.customId === button2CustomId || i.customId === button3CustomId) {
@@ -156,9 +151,9 @@ export const enlistUsers = {
             userArrays.potentialUserIds.forEach(id => enlistPromptUserIds.push(id))
             userArrays.ignoredUserIds = guildMemberIds.filter(id => !(enlistPromptUserIds.includes(id)))
 
-            await updateUserData(interaction, userArrays.enlistedUserIds, StatName.enlist);
-            await updateUserData(interaction, userArrays.rejectedUserIds, StatName.reject);
-            await updateUserData(interaction, userArrays.ignoredUserIds, StatName.ignore);
+            await updateUserData(interaction, userArrays.enlistedUserIds, UserStats.enlist);
+            await updateUserData(interaction, userArrays.rejectedUserIds, UserStats.reject);
+            await updateUserData(interaction, userArrays.ignoredUserIds, UserStats.ignore);
         });
         let terminate: boolean = false
         await terminationListener(client, collector, terminate)
