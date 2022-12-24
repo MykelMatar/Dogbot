@@ -17,7 +17,7 @@ export async function updateUserData(interaction: CommandInteraction, userIdArra
     log.info(`Valid ${statName} user ID array provided`)
 
     const currentGuild = await guilds.findOne({guildId: interaction.guildId})
-    const UserData = currentGuild.UserData
+    const userData = currentGuild.UserData
 
     let statsArray: number[] = []; // default values if user has no data
     switch (statName) {
@@ -39,14 +39,14 @@ export async function updateUserData(interaction: CommandInteraction, userIdArra
     }
 
     log.info('checking for user data...')
-    if (UserData.length == 0) {
+    if (userData.length == 0) {
         log.info(`no user data for ${interaction.guild.name}`)
         let guildMember = await interaction.guild.members.fetch(userIdArray[0])
         log.info(`creating user data for ${guildMember.user.username}...`)
         switch (statName) {
             case UserStats.tttWins:
             case UserStats.tttLosses:
-                UserData.push({
+                userData.push({
                     username: guildMember.user.username,
                     id: userIdArray[0],
                     tttStats: {
@@ -58,7 +58,7 @@ export async function updateUserData(interaction: CommandInteraction, userIdArra
             case UserStats.enlist:
             case UserStats.reject:
             case UserStats.ignore:
-                UserData.push({
+                userData.push({
                     username: guildMember.user.username,
                     id: userIdArray[0],
                     enlistStats: {
@@ -70,7 +70,7 @@ export async function updateUserData(interaction: CommandInteraction, userIdArra
                 break;
             case UserStats.wzProfile:
                 if (!("platform" in profile)) return log.error('Incorrect profile type. Warzone Profile has the "platform" property.')
-                UserData.push({
+                userData.push({
                     username: guildMember.user.username,
                     id: userIdArray[0],
                     warzoneProfile: {
@@ -81,7 +81,7 @@ export async function updateUserData(interaction: CommandInteraction, userIdArra
                 break;
             case UserStats.valProfile:
                 if (!("tag" in profile)) return log.error('Incorrect profile type. Valorant Profile has the "tag" property.')
-                UserData.push({
+                userData.push({
                     username: guildMember.user.username,
                     id: userIdArray[0],
                     valorantProfile: {
@@ -98,19 +98,20 @@ export async function updateUserData(interaction: CommandInteraction, userIdArra
             return log.info(`Done!`)
         }
     }
+
     for (const userId of userIdArray) { // 'for of' instead of 'for each' so await can be used
         const index = userIdArray.indexOf(userId);
 
         let guildMember = await interaction.guild.members.fetch(userId)
-        if (!(UserData.some(user => user.id === userIdArray[index]))) { // if user data doesnt exist, create data
+        if (!(userData.some(user => user.id === userIdArray[index]))) { // if user data doesnt exist, create data
             log.info(`creating user data for ${guildMember.user.username}...`)
             let username = interaction.guild.members.cache.get(`${userIdArray[index]}`).user.username
 
             switch (statName) {
                 case UserStats.tttWins:
                 case UserStats.tttLosses:
-                    if (UserData[index].tttStats == null) {
-                        UserData.push({
+                    if (userData[index].tttStats == null) {
+                        userData.push({
                             username: username,
                             id: userIdArray[index],
                             tttStats: {
@@ -123,8 +124,8 @@ export async function updateUserData(interaction: CommandInteraction, userIdArra
                 case UserStats.enlist:
                 case UserStats.reject:
                 case UserStats.ignore:
-                    if (UserData[index].enlistStats == null) {
-                        UserData.push({
+                    if (userData[index].enlistStats == null) {
+                        userData.push({
                             username: username,
                             id: userIdArray[index],
                             enlistStats: {
@@ -137,8 +138,8 @@ export async function updateUserData(interaction: CommandInteraction, userIdArra
                     break;
                 case UserStats.wzProfile:
                     if (!("platform" in profile)) return log.error('Incorrect profile type. Warzone Profile has the "platform" property.')
-                    if (UserData[index].warzoneProfile != null) return log.error(`User already has Warzone profile data`)
-                    UserData.push({
+                    if (userData[index].warzoneProfile != null) return log.error(`User already has Warzone profile data`)
+                    userData.push({
                         username: username,
                         id: userIdArray[index],
                         warzoneProfile: {
@@ -150,8 +151,8 @@ export async function updateUserData(interaction: CommandInteraction, userIdArra
                     break;
                 case UserStats.valProfile:
                     if (!("tag" in profile)) return log.error('Incorrect profile type. Valorant Profile has the "tag" property.')
-                    if (UserData[index].valorantProfile != null) return log.error(`User already has Valorant profile data`)
-                    UserData.push({
+                    if (userData[index].valorantProfile != null) return log.error(`User already has Valorant profile data`)
+                    userData.push({
                         username: username,
                         id: userIdArray[index],
                         valorantProfile: {
@@ -164,7 +165,7 @@ export async function updateUserData(interaction: CommandInteraction, userIdArra
             log.info('Done!')
         } else {
             log.info(`Updating user data for ${guildMember.user.username} in ${interaction.guild.name}...`)
-            let user = UserData.find(user => user.id === userId)
+            let user = userData.find(user => user.id === userId)
             // check if the corresponding stat exists within the user data: if it doesn't exist, make it, if it exists, update it
             switch (statName) {
                 case UserStats.tttWins:

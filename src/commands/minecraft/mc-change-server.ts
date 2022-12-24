@@ -8,7 +8,7 @@ import {
     SelectMenuBuilder,
     SlashCommandBuilder
 } from "discord.js";
-import {GuildSchema, MenuGeneratorReturnValues, NewClient} from "../../dependencies/myTypes";
+import {DiscordMenuGeneratorReturnValues, GuildSchema, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 import {terminationListener} from "../../dependencies/helpers/terminationListener";
 
@@ -28,7 +28,7 @@ export const mcChangeServer = {
             return;
         }
 
-        let optionGenerator: MenuGeneratorReturnValues = await McMenuOptionGenerator(interaction, guildName, serverListSize);
+        let optionGenerator: DiscordMenuGeneratorReturnValues = await McMenuOptionGenerator(interaction, guildName, serverListSize);
         let optionsArray = optionGenerator.optionsArray
         let label = optionGenerator.options.label
         let description = optionGenerator.options.description

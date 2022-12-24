@@ -2,8 +2,6 @@ import DiscordJS, {APISelectMenuOption, CommandInteraction, SlashCommandBuilder}
 import {platforms} from "call-of-duty-api";
 import {Document} from "mongoose";
 
-export const embedColor = '#B8CAD1'
-
 export type NewClient = DiscordJS.Client & {
     commands: DiscordJS.Collection<string, SlashCommand> // allows commands to be bound to the client instance for global retrieval
     isTestBot: boolean // whether it is the test bot or not
@@ -27,17 +25,13 @@ export interface WarzoneProfile {
     platform: platforms
 }
 
-export enum UserStats {
-    tttWins = 'tttWins',
-    tttLosses = 'tttLosses',
-    enlist = 'enlist',
-    reject = 'reject',
-    ignore = 'ignore',
-    wzProfile = 'wzProfile',
-    valProfile = 'valProfile',
+export interface MinecraftServer {
+    name: string
+    ip: string
+    port: number
 }
 
-export type MenuGeneratorReturnValues = {
+export type DiscordMenuGeneratorReturnValues = {
     optionsArray: APISelectMenuOption[],
     options: DiscordMenuOption,
 }
@@ -66,12 +60,6 @@ export interface EnlistUserInfoArrays {
     potentialUsers: string[]
     potentialUserIds: string[]
     ignoredUserIds: string[]
-}
-
-export interface MinecraftServer {
-    name: string
-    ip: string
-    port: number
 }
 
 export type GuildSchema = Document & {
@@ -122,3 +110,15 @@ export type GuildSchema = Document & {
         }
     }
 }
+
+export enum UserStats {
+    tttWins = 'tttWins',
+    tttLosses = 'tttLosses',
+    enlist = 'enlist',
+    reject = 'reject',
+    ignore = 'ignore',
+    wzProfile = 'wzProfile',
+    valProfile = 'valProfile',
+}
+
+export const embedColor = '#B8CAD1'

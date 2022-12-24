@@ -10,7 +10,7 @@ import {
 } from "discord.js";
 import {status} from "minecraft-server-util";
 import {McMenuOptionGenerator} from "../../dependencies/helpers/mcMenuOptionGenerator";
-import {GuildSchema, MenuGeneratorReturnValues, MinecraftServer, NewClient} from "../../dependencies/myTypes";
+import {DiscordMenuGeneratorReturnValues, GuildSchema, MinecraftServer, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 import {terminationListener} from "../../dependencies/helpers/terminationListener";
 
@@ -36,7 +36,7 @@ export const mcChangeServerIP = {
             await interaction.editReply('*No Registered Servers, use /mc-add-server or /mc-list-servers to add servers.*')
             return;
         }
-        
+
         // retrieve server info
         let server: MinecraftServer = { // setup object to push to mongoDB
             name: undefined,
@@ -65,7 +65,7 @@ export const mcChangeServerIP = {
         }
 
         // create variables and generate options for select menu
-        let optionGenerator: MenuGeneratorReturnValues = await McMenuOptionGenerator(interaction, guildName, serverListSize);
+        let optionGenerator: DiscordMenuGeneratorReturnValues = await McMenuOptionGenerator(interaction, guildName, serverListSize);
         let row = new ActionRowBuilder<SelectMenuBuilder>()
             .addComponents(
                 new SelectMenuBuilder()
