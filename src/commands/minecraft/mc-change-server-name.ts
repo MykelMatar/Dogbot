@@ -10,7 +10,7 @@ import {
 import {McMenuOptionGenerator} from "../../dependencies/helpers/mcMenuOptionGenerator";
 import {DiscordMenuGeneratorReturnValues, GuildSchema, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
-import {terminationListener} from "../../dependencies/helpers/terminationListener";
+import {terminate, terminationListener} from "../../dependencies/helpers/terminationListener";
 
 export const mcChangeServerName = {
     data: new SlashCommandBuilder()
@@ -64,6 +64,8 @@ export const mcChangeServerName = {
             componentType: ComponentType.SelectMenu,
             time: 10000
         });
+        let terminateBound = terminate.bind(null, client, collector)
+        await terminationListener(client, collector, terminateBound)
 
         let serverName
         collector.on('collect', async i => {
@@ -83,6 +85,7 @@ export const mcChangeServerName = {
         });
 
         collector.on('end', async collected => {
+            process.removeListener('SIGINT', terminateBound)
             if (collected.size === 0) {
                 await interaction.editReply({content: '*Request Timeout*', components: []});
                 log.error('Request Timeout')
@@ -96,7 +99,5 @@ export const mcChangeServerName = {
                 log.info('Server Renamed Successfully')
             }
         });
-        let terminate: boolean = false
-        await terminationListener(client, collector, terminate)
     }
 }

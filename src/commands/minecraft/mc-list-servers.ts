@@ -11,7 +11,7 @@ import {
 } from "discord.js";
 import {embedColor, GuildSchema, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
-import {terminationListener} from "../../dependencies/helpers/terminationListener";
+import {terminate, terminationListener} from "../../dependencies/helpers/terminationListener";
 import {status} from "minecraft-server-util";
 
 //TODO check add server button, might not be working
@@ -114,7 +114,9 @@ export const mcListServers = {
             componentType: ComponentType.Button,
             time: 20000
         });
-
+        let terminateBound = terminate.bind(null, client, collector)
+        await terminationListener(client, collector, terminateBound)
+        
         try {
             const command1 = client.commands.get('mc-add-server');
             const command2 = client.commands.get('mc-delete-server');
@@ -139,14 +141,12 @@ export const mcListServers = {
             });
 
             collector.on('end', async collected => {
+                process.removeListener('SIGINT', terminateBound)
                 if (collected.size === 0)
                     await interaction.editReply({embeds: [embed], components: []}) // remove buttons & embed
                 else if (collected.first().customId === 'ListAdd' || collected.first().customId === 'ListRemove' || collected.first().customId === 'ListChange')
                     await interaction.editReply({embeds: [], components: []})   // remove buttons & embed
             });
-
-            let terminate: boolean = false
-            await terminationListener(client, collector, terminate)
         } catch (e) {
             log.error(e)
             await interaction.editReply({content: 'Refrain from using the same command multiple times'})

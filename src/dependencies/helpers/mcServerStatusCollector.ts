@@ -1,7 +1,7 @@
 import {CommandInteraction, ComponentType, Message} from "discord.js";
 import {NewClient} from "../myTypes";
 import log from "../logger";
-import {terminationListener} from "./terminationListener";
+import {terminate, terminationListener} from "./terminationListener";
 
 /**
  * button collector for mc-server-status command. In a seperate function because it is used twice
@@ -19,6 +19,8 @@ export async function McServerStatusCollector(client: NewClient, interaction: Co
         componentType: ComponentType.Button,
         time: 10000
     });
+    let terminateBound = terminate.bind(null, client, collector)
+    await terminationListener(client, collector, terminateBound)
 
     const command1 = client.commands.get('mc-change-server');
     const command2 = client.commands.get('mc-list-servers');
@@ -39,10 +41,8 @@ export async function McServerStatusCollector(client: NewClient, interaction: Co
     });
 
     collector.on('end', async collected => {
+        process.removeListener('SIGINT', terminateBound)
         log.info(`mc collected ${collected.size} button presses`)
         if (collected.size === 0) await interaction.editReply({components: []})  // remove buttons
     });
-
-    let terminate: boolean = false
-    await terminationListener(client, collector, terminate)
 }

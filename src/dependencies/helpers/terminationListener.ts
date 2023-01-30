@@ -7,24 +7,19 @@ import {NewClient} from "../myTypes";
  *
  * @param client
  * @param collector
- * @param terminate
+ * @param terminateInstance
  */
-export async function terminationListener(client: NewClient, collector: InteractionCollector<any>, terminate?: boolean) {
-    process.on('SIGINT', () => {
-        if (terminate === true) { // not required for npm scripts 
-            log.info('Terminating Dogbot...')
-            client.destroy()
-            log.info('Done')
-            process.exit(69)
-        }
-        terminate = true
-        log.info('Shutting down collectors...')
-        collector.stop()
-        log.info('Press Ctrl+C again to shutdown')
-    })
-    process.on('SIGTERM', () => {
-        log.info('SIGTERM detected')
-        log.info('Shutting down collectors...')
-        collector.stop()
-    })
+export async function terminationListener(client: NewClient, collector: InteractionCollector<any>, terminateInstance) {
+    process.on('SIGINT', terminateInstance)
+}
+
+export function terminate(client, collector) {
+    log.info('Shutting down collectors...')
+    collector.stop()
+    setTimeout(() => {
+        log.info('Terminating Dogbot...')
+        client.destroy()
+        log.info('Done')
+        process.exit(69)
+    }, 2000) // wait for collector to finish
 }

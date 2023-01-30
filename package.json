@@ -21,8 +21,6 @@
   "description": "Discord gamer bot",
   "main": "src/index.ts",
   "scripts": {
-    "start": "NODE_PATH=./build node build/index.js",
-    "build": "tsc -p .",
     "bot": "ts-node src/index.ts",
     "dev": "nodemon src/index.ts"
   },

@@ -10,7 +10,7 @@ import {
 } from "discord.js";
 import {DiscordMenuGeneratorReturnValues, GuildSchema, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
-import {terminationListener} from "../../dependencies/helpers/terminationListener";
+import {terminate, terminationListener} from "../../dependencies/helpers/terminationListener";
 
 export const mcChangeServer = {
     data: new SlashCommandBuilder()
@@ -53,6 +53,8 @@ export const mcChangeServer = {
             componentType: ComponentType.SelectMenu,
             time: 15000
         });
+        let terminateBound = terminate.bind(null, client, collector)
+        await terminationListener(client, collector, terminateBound)
 
         try {
             collector.on('collect', async i => {
@@ -72,6 +74,7 @@ export const mcChangeServer = {
         }
 
         collector.on('end', async collected => {
+            process.removeListener('SIGINT', terminateBound)
             if (collected.size === 0)
                 await interaction.editReply({content: 'Request Timeout', components: []})
             else if (collected.first().customId !== 'change-menu')
@@ -84,8 +87,5 @@ export const mcChangeServer = {
                 await client.commands.get('mc-server-status').execute(client, interaction, guildData, guildName);
             }
         });
-
-        let terminate: boolean = false
-        await terminationListener(client, collector, terminate)
     }
 }

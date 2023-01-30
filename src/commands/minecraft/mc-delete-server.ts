@@ -10,7 +10,7 @@ import {
 import {McMenuOptionGenerator} from "../../dependencies/helpers/mcMenuOptionGenerator";
 import {DiscordMenuGeneratorReturnValues, GuildSchema, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
-import {terminationListener} from "../../dependencies/helpers/terminationListener";
+import {terminate, terminationListener} from "../../dependencies/helpers/terminationListener";
 
 
 export const mcDeleteServer = {
@@ -47,6 +47,8 @@ export const mcDeleteServer = {
             componentType: ComponentType.SelectMenu,
             time: 15000
         });
+        let terminateBound = terminate.bind(null, client, collector)
+        await terminationListener(client, collector, terminateBound)
 
         let serverName;
         try {
@@ -76,6 +78,7 @@ export const mcDeleteServer = {
         }
 
         collector.on('end', async collected => {
+            process.removeListener('SIGINT', terminateBound)
             if (collected.size === 0) {
                 await interaction.editReply({content: '*Request Timeout*', components: []});
                 log.error('Request Timeout')
@@ -87,8 +90,5 @@ export const mcDeleteServer = {
                 log.info('Server Deleted Successfully')
             }
         });
-
-        let terminate: boolean = false
-        await terminationListener(client, collector, terminate)
     }
 }

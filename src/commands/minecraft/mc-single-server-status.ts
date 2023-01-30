@@ -12,7 +12,7 @@ import {
 import {status, statusBedrock} from "minecraft-server-util";
 import {embedColor, GuildSchema, MinecraftServer, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
-import {terminationListener} from "../../dependencies/helpers/terminationListener";
+import {terminate, terminationListener} from "../../dependencies/helpers/terminationListener";
 
 export const mcSingleServerStatus = {
     data: new SlashCommandBuilder()
@@ -81,6 +81,9 @@ export const mcSingleServerStatus = {
                     componentType: ComponentType.Button,
                     time: 10000
                 });
+                let terminateBound = terminate.bind(null, client, collector)
+                await terminationListener(client, collector, terminateBound)
+                
                 collector.on('collect', async i => {
                     if (i.message.id != statusMessage.id) return
                     if (i.customId === 'SingleAdd') {
@@ -95,6 +98,7 @@ export const mcSingleServerStatus = {
                     }
                 });
                 collector.on('end', async collected => {
+                    process.removeListener('SIGINT', terminateBound)
                     if (collected.size === 0)
                         await interaction.editReply({
                             embeds: [embed],
@@ -107,8 +111,6 @@ export const mcSingleServerStatus = {
                             components: []
                         })
                 });
-                let terminate: boolean = false
-                await terminationListener(client, collector, terminate)
             })
             .catch(async () => {
                 statusBedrock(mcServer.ip, mcServer.port, options)

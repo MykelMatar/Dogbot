@@ -17,8 +17,8 @@ import {embedColor, EnlistUserInfoArrays, GuildSchema, NewClient, UserStats} fro
 import {updateEnlistUserArrays} from "../../dependencies/helpers/updateEnlistUserArrays";
 import {updateUserData} from "../../dependencies/helpers/updateUserData";
 import log from "../../dependencies/logger";
-import {terminationListener} from "../../dependencies/helpers/terminationListener";
 import guilds from "../../dependencies/schemas/guild-schema";
+import {terminate, terminationListener} from "../../dependencies/helpers/terminationListener";
 
 //TODO maybe add a Gaming Squad embed after the collector ends that displays everyone who registered
 export const enlistUsers = {
@@ -111,6 +111,9 @@ export const enlistUsers = {
             componentType: ComponentType.Button,
             time: 1.08e+7 // 3 hour (1.08e+7) timer
         });
+        let terminateBound = terminate.bind(null, client, collector)
+        await terminationListener(client, collector, terminateBound)
+
         try {
             let button1CustomId = row.components[0].data["custom_id"]
             let button2CustomId = row.components[1].data["custom_id"]
@@ -138,6 +141,7 @@ export const enlistUsers = {
 
         collector.on('end', async collected => {
             await enlistPrompt.edit({content: '⚠ ***ENLISTING ENDED*** ⚠', embeds: [embed], components: []})
+            process.removeListener('SIGINT', terminateBound)
             if (collected.size === 0) return
 
             // logic to get users who ignored the enlist prompt for ignore% stat
@@ -155,7 +159,5 @@ export const enlistUsers = {
             await updateUserData(interaction, userArrays.rejectedUserIds, UserStats.reject);
             await updateUserData(interaction, userArrays.ignoredUserIds, UserStats.ignore);
         });
-        let terminate: boolean = false
-        await terminationListener(client, collector, terminate)
     }
 }

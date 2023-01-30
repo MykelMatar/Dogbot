@@ -12,7 +12,7 @@ import {status} from "minecraft-server-util";
 import {McMenuOptionGenerator} from "../../dependencies/helpers/mcMenuOptionGenerator";
 import {DiscordMenuGeneratorReturnValues, GuildSchema, MinecraftServer, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
-import {terminationListener} from "../../dependencies/helpers/terminationListener";
+import {terminate, terminationListener} from "../../dependencies/helpers/terminationListener";
 
 export const mcChangeServerIP = {
     data: new SlashCommandBuilder()
@@ -86,6 +86,8 @@ export const mcChangeServerIP = {
             max: 1,
             time: 10000
         });
+        let terminateBound = terminate.bind(null, client, collector)
+        await terminationListener(client, collector, terminateBound)
 
         let serverName;
         collector.on('collect', async i => {
@@ -103,6 +105,7 @@ export const mcChangeServerIP = {
         });
 
         collector.on('end', async collected => {
+            process.removeListener('SIGINT', terminateBound)
             if (collected.size === 0) {
                 await interaction.editReply({content: 'Request Timeout', components: []});
                 log.error('Request Timeout')
@@ -114,8 +117,5 @@ export const mcChangeServerIP = {
                 log.info('Server IP changed Successfully')
             }
         });
-
-        let terminate: boolean = false
-        await terminationListener(client, collector, terminate)
     }
 }
