@@ -1,4 +1,4 @@
-import DiscordJS, {APISelectMenuOption, CommandInteraction, SlashCommandBuilder} from "discord.js";
+import DiscordJS, {APISelectMenuOption, Collection, CommandInteraction, SlashCommandBuilder} from "discord.js";
 import {platforms} from "call-of-duty-api";
 import {Document} from "mongoose";
 
@@ -52,7 +52,7 @@ export interface EnlistLeaderboardUser {
     adjustedRejectRankValue: number
 }
 
-export interface EnlistUserInfoArrays {
+export interface EnlistUserData {
     enlistedUsers: string[]
     enlistedUserIds: string[] // for pushing user data to mongoDB
     rejectedUsers: string[]
@@ -60,6 +60,7 @@ export interface EnlistUserInfoArrays {
     potentialUsers: string[]
     potentialUserIds: string[]
     ignoredUserIds: string[]
+    userAvailabilityMap: Collection<string, string>
 }
 
 export type GuildSchema = Document & {

@@ -4,6 +4,7 @@ import {
     ButtonBuilder,
     ButtonInteraction,
     ButtonStyle,
+    Collection,
     CommandInteraction,
     CommandInteractionOption,
     ComponentType,
@@ -11,10 +12,11 @@ import {
     InteractionCollector,
     Message,
     Role,
-    SlashCommandBuilder
+    SlashCommandBuilder,
+    StringSelectMenuInteraction
 } from "discord.js";
-import {embedColor, EnlistUserInfoArrays, GuildSchema, NewClient, UserStats} from "../../dependencies/myTypes";
-import {updateEnlistUserArrays} from "../../dependencies/helpers/updateEnlistUserArrays";
+import {embedColor, EnlistUserData, GuildSchema, NewClient, UserStats} from "../../dependencies/myTypes";
+import {updateEnlistUserEmbed} from "../../dependencies/helpers/updateEnlistUserEmbed";
 import {updateUserData} from "../../dependencies/helpers/updateUserData";
 import log from "../../dependencies/logger";
 import guilds from "../../dependencies/schemas/guild-schema";
@@ -97,7 +99,7 @@ export const enlistUsers = {
             files: [file],
             components: [row]
         })
-        let userArrays: EnlistUserInfoArrays = {
+        let enlistUserData: EnlistUserData = {
             enlistedUsers: ['-'],
             enlistedUserIds: [],
             rejectedUsers: ['-'],
@@ -105,29 +107,53 @@ export const enlistUsers = {
             potentialUsers: ['-'],
             potentialUserIds: [],
             ignoredUserIds: [],
+            userAvailabilityMap: new Collection()
         }
 
-        const collector: InteractionCollector<ButtonInteraction> = interaction.channel.createMessageComponentCollector({
+        const enlistCollector: InteractionCollector<ButtonInteraction> = interaction.channel.createMessageComponentCollector({
             componentType: ComponentType.Button,
             time: 1.08e+7 // 3 hour (1.08e+7) timer
         });
-        let terminateBound = terminate.bind(null, client, collector)
-        await terminationListener(client, collector, terminateBound)
+        let terminateBound = terminate.bind(null, client, enlistCollector)
+        await terminationListener(client, enlistCollector, terminateBound)
 
         try {
-            let button1CustomId = row.components[0].data["custom_id"]
-            let button2CustomId = row.components[1].data["custom_id"]
-            let button3CustomId = row.components[2].data["custom_id"]
-            collector.on('collect', async i => {
+            let gamingButtonId = row.components[0].data["custom_id"]
+            let perhapsButtonId = row.components[1].data["custom_id"]
+            let rejectButtonId = row.components[2].data["custom_id"]
+            enlistCollector.on('collect', async i => {
                 if (i.message.id != enlistPrompt.id) return // prevent simultaneous prompt from affecting each other
-                if (i.customId === button1CustomId || i.customId === button2CustomId || i.customId === button3CustomId) {
-                    await i.deferUpdate(); // prevents "this interaction failed" interaction from appearing
-                    await updateEnlistUserArrays(i, userArrays)
-
-                    embed.data.fields[0].value = userArrays.enlistedUsers.join('');
-                    embed.data.fields[1].value = userArrays.potentialUsers.join('');
-                    embed.data.fields[2].value = userArrays.rejectedUsers.join('');
-                    await enlistPrompt.edit({content: `${role}`, embeds: [embed], components: [row]});
+                if (i.customId === gamingButtonId || i.customId === perhapsButtonId || i.customId === rejectButtonId) {
+                    if (i.customId === perhapsButtonId && !(enlistUserData.potentialUserIds.includes(i.user.id))) {
+                        await i.reply({
+                            content: 'please select your availability',
+                            components: [require('../../dependencies/timeDropdownMenu').timeMenu],
+                            ephemeral: true
+                        })
+                        const timeCollector: InteractionCollector<StringSelectMenuInteraction> = interaction.channel.createMessageComponentCollector({
+                            componentType: ComponentType.SelectMenu,
+                            time: 20000,
+                            max: 1
+                        });
+                        timeCollector.on('collect', async j => {
+                            // if (j.message.id != timeSelectPrompt.id ) return
+                            if (j.customId !== 'time') return
+                            let guildMember = j.user.username
+                            let index = enlistUserData.potentialUsers.findIndex(user => user == `> ${guildMember}\n`)
+                            enlistUserData.userAvailabilityMap.set(j.user.id, j.values[0])
+                            enlistUserData.potentialUsers[index] = `> ${guildMember} ~${j.values[0]}\n`
+                        })
+                        timeCollector.on('end', async collected => {
+                            if (collected.size == 0) {
+                                enlistUserData.userAvailabilityMap.set(i.user.id, 'Not sure')
+                            }
+                            await updateEnlistUserEmbed(i, embed, enlistUserData, enlistPrompt, row, role)
+                            await i.deleteReply()
+                        })
+                    } else {
+                        await i.deferUpdate(); // prevents "this interaction failed" interaction from appearing
+                        await updateEnlistUserEmbed(i, embed, enlistUserData, enlistPrompt, row, role)
+                    }
                 }
             });
         } catch (e) {
@@ -139,7 +165,7 @@ export const enlistUsers = {
             log.error(e)
         }
 
-        collector.on('end', async collected => {
+        enlistCollector.on('end', async collected => {
             await enlistPrompt.edit({content: '⚠ ***ENLISTING ENDED*** ⚠', embeds: [embed], components: []})
             process.removeListener('SIGINT', terminateBound)
             if (collected.size === 0) return
@@ -150,14 +176,14 @@ export const enlistUsers = {
             for (const user of userData) {
                 guildMemberIds.push(user.id)
             }
-            userArrays.enlistedUserIds.forEach(id => enlistPromptUserIds.push(id))
-            userArrays.rejectedUserIds.forEach(id => enlistPromptUserIds.push(id))
-            userArrays.potentialUserIds.forEach(id => enlistPromptUserIds.push(id))
-            userArrays.ignoredUserIds = guildMemberIds.filter(id => !(enlistPromptUserIds.includes(id)))
+            enlistUserData.enlistedUserIds.forEach(id => enlistPromptUserIds.push(id))
+            enlistUserData.rejectedUserIds.forEach(id => enlistPromptUserIds.push(id))
+            enlistUserData.potentialUserIds.forEach(id => enlistPromptUserIds.push(id))
+            enlistUserData.ignoredUserIds = guildMemberIds.filter(id => !(enlistPromptUserIds.includes(id)))
 
-            await updateUserData(interaction, userArrays.enlistedUserIds, UserStats.enlist);
-            await updateUserData(interaction, userArrays.rejectedUserIds, UserStats.reject);
-            await updateUserData(interaction, userArrays.ignoredUserIds, UserStats.ignore);
+            await updateUserData(interaction, enlistUserData.enlistedUserIds, UserStats.enlist);
+            await updateUserData(interaction, enlistUserData.rejectedUserIds, UserStats.reject);
+            await updateUserData(interaction, enlistUserData.ignoredUserIds, UserStats.ignore);
         });
     }
 }
