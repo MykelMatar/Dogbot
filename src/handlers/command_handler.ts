@@ -22,8 +22,8 @@ export default (client: NewClient) => {
         const rest = new REST({version: '10'}).setToken(process.env.BOT_TEST_TOKEN);
         (async () => {
             await rest.put(
-                Routes.applicationGuildCommands('848283770041532425', testingServer),
-                {body: []},
+                Routes.applicationGuildCommands('851186508262408192', testingServer),
+                {body: commands},
             );
         })();
     } else { // global slash command on Dogbot
