@@ -50,6 +50,7 @@ export const enlistUsers = {
         if (titleOption != undefined) {
             title = titleOption.value as string
         } else {
+            title = defaultTitle
         }
         if (roleOption != undefined) {
             role = roleOption.value as string | Role
@@ -111,7 +112,7 @@ export const enlistUsers = {
 
         const enlistCollector: InteractionCollector<ButtonInteraction> = interaction.channel.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: 1.08e+7 // 3 hour (1.08e+7) timer
+            time: 3000 // 3 hour (1.08e+7) timer
         });
         let terminateBound = terminate.bind(null, client, enlistCollector)
         await terminationListener(client, enlistCollector, terminateBound)
@@ -165,7 +166,6 @@ export const enlistUsers = {
         }
 
         enlistCollector.on('end', async collected => {
-            await enlistPrompt.edit({content: '⚠ ***ENLISTING ENDED*** ⚠', embeds: [embed], components: []})
             process.removeListener('SIGINT', terminateBound)
             if (collected.size === 0) return
 
