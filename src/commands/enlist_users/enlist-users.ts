@@ -35,6 +35,11 @@ export const enlistUsers = {
             option.setName('role')
                 .setDescription('Role to @ when sending this prompt. Can be set automatically via the /enlist-set-role')
                 .setRequired(false)
+        )
+        .addRoleOption(option =>
+            option.setName('minimum')
+                .setDescription('minimum number of gamers required to game')
+                .setRequired(false)
         ),
     // cooldown: 10800, // 3 hour cooldown to match the 3 hour enlist timer
     async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema) {
@@ -42,15 +47,22 @@ export const enlistUsers = {
         const userData = guildData.UserData
 
         // retrieve parameters
-        let title: string, role: Role | string
+        let title: string, role: Role | string, minimumNumberOfGamers: number
         const defaultTitle: string = `Gamer Time`
+        const defaultAmount: number = 5
         let titleOption: CommandInteractionOption = interaction.options.data.find(option => option.name === 'title')
         let roleOption: CommandInteractionOption = interaction.options.data.find(option => option.name === 'role')
+        let amountOption: CommandInteractionOption = interaction.options.data.find(option => option.name === 'minimum')
 
         if (titleOption != undefined) {
             title = titleOption.value as string
         } else {
             title = defaultTitle
+        }
+        if (amountOption != undefined) {
+            minimumNumberOfGamers = amountOption.value as number
+        } else {
+            minimumNumberOfGamers = defaultAmount
         }
         if (roleOption != undefined) {
             role = roleOption.value as string | Role
@@ -82,7 +94,7 @@ export const enlistUsers = {
             );
         const file = new AttachmentBuilder('./src/dependencies/images/Dogbot.png')
         const embed = new EmbedBuilder()
-            .setTitle(title)
+            .setTitle(`${title} (need ${minimumNumberOfGamers})`)
             .setThumbnail('attachment://Dogbot.png')
             .addFields(
                 {name: 'Gaming', value: '-', inline: true},
@@ -112,7 +124,7 @@ export const enlistUsers = {
 
         const enlistCollector: InteractionCollector<ButtonInteraction> = interaction.channel.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: 1.08e+7 // 3 hour (1.08e+7) timer
+            time: 3000 // 3 hour (1.08e+7) timer
         });
         let terminateBound = terminate.bind(null, client, enlistCollector)
         await terminationListener(client, enlistCollector, terminateBound)
@@ -166,7 +178,46 @@ export const enlistUsers = {
         }
 
         enlistCollector.on('end', async collected => {
-            await enlistPrompt.edit({content: '⚠ ***ENLISTING ENDED*** ⚠', embeds: [embed], components: []})
+            if (enlistUserData.enlistedUserIds.length != 0) {
+                const summonButton = new ActionRowBuilder<ButtonBuilder>()
+                    .addComponents(
+                        new ButtonBuilder()
+                            .setCustomId('Summon')
+                            .setLabel('Summon Gamers')
+                            .setStyle(ButtonStyle.Success),
+                    );
+                await enlistPrompt.edit({
+                    content: '⚠ ***ENLISTING ENDED*** ⚠',
+                    embeds: [embed],
+                    components: [summonButton]
+                })
+                const summonCollector: InteractionCollector<ButtonInteraction> = interaction.channel.createMessageComponentCollector({
+                    componentType: ComponentType.Button,
+                    time: (1.08e+7), // 3 hour (1.08e+7 ms) timer
+                    max: 1
+                });
+                summonCollector.on('collect', async i => {
+                    if (i.customId === summonButton.components[0].data["custom_id"]) {
+                        let users = enlistUserData.enlistedUserIds
+                        users.forEach((user, index) => {
+                            users[index] = `<@${user}>`
+                        })
+                        if (enlistUserData.enlistedUserIds.length == 1) {
+                            i.channel.send({content: `lol ${users.join(',')} has no friends`})
+                        } else if (enlistUserData.enlistedUserIds.length == minimumNumberOfGamers) {
+                            i.channel.send({content: `${users.join(',')}: Gamer Time is upon us`})
+                        } else if (enlistUserData.enlistedUserIds.length + enlistUserData.potentialUserIds.length >= minimumNumberOfGamers) {
+                            i.channel.send({content: `${users.join(',')}: You may potentially have ${minimumNumberOfGamers} gamers`})
+                        } else {
+                            i.channel.send({content: `${users.join(',')}: Insufficient Gamers`})
+                        }
+                    }
+
+                })
+                summonCollector.on('end', async () => {
+                    await enlistPrompt.edit({content: '⚠ ***ENLISTING ENDED*** ⚠', embeds: [embed], components: []})
+                })
+            }
             process.removeListener('SIGINT', terminateBound)
             if (collected.size === 0) return
 
