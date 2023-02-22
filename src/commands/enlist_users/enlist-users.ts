@@ -50,7 +50,6 @@ export const enlistUsers = {
         if (titleOption != undefined) {
             title = titleOption.value as string
         } else {
-            title = defaultTitle
         }
         if (roleOption != undefined) {
             role = roleOption.value as string | Role

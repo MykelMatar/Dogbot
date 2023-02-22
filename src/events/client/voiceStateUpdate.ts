@@ -1,14 +1,14 @@
 import log from "../../dependencies/logger";
 import {NewClient} from "../../dependencies/myTypes";
-import { VoiceState } from "discord.js";
+import {VoiceState} from "discord.js";
 import {getVoiceConnection, joinVoiceChannel} from "@discordjs/voice";
 
-export async function voiceStateUpdate(client: NewClient, oldState: VoiceState, newState: VoiceState) {
+async function voiceStateUpdate(client: NewClient, oldState: VoiceState, newState: VoiceState) {
     // Check if the bot is joining a voice channel
     if (!oldState.channelId && newState.channelId) {
         // Check if bot is already in a voice channel
         const connection = getVoiceConnection(newState.guild.id);
-        if(connection) return;
+        if (connection) return;
         // Check if the user joining the voice channel is the first user
         if (newState.channel.members.size >= 1) {
             // Join the same voice channel as the first user
