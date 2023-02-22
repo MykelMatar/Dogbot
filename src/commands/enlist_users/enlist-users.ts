@@ -112,7 +112,7 @@ export const enlistUsers = {
 
         const enlistCollector: InteractionCollector<ButtonInteraction> = interaction.channel.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: 3000 // 3 hour (1.08e+7) timer
+            time: 1.08e+7 // 3 hour (1.08e+7) timer
         });
         let terminateBound = terminate.bind(null, client, enlistCollector)
         await terminationListener(client, enlistCollector, terminateBound)
@@ -166,6 +166,7 @@ export const enlistUsers = {
         }
 
         enlistCollector.on('end', async collected => {
+            await enlistPrompt.edit({content: '⚠ ***ENLISTING ENDED*** ⚠', embeds: [embed], components: []})
             process.removeListener('SIGINT', terminateBound)
             if (collected.size === 0) return
 
@@ -183,6 +184,7 @@ export const enlistUsers = {
             await updateUserData(interaction, enlistUserData.enlistedUserIds, UserStats.enlist);
             await updateUserData(interaction, enlistUserData.rejectedUserIds, UserStats.reject);
             await updateUserData(interaction, enlistUserData.ignoredUserIds, UserStats.ignore);
+
         });
     }
 }
