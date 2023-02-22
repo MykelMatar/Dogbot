@@ -124,7 +124,7 @@ export const enlistUsers = {
 
         const enlistCollector: InteractionCollector<ButtonInteraction> = interaction.channel.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: 3000 // 3 hour (1.08e+7) timer
+            time: 1.08e+7 // 3 hour (1.08e+7) timer
         });
         let terminateBound = terminate.bind(null, client, enlistCollector)
         await terminationListener(client, enlistCollector, terminateBound)
