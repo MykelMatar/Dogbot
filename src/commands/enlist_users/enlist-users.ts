@@ -198,18 +198,22 @@ export const enlistUsers = {
                 });
                 summonCollector.on('collect', async i => {
                     if (i.customId === summonButton.components[0].data["custom_id"]) {
-                        let users = enlistUserData.enlistedUserIds
-                        users.forEach((user, index) => {
-                            users[index] = `<@${user}>`
+                        let enlistedUsers = enlistUserData.enlistedUserIds
+                        enlistedUsers.forEach((user, index) => {
+                            enlistedUsers[index] = `<@${user}>`
+                        })
+                        let potentialUsers = enlistUserData.potentialUserIds
+                        potentialUsers.forEach((user, index) => {
+                            potentialUsers[index] = `<@${user}>`
                         })
                         if (enlistUserData.enlistedUserIds.length == 1) {
-                            i.channel.send({content: `lol ${users.join(',')} has no friends`})
+                            i.channel.send({content: `lol ${enlistedUsers.join(',')} has no friends (except maybe ${potentialUsers.join(',')})`})
                         } else if (enlistUserData.enlistedUserIds.length == minimumNumberOfGamers) {
-                            i.channel.send({content: `${users.join(',')}: Gamer Time is upon us`})
+                            i.channel.send({content: `${enlistedUsers.join(',')}(and maybe ${potentialUsers.join(',')}): Gamer Time is upon us `})
                         } else if (enlistUserData.enlistedUserIds.length + enlistUserData.potentialUserIds.length >= minimumNumberOfGamers) {
-                            i.channel.send({content: `${users.join(',')}: You may potentially have ${minimumNumberOfGamers} gamers`})
+                            i.channel.send({content: `${enlistedUsers.join(',')}: You have ${minimumNumberOfGamers} gamers if ${potentialUsers.join(',')} play`})
                         } else {
-                            i.channel.send({content: `${users.join(',')}: Insufficient Gamers`})
+                            i.channel.send({content: `${enlistedUsers.join(',')}: Insufficient Gamers`})
                         }
                     }
 
