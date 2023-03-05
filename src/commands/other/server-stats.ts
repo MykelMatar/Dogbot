@@ -13,11 +13,8 @@ export const serverStats = {
     async execute(client: NewClient, interaction: CommandInteraction) {
         const guild: Guild = interaction.guild
         let owner: GuildMember = await guild.members.fetch(guild.ownerId)
-        let verification: string
-
-        if (guild.verified) verification = 'Verified ✅'
-        else verification = 'Not Verified';
-
+        let verification: string = guild.verified ? 'Verified ✅' : 'Not Verified';
+        
         const embed = new EmbedBuilder()
             .setTitle(`${interaction.guild.name}'s Stats`)
             .addFields(

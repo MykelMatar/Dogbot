@@ -9,7 +9,7 @@ export type NewClient = DiscordJS.Client & {
 
 export type SlashCommand = {
     data: SlashCommandBuilder
-    cooldown: number
+    cooldown?: number
     execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema, guildName: string): Promise<void>
 }
 
@@ -48,8 +48,8 @@ export interface EnlistLeaderboardUser {
     rejects: number
     enlistPercentage: number
     rejectPercentage: number
-    adjustedEnlistRankValue: number
-    adjustedRejectRankValue: number
+    EnlistRankValue: number
+    RejectRankValue: number
 }
 
 export interface EnlistUserData {

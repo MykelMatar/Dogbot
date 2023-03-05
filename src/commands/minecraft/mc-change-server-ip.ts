@@ -79,19 +79,23 @@ export const mcChangeServerIP = {
             components: [row]
         });
 
-        let filter = i => i.user.id === interaction.member.user.id;
+        const filter = i => {
+            if (i.user.id !== interaction.member.user.id) return false;
+            return i.message.id === sent.id;
+        };
+
         const collector = interaction.channel.createMessageComponentCollector({
             filter,
             componentType: ComponentType.SelectMenu,
             max: 1,
             time: 10000
         });
+        
         let terminateBound = terminate.bind(null, client, collector)
         await terminationListener(client, collector, terminateBound)
 
         let serverName;
         collector.on('collect', async i => {
-            if (i.message.id != sent.id) return
             if (i.customId !== 'change-ip-menu') return collector.stop()
             for (let j = 0; j < serverListSize; j++) {
                 if (i.values[0] === `selection${j}`) {

@@ -41,7 +41,10 @@ export const mcDeleteServer = {
             );
         let sent: Message = await interaction.editReply({content: 'Select a Server to Delete', components: [row]});
 
-        const filter = i => i.user.id === interaction.member.user.id
+        const filter = i => {
+            if (i.user.id !== interaction.member.user.id) return false;
+            return i.message.id === sent.id;
+        };
         const collector = interaction.channel.createMessageComponentCollector({
             filter,
             componentType: ComponentType.SelectMenu,
@@ -53,7 +56,6 @@ export const mcDeleteServer = {
         let serverName;
         try {
             collector.on('collect', async i => {
-                if (i.message.id != sent.id) return
                 if (i.customId !== 'delete-menu') return collector.stop()
                 let selectedServerIP, serverIP
 
@@ -82,9 +84,6 @@ export const mcDeleteServer = {
             if (collected.size === 0) {
                 await interaction.editReply({content: '*Request Timeout*', components: []});
                 log.error('Request Timeout')
-            } else if (collected.first().customId !== 'delete-menu') {
-                await interaction.editReply({content: '*Avoid using multiple commands at once*', components: []});
-                log.error('Command Collision Detected')
             } else if (collected.first().customId === 'delete-menu') {
                 await interaction.editReply({content: `**${serverName}** deleted`, components: []});
                 log.info('Server Deleted Successfully')

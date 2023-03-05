@@ -2,7 +2,7 @@ import {ChannelType, CommandInteraction, CommandInteractionOption, SlashCommandB
 import {NewClient} from "../../dependencies/myTypes";
 import {joinVoiceChannel} from '@discordjs/voice';
 
-export const joinVc = {
+const joinVc = {
     data: new SlashCommandBuilder()
         .setName('join-vc')
         .setDescription('sends dogbot to voice channel user is in (or selected voice channel)')

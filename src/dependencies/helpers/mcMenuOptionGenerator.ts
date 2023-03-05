@@ -24,19 +24,16 @@ export async function McMenuOptionGenerator(interaction: CommandInteraction, gui
 
     log.info('generating menu options...')
     for (let i = 0; i < listSize; i++) {
-        options.label[i] = serverList[i].name
-        options.description[i] = serverList[i].ip
-        options.value[i] = `selection${i}`
+        options.label.push(serverList[i].name)
+        options.description.push(serverList[i].ip)
+        options.value.push(`selection${i}`)
+        optionsArray.push({
+            label: serverList[i].name,
+            description: serverList[i].ip,
+            value: `selection${i}`,
+        })
     }
 
-    // generate discord-readable format for options
-    for (let i = 0; i < listSize; i++) {
-        optionsArray[i] = {
-            label: options.label[i],
-            description: options.description[i],
-            value: options.value[i],
-        }
-    }
     log.info('done')
     return {
         optionsArray: optionsArray,

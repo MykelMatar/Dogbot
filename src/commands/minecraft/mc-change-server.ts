@@ -47,18 +47,22 @@ export const mcChangeServer = {
             embeds: []
         });
 
-        const filter = i => i.user.id === interaction.member.user.id
+        const filter = i => {
+            if (i.user.id !== interaction.member.user.id) return false;
+            return i.message.id === sent.id;
+        };
+
         const collector = interaction.channel.createMessageComponentCollector({
             filter,
             componentType: ComponentType.SelectMenu,
             time: 15000
         });
+        
         let terminateBound = terminate.bind(null, client, collector)
         await terminationListener(client, collector, terminateBound)
 
         try {
             collector.on('collect', async i => {
-                if (i.message.id != sent.id) return
                 if (i.customId !== 'change-menu') return collector.stop()
                 for (let j = 0; j < serverListSize; j++) {
                     if (i.values[0] === `selection${j}`) {
@@ -75,11 +79,9 @@ export const mcChangeServer = {
 
         collector.on('end', async collected => {
             process.removeListener('SIGINT', terminateBound)
-            if (collected.size === 0)
+            if (collected.size === 0) {
                 await interaction.editReply({content: 'Request Timeout', components: []})
-            else if (collected.first().customId !== 'change-menu')
-                await interaction.editReply({content: '*Avoid using multiple commands at once*', components: []})
-            else if (collected.first().customId === 'change-menu') {
+            } else if (collected.first().customId === 'change-menu') {
                 await interaction.editReply({
                     content: `Now tracking **${MCServerData.selectedServer.name}**. Retrieving server status...`,
                     components: []

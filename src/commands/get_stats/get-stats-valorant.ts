@@ -5,8 +5,6 @@ import {embedColor, GuildSchema, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 import {getText} from "../../dependencies/helpers/getText";
 
-// TODO make resistant to tracker.gg website changes
-// TODO add buttons to get map stats and weapon stats and stuff
 export const getStatsValorant = {
     data: new SlashCommandBuilder()
         .setName('get-stats-valorant')
@@ -29,21 +27,20 @@ export const getStatsValorant = {
         let tagOption: CommandInteractionOption = interaction.options.data.find(option => option.name === 'tag')
         let userData, user: string, tag: string
 
-        if (tagOption != undefined && userOption != undefined) { // if the options are used
+        if (tagOption && userOption) { // both options are present
             tag = tagOption.value as string
             user = userOption.value as string
-        } else if (tagOption == undefined && userOption == undefined) { // if the options are not used
+        } else if (!tagOption && !userOption) { // no option is present
             userData = guildData.UserData.find(user => user.id === interaction.user.id)
-            if (userData === undefined) {
+            if (!userData) {
                 return interaction.editReply({content: 'User does not have any data. Please use the input options for the command'})
             }
             if (userData.valorantProfile == '{}') {
-                return interaction.editReply({content: 'Unknown user. Use set-profile-warzone to set your profile or use the command parameters to find a player'})
+                return interaction.editReply({content: 'Unknown user. Use set-profile-valorant to set your profile or use the command parameters to find a player'})
             }
             tag = userData.valorantProfile.tag
             user = userData.valorantProfile.username
-        } else if ((tagOption != undefined && userOption == undefined) || // if one option is used without the other
-            (tagOption == undefined && userOption != undefined)) {
+        } else { // one option is present
             return interaction.editReply({content: `must input both a username and platform. `})
         }
         let uriUser = encodeURIComponent(user.trim())
@@ -65,15 +62,15 @@ export const getStatsValorant = {
                 log.error(`${status} error. ${errorInfo}`)
                 return interaction.editReply(`${status} error. ${errorInfo}`)
             } else if (status != undefined) {
-                return interaction.editReply(`unknown error response. Please open an issue in the github issues page, or check if one already exists. The github page can be accessed by using /elp`)
+                return interaction.editReply(`unknown error response. Please open an issue in the github issues page, or check if one already exists.`)
             }
 
             let statHeaderClass = $('span.stat__value') // stats found in the large header
             let rank: string = statHeaderClass.first().text();
             let stats = getText($, 'span.value') as string[]
             let statPercentages = getText($, 'span.rank') as string[]
-            let topAgents = getText($, 'div.st') as string[]
-            let topGuns = getText($, 'div.weapon') as string[]
+            let topAgents = getText($, 'div.value') as string[]
+            let topGuns = getText($, 'div.weapon__name') as string[]
             let playtimes = getText($, 'span.playtime') as string[]
 
             let StatMap = {
@@ -82,16 +79,16 @@ export const getStatsValorant = {
                 headshots: stats[5],
                 headshotsPercent: statPercentages[2],
                 wins: stats[6],
-                kad: stats[12],
+                kad: stats[14],
                 adr: stats[3],
                 adrPercentage: statPercentages[0],
-                scorePerRound: stats[12],
-                killsPerRound: stats[13],
-                firstBloods: stats[15],
+                scorePerRound: stats[13],
+                killsPerRound: stats[15],
+                firstBloods: stats[16],
             }
-            let topAgent: string = topAgents[0].split(' ')[22]
-            let topGun = topGuns[0].split(' ')[1]
-            let playtime = `${playtimes[0].split(' ')[10]} ${playtimes[0].split(' ')[11]}`
+            let topAgent: string = topAgents[10]
+            let topGun = topGuns[0].split(' ')[0]
+            let playtime = playtimes[0].split(' ')[1]
 
             const embed = new EmbedBuilder()
                 .setTitle(`${user}'s Valorant Stats`)

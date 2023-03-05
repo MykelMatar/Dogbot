@@ -30,70 +30,56 @@ export const enlistLeaderboard = {
                 .setRequired(false)),
 
     async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema) {
-        let ephemeralSetting
-        let hideOption = interaction.options.data.find(option => option.name === 'hide')
-        if (hideOption === undefined) ephemeralSetting = true
-        else ephemeralSetting = hideOption.value
+        const hideOption = interaction.options.data.find(option => option.name === 'hide')
+        const ephemeralSetting = Boolean(hideOption?.value ?? true)
 
-        let userData = guildData.UserData
-        let percentageWeight: number = .9,
-            enlistWeight: number = 1,
-            ignoreWeight: number = 0 // using ignore values in rank calculations generated very odd leaderboards
+        const userData = guildData.UserData
+        const percentageWeight: number = .9
+        const enlistWeight: number = 1
+        const ignoreWeight: number = 0 // using ignore values in rank calculations generated very odd leaderboards
 
-        let totalEnlistValue: number = 0
-        for (const user of userData) {
-            let enlists: number = user.enlistStats.enlists
-            let rejects: number = user.enlistStats.rejects
-            totalEnlistValue += (enlists + rejects)
-        }
+        const totalEnlistValue = userData.reduce((acc, user) => {
+            const enlists = user.enlistStats.enlists;
+            const rejects = user.enlistStats.rejects;
+            return acc + enlists + rejects;
+        }, 0);
 
         let userArray: EnlistLeaderboardUser[] = []
         for (const user of userData) {
-            let enlistPercentage: number,
-                rejectPercentage: number,
-                ignorePercentage: number,
-                enlists: number = user.enlistStats.enlists,
-                rejects: number = user.enlistStats.rejects,
-                ignores: number = user.enlistStats.ignores
-            let totalOfValues: number = enlists + rejects + ignores
+            const enlists = user.enlistStats.enlists;
+            const rejects = user.enlistStats.rejects;
+            const ignores = user.enlistStats.ignores;
+            const totalOfValues = enlists + rejects + ignores;
 
-            if (rejects === 0) enlistPercentage = 1
-            else enlistPercentage = (enlists / totalOfValues)
+            let enlistPercentage = rejects === 0 ? 1 : enlists / totalOfValues;
+            let rejectPercentage = enlists === 0 ? 1 : rejects / totalOfValues;
+            let ignorePercentage = enlists === 0 && rejects === 0 ? 100 : (ignores / totalOfValues) * 100;
 
-            if (enlists === 0) rejectPercentage = 1
-            else rejectPercentage = (rejects / totalOfValues)
+            // normalization of enlist and reject amount totals 
+            let normalizedEnlistTotal = enlists / totalEnlistValue;
+            let normalizedRejectTotal = rejects / totalEnlistValue;
 
-            if (enlists === 0 && rejects === 0) ignorePercentage = 100
-            else ignorePercentage = (ignores / totalOfValues) * 100
+            // avoids NaN values (in case of 0 values)
+            enlistPercentage ||= 0;
+            rejectPercentage ||= 0;
+            normalizedEnlistTotal ||= 0;
+            normalizedRejectTotal ||= 0;
+            ignorePercentage ||= 0;
 
-            let normalizedEnlistValue: number = enlists / totalEnlistValue,
-                normalizedRejectValue: number = rejects / totalEnlistValue
+            // Apply weights 
+            const [weightedEnlistPercentage, weightedRejectPercentage, weightedIgnorePercentage, weightedEnlistTotal, weightedRejectTotal] = [
+                enlistPercentage * percentageWeight,
+                rejectPercentage * percentageWeight,
+                ignorePercentage * ignoreWeight,
+                normalizedEnlistTotal * enlistWeight,
+                normalizedRejectTotal * enlistWeight,
+            ];
 
-            // ensures no values return NaN (in case of 0 values)
-            if (isNaN(enlistPercentage)) {
-                enlistPercentage = 0
-            }
-            if (isNaN(rejectPercentage)) {
-                rejectPercentage = 0
-            }
-            if (isNaN(normalizedEnlistValue)) {
-                normalizedEnlistValue = 0
-            }
-            if (isNaN(normalizedRejectValue)) {
-                normalizedRejectValue = 0
-            }
-            if (isNaN(ignorePercentage)) {
-                ignorePercentage = 0
-            }
-
-            let adjustedEnlistPercentage: number = enlistPercentage * percentageWeight,
-                adjustedRejectPercentage: number = rejectPercentage * percentageWeight,
-                adjustedEnlistValue: number = normalizedEnlistValue * enlistWeight,
-                adjustedRejectValue: number = normalizedRejectValue * enlistWeight
-            // adjustedIgnoreValue: number = ignorePercentage * ignoreWeight
-
-            let adjustedEnlistRank: number = adjustedEnlistPercentage + adjustedEnlistValue
-            let adjustedRejectRank: number = adjustedRejectPercentage + adjustedRejectValue
+            // Get final ranking value
+            const [EnlistRank, RejectRank] = [
+                weightedEnlistPercentage + weightedEnlistTotal - weightedIgnorePercentage,
+                weightedRejectPercentage + weightedRejectTotal - weightedIgnorePercentage,
+            ];
 
             let leaderboardUser: EnlistLeaderboardUser = {
                 name: user.username,
@@ -101,8 +87,8 @@ export const enlistLeaderboard = {
                 rejects: rejects,
                 enlistPercentage: enlistPercentage,
                 rejectPercentage: rejectPercentage,
-                adjustedEnlistRankValue: adjustedEnlistRank,
-                adjustedRejectRankValue: adjustedRejectRank,
+                EnlistRankValue: EnlistRank,
+                RejectRankValue: RejectRank,
             }
             userArray.push(leaderboardUser)
         }
@@ -119,21 +105,17 @@ export const enlistLeaderboard = {
             })
         }
 
-        // 2d arrays that store names, percentages, and total enlist values
-        let topNames: string[] = [], topPercentages = [], topTotals = []
-        let bottomNames: string[] = [], bottomPercentages = [], bottomTotals = []
-        let top3Gamers: Array<string[]> = [topNames, topPercentages, topTotals],
-            top3Losers: Array<string[]> = [bottomNames, bottomPercentages, bottomTotals]
+        // 2d arrays that store names, percentages, and total enlist values for each user
+        // not using objects because the arrays display vertically in the embed, meaning the values each need their own array
+        let top3Gamers: string[][] = []
+        let top3Losers: string[][] = []
 
-        // have to separate rankings into 2 loops because userArray needs to be sorted differently for each Ranking
-        let enlistRankings: EnlistLeaderboardUser[] = userArray.sort((a, b) => (b.adjustedEnlistRankValue - a.adjustedEnlistRankValue))
+        let enlistRankings: EnlistLeaderboardUser[] = [...userArray].sort((a, b) => (b.EnlistRankValue - a.EnlistRankValue))
+        let rejectRankings: EnlistLeaderboardUser[] = [...userArray].sort((a, b) => (a.RejectRankValue < b.RejectRankValue ? 1 : -1))
         for (let i = 0; i < 3; i++) {
             top3Gamers[0].push(`**${i + 1}.** ${enlistRankings[i].name}\n`,)
             top3Gamers[1].push(`**${i + 1}.** ${(enlistRankings[i].enlistPercentage * 100).toFixed(2)}\n`)
             top3Gamers[2].push(`**${i + 1}.** ${enlistRankings[i].enlists + enlistRankings[i].rejects}\n`)
-        }
-        let rejectRankings: EnlistLeaderboardUser[] = userArray.sort((a, b) => (a.adjustedRejectRankValue < b.adjustedRejectRankValue ? 1 : -1))
-        for (let i = 0; i < 3; i++) {
             top3Losers[0].push(`**${i + 1}.** ${rejectRankings[i].name}\n`)
             top3Losers[1].push(`**${i + 1}.** ${(rejectRankings[i].rejectPercentage * 100).toFixed(2)}\n`,)
             top3Losers[2].push(`**${i + 1}.** ${rejectRankings[i].enlists + rejectRankings[i].rejects}\n`)

@@ -3,6 +3,7 @@ import {
     ButtonBuilder,
     ButtonStyle,
     CommandInteraction,
+    CommandInteractionOption,
     EmbedBuilder,
     Message,
     SlashCommandBuilder
@@ -27,13 +28,12 @@ export const mcServerStatus = {
 
     async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema, guildName: string) {
         const MCServerData = guildData.MCServerData
-        const serverList: object[] = MCServerData.serverList
+        const {serverList}: { serverList: object[] } = MCServerData;
+
         if (serverList.length === 0) {
-            return interaction.editReply('*No Registered Servers, use !addmc or !listmc to add servers.*')
+            return interaction.editReply('*No Registered Servers, use /mc-add-server to add servers.*')
         }
-        let title: string = JSON.stringify(MCServerData.selectedServer.name)
-        let MCServerIP: string = JSON.stringify(MCServerData.selectedServer.ip)
-        let MCServerPort: number = MCServerData.selectedServer.port
+        const {name, ip, port} = MCServerData.selectedServer;
 
         let row: ActionRowBuilder<ButtonBuilder>
         if (serverList.length === 1) {
@@ -49,24 +49,23 @@ export const mcServerStatus = {
                 .addComponents(
                     new ButtonBuilder()
                         .setCustomId('Change')
-                        .setLabel('Change')
+                        .setLabel('Change Server')
                         .setStyle(ButtonStyle.Primary),
                     new ButtonBuilder()
                         .setCustomId('List')
                         .setLabel('Server List')
-                        .setStyle(ButtonStyle.Secondary),
+                        .setStyle(ButtonStyle.Primary),
                 )
         }
-
-        const options = {timeout: 3000}
-        status(MCServerIP.replace(/"+/g, ''), MCServerPort, options)
+        
+        status(ip, port, {timeout: 3000})
             .then(async (response) => {
                 log.info('Server Online')
 
                 const embed = new EmbedBuilder()
-                    .setTitle(title.replace(/["]+/g, ''))
+                    .setTitle(name)
                     .addFields(
-                        {name: 'Server IP', value: `>  ${MCServerIP.replace(/["]+/g, '')}`},
+                        {name: 'Server IP', value: `>  ${ip}`},
                         {name: 'Modpack', value: `> ${response.motd.clean.toString()}`},
                         {name: 'Version', value: `>  ${response.version.name.toString()}`},
                         {name: 'Online Players', value: `>  ${response.players.online.toString()}`},
@@ -74,19 +73,18 @@ export const mcServerStatus = {
                     .setColor(embedColor)
                     .setFooter({text: 'Server Online'})
 
-                let searchedPlayer = interaction.options.data.find(option => option.name === 'username')
+                const {value: searchedPlayer} = (interaction.options.data.find(option => option.name === 'username') ?? {}) as CommandInteractionOption;
                 let onlinePlayers = response.players.sample
                 let foundPlayer = false;
 
                 if (searchedPlayer !== undefined) {
-                    onlinePlayers.forEach(player => {
-                        if (player.name === searchedPlayer.value) {
-                            embed.addFields({name: 'Searched User', value: `>  ${player.name} is online`})
-                            foundPlayer = true;
-                        }
-                    })
-                    if (foundPlayer === false) {
-                        embed.addFields({name: 'Searched User', value: `>  ${searchedPlayer.value} is offline`})
+                    const player = onlinePlayers.find(player => player.name === searchedPlayer);
+                    if (player !== undefined) {
+                        embed.addFields({name: 'Searched User', value: `>  ${player.name} is online`});
+                        foundPlayer = true;
+                    }
+                    if (!foundPlayer) {
+                        embed.addFields({name: 'Searched User', value: `>  ${searchedPlayer} is offline`})
                     }
                 }
 
@@ -97,7 +95,7 @@ export const mcServerStatus = {
                 log.error('Server Offline')
 
                 const embed = new EmbedBuilder()
-                    .addFields({name: `${title.replace(/"+/g, '')} Offline`, value: '*all good*'})
+                    .addFields({name: `${name} Offline`, value: '*all good, try going outside*'})
                     .setColor(embedColor)
 
                 let sent: Message = await interaction.editReply({embeds: [embed], components: [row]})
