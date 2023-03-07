@@ -39,16 +39,13 @@ export const enlistLeaderboard = {
         const ignoreWeight: number = 0 // using ignore values in rank calculations generated very odd leaderboards
 
         const totalEnlistValue = userData.reduce((acc, user) => {
-            const enlists = user.enlistStats.enlists;
-            const rejects = user.enlistStats.rejects;
+            const {enlists, rejects} = user.enlistStats
             return acc + enlists + rejects;
         }, 0);
 
         let userArray: EnlistLeaderboardUser[] = []
         for (const user of userData) {
-            const enlists = user.enlistStats.enlists;
-            const rejects = user.enlistStats.rejects;
-            const ignores = user.enlistStats.ignores;
+            const {enlists, rejects, ignores} = user.enlistStats
             const totalOfValues = enlists + rejects + ignores;
 
             let enlistPercentage = rejects === 0 ? 1 : enlists / totalOfValues;

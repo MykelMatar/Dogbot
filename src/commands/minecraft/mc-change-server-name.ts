@@ -10,7 +10,12 @@ import {
 import {McMenuOptionGenerator} from "../../dependencies/helpers/mcMenuOptionGenerator";
 import {DiscordMenuGeneratorReturnValues, GuildSchema, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
-import {terminate, terminationListener} from "../../dependencies/helpers/terminationListener";
+import {
+    removeTerminationListener,
+    terminate,
+    terminationListener
+} from "../../dependencies/helpers/terminationListener";
+import {createMcCommandCollector} from "../../dependencies/helpers/createMcCommandCollector";
 
 export const mcChangeServerName = {
     data: new SlashCommandBuilder()
@@ -20,6 +25,7 @@ export const mcChangeServerName = {
         .addStringOption(option =>
             option.setName('new-name')
                 .setDescription('The new server name')
+                .setMaxLength(30)
                 .setRequired(true)),
 
     async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema, guildName: string) {
@@ -31,13 +37,9 @@ export const mcChangeServerName = {
         }
 
         let newName = interaction.options.data[0].value as string
-        if (newName.toString().length > 30) {
-            await interaction.editReply('Please keep server name below 30 characters')
-            return log.error("name greater than 30 char");
-        }
 
         // verify that name is not already registered under a different IP
-        if (MCServerData.serverList.some(server => server["name"] === newName)) {
+        if (MCServerData.serverList.some(server => server.name === newName)) {
             await interaction.editReply(
                 "Cannot have duplicate server names, please choose a different name or use /mc-change-server-ip to change the IP of the existing server"
             );
@@ -58,26 +60,20 @@ export const mcChangeServerName = {
             components: [row]
         });
 
-        let filter = i => i.user.id === interaction.member.user.id;
-        const collector = interaction.channel.createMessageComponentCollector({
-            filter,
-            componentType: ComponentType.SelectMenu,
-            time: 10000
-        });
+        const collector = createMcCommandCollector(interaction, sent)
         let terminateBound = terminate.bind(null, client, collector)
         await terminationListener(client, collector, terminateBound)
 
-        let serverName
+        let selectedServerName
         collector.on('collect', async i => {
-            if (i.message.id != sent.id) return
-            if (i.customId !== 'change-server-menu') return collector.stop()
-            for (let j = 0; j < serverListSize; j++) {
-                if (i.values[0] === `selection${j}`) {
-                    serverName = MCServerData.serverList[j].name
-                    MCServerData.serverList[j].name = newName
-                }
-            }
-            if (MCServerData.selectedServer.name === serverName) {
+            const selectedServerIP = i.values[0]
+            const selectedServer = MCServerData.serverList.find(server => {
+                return server.ip === selectedServerIP
+            })
+            let selectedServerName = selectedServer.name
+            selectedServer.name = newName
+            
+            if (MCServerData.selectedServer.name === selectedServerName) {
                 MCServerData.selectedServer.name = newName
             }
             await guildData.save()
@@ -85,7 +81,7 @@ export const mcChangeServerName = {
         });
 
         collector.on('end', async collected => {
-            process.removeListener('SIGINT', terminateBound)
+            removeTerminationListener(terminateBound)
             if (collected.size === 0) {
                 await interaction.editReply({content: '*Request Timeout*', components: []});
                 log.error('Request Timeout')
@@ -94,7 +90,7 @@ export const mcChangeServerName = {
                 log.error('Command Collision Detected')
             } else if (collected.first().customId === 'change-server-menu') {
                 await interaction.editReply({
-                    content: ` **${serverName}** renamed successfully to **${newName}**`, components: []
+                    content: ` **${selectedServerName}** renamed successfully to **${newName}**`, components: []
                 })
                 log.info('Server Renamed Successfully')
             }

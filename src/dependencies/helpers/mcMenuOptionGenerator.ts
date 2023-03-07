@@ -26,11 +26,11 @@ export async function McMenuOptionGenerator(interaction: CommandInteraction, gui
     for (let i = 0; i < listSize; i++) {
         options.label.push(serverList[i].name)
         options.description.push(serverList[i].ip)
-        options.value.push(`selection${i}`)
+        options.value.push(serverList[i].ip)
         optionsArray.push({
             label: serverList[i].name,
             description: serverList[i].ip,
-            value: `selection${i}`,
+            value: serverList[i].ip, // use server ip as value to make finding the server easier
         })
     }
 

@@ -16,7 +16,11 @@ import {
 import {embedColor, EnlistUserData, GuildSchema, NewClient, UserStats} from "../../dependencies/myTypes";
 import {updateEnlistUserEmbed} from "../../dependencies/helpers/updateEnlistUserEmbed";
 import guilds from "../../dependencies/schemas/guild-schema";
-import {terminate, terminationListener} from "../../dependencies/helpers/terminationListener";
+import {
+    removeTerminationListener,
+    terminate,
+    terminationListener
+} from "../../dependencies/helpers/terminationListener";
 import {updateUserData} from "../../dependencies/helpers/updateUserData";
 
 //TODO add edit button to edit fields
@@ -74,11 +78,11 @@ export const enlistUsers = {
         const row = new ActionRowBuilder<ButtonBuilder>()
             .addComponents(
                 new ButtonBuilder()
-                    .setLabel(`✅`)
+                    .setLabel(`✓`)
                     .setCustomId('Gamer')
                     .setStyle(ButtonStyle.Primary),
                 new ButtonBuilder()
-                    .setLabel(`❌`)
+                    .setLabel(`✘`)
                     .setCustomId('Cringe')
                     .setStyle(ButtonStyle.Primary),
                 new ButtonBuilder()
@@ -179,8 +183,7 @@ export const enlistUsers = {
         });
 
         enlistCollector.on('end', async collected => {
-            process.removeListener('SIGINT', terminateBound)
-            process.removeListener('SIGTERM', terminateBound)
+            removeTerminationListener(terminateBound)
             if (collected.size === 0) return
             // logic to get users who ignored the enlist prompt for ignore% stat
             const allUserIds = userData.map(user => user.id).flat();

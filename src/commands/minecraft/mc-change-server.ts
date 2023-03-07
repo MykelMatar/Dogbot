@@ -9,8 +9,11 @@ import {
     SlashCommandBuilder
 } from "discord.js";
 import {DiscordMenuGeneratorReturnValues, GuildSchema, NewClient} from "../../dependencies/myTypes";
-import log from "../../dependencies/logger";
-import {terminate, terminationListener} from "../../dependencies/helpers/terminationListener";
+import {
+    removeTerminationListener,
+    terminate,
+    terminationListener
+} from "../../dependencies/helpers/terminationListener";
 
 export const mcChangeServer = {
     data: new SlashCommandBuilder()
@@ -47,38 +50,32 @@ export const mcChangeServer = {
             embeds: []
         });
 
-        const filter = i => {
-            if (i.user.id !== interaction.member.user.id) return false;
-            return i.message.id === sent.id;
-        };
-
         const collector = interaction.channel.createMessageComponentCollector({
-            filter,
             componentType: ComponentType.SelectMenu,
-            time: 15000
+            time: 15000,
+            max: 1,
+            filter: (i) => {
+                if (i.user.id !== interaction.member.user.id) return false;
+                return i.message.id === sent.id;
+            },
         });
-        
+
         let terminateBound = terminate.bind(null, client, collector)
         await terminationListener(client, collector, terminateBound)
 
-        try {
-            collector.on('collect', async i => {
-                if (i.customId !== 'change-menu') return collector.stop()
-                for (let j = 0; j < serverListSize; j++) {
-                    if (i.values[0] === `selection${j}`) {
-                        MCServerData.selectedServer.name = label[j];
-                        MCServerData.selectedServer.ip = description[j];
-                    }
-                }
-                await guildData.save()
-                collector.stop()
-            });
-        } catch (e) {
-            log.error(e)
-        }
+        collector.on('collect', async i => {
+            const selectedServerIP = i.values[0]
+            const selectedServer = MCServerData.serverList.find(server => {
+                return server.ip === selectedServerIP
+            })
+            MCServerData.selectedServer.name = selectedServer.name;
+            MCServerData.selectedServer.ip = selectedServer.ip;
+
+            await guildData.save()
+        });
 
         collector.on('end', async collected => {
-            process.removeListener('SIGINT', terminateBound)
+            removeTerminationListener(terminateBound)
             if (collected.size === 0) {
                 await interaction.editReply({content: 'Request Timeout', components: []})
             } else if (collected.first().customId === 'change-menu') {
