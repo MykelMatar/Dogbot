@@ -22,7 +22,7 @@ const client = new Client({
 }) as NewClient
 
 client.commands = new Collection();
-client.isTestBot = true; // set false if deploying Dogbot
+client.isTestBot = false; // set false if deploying Dogbot
 
 ['command_handler', 'event_handler'].forEach(handler => {
     require(`./handlers/${handler}`).default(client)
