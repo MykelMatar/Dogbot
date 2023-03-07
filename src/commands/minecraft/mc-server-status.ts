@@ -8,7 +8,7 @@ import {
     Message,
     SlashCommandBuilder
 } from "discord.js";
-import {status} from "minecraft-server-util";
+import {status, statusBedrock} from "minecraft-server-util";
 import {McServerStatusCollector} from "../../dependencies/helpers/mcServerStatusCollector";
 import {embedColor, GuildSchema, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
@@ -34,6 +34,7 @@ export const mcServerStatus = {
             return interaction.editReply('*No Registered Servers, use /mc-add-server to add servers.*')
         }
         const {name, ip, port} = MCServerData.selectedServer;
+        const {value: searchedPlayer} = (interaction.options.data.find(option => option.name === 'username') ?? {}) as CommandInteractionOption;
 
         let row: ActionRowBuilder<ButtonBuilder>
         if (serverList.length === 1) {
@@ -57,41 +58,59 @@ export const mcServerStatus = {
                         .setStyle(ButtonStyle.Primary),
                 )
         }
-        
-        status(ip, port, {timeout: 3000})
-            .then(async (response) => {
-                log.info('Server Online')
+
+        try {
+            let javaResponse = await status(ip, port, {timeout: 3000})
+
+            const embed = new EmbedBuilder()
+                .setTitle(name)
+                .addFields(
+                    {name: 'Server IP', value: `>  ${ip}`},
+                    {name: 'Modpack', value: `> ${javaResponse.motd.clean.toString()}`},
+                    {name: 'Version', value: `>  ${javaResponse.version.name.toString()}`},
+                    {name: 'Online Players', value: `>  ${javaResponse.players.online.toString()}`},
+                )
+                .setColor(embedColor)
+                .setFooter({text: 'Server Online'})
+
+            let onlinePlayers = javaResponse.players.sample
+            let foundPlayer = false;
+
+            if (searchedPlayer !== undefined) {
+                const player = onlinePlayers.find(player => player.name === searchedPlayer);
+                if (player !== undefined) {
+                    embed.addFields({name: 'Searched User', value: `>  ${player.name} is online`});
+                    foundPlayer = true;
+                }
+                if (!foundPlayer) {
+                    embed.addFields({name: 'Searched User', value: `>  ${searchedPlayer} is offline`})
+                }
+            }
+
+            let sent: Message = await interaction.editReply({embeds: [embed], components: [row]})
+            await McServerStatusCollector(client, interaction, guildData, guildName, sent)
+
+        } catch (e) {
+            try {
+                console.log(ip, port)
+                let bedrockResponse = await statusBedrock(ip, port, {timeout: 3000})
 
                 const embed = new EmbedBuilder()
                     .setTitle(name)
                     .addFields(
                         {name: 'Server IP', value: `>  ${ip}`},
-                        {name: 'Modpack', value: `> ${response.motd.clean.toString()}`},
-                        {name: 'Version', value: `>  ${response.version.name.toString()}`},
-                        {name: 'Online Players', value: `>  ${response.players.online.toString()}`},
+                        {name: 'Modpack', value: `> ${bedrockResponse.motd.clean.toString()}`},
+                        {name: 'Version', value: `>  ${bedrockResponse.version.name.toString()}`},
+                        {name: 'Online Players', value: `>  ${bedrockResponse.players.online.toString()}`},
                     )
                     .setColor(embedColor)
                     .setFooter({text: 'Server Online'})
 
-                const {value: searchedPlayer} = (interaction.options.data.find(option => option.name === 'username') ?? {}) as CommandInteractionOption;
-                let onlinePlayers = response.players.sample
-                let foundPlayer = false;
+                let content: string = searchedPlayer ? 'cannot search for players on bedrock server' : '';
+                let sent: Message = await interaction.editReply({content: content, embeds: [embed], components: [row]})
 
-                if (searchedPlayer !== undefined) {
-                    const player = onlinePlayers.find(player => player.name === searchedPlayer);
-                    if (player !== undefined) {
-                        embed.addFields({name: 'Searched User', value: `>  ${player.name} is online`});
-                        foundPlayer = true;
-                    }
-                    if (!foundPlayer) {
-                        embed.addFields({name: 'Searched User', value: `>  ${searchedPlayer} is offline`})
-                    }
-                }
-
-                let sent: Message = await interaction.editReply({embeds: [embed], components: [row]})
                 await McServerStatusCollector(client, interaction, guildData, guildName, sent)
-            })
-            .catch(async () => {
+            } catch (e) {
                 log.error('Server Offline')
 
                 const embed = new EmbedBuilder()
@@ -100,6 +119,7 @@ export const mcServerStatus = {
 
                 let sent: Message = await interaction.editReply({embeds: [embed], components: [row]})
                 await McServerStatusCollector(client, interaction, guildData, guildName, sent)
-            });
+            }
+        }
     }
 }

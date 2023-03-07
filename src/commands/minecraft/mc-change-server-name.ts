@@ -1,5 +1,6 @@
 import {
     ActionRowBuilder,
+    APISelectMenuOption,
     CommandInteraction,
     ComponentType,
     Message,
@@ -8,7 +9,7 @@ import {
     SlashCommandBuilder
 } from "discord.js";
 import {McMenuOptionGenerator} from "../../dependencies/helpers/mcMenuOptionGenerator";
-import {DiscordMenuGeneratorReturnValues, GuildSchema, NewClient} from "../../dependencies/myTypes";
+import {GuildSchema, MinecraftServer, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 import {
     removeTerminationListener,
@@ -28,8 +29,9 @@ export const mcChangeServerName = {
                 .setMaxLength(30)
                 .setRequired(true)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema, guildName: string) {
+    async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema) {
         const MCServerData = guildData.MCServerData
+        let serverList: MinecraftServer[] = MCServerData.serverList
         let serverListSize: number = MCServerData.serverList.length
         if (serverListSize === 0) {
             await interaction.editReply('*No Registered Servers, use /mc-add-server or /mc-list-servers to add servers.*')
@@ -46,13 +48,13 @@ export const mcChangeServerName = {
             return log.error("Duplicate Name Detected");
         }
 
-        let optionGenerator: DiscordMenuGeneratorReturnValues = await McMenuOptionGenerator(interaction, guildName, serverListSize);
+        let menuOptions: APISelectMenuOption[] = await McMenuOptionGenerator(interaction, serverList);
         let row = new ActionRowBuilder<SelectMenuBuilder>()
             .addComponents(
                 new SelectMenuBuilder()
                     .setCustomId('change-server-menu')
                     .setPlaceholder('Nothing selected')
-                    .addOptions(optionGenerator.optionsArray),
+                    .addOptions(menuOptions),
             );
 
         let sent: Message = await interaction.editReply({
@@ -72,7 +74,7 @@ export const mcChangeServerName = {
             })
             let selectedServerName = selectedServer.name
             selectedServer.name = newName
-            
+
             if (MCServerData.selectedServer.name === selectedServerName) {
                 MCServerData.selectedServer.name = newName
             }
@@ -85,9 +87,6 @@ export const mcChangeServerName = {
             if (collected.size === 0) {
                 await interaction.editReply({content: '*Request Timeout*', components: []});
                 log.error('Request Timeout')
-            } else if (collected.first().customId !== 'change-server-menu') {
-                await interaction.editReply({content: 'Avoid using multiple commands at once', components: []});
-                log.error('Command Collision Detected')
             } else if (collected.first().customId === 'change-server-menu') {
                 await interaction.editReply({
                     content: ` **${selectedServerName}** renamed successfully to **${newName}**`, components: []

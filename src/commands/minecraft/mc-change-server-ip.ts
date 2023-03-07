@@ -1,5 +1,6 @@
 import {
     ActionRowBuilder,
+    APISelectMenuOption,
     CommandInteraction,
     CommandInteractionOption,
     ComponentType,
@@ -10,13 +11,14 @@ import {
 } from "discord.js";
 import {status} from "minecraft-server-util";
 import {McMenuOptionGenerator} from "../../dependencies/helpers/mcMenuOptionGenerator";
-import {DiscordMenuGeneratorReturnValues, GuildSchema, MinecraftServer, NewClient} from "../../dependencies/myTypes";
+import {GuildSchema, MinecraftServer, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 import {
     removeTerminationListener,
     terminate,
     terminationListener
 } from "../../dependencies/helpers/terminationListener";
+import {createMcCommandCollector} from "../../dependencies/helpers/createMcCommandCollector";
 
 export const mcChangeServerIP = {
     data: new SlashCommandBuilder()
@@ -32,8 +34,9 @@ export const mcChangeServerIP = {
                 .setDescription('the new port')
                 .setRequired(false)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema, guildName: string) {
+    async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema) {
         const MCServerData = guildData.MCServerData
+        let serverList: MinecraftServer[] = MCServerData.serverList
         let serverListSize: number = MCServerData.serverList.length
 
         if (serverListSize === 0) {
@@ -66,13 +69,13 @@ export const mcChangeServerIP = {
         }
 
         // create variables and generate options for select menu
-        let optionGenerator: DiscordMenuGeneratorReturnValues = await McMenuOptionGenerator(interaction, guildName, serverListSize);
+        let menuOptions: APISelectMenuOption[] = await McMenuOptionGenerator(interaction, serverList);
         let row = new ActionRowBuilder<SelectMenuBuilder>()
             .addComponents(
                 new SelectMenuBuilder()
                     .setCustomId('change-ip-menu')
                     .setPlaceholder('Nothing selected')
-                    .addOptions(optionGenerator.optionsArray),
+                    .addOptions(menuOptions),
             );
 
         let sent: Message = await interaction.editReply({
@@ -80,16 +83,7 @@ export const mcChangeServerIP = {
             components: [row]
         });
 
-        const collector = interaction.channel.createMessageComponentCollector({
-            componentType: ComponentType.SelectMenu,
-            time: 15000,
-            max: 1,
-            filter: (i) => {
-                if (i.user.id !== interaction.member.user.id) return false;
-                return i.message.id === sent.id;
-            },
-        });
-
+        const collector = createMcCommandCollector(interaction, sent)
         let terminateBound = terminate.bind(null, client, collector)
         await terminationListener(client, collector, terminateBound)
 

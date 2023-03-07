@@ -1,32 +1,19 @@
-import guilds from '../schemas/guild-schema'
 import log from "../logger";
 import {APISelectMenuOption, CommandInteraction} from "discord.js";
-import {DiscordMenuGeneratorReturnValues, DiscordMenuOption} from "../myTypes";
+import {MinecraftServer} from "../myTypes";
 
 /**
  * Generates interaction menu options for minecraft commands
  *
  * @param interaction
- * @param guildName
- * @param listSize
+ * @param serverList
  */
-export async function McMenuOptionGenerator(interaction: CommandInteraction, guildName: string, listSize: number): Promise<DiscordMenuGeneratorReturnValues> {
+export async function McMenuOptionGenerator(interaction: CommandInteraction, serverList: MinecraftServer[]): Promise<APISelectMenuOption[]> {
     let optionsArray: APISelectMenuOption[] = []
-    let options: DiscordMenuOption = {
-        label: [],
-        value: [],
-        description: [],
-    };
-
-    log.info('retrieving server list...')
-    const currentGuild = await guilds.findOne({guildId: interaction.guildId})
-    let serverList = currentGuild.MCServerData.serverList
+    const listSize = serverList.length
 
     log.info('generating menu options...')
     for (let i = 0; i < listSize; i++) {
-        options.label.push(serverList[i].name)
-        options.description.push(serverList[i].ip)
-        options.value.push(serverList[i].ip)
         optionsArray.push({
             label: serverList[i].name,
             description: serverList[i].ip,
@@ -35,8 +22,5 @@ export async function McMenuOptionGenerator(interaction: CommandInteraction, gui
     }
 
     log.info('done')
-    return {
-        optionsArray: optionsArray,
-        options: options,
-    };
+    return optionsArray
 }

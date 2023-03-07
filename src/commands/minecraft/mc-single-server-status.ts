@@ -9,10 +9,14 @@ import {
     Message,
     SlashCommandBuilder,
 } from "discord.js";
-import {status, statusBedrock} from "minecraft-server-util";
+import {JavaStatusOptions, status, statusBedrock} from "minecraft-server-util";
 import {embedColor, GuildSchema, MinecraftServer, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
-import {terminate, terminationListener} from "../../dependencies/helpers/terminationListener";
+import {
+    removeTerminationListener,
+    terminate,
+    terminationListener
+} from "../../dependencies/helpers/terminationListener";
 
 export const mcSingleServerStatus = {
     data: new SlashCommandBuilder()
@@ -38,25 +42,13 @@ export const mcSingleServerStatus = {
             port: undefined
         };
         let portOption: CommandInteractionOption = (interaction.options.data.find(option => option.name === 'port'));
-        if (portOption === undefined) {
-            mcServer.port = 25565
-        } else {
-            mcServer.port = portOption.value as number
-        }
+        mcServer.port = portOption?.value as number ?? 25565;
         mcServer.ip = interaction.options.data[0].value as string
 
-        const options = {timeout: 3000}
-        status(mcServer.ip, mcServer.port, options)
+        let options: JavaStatusOptions = {timeout: 3000}
+        status(mcServer.ip, mcServer.port,)
             .then(async (response) => {
                 log.info('Server Online')
-
-                const row = new ActionRowBuilder<ButtonBuilder>()
-                    .addComponents(
-                        new ButtonBuilder()
-                            .setCustomId('SingleAdd')
-                            .setLabel('Add To List')
-                            .setStyle(ButtonStyle.Primary),
-                    );
 
                 const embed = new EmbedBuilder()
                     .addFields(
@@ -68,22 +60,29 @@ export const mcSingleServerStatus = {
                     .setColor(embedColor)
                     .setFooter({text: 'Server Online'})
 
-                const serverList: object[] = guildData.MCServerData.serverList
+                const serverList: MinecraftServer[] = guildData.MCServerData.serverList
                 if (serverList.length === 10 || serverList.some(servers => servers["ip"] === mcServer.ip)) {
                     return interaction.editReply({embeds: [embed]})
                 } else {
+                    const row = new ActionRowBuilder<ButtonBuilder>()
+                        .addComponents(
+                            new ButtonBuilder()
+                                .setCustomId('SingleAdd')
+                                .setLabel('Add To List')
+                                .setStyle(ButtonStyle.Primary),
+                        );
+
                     var statusMessage: Message = await interaction.editReply({embeds: [embed], components: [row]})
                 }
 
-                const filter = i => i.user.id === interaction.member.user.id;
                 const collector = interaction.channel.createMessageComponentCollector({
-                    filter,
+                    filter: i => i.user.id === interaction.member.user.id,
                     componentType: ComponentType.Button,
                     time: 10000
                 });
                 let terminateBound = terminate.bind(null, client, collector)
                 await terminationListener(client, collector, terminateBound)
-                
+
                 collector.on('collect', async i => {
                     if (i.message.id != statusMessage.id) return
                     if (i.customId === 'SingleAdd') {
@@ -98,7 +97,7 @@ export const mcSingleServerStatus = {
                     }
                 });
                 collector.on('end', async collected => {
-                    process.removeListener('SIGINT', terminateBound)
+                    removeTerminationListener(terminateBound)
                     if (collected.size === 0)
                         await interaction.editReply({
                             embeds: [embed],

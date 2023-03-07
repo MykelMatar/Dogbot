@@ -8,7 +8,7 @@ import {
     SelectMenuBuilder,
     SlashCommandBuilder
 } from "discord.js";
-import {DiscordMenuGeneratorReturnValues, GuildSchema, NewClient} from "../../dependencies/myTypes";
+import {GuildSchema, MinecraftServer, NewClient} from "../../dependencies/myTypes";
 import {
     removeTerminationListener,
     terminate,
@@ -22,7 +22,9 @@ export const mcChangeServer = {
 
     async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema, guildName: string) {
         const MCServerData = guildData.MCServerData
+        let serverList: MinecraftServer[] = MCServerData.serverList
         let serverListSize: number = MCServerData.serverList.length
+
         if (serverListSize === 0) {
             await interaction.editReply('No Registered Servers, use /mc-add-server or /mc-list-servers to add servers.')
             return;
@@ -31,17 +33,14 @@ export const mcChangeServer = {
             return;
         }
 
-        let optionGenerator: DiscordMenuGeneratorReturnValues = await McMenuOptionGenerator(interaction, guildName, serverListSize);
-        let optionsArray = optionGenerator.optionsArray
-        let label = optionGenerator.options.label
-        let description = optionGenerator.options.description
+        let menuOptions: APISelectMenuOption[] = await McMenuOptionGenerator(interaction, serverList);
 
         let row = new ActionRowBuilder<SelectMenuBuilder>()
             .addComponents(
                 new SelectMenuBuilder()
                     .setCustomId('change-menu')
                     .setPlaceholder('Nothing selected')
-                    .addOptions(optionsArray),
+                    .addOptions(menuOptions),
             );
 
         let sent: Message = await interaction.editReply({
@@ -70,6 +69,7 @@ export const mcChangeServer = {
             })
             MCServerData.selectedServer.name = selectedServer.name;
             MCServerData.selectedServer.ip = selectedServer.ip;
+            MCServerData.selectedServer.port = selectedServer.port
 
             await guildData.save()
         });

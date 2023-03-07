@@ -31,17 +31,6 @@ export interface MinecraftServer {
     port: number
 }
 
-export type DiscordMenuGeneratorReturnValues = {
-    optionsArray: APISelectMenuOption[],
-    options: DiscordMenuOption,
-}
-
-export interface DiscordMenuOption {
-    label: string[]
-    description: string[]
-    value: string[]
-}
-
 export interface EnlistLeaderboardUser {
     name: string
     enlists: number

@@ -15,7 +15,7 @@ import {
     terminate,
     terminationListener
 } from "../../dependencies/helpers/terminationListener";
-import {status} from "minecraft-server-util";
+import {status, statusBedrock} from "minecraft-server-util";
 
 //TODO check add server button, might not be working
 export const mcListServers = {
@@ -44,14 +44,15 @@ export const mcListServers = {
             const statusPromises = MCServerData.serverList.map(MCServer => {
                 return status(MCServer.ip, MCServer.port, {timeout: 2000})
                     .then(() => '*Online*')
-                    .catch(() => '*Offline*');
+                    .catch(() =>
+                        statusBedrock(MCServer.ip, MCServer.port, {timeout: 2000})
+                            .then(() => '*Online*')
+                            .catch(() => '*Offline*'));
             });
-
             const statusResults = await Promise.all(statusPromises);
             serverStatusList = [...statusResults];
         }
-
-
+        
         if (serverIPList.length === 0) { // using server IP List ensures a nameless IP is not overwritten
             serverNameList = ["N/A"]
             serverIPList = ["N/A"]

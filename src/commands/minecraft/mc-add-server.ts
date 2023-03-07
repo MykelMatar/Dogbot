@@ -1,5 +1,5 @@
 import {CommandInteraction, PermissionFlagsBits, SlashCommandBuilder} from "discord.js";
-import {status} from 'minecraft-server-util'
+import {status, statusBedrock} from 'minecraft-server-util'
 import {McAddServerInteraction} from "../../dependencies/helpers/mcAddServerInteraction"
 import {GuildSchema, MinecraftServer, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
@@ -16,7 +16,8 @@ export const mcAddServer = {
         .addStringOption(option =>
             option.setName('name')
                 .setDescription('name of the server. Can be changed later via mc-change-server-name')
-                .setRequired(true))
+                .setRequired(true)
+                .setMaxLength(30))
         .addNumberOption(option =>
             option.setName('port')
                 .setDescription('Port of your server.')
@@ -25,8 +26,7 @@ export const mcAddServer = {
     async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema) {
         const serverList: MinecraftServer[] = guildData.MCServerData.serverList
         if (serverList.length === 10) {
-            await interaction.editReply("Max number of servers reached (Limit of 10).");
-            return
+            return interaction.editReply("Max number of servers reached (Limit of 10).");
         }
 
         let newServer: MinecraftServer = {
@@ -72,11 +72,22 @@ export const mcAddServer = {
             serverList.push(newServer);
             await Promise.all([guildData.save(), interaction.editReply("Server added successfully")]);
         } catch (error) {
-            log.error(error)
-            await interaction.editReply(
-                "Could not retrieve server status. Double check IP and make sure server is online."
-            );
-            log.error('Invalid Server IP / Server Offline')
+            try {
+                await statusBedrock(newServer.ip, newServer.port);
+                // if server is the first added server, make it the selected server to track in /mc-server-status
+                if (serverList.length === 0) {
+                    const {ip, port, name} = newServer;
+                    guildData.MCServerData.selectedServer = {ip, port, name} // assuming you have variables named ip, port, and name that correspond to mcServer.ip, mcServer.port, and mcServer.name
+                }
+                serverList.push(newServer);
+                await Promise.all([guildData.save(), interaction.editReply("Server added successfully")]);
+            } catch (e) {
+                log.error(error)
+                await interaction.editReply(
+                    "Could not retrieve server status. Double check IP and make sure server is online."
+                );
+                log.error('Invalid Server IP / Server Offline')
+            }
         }
     }
 }
