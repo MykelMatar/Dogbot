@@ -10,7 +10,11 @@ import {
 import {McMenuOptionGenerator} from "../../dependencies/helpers/mcMenuOptionGenerator";
 import {DiscordMenuGeneratorReturnValues, GuildSchema, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
-import {terminate, terminationListener} from "../../dependencies/helpers/terminationListener";
+import {
+    removeTerminationListener,
+    terminate,
+    terminationListener
+} from "../../dependencies/helpers/terminationListener";
 
 
 export const mcDeleteServer = {
@@ -39,52 +43,60 @@ export const mcDeleteServer = {
                     .setPlaceholder('Nothing selected')
                     .addOptions(optionGenerator.optionsArray),
             );
+
         let sent: Message = await interaction.editReply({content: 'Select a Server to Delete', components: [row]});
 
-        const filter = i => i.user.id === interaction.member.user.id
+        const filter = i => {
+            if (i.user.id !== interaction.member.user.id) return false;
+            return i.message.id === sent.id;
+        };
+
         const collector = interaction.channel.createMessageComponentCollector({
-            filter,
             componentType: ComponentType.SelectMenu,
-            time: 15000
+            time: 15000,
+            max: 1,
+            filter: (i) => {
+                if (i.user.id !== interaction.member.user.id) return false;
+                return i.message.id === sent.id;
+            },
         });
+
         let terminateBound = terminate.bind(null, client, collector)
         await terminationListener(client, collector, terminateBound)
 
         let serverName;
         try {
             collector.on('collect', async i => {
-                if (i.message.id != sent.id) return
-                if (i.customId !== 'delete-menu') return collector.stop()
-                let selectedServerIP, serverIP
+                const selectedServerIP = i.values[0]
+                const selectedServer = MCServerData.serverList.find(server => {
+                    return server.ip === selectedServerIP
+                })
 
-                for (let j = 0; j < serverListSize; j++) {
-                    if (i.values[0] === `selection${j}`) {
-                        selectedServerIP = MCServerData.selectedServer.ip
-                        serverIP = MCServerData.serverList[j].ip
-                        serverName = MCServerData.serverList[j].name
-                        MCServerData.serverList.splice(j, 1)
+                if (selectedServer) {
+                    const selectedIndex = MCServerData.serverList.indexOf(selectedServer);
+                    serverName = selectedServer.name
+                    if (selectedIndex !== -1) {
+                        MCServerData.serverList.splice(selectedIndex, 1);
                     }
                 }
-                if (selectedServerIP === serverIP) {
+
+                // this works because you cannot delete the only existing server, which means [0] will always exist
+                if (selectedServerIP === selectedServer.ip) {
                     MCServerData.selectedServer.ip = MCServerData.serverList[0].ip
                     MCServerData.selectedServer.port = MCServerData.serverList[0].port
                     MCServerData.selectedServer.name = MCServerData.serverList[0].name
                 }
                 await guildData.save()
-                collector.stop()
             });
         } catch (e) {
             log.error(e)
         }
 
         collector.on('end', async collected => {
-            process.removeListener('SIGINT', terminateBound)
+            removeTerminationListener(terminateBound)
             if (collected.size === 0) {
                 await interaction.editReply({content: '*Request Timeout*', components: []});
                 log.error('Request Timeout')
-            } else if (collected.first().customId !== 'delete-menu') {
-                await interaction.editReply({content: '*Avoid using multiple commands at once*', components: []});
-                log.error('Command Collision Detected')
             } else if (collected.first().customId === 'delete-menu') {
                 await interaction.editReply({content: `**${serverName}** deleted`, components: []});
                 log.info('Server Deleted Successfully')

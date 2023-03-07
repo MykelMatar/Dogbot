@@ -9,7 +9,7 @@ import {NewClient} from "../myTypes";
  * @param collector
  * @param terminateInstance
  */
-export async function terminationListener(client: NewClient, collector: InteractionCollector<any>, terminateInstance) {
+export function terminationListener(client: NewClient, collector: InteractionCollector<any>, terminateInstance) {
     process.on('SIGINT', terminateInstance)
 }
 
@@ -21,5 +21,10 @@ export function terminate(client, collector) {
         client.destroy()
         log.info('Done')
         process.exit(69)
-    }, 2000) // wait for collector to finish
+    }, 1000) // wait for collector to finish
+}
+
+export function removeTerminationListener(terminateInstance) {
+    process.off('SIGINT', terminateInstance);
+    process.off('SIGTERM', terminateInstance);
 }

@@ -15,18 +15,15 @@ export const enlistStats = {
                 .setRequired(false)),
 
     async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema) {
-        let username: string, userId: string
-        let user: CommandInteractionOption = (interaction.options.data.find(option => option.name === 'user'));
-        if (user == undefined) {
-            username = interaction.user.username
-            userId = interaction.user.id
-        } else {
-            username = user.user.username
-            userId = (user.value).toString()
-        }
+        const hideOption = interaction.options.data.find(option => option.name === 'hide');
+        const ephemeralSetting = hideOption === undefined ? true : hideOption.value;
+        
+        let userOption: CommandInteractionOption = (interaction.options.data.find(option => option.name === 'user'));
+        const username = userOption?.user.username ?? interaction.user.username;
+        const userId = userOption?.value?.toString() ?? interaction.user.id;
 
         let userData = guildData.UserData.find(user => user.id === userId)
-        if (userData === undefined) {
+        if (!userData) {
             return interaction.reply({
                 ephemeral: true,
                 content: 'User does not have any data. Data is only created for users who have enlisted, rejected, or retrieved game stats'
@@ -34,24 +31,13 @@ export const enlistStats = {
         }
 
         let enlistRatio: string, socialStatus: string, commendation: string
-        const enlistValue: number = userData.enlistStats.enlists
-        const rejectValue: number = userData.enlistStats.rejects
-        const ignoreValue: number = userData.enlistStats.ignores
+        const {enlists: enlistValue, rejects: rejectValue, ignores: ignoreValue} = userData.enlistStats;
+        enlistRatio = (rejectValue !== 0) ? (enlistValue / rejectValue).toFixed(2) : enlistValue.toFixed(2);
 
-        if (rejectValue !== 0) enlistRatio = (enlistValue / rejectValue).toFixed(2)
-        else enlistRatio = enlistValue.toFixed(2)
-
-        let enlistPercentage, rejectPercentage, ignorePercentage
         let totalValue = enlistValue + rejectValue + ignoreValue
-
-        if (rejectValue === 0) enlistPercentage = 100
-        else enlistPercentage = (enlistValue / totalValue) * 100
-
-        if (enlistValue === 0) rejectPercentage = 100
-        else rejectPercentage = (rejectValue / totalValue) * 100
-
-        if (enlistValue === 0 && rejectValue === 0) ignorePercentage = 100
-        else ignorePercentage = (ignoreValue / totalValue) * 100
+        let enlistPercentage = rejectValue === 0 ? 100 : (enlistValue / totalValue) * 100
+        let rejectPercentage = enlistValue === 0 ? 100 : (rejectValue / totalValue) * 100
+        let ignorePercentage = enlistValue === 0 && rejectValue === 0 ? 100 : (ignoreValue / totalValue) * 100
 
         // determine social status and commendation
         if (ignoreValue > enlistValue + rejectValue) {
@@ -100,11 +86,6 @@ export const enlistStats = {
             ])
             .setColor(embedColor)
 
-        let ephemeralSetting
-        let hideOption = interaction.options.data.find(option => option.name === 'hide')
-        if (hideOption === undefined) ephemeralSetting = true
-        else ephemeralSetting = hideOption.value
-
-        await interaction.reply({ephemeral: ephemeralSetting, embeds: [embed]})
+        await interaction.reply({ephemeral: ephemeralSetting as boolean, embeds: [embed]})
     }
 }

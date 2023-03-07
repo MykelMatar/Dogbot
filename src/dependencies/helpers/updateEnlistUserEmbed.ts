@@ -6,20 +6,23 @@ import {ButtonInteraction, EmbedBuilder, Message, Role} from "discord.js";
  * to update info in MongoDB
  *
  * @param interaction button interaction
- * @param embed
+ * @param embed embed in the enlistPrompt message
  * @param enlistUserData object that stores all the user info arrays
- * @param enlistPrompt
- * @param row
- * @param role
+ * @param enlistPrompt message containing embed and buttons
+ * @param row row of buttons
+ * @param role role being mentioned in the message
  */
 export async function updateEnlistUserEmbed(interaction: ButtonInteraction, embed: EmbedBuilder, enlistUserData: EnlistUserData, enlistPrompt: Message, row, role: string | Role) {
-    let selectedUserArray, selectedUserIdArray, secondUserArray, secondUserIdArray, thirdUserArray, thirdUserIdArray
-    let userString: string = `> ${interaction.user.username}\n`
-    let potentialUserString: string
+    let selectedUserArray: string[],
+        selectedUserIdArray: string[],
+        secondUserArray: string[],
+        secondUserIdArray: string[],
+        thirdUserArray: string[],
+        thirdUserIdArray: string[]
     let perhapsFlag: boolean
-
-    let userTime = enlistUserData.userAvailabilityMap.get(interaction.user.id) // can be undefined
-    potentialUserString = `> ${interaction.user.username} ~${userTime}\n`
+    const userString: string = `> ${interaction.user.username}\n`
+    const userTime: string | undefined = enlistUserData.userAvailabilityMap.get(interaction.user.id) // can be undefined
+    const potentialUserString: string = `> ${interaction.user.username} ~${userTime}\n`
 
     if (interaction.customId === 'Gamer') {
         perhapsFlag = false
@@ -87,7 +90,7 @@ export async function updateEnlistUserEmbed(interaction: ButtonInteraction, embe
         selectedUserArray.splice(selectedUserArray.indexOf('-'), 1)
     }
     embed.data.fields[0].value = enlistUserData.enlistedUsers.join('');
-    embed.data.fields[1].value = enlistUserData.potentialUsers.join('');
-    embed.data.fields[2].value = enlistUserData.rejectedUsers.join('');
+    embed.data.fields[1].value = enlistUserData.rejectedUsers.join('');
+    embed.data.fields[2].value = enlistUserData.potentialUsers.join('');
     await enlistPrompt.edit({content: `${role}`, embeds: [embed], components: [row]});
 }

@@ -19,18 +19,21 @@ export default (client: NewClient) => {
     // slash command registration
     if (client.isTestBot) { // Guild bound commands using testing bot
         let testingServer = '715122900021149776'
+        let testBotId = '851186508262408192'
+
         const rest = new REST({version: '10'}).setToken(process.env.BOT_TEST_TOKEN);
         (async () => {
             await rest.put(
-                Routes.applicationGuildCommands('851186508262408192', testingServer),
+                Routes.applicationGuildCommands(testBotId, testingServer),
                 {body: commands},
             );
         })();
     } else { // global slash command on Dogbot
+        let dogbotId = '848283770041532425'
         const rest = new REST({version: '10'}).setToken(process.env.BOT_TOKEN);
         (async () => {
             await rest.put(
-                Routes.applicationCommands('848283770041532425'),
+                Routes.applicationCommands(dogbotId),
                 {body: commands},
             );
         })();

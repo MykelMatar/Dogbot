@@ -1,4 +1,4 @@
-import {Schema, model} from "mongoose";
+import {model, Schema} from "mongoose";
 import {platforms} from "call-of-duty-api";
 
 const guildSchema = new Schema({
@@ -18,7 +18,7 @@ const guildSchema = new Schema({
             enlistStats: {
                 enlists: Number,
                 rejects: Number,
-                ignores: Number, 
+                ignores: Number,
             },
             tttStats: {
                 wins: Number,

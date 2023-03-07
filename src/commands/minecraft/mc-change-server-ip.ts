@@ -12,7 +12,11 @@ import {status} from "minecraft-server-util";
 import {McMenuOptionGenerator} from "../../dependencies/helpers/mcMenuOptionGenerator";
 import {DiscordMenuGeneratorReturnValues, GuildSchema, MinecraftServer, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
-import {terminate, terminationListener} from "../../dependencies/helpers/terminationListener";
+import {
+    removeTerminationListener,
+    terminate,
+    terminationListener
+} from "../../dependencies/helpers/terminationListener";
 
 export const mcChangeServerIP = {
     data: new SlashCommandBuilder()
@@ -31,25 +35,22 @@ export const mcChangeServerIP = {
     async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema, guildName: string) {
         const MCServerData = guildData.MCServerData
         let serverListSize: number = MCServerData.serverList.length
-        // make sure there is at least 1 server
+
         if (serverListSize === 0) {
             await interaction.editReply('*No Registered Servers, use /mc-add-server or /mc-list-servers to add servers.*')
             return;
         }
 
-        // retrieve server info
-        let server: MinecraftServer = { // setup object to push to mongoDB
+        let {value: port = 25565} = ((interaction.options.data.find(option => option.name === 'port')) ?? {}) as CommandInteractionOption;
+
+        let newServer: MinecraftServer = {
             name: undefined,
             ip: interaction.options.data[0].value as string,
-            port: undefined
+            port: port as number
         };
-        let portOption: CommandInteractionOption = (interaction.options.data.find(option => option.name === 'port'));
-        if (portOption === undefined) {
-            server.port = 25565
-        } else server.port = portOption.value as number // value is guaranteed to be number
 
         // verify that IP is not already registered
-        if (MCServerData.serverList.some(server => server["ip"] === server.ip)) {
+        if (MCServerData.serverList.some(server => server.ip === newServer.ip)) {
             await interaction.editReply(
                 "Server already registered, double check the IP or use **mc-change-server-name** to change the name of an existing server"
             );
@@ -58,7 +59,7 @@ export const mcChangeServerIP = {
 
         // validate server status
         try {
-            await status(server.ip, server.port)
+            await status(newServer.ip, newServer.port)
         } catch (error) {
             await interaction.editReply('Could not retrieve server status. Double check IP and make sure server is online.')
             log.error('Invalid Server IP / Server Offline');
@@ -79,39 +80,37 @@ export const mcChangeServerIP = {
             components: [row]
         });
 
-        let filter = i => i.user.id === interaction.member.user.id;
         const collector = interaction.channel.createMessageComponentCollector({
-            filter,
             componentType: ComponentType.SelectMenu,
+            time: 15000,
             max: 1,
-            time: 10000
+            filter: (i) => {
+                if (i.user.id !== interaction.member.user.id) return false;
+                return i.message.id === sent.id;
+            },
         });
+
         let terminateBound = terminate.bind(null, client, collector)
         await terminationListener(client, collector, terminateBound)
 
         let serverName;
         collector.on('collect', async i => {
-            if (i.message.id != sent.id) return
-            if (i.customId !== 'change-ip-menu') return collector.stop()
-            for (let j = 0; j < serverListSize; j++) {
-                if (i.values[0] === `selection${j}`) {
-                    MCServerData.serverList[j].ip = server.ip
-                    MCServerData.serverList[j].port = server.port
-                    serverName = MCServerData.serverList[j].name
-                }
-            }
+            const selectedServerIP = i.values[0]
+            const selectedServer = MCServerData.serverList.find(server => {
+                return server.ip === selectedServerIP
+            })
+            selectedServer.ip = newServer.ip
+            selectedServer.port = newServer.port
+            serverName = selectedServer.name
+
             await guildData.save()
-            collector.stop()
         });
 
         collector.on('end', async collected => {
-            process.removeListener('SIGINT', terminateBound)
+            removeTerminationListener(terminateBound)
             if (collected.size === 0) {
                 await interaction.editReply({content: 'Request Timeout', components: []});
                 log.error('Request Timeout')
-            } else if (collected.first().customId !== 'change-ip-menu') {
-                await interaction.editReply({content: 'Avoid using multiple commands at once', components: []});
-                log.error('Command Collision Detected')
             } else if (collected.first().customId === 'change-ip-menu') {
                 await interaction.editReply({content: `**${serverName}** IP changed successfully`, components: []});
                 log.info('Server IP changed Successfully')

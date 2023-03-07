@@ -10,8 +10,11 @@ import {
     SlashCommandBuilder
 } from "discord.js";
 import {embedColor, GuildSchema, NewClient} from "../../dependencies/myTypes";
-import log from "../../dependencies/logger";
-import {terminate, terminationListener} from "../../dependencies/helpers/terminationListener";
+import {
+    removeTerminationListener,
+    terminate,
+    terminationListener
+} from "../../dependencies/helpers/terminationListener";
 import {status} from "minecraft-server-util";
 
 //TODO check add server button, might not be working
@@ -30,26 +33,26 @@ export const mcListServers = {
 
     async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema, guildName: string) {
         const MCServerData = guildData.MCServerData
-        let serverNameList: string[] = [],
-            serverIPList: string[] = [],
-            serverStatusList: string[] = []
-        let statusOption: CommandInteractionOption = interaction.options.data.find(option => option.name === 'get-status')
 
-        for (const MCServer of MCServerData.serverList) {
-            serverNameList.push(MCServer.name)
-            serverIPList.push(MCServer.ip)
-            if (statusOption != undefined) {
-                await status(MCServer.ip, MCServer.port, {timeout: 2000})
-                    .then(() => {
-                        serverStatusList.push('*Online*')
-                    })
-                    .catch(() => {
-                        serverStatusList.push('*Offline*')
-                    })
-            }
+        let serverStatusList: string[] = []
+        let {value: getStatus} = (interaction.options.data.find(option => option.name === 'get-status') ?? {}) as CommandInteractionOption
+
+        let serverNameList: string[] = MCServerData.serverList.map(server => server.name);
+        let serverIPList: string[] = MCServerData.serverList.map(server => server.ip);
+
+        if (getStatus) {
+            const statusPromises = MCServerData.serverList.map(MCServer => {
+                return status(MCServer.ip, MCServer.port, {timeout: 2000})
+                    .then(() => '*Online*')
+                    .catch(() => '*Offline*');
+            });
+
+            const statusResults = await Promise.all(statusPromises);
+            serverStatusList = [...statusResults];
         }
-        // ensure list is never empty; embeds cannot receive empty values
-        if (serverIPList.length === 0) {   // using server IP List ensures a nameless IP is not overwritten
+
+
+        if (serverIPList.length === 0) { // using server IP List ensures a nameless IP is not overwritten
             serverNameList = ["N/A"]
             serverIPList = ["N/A"]
         }
@@ -102,54 +105,50 @@ export const mcListServers = {
             .setColor(embedColor)
             .setFooter({text: MCServerData.serverList.length + ' / 10 Servers Registered'})
 
-        if (statusOption != undefined) {
+        if (getStatus) {
             embed.addFields({name: 'Status', value: serverStatusList.join(' \n '), inline: true})
         }
 
-        let sent: Message = await interaction.editReply({embeds: [embed], components: [row]})
+        const sent: Message = await interaction.editReply({embeds: [embed], components: [row]})
 
-        const filter = i => i.user.id === interaction.member.user.id;
         const collector = interaction.channel.createMessageComponentCollector({
-            filter,
             componentType: ComponentType.Button,
-            time: 20000
+            time: 60000,
+            filter: (i) => {
+                if (i.user.id !== interaction.member.user.id) return false;
+                return i.message.id === sent.id;
+            },
         });
-        let terminateBound = terminate.bind(null, client, collector)
+        const terminateBound = terminate.bind(null, client, collector)
         await terminationListener(client, collector, terminateBound)
-        
-        try {
-            const command1 = client.commands.get('mc-add-server');
-            const command2 = client.commands.get('mc-delete-server');
-            const command3 = client.commands.get('mc-change-server');
-            collector.on('collect', async i => {
-                if (i.message.id != sent.id) return
-                let update, execute;
-                if (i.customId === 'ListAdd') {
-                    update = i.update({embeds: [], content: '*Adding Server...*', components: []});
-                    execute = command1.execute(client, interaction, guildData, guildName);
-                    collector.stop()
-                } else if (i.customId === 'ListRemove') {
-                    update = i.update({embeds: [], content: '*Removing Server...*', components: []});
-                    execute = command2.execute(client, interaction, guildData, guildName);
-                    collector.stop()
-                } else if (i.customId === 'ListChange') {
-                    update = i.update({content: '*Changing Server...*', components: []});
-                    execute = command3.execute(client, interaction, guildData, guildName);
-                    collector.stop()
-                }
-                await Promise.all([update, execute])
-            });
 
-            collector.on('end', async collected => {
-                process.removeListener('SIGINT', terminateBound)
-                if (collected.size === 0)
-                    await interaction.editReply({embeds: [embed], components: []}) // remove buttons & embed
-                else if (collected.first().customId === 'ListAdd' || collected.first().customId === 'ListRemove' || collected.first().customId === 'ListChange')
-                    await interaction.editReply({embeds: [], components: []})   // remove buttons & embed
-            });
-        } catch (e) {
-            log.error(e)
-            await interaction.editReply({content: 'Refrain from using the same command multiple times'})
-        }
+        const command1 = client.commands.get('mc-add-server');
+        const command2 = client.commands.get('mc-delete-server');
+        const command3 = client.commands.get('mc-change-server');
+
+        collector.on('collect', async i => {
+            let update, execute;
+            if (i.customId === 'ListAdd') {
+                update = i.update({embeds: [], content: '*Adding Server...*', components: []});
+                execute = command1.execute(client, interaction, guildData, guildName);
+            } else if (i.customId === 'ListRemove') {
+                update = i.update({embeds: [], content: '*Removing Server...*', components: []});
+                execute = command2.execute(client, interaction, guildData, guildName);
+            } else if (i.customId === 'ListChange') {
+                update = i.update({content: '*Changing Server...*', components: []});
+                execute = command3.execute(client, interaction, guildData, guildName);
+                collector.stop()
+            }
+            await Promise.all([update, execute])
+        });
+
+        collector.on('end', async collected => {
+            removeTerminationListener(terminateBound)
+            if (collected.size === 0)
+                await interaction.editReply({embeds: [embed], components: []}) // remove buttons & embed
+            else if (collected.first().customId === 'ListAdd' || collected.first().customId === 'ListRemove' || collected.first().customId === 'ListChange')
+                await interaction.editReply({embeds: [], components: []})   // remove buttons & embed
+        });
+
     }
 }

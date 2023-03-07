@@ -13,7 +13,10 @@ import {terminate, terminationListener} from "./terminationListener";
  * @param statusPrompt
  */
 export async function McServerStatusCollector(client: NewClient, interaction: CommandInteraction, guildData, guildName: string, statusPrompt: Message) {
-    const filter = i => i.user.id === interaction.member.user.id;
+    const filter = i => {
+        if (i.user.id !== interaction.member.user.id) return false;
+        return i.message.id === statusPrompt.id;
+    };
     const collector = interaction.channel.createMessageComponentCollector({
         filter,
         componentType: ComponentType.Button,
@@ -26,7 +29,6 @@ export async function McServerStatusCollector(client: NewClient, interaction: Co
     const command2 = client.commands.get('mc-list-servers');
 
     collector.on('collect', async i => {
-        if (i.message.id != statusPrompt.id) return
         let update, execute;
         if (i.customId === 'Change') {
             update = i.update({content: 'Server Change Requested', components: []});

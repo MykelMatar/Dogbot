@@ -16,7 +16,7 @@ export async function fetchHTML(url: string): Promise<CheerioAPI> {
         .use(StealthPlugin())
         .launch({
             headless: true,
-            executablePath: '/usr/bin/chromium-browser', // for raspi deployment
+            // executablePath: '/usr/bin/chromium-browser', // for raspi deployment
             ignoreHTTPSErrors: true,
             args: settings,
         })

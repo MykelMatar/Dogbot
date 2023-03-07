@@ -1,4 +1,4 @@
-import {Client, Collection, GatewayIntentBits} from "discord.js";
+import {ActivityType, Client, Collection, GatewayIntentBits} from "discord.js";
 import 'dotenv/config'
 import {NewClient} from "./dependencies/myTypes";
 import log from "./dependencies/logger";
@@ -10,7 +10,8 @@ const client = new Client({
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.GuildPresences,
         GatewayIntentBits.MessageContent,
-        GatewayIntentBits.GuildVoiceStates
+        GatewayIntentBits.GuildVoiceStates,
+        GatewayIntentBits.GuildEmojisAndStickers
     ],
     sweepers: {
         messages: {
@@ -33,4 +34,15 @@ if (client.isTestBot) {
     client.login(process.env.BOT_TOKEN).catch(e => log.error(e))
 }
 
-//console.log(process.memoryUsage().heapUsed / 1024 / 1024) check mb of mem usage
+// change activity every 10s
+let activities: string[] = ['Fortnite no build', 'Warzone no build', 'with ur mom', 'with ur dad', 'with the bois']
+setInterval(function() {
+    let activityType: ActivityType
+    let index = Math.floor(Math.random() * (activities.length - 1))
+    if (index == 0 || index == 1) {
+        activityType = ActivityType.Competing
+    } else {
+        activityType = ActivityType.Playing
+    }
+    client.user.setActivity(activities[index], {type: activityType});
+}, 10000)
