@@ -5,6 +5,28 @@ import {platforms} from "call-of-duty-api";
 import {GameProfile, UserStats} from "../myTypes";
 
 /**
+ * Logic for leveling system
+ *  - only Enlists grant XP (what to do about perhaps gamers that game?)
+ *  - Enlist streaks grant more XP 
+ *  - Reject ends an enlist streak
+ *  - Each level requires more xp than the last
+ *      - everyone starts at level 1
+ *      - level 2 requires 10 xp
+ *      - every level requires an additional 10xp
+ *      - Enlists give base 10xp
+ *      - Enlist streak caps out at 10
+ *          - Every enlist streak level grants an additional 5xp per enlist (max of 50)
+ *      - no streak, lvl 50 = 500/10 = 50 enlists
+ *      - with consistent streak, lvl 50 = 500-270 / 50 =  ~14 enlists (i think)
+ *  - Prestige leveling after level 50
+ *  - 10 prestiges then Master Prestige
+ *  - Make custom symbols for each one so people get badge in the prompt
+ *  - store user xp as number that only increases over time (no reset on prestige)
+ *      - map xp values to levels and prestiges that get calculated when needed
+ *      - OR also store lvl so that it doesnt need to be calculated every time? dec tax on system but inc usage in db
+ */
+
+/**
  * updates mongoDB UserData
  *
  * @param interaction

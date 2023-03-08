@@ -84,11 +84,11 @@ export const enlistUsers = {
                 new ButtonBuilder()
                     .setLabel(`✘`)
                     .setCustomId('Cringe')
-                    .setStyle(ButtonStyle.Primary),
+                    .setStyle(ButtonStyle.Danger),
                 new ButtonBuilder()
                     .setLabel(`❔`)
                     .setCustomId('Perhaps')
-                    .setStyle(ButtonStyle.Primary),
+                    .setStyle(ButtonStyle.Secondary),
             );
 
         const file = new AttachmentBuilder('./src/dependencies/images/Dogbot.png')
