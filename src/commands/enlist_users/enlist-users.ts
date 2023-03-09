@@ -80,11 +80,11 @@ export const enlistUsers = {
                 new ButtonBuilder()
                     .setLabel(`✓`)
                     .setCustomId('Gamer')
-                    .setStyle(ButtonStyle.Primary),
+                    .setStyle(ButtonStyle.Success),
                 new ButtonBuilder()
                     .setLabel(`✘`)
                     .setCustomId('Cringe')
-                    .setStyle(ButtonStyle.Primary),
+                    .setStyle(ButtonStyle.Danger),
                 new ButtonBuilder()
                     .setLabel(`❔`)
                     .setCustomId('Perhaps')
