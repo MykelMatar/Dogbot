@@ -104,8 +104,8 @@ export const enlistLeaderboard = {
 
         // 2d arrays that store names, percentages, and total enlist values for each user
         // not using objects because the arrays display vertically in the embed, meaning the values each need their own array
-        let top3Gamers: string[][] = []
-        let top3Losers: string[][] = []
+        let top3Gamers: string[][] = [[], [], []]
+        let top3Losers: string[][] = [[], [], []]
 
         let enlistRankings: EnlistLeaderboardUser[] = [...userArray].sort((a, b) => (b.EnlistRankValue - a.EnlistRankValue))
         let rejectRankings: EnlistLeaderboardUser[] = [...userArray].sort((a, b) => (a.RejectRankValue < b.RejectRankValue ? 1 : -1))
