@@ -1,8 +1,30 @@
-import guilds from "../schemas/guild-schema";
+import Guild from "../schemas/guild-schema";
 import log from "../logger";
-import {CommandInteraction} from "discord.js";
+import {CommandInteraction, Snowflake} from "discord.js";
+import {GameProfile, IGuild, UserStats} from "../myTypes";
 import {platforms} from "call-of-duty-api";
-import {GameProfile, UserStats} from "../myTypes";
+
+/**
+ * Logic for leveling system
+ *  - only Enlists grant XP (what to do about perhaps gamers that game?)
+ *  - Enlist streaks grant more XP
+ *  - Reject ends an enlist streak
+ *  - Each level requires more xp than the last
+ *      - everyone starts at level 1
+ *      - level 2 requires 10 xp
+ *      - every level requires an additional 10xp
+ *      - Enlists give base 10xp
+ *      - Enlist streak caps out at 10
+ *          - Every enlist streak level grants an additional 5xp per enlist (max of 50)
+ *      - no streak, lvl 50 = 500/10 = 50 enlists
+ *      - with consistent streak, lvl 50 = 500-270 / 50 =  ~14 enlists (i think)
+ *  - Prestige leveling after level 50
+ *  - 10 prestiges then Master Prestige
+ *  - Make custom symbols for each one so people get badge in the prompt
+ *  - store user xp as number that only increases over time (no reset on prestige)
+ *      - map xp values to levels and prestiges that get calculated when needed
+ *      - OR also store lvl so that it doesnt need to be calculated every time? dec tax on system but inc usage in db
+ */
 
 /**
  * updates mongoDB UserData
@@ -12,31 +34,12 @@ import {GameProfile, UserStats} from "../myTypes";
  * @param statName
  * @param profile
  */
-export async function updateUserData(interaction: CommandInteraction, userIdArray: string[], statName: UserStats, profile?: GameProfile) {
+export async function updateUserData(interaction: CommandInteraction, userIdArray: Snowflake[], statName: UserStats, profile?: GameProfile) {
     if (userIdArray.length === 0) return log.info(`${statName} user Id Array is empty, skipping user data check`)
     log.info(`Valid ${statName} user ID array provided`)
 
-    const currentGuild = await guilds.findOne({guildId: interaction.guildId})
-    const userData = currentGuild.UserData
-
-    let statsArray: number[] = []; // default values if user has no data
-    switch (statName) {
-        case UserStats.tttWins:
-            statsArray = [1, 0, 0, 0, 0];
-            break;
-        case UserStats.tttLosses:
-            statsArray = [0, 1, 0, 0, 0];
-            break;
-        case UserStats.enlist:
-            statsArray = [0, 0, 1, 0, 0];
-            break;
-        case UserStats.reject:
-            statsArray = [0, 0, 0, 1, 0];
-            break;
-        case UserStats.ignore:
-            statsArray = [0, 0, 0, 0, 1];
-            break;
-    }
+    const currentGuild: IGuild = await Guild.findOne({guildId: interaction.guildId})
+    const userData = currentGuild.userData
 
     log.info('checking for user data...')
     if (userData.length == 0) {
@@ -50,22 +53,36 @@ export async function updateUserData(interaction: CommandInteraction, userIdArra
                     username: guildMember.user.username,
                     id: userIdArray[0],
                     tttStats: {
-                        wins: statsArray[0],
-                        losses: statsArray[1]
+                        wins: statName === UserStats.tttWins ? 1 : 0,
+                        losses: statName === UserStats.tttLosses ? 1 : 0
                     }
                 })
                 break;
             case UserStats.enlist:
             case UserStats.reject:
             case UserStats.ignore:
+                const enlistStats = {
+                    enlists: 0,
+                    rejects: 0,
+                    ignores: 0,
+                    enlistXp: 0,
+                    enlistStreak: 0
+                };
+
+                if (statName === UserStats.enlist) {
+                    enlistStats.enlists = 1;
+                    enlistStats.enlistXp = 10;
+                    enlistStats.enlistStreak = 1;
+                } else if (statName === UserStats.reject) {
+                    enlistStats.rejects = 1;
+                } else if (statName === UserStats.ignore) {
+                    enlistStats.ignores = 1;
+                }
+
                 userData.push({
                     username: guildMember.user.username,
                     id: userIdArray[0],
-                    enlistStats: {
-                        enlists: statsArray[2],
-                        rejects: statsArray[3],
-                        ignores: statsArray[4]
-                    }
+                    enlistStats: enlistStats
                 })
                 break;
             case UserStats.wzProfile:
@@ -93,6 +110,7 @@ export async function updateUserData(interaction: CommandInteraction, userIdArra
         }
         userIdArray.splice(0, 1)
         log.info('Server now has User Data')
+        
         if (userIdArray.length == 0) {
             await currentGuild.save()
             return log.info(`Done!`)
@@ -115,8 +133,8 @@ export async function updateUserData(interaction: CommandInteraction, userIdArra
                             username: username,
                             id: userIdArray[index],
                             tttStats: {
-                                wins: statsArray[0],
-                                losses: statsArray[1]
+                                wins: statName === UserStats.tttWins ? 1 : 0,
+                                losses: statName === UserStats.tttLosses ? 1 : 0
                             }
                         })
                     }
@@ -129,9 +147,11 @@ export async function updateUserData(interaction: CommandInteraction, userIdArra
                             username: username,
                             id: userIdArray[index],
                             enlistStats: {
-                                enlists: statsArray[2],
-                                rejects: statsArray[3],
-                                ignores: statsArray[4]
+                                enlists: statName === UserStats.enlist ? 1 : 0,
+                                rejects: statName === UserStats.reject ? 1 : 0,
+                                ignores: statName === UserStats.ignore ? 1 : 0,
+                                enlistXp: 0,
+                                enlistStreak: 0,
                             }
                         })
                     }
@@ -169,33 +189,33 @@ export async function updateUserData(interaction: CommandInteraction, userIdArra
             // check if the corresponding stat exists within the user data: if it doesn't exist, make it, if it exists, update it
             switch (statName) {
                 case UserStats.tttWins:
-                    if (user.tttStats == '{}') {
+                    if (Object.keys(user.tttStats).length === 0) {
                         user.tttStats.wins = 1
                         user.tttStats.losses = 0
                     } else user.tttStats.wins++;
                     break;
                 case UserStats.tttLosses:
-                    if (user.tttStats == '{}') {
+                    if (Object.keys(user.tttStats).length === 0) {
                         user.tttStats.wins = 0
                         user.tttStats.losses = 1
                     } else user.tttStats.losses++;
                     break;
                 case UserStats.enlist:
-                    if (user.enlistStats == '{}') {
+                    if (Object.keys(user.enlistStats).length === 0) {
                         user.enlistStats.enlists = 1
                         user.enlistStats.rejects = 0
                         user.enlistStats.ignores = 0
                     } else user.enlistStats.enlists++;
                     break;
                 case UserStats.reject:
-                    if (user.enlistStats == '{}') {
+                    if (Object.keys(user.enlistStats).length === 0) {
                         user.enlistStats.enlists = 0
                         user.enlistStats.rejects = 1
                         user.enlistStats.ignores = 0
                     } else user.enlistStats.rejects++
                     break;
                 case UserStats.ignore:
-                    if (user.enlistStats == '{}') {
+                    if (Object.keys(user.enlistStats).length === 0) {
                         user.enlistStats.enlists = 0
                         user.enlistStats.rejects = 0
                         user.enlistStats.ignores = 1

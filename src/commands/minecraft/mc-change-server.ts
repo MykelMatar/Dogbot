@@ -5,23 +5,24 @@ import {
     CommandInteraction,
     ComponentType,
     Message,
-    SelectMenuBuilder,
-    SlashCommandBuilder
+    SlashCommandBuilder,
+    StringSelectMenuBuilder
 } from "discord.js";
-import {GuildSchema, MinecraftServer, NewClient} from "../../dependencies/myTypes";
+import {IGuild, MinecraftServer, NewClient} from "../../dependencies/myTypes";
 import {
     removeTerminationListener,
     terminate,
     terminationListener
 } from "../../dependencies/helpers/terminationListener";
+import {createMcCommandCollector} from "../../dependencies/helpers/createMcCommandCollector";
 
 export const mcChangeServer = {
     data: new SlashCommandBuilder()
         .setName('mc-change-server')
         .setDescription('changes the server being tracked by mc-server-status'),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema, guildName: string) {
-        const MCServerData = guildData.MCServerData
+    async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
+        const MCServerData = guildData.mcServerData
         let serverList: MinecraftServer[] = MCServerData.serverList
         let serverListSize: number = MCServerData.serverList.length
 
@@ -35,9 +36,9 @@ export const mcChangeServer = {
 
         let menuOptions: APISelectMenuOption[] = await McMenuOptionGenerator(interaction, serverList);
 
-        let row = new ActionRowBuilder<SelectMenuBuilder>()
+        let row = new ActionRowBuilder<StringSelectMenuBuilder>()
             .addComponents(
-                new SelectMenuBuilder()
+                new StringSelectMenuBuilder()
                     .setCustomId('change-menu')
                     .setPlaceholder('Nothing selected')
                     .addOptions(menuOptions),
@@ -45,20 +46,10 @@ export const mcChangeServer = {
 
         let sent: Message = await interaction.editReply({
             content: 'Select a Different Server to Check',
-            components: [row],
-            embeds: []
+            components: [row]
         });
 
-        const collector = interaction.channel.createMessageComponentCollector({
-            componentType: ComponentType.SelectMenu,
-            time: 15000,
-            max: 1,
-            filter: (i) => {
-                if (i.user.id !== interaction.member.user.id) return false;
-                return i.message.id === sent.id;
-            },
-        });
-
+        const collector = createMcCommandCollector(interaction, sent)
         let terminateBound = terminate.bind(null, client, collector)
         await terminationListener(client, collector, terminateBound)
 
@@ -83,7 +74,7 @@ export const mcChangeServer = {
                     content: `Now tracking **${MCServerData.selectedServer.name}**. Retrieving server status...`,
                     components: []
                 })
-                await client.commands.get('mc-server-status').execute(client, interaction, guildData, guildName);
+                await client.commands.get('mc-server-status').execute(client, interaction, guildData);
             }
         });
     }

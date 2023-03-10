@@ -1,7 +1,7 @@
 import {CommandInteraction, CommandInteractionOption, EmbedBuilder, SlashCommandBuilder} from "discord.js";
 import {fetchHTML} from "../../dependencies/helpers/fetchHTML";
 import {CheerioAPI} from "cheerio";
-import {embedColor, GuildSchema, NewClient} from "../../dependencies/myTypes";
+import {embedColor, IGuild, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 import {getText} from "../../dependencies/helpers/getText";
 
@@ -22,7 +22,7 @@ export const getStatsValorant = {
                 .setDescription('Whether to hide response or not')
                 .setRequired(false)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema) {
+    async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
         let userOption: CommandInteractionOption = interaction.options.data.find(option => option.name === 'username')
         let tagOption: CommandInteractionOption = interaction.options.data.find(option => option.name === 'tag')
         let userData, user: string, tag: string
@@ -31,7 +31,7 @@ export const getStatsValorant = {
             tag = tagOption.value as string
             user = userOption.value as string
         } else if (!tagOption && !userOption) { // no option is present
-            userData = guildData.UserData.find(user => user.id === interaction.user.id)
+            userData = guildData.userData.find(user => user.id === interaction.user.id)
             if (!userData) {
                 return interaction.editReply({content: 'User does not have any data. Please use the input options for the command'})
             }

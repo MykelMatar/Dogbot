@@ -22,7 +22,7 @@ export async function guildCreate(client: NewClient, guild: Guild) {
             }
         },
         UserData: [],
-        MCServerData: {
+        mcServerData: {
             serverList: [],
             selectedServer: {
                 name: null,

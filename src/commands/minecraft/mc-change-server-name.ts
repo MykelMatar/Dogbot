@@ -5,11 +5,11 @@ import {
     ComponentType,
     Message,
     PermissionFlagsBits,
-    SelectMenuBuilder,
-    SlashCommandBuilder
+    SlashCommandBuilder,
+    StringSelectMenuBuilder
 } from "discord.js";
 import {McMenuOptionGenerator} from "../../dependencies/helpers/mcMenuOptionGenerator";
-import {GuildSchema, MinecraftServer, NewClient} from "../../dependencies/myTypes";
+import {IGuild, MinecraftServer, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 import {
     removeTerminationListener,
@@ -29,8 +29,8 @@ export const mcChangeServerName = {
                 .setMaxLength(30)
                 .setRequired(true)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema) {
-        const MCServerData = guildData.MCServerData
+    async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
+        const MCServerData = guildData.mcServerData
         let serverList: MinecraftServer[] = MCServerData.serverList
         let serverListSize: number = MCServerData.serverList.length
         if (serverListSize === 0) {
@@ -49,9 +49,9 @@ export const mcChangeServerName = {
         }
 
         let menuOptions: APISelectMenuOption[] = await McMenuOptionGenerator(interaction, serverList);
-        let row = new ActionRowBuilder<SelectMenuBuilder>()
+        let row = new ActionRowBuilder<StringSelectMenuBuilder>()
             .addComponents(
-                new SelectMenuBuilder()
+                new StringSelectMenuBuilder()
                     .setCustomId('change-server-menu')
                     .setPlaceholder('Nothing selected')
                     .addOptions(menuOptions),
@@ -72,7 +72,7 @@ export const mcChangeServerName = {
             const selectedServer = MCServerData.serverList.find(server => {
                 return server.ip === selectedServerIP
             })
-            let selectedServerName = selectedServer.name
+            selectedServerName = selectedServer.name
             selectedServer.name = newName
 
             if (MCServerData.selectedServer.name === selectedServerName) {

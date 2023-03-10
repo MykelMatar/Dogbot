@@ -1,5 +1,5 @@
 import {CommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js";
-import {embedColor, EnlistLeaderboardUser, GuildSchema, NewClient} from "../../dependencies/myTypes";
+import {embedColor, EnlistLeaderboardUser, IGuild, NewClient} from "../../dependencies/myTypes";
 
 //TODO if user changes username, does it affect any commands?
 /*
@@ -29,11 +29,11 @@ export const enlistLeaderboard = {
                 .setDescription('Whether to display the leaderboard or not')
                 .setRequired(false)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema) {
+    async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
         const hideOption = interaction.options.data.find(option => option.name === 'hide')
         const ephemeralSetting = Boolean(hideOption?.value ?? true)
 
-        const userData = guildData.UserData
+        const userData = guildData.userData
         const percentageWeight: number = .9
         const enlistWeight: number = 1
         const ignoreWeight: number = 0 // using ignore values in rank calculations generated very odd leaderboards

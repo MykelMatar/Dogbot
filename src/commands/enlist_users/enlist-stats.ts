@@ -1,5 +1,5 @@
 import {CommandInteraction, CommandInteractionOption, EmbedBuilder, SlashCommandBuilder} from "discord.js";
-import {embedColor, GuildSchema, NewClient} from "../../dependencies/myTypes";
+import {embedColor, IGuild, NewClient} from "../../dependencies/myTypes";
 
 export const enlistStats = {
     data: new SlashCommandBuilder()
@@ -14,15 +14,15 @@ export const enlistStats = {
                 .setDescription('Whether to hide the response or not')
                 .setRequired(false)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema) {
+    async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
         const hideOption = interaction.options.data.find(option => option.name === 'hide');
         const ephemeralSetting = hideOption === undefined ? true : hideOption.value;
-        
+
         let userOption: CommandInteractionOption = (interaction.options.data.find(option => option.name === 'user'));
         const username = userOption?.user.username ?? interaction.user.username;
         const userId = userOption?.value?.toString() ?? interaction.user.id;
 
-        let userData = guildData.UserData.find(user => user.id === userId)
+        let userData = guildData.userData.find(user => user.id === userId)
         if (!userData) {
             return interaction.reply({
                 ephemeral: true,

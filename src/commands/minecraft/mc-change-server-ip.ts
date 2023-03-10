@@ -6,12 +6,12 @@ import {
     ComponentType,
     Message,
     PermissionFlagsBits,
-    SelectMenuBuilder,
-    SlashCommandBuilder
+    SlashCommandBuilder,
+    StringSelectMenuBuilder
 } from "discord.js";
 import {status} from "minecraft-server-util";
 import {McMenuOptionGenerator} from "../../dependencies/helpers/mcMenuOptionGenerator";
-import {GuildSchema, MinecraftServer, NewClient} from "../../dependencies/myTypes";
+import {IGuild, MinecraftServer, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 import {
     removeTerminationListener,
@@ -34,8 +34,8 @@ export const mcChangeServerIP = {
                 .setDescription('the new port')
                 .setRequired(false)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema) {
-        const MCServerData = guildData.MCServerData
+    async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
+        const MCServerData = guildData.mcServerData
         let serverList: MinecraftServer[] = MCServerData.serverList
         let serverListSize: number = MCServerData.serverList.length
 
@@ -70,9 +70,9 @@ export const mcChangeServerIP = {
 
         // create variables and generate options for select menu
         let menuOptions: APISelectMenuOption[] = await McMenuOptionGenerator(interaction, serverList);
-        let row = new ActionRowBuilder<SelectMenuBuilder>()
+        let row = new ActionRowBuilder<StringSelectMenuBuilder>()
             .addComponents(
-                new SelectMenuBuilder()
+                new StringSelectMenuBuilder()
                     .setCustomId('change-ip-menu')
                     .setPlaceholder('Nothing selected')
                     .addOptions(menuOptions),
@@ -87,7 +87,7 @@ export const mcChangeServerIP = {
         let terminateBound = terminate.bind(null, client, collector)
         await terminationListener(client, collector, terminateBound)
 
-        let serverName;
+        let selectedServerName;
         collector.on('collect', async i => {
             const selectedServerIP = i.values[0]
             const selectedServer = MCServerData.serverList.find(server => {
@@ -95,7 +95,7 @@ export const mcChangeServerIP = {
             })
             selectedServer.ip = newServer.ip
             selectedServer.port = newServer.port
-            serverName = selectedServer.name
+            selectedServerName = selectedServer.name
 
             await guildData.save()
         });
@@ -106,7 +106,10 @@ export const mcChangeServerIP = {
                 await interaction.editReply({content: 'Request Timeout', components: []});
                 log.error('Request Timeout')
             } else if (collected.first().customId === 'change-ip-menu') {
-                await interaction.editReply({content: `**${serverName}** IP changed successfully`, components: []});
+                await interaction.editReply({
+                    content: `**${selectedServerName}** IP changed successfully`,
+                    components: []
+                });
                 log.info('Server IP changed Successfully')
             }
         });
