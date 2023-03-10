@@ -5,11 +5,11 @@ import {
     ComponentType,
     Message,
     PermissionFlagsBits,
-    SelectMenuBuilder,
-    SlashCommandBuilder
+    SlashCommandBuilder,
+    StringSelectMenuBuilder
 } from "discord.js";
 import {McMenuOptionGenerator} from "../../dependencies/helpers/mcMenuOptionGenerator";
-import {GuildSchema, MinecraftServer, NewClient} from "../../dependencies/myTypes";
+import {IGuild, MinecraftServer, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 import {
     removeTerminationListener,
@@ -25,8 +25,8 @@ export const mcDeleteServer = {
         .setDescription('Deletes a registered MC server')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema) {
-        const MCServerData = guildData.MCServerData
+    async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
+        const MCServerData = guildData.mcServerData
         let serverList: MinecraftServer[] = MCServerData.serverList
         let serverListSize: number = MCServerData.serverList.length
         if (serverListSize === 0) {
@@ -39,9 +39,9 @@ export const mcDeleteServer = {
         }
 
         let menuOptions: APISelectMenuOption[] = await McMenuOptionGenerator(interaction, serverList);
-        const row = new ActionRowBuilder<SelectMenuBuilder>()
+        const row = new ActionRowBuilder<StringSelectMenuBuilder>()
             .addComponents(
-                new SelectMenuBuilder()
+                new StringSelectMenuBuilder()
                     .setCustomId('delete-menu')
                     .setPlaceholder('Nothing selected')
                     .addOptions(menuOptions),

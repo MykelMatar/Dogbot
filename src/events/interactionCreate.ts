@@ -1,5 +1,5 @@
 import {Collection, CommandInteraction, GuildMember} from "discord.js";
-import {GuildSchema, NewClient, SlashCommand} from "../dependencies/myTypes";
+import {IGuild, NewClient, SlashCommand} from "../dependencies/myTypes";
 import guilds from "../dependencies/schemas/guild-schema";
 import log from "../dependencies/logger";
 
@@ -19,6 +19,7 @@ export async function interactionCreate(client: NewClient, interaction: CommandI
     const currentTime = Date.now();
     const timeStamps = cooldowns.get(command.data.name)
     const cooldown_time = (command.cooldown) * 1000 // convert to ms
+
     if (timeStamps.has(interaction.guild.id)) {
         const expirationTime = timeStamps.get(interaction.guild.id) + cooldown_time
 
@@ -33,10 +34,9 @@ export async function interactionCreate(client: NewClient, interaction: CommandI
     timeStamps.set(interaction.guild.id, currentTime)
 
     // global ephemeral interaction handling (for commands w/ optional 'hide' param)
-    let guildName = interaction.guild.name.replace(/\s+/g, "")
     let hideCommands: string[] = ['mc', 'get-stats', 'server-stats', 'help']
     let ephemeralSetting
-    
+
     let hideOption = interaction.options.data.find(option => option.name === 'hide')
     if (hideOption === undefined) ephemeralSetting = true
     else ephemeralSetting = hideOption.value
@@ -49,8 +49,8 @@ export async function interactionCreate(client: NewClient, interaction: CommandI
         if (!(!(interaction.member instanceof GuildMember))) {
             log.info(`${interaction.commandName} requested by ${interaction.member.user.username} in ${interaction.member.guild.name}`)
         }
-        let guildData: GuildSchema = await guilds.findOne({guildId: interaction.guildId})
-        await command.execute(client, interaction, guildData, guildName);
+        let guildData: IGuild = await guilds.findOne({guildId: interaction.guildId})
+        await command.execute(client, interaction, guildData);
     } catch (error) {
         log.error(error)
         await interaction.reply({content: 'There was an error while executing this command!', ephemeral: true});

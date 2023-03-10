@@ -1,5 +1,5 @@
 import {CommandInteraction, CommandInteractionOption, EmbedBuilder, SlashCommandBuilder} from "discord.js";
-import {embedColor, GuildSchema, NewClient} from "../../dependencies/myTypes";
+import {embedColor, IGuild, NewClient} from "../../dependencies/myTypes";
 import {login, platforms, Warzone} from "call-of-duty-api";
 import log from "../../dependencies/logger";
 
@@ -27,7 +27,7 @@ export const getStatsWarzone = {
             option.setName('hide')
                 .setDescription('hides stats from others')),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema) {
+    async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
         let platformOption: CommandInteractionOption = interaction.options.data.find(option => option.name === 'platform')
         let usernameOption: CommandInteractionOption = interaction.options.data.find(option => option.name === 'username')
         let userData, platform: platforms, username: string
@@ -36,7 +36,7 @@ export const getStatsWarzone = {
             platform = platformOption.value as platforms
             username = usernameOption.value as string
         } else if (platformOption == undefined && usernameOption == undefined) { // if the options are not used
-            userData = guildData.UserData.find(user => user.id === interaction.user.id)
+            userData = guildData.userData.find(user => user.id === interaction.user.id)
             if (userData === undefined) {
                 return interaction.editReply({content: 'User does not have any data. Please use the input options for the command'})
             }

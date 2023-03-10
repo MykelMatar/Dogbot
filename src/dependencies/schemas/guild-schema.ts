@@ -4,14 +4,14 @@ import {platforms} from "call-of-duty-api";
 const guildSchema = new Schema({
     guild: String,
     guildId: String,
-    ServerData: {
+    serverData: {
         welcomeChannel: String,
         roles: {
             autoenlist: String,
             default: String,
         },
     },
-    UserData: [
+    userData: [
         {
             username: String,
             id: String,
@@ -20,6 +20,7 @@ const guildSchema = new Schema({
                 rejects: Number,
                 ignores: Number,
                 enlistXp: Number,
+                enlistStreak: Number,
             },
             tttStats: {
                 wins: Number,
@@ -27,7 +28,10 @@ const guildSchema = new Schema({
             },
             warzoneProfile: {
                 username: String,
-                platform: typeof platforms,
+                platform: {
+                    type: String,
+                    enum: platforms,
+                },
             },
             valorantProfile: {
                 username: String,
@@ -35,7 +39,7 @@ const guildSchema = new Schema({
             }
         },
     ],
-    MCServerData: {
+    mcServerData: {
         serverList: [
             {
                 name: String,
@@ -51,4 +55,4 @@ const guildSchema = new Schema({
     },
 });
 
-export default model("Guilds", guildSchema);
+export default model("Guild", guildSchema);

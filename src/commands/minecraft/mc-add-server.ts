@@ -1,7 +1,6 @@
-import {CommandInteraction, PermissionFlagsBits, SlashCommandBuilder} from "discord.js";
+import {CommandInteraction, PermissionFlagsBits, SlashCommandBuilder, TextInputStyle} from "discord.js";
 import {status, statusBedrock} from 'minecraft-server-util'
-import {McAddServerInteraction} from "../../dependencies/helpers/mcAddServerInteraction"
-import {GuildSchema, MinecraftServer, NewClient} from "../../dependencies/myTypes";
+import {IGuild, MinecraftServer, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 
 export const mcAddServer = {
@@ -23,8 +22,8 @@ export const mcAddServer = {
                 .setDescription('Port of your server.')
                 .setRequired(false)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema) {
-        const serverList: MinecraftServer[] = guildData.MCServerData.serverList
+    async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
+        const serverList: MinecraftServer[] = guildData.mcServerData.serverList
         if (serverList.length === 10) {
             return interaction.editReply("Max number of servers reached (Limit of 10).");
         }
@@ -35,24 +34,13 @@ export const mcAddServer = {
             port: undefined
         };
 
-        try { // if slash command is used
-            newServer.ip = interaction.options.data[0].value as string;
-            newServer.name = interaction.options.data[1].value as string;
-            const portOption = interaction.options.data.find(option => option.name === 'port');
-            newServer.port = portOption?.value as number ?? 25565;
-        } catch { // if button on /mc-list-servers is used
-            newServer.ip = await McAddServerInteraction(interaction, "Input server IP (server must be online)", "Request Timeout") as string;
-            if (newServer.ip == null) return await interaction.editReply('Invalid Server IP');
-            newServer.name = await McAddServerInteraction(interaction, "Input Name", "Request Timeout") as string;
-            if (newServer.name.toString().length > 30) {
-                return await interaction.editReply('Please keep server name below 30 characters')
-            }
-            if (newServer.name.toString().length < 1) {
-                return await interaction.editReply('Invalid server name input. ')
-            }
-            newServer.port = await McAddServerInteraction(interaction, "Input Server Port. If you are not sure, the default is 25565.", "Request Timeout") as number;
-            // not using Promise.all bc 1 response must be collected before the other / not simultaneous
-        }
+        const {value: ip} = interaction.options.data.find(option => option.name === 'ip');
+        const {value: name} = interaction.options.data.find(option => option.name === 'name');
+        const {value: port = 25565} = interaction.options.data.find(option => option.name === 'port');
+
+        newServer.name = name as string
+        newServer.ip = ip as string
+        newServer.port = port as number
 
         if (serverList.some(server => server.ip === newServer.ip)) {
             await interaction.editReply(
@@ -67,7 +55,7 @@ export const mcAddServer = {
             // if server is the first added server, make it the selected server to track in /mc-server-status
             if (serverList.length === 0) {
                 const {ip, port, name} = newServer;
-                guildData.MCServerData.selectedServer = {ip, port, name} // assuming you have variables named ip, port, and name that correspond to mcServer.ip, mcServer.port, and mcServer.name
+                guildData.mcServerData.selectedServer = {ip, port, name} // assuming you have variables named ip, port, and name that correspond to mcServer.ip, mcServer.port, and mcServer.name
             }
             serverList.push(newServer);
             await Promise.all([guildData.save(), interaction.editReply("Server added successfully")]);
@@ -77,7 +65,7 @@ export const mcAddServer = {
                 // if server is the first added server, make it the selected server to track in /mc-server-status
                 if (serverList.length === 0) {
                     const {ip, port, name} = newServer;
-                    guildData.MCServerData.selectedServer = {ip, port, name} // assuming you have variables named ip, port, and name that correspond to mcServer.ip, mcServer.port, and mcServer.name
+                    guildData.mcServerData.selectedServer = {ip, port, name} // assuming you have variables named ip, port, and name that correspond to mcServer.ip, mcServer.port, and mcServer.name
                 }
                 serverList.push(newServer);
                 await Promise.all([guildData.save(), interaction.editReply("Server added successfully")]);

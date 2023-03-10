@@ -3,7 +3,7 @@ import 'dotenv/config'
 import {NewClient} from "./dependencies/myTypes";
 import log from "./dependencies/logger";
 
-const client = new Client({
+const client: NewClient = new Client({
     intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMembers,
@@ -22,7 +22,7 @@ const client = new Client({
 }) as NewClient
 
 client.commands = new Collection();
-client.isTestBot = false; // set false if deploying Dogbot
+client.isTestBot = true; // set false if deploying Dogbot
 
 ['command_handler', 'event_handler'].forEach(handler => {
     require(`./handlers/${handler}`).default(client)

@@ -1,19 +1,30 @@
-import DiscordJS, {APISelectMenuOption, Collection, CommandInteraction, SlashCommandBuilder} from "discord.js";
+import DiscordJS, {
+    APISelectMenuOption,
+    ApplicationCommandData,
+    Collection,
+    CommandInteraction,
+    Message,
+    Snowflake
+} from "discord.js";
 import {platforms} from "call-of-duty-api";
 import {Document} from "mongoose";
 
-export type NewClient = DiscordJS.Client & {
+export interface NewClient extends DiscordJS.Client {
     commands: DiscordJS.Collection<string, SlashCommand> // allows commands to be bound to the client instance for global retrieval
     isTestBot: boolean // whether it is the test bot or not
 }
 
-export type SlashCommand = {
-    data: SlashCommandBuilder
-    cooldown?: number
-    execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema, guildName: string): Promise<void>
+interface CustomSlashCommandBuilder {
+    name: string;
+    description: string;
+    toJSON?: () => ApplicationCommandData; // or `ApplicationCommandData` if you need it
 }
 
-export type GameProfile = ValorantProfile | WarzoneProfile
+export interface SlashCommand {
+    data: CustomSlashCommandBuilder;
+    cooldown?: number;
+    execute: (client: NewClient, interaction: CommandInteraction, guildData: IGuild) => Promise<void | Message>;
+}
 
 export interface ValorantProfile {
     username: string
@@ -24,6 +35,8 @@ export interface WarzoneProfile {
     username: string
     platform: platforms
 }
+
+export type GameProfile = ValorantProfile | WarzoneProfile
 
 export interface MinecraftServer {
     name: string
@@ -43,62 +56,60 @@ export interface EnlistLeaderboardUser {
 
 export interface EnlistUserData {
     enlistedUsers: string[]
-    enlistedUserIds: string[] // for pushing user data to mongoDB
+    enlistedUserIds: Snowflake[] // for pushing user data to mongoDB
     rejectedUsers: string[]
-    rejectedUserIds: string[]
+    rejectedUserIds: Snowflake[]
     potentialUsers: string[]
-    potentialUserIds: string[]
-    ignoredUserIds: string[]
-    userAvailabilityMap: Collection<string, string>
+    potentialUserIds: Snowflake[]
+    ignoredUserIds: Snowflake[]
+    userAvailabilityMap: Collection<Snowflake, string>
 }
 
-export type GuildSchema = Document & {
-    guild: string
-    guildId: string
-    ServerData: {
-        welcomeChannel: string
+export interface IGuild extends Document {
+    guild: string;
+    guildId: string;
+    serverData: {
+        welcomeChannel: string;
         roles: {
-            autoenlist: string
-            default: string
-        }
-    }
-    UserData: [
-        {
-            username: string
-            id: string
-            enlistStats: {
-                enlists: number
-                rejects: number
-                ignores: number
-            }
-            tttStats: {
-                wins: number
-                losses: number
-            }
-            warzoneProfile: {
-                username: string
-                platform: platforms
-            }
-            valorantProfile: {
-                username: string
-                tag: string
-            }
-        }
-    ]
-    MCServerData: {
-        serverList: [
-            {
-                name: string
-                ip: string
-                port: number
-            }
-        ]
+            autoenlist: string;
+            default: string;
+        };
+    };
+    userData: {
+        username: string;
+        id: string;
+        enlistStats?: {
+            enlists: number;
+            rejects: number;
+            ignores: number;
+            enlistXp: number;
+            enlistStreak: number;
+        };
+        tttStats?: {
+            wins: number;
+            losses: number;
+        };
+        warzoneProfile?: {
+            username: string;
+            platform: platforms;
+        };
+        valorantProfile?: {
+            username: string;
+            tag: string;
+        };
+    }[];
+    mcServerData: {
+        serverList: {
+            name: string;
+            ip: string;
+            port: number;
+        }[];
         selectedServer: {
-            name: string
-            ip: string
-            port: number
-        }
-    }
+            name: string;
+            ip: string;
+            port: number;
+        };
+    };
 }
 
 export enum UserStats {

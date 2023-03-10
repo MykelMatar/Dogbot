@@ -1,21 +1,18 @@
 import {
     ActionRowBuilder,
-    AttachmentBuilder,
     ButtonBuilder,
     ButtonInteraction,
     ButtonStyle,
     Collection,
     CommandInteraction,
-    CommandInteractionOption,
     ComponentType,
     EmbedBuilder,
     InteractionCollector,
     Message,
     SlashCommandBuilder
 } from "discord.js";
-import {embedColor, EnlistUserData, GuildSchema, NewClient, UserStats} from "../../dependencies/myTypes";
+import {embedColor, EnlistUserData, IGuild, NewClient, SlashCommand, UserStats} from "../../dependencies/myTypes";
 import {updateEnlistUserEmbed} from "../../dependencies/helpers/updateEnlistUserEmbed";
-import guilds from "../../dependencies/schemas/guild-schema";
 import {
     removeTerminationListener,
     terminate,
@@ -23,8 +20,8 @@ import {
 } from "../../dependencies/helpers/terminationListener";
 import {updateUserData} from "../../dependencies/helpers/updateUserData";
 
-//TODO add edit button to edit fields
-export const enlistUsers = {
+// TODO add edit button to edit fields
+export const enlistUsers: SlashCommand = {
     data: new SlashCommandBuilder()
         .setName('enlist-users')
         .setDescription('creates prompt that allows users to RSVP for events')
@@ -49,15 +46,15 @@ export const enlistUsers = {
                 .setRequired(false)
         ),
     // cooldown: 10800, // 3 hour cooldown to match the 3 hour enlist timer
-    async execute(client: NewClient, interaction: CommandInteraction, guildData: GuildSchema) {
+    async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
         await interaction.reply({content: 'prompt sent', ephemeral: true})
-        const userData = guildData.UserData
+        const userData = guildData.userData
 
         // retrieve parameters
-        const {value: title = 'Gamer Time'} = (interaction.options.data.find(option => option.name === 'title') ?? {}) as CommandInteractionOption;
-        const {value: game} = (interaction.options.data.find(option => option.name === 'game') ?? {}) as CommandInteractionOption;
-        const {value: roleId} = (interaction.options.data.find(option => option.name === 'role') ?? {}) as CommandInteractionOption;
-        const {value: minGamers = 5} = (interaction.options.data.find(option => option.name === 'minimum') ?? {}) as CommandInteractionOption;
+        const {value: title = 'Gamer Time'} = interaction.options.data.find(option => option.name === 'title') ?? {};
+        const {value: game} = interaction.options.data.find(option => option.name === 'game');
+        const {value: roleId} = interaction.options.data.find(option => option.name === 'role') ?? {};
+        const {value: minGamers} = interaction.options.data.find(option => option.name === 'minimum');
 
         let role: string = ''
         if (roleId) {
@@ -66,21 +63,19 @@ export const enlistUsers = {
                 role = `<@&${selectedRole.id}>`;
             }
         } else {
-            const currentGuild = await guilds.findOne({guildId: interaction.guildId});
-            const selectedRoleId = currentGuild.ServerData.roles.autoenlist;
+            const selectedRoleId = guildData.serverData.roles.autoenlist;
             const selectedRole = interaction.guild.roles.cache.get(selectedRoleId);
             if (selectedRole) {
                 role = `<@&${selectedRole.id}>`;
             }
         }
 
-        // create buttons and embed
         const row = new ActionRowBuilder<ButtonBuilder>()
             .addComponents(
                 new ButtonBuilder()
                     .setLabel(`✓`)
                     .setCustomId('Gamer')
-                    .setStyle(ButtonStyle.Primary),
+                    .setStyle(ButtonStyle.Success),
                 new ButtonBuilder()
                     .setLabel(`✘`)
                     .setCustomId('Cringe')
@@ -88,14 +83,12 @@ export const enlistUsers = {
                 new ButtonBuilder()
                     .setLabel(`❔`)
                     .setCustomId('Perhaps')
-                    .setStyle(ButtonStyle.Secondary),
+                    .setStyle(ButtonStyle.Primary),
             );
 
-        const file = new AttachmentBuilder('./src/dependencies/images/Dogbot.png')
         const embed = new EmbedBuilder()
             .setTitle(`${title}`)
             .setDescription(`need ${minGamers} for ${game}`)
-            // .setThumbnail('attachment://Dogbot.png')
             .addFields(
                 {name: 'Gaming', value: '-', inline: true},
                 {name: 'Not Gaming', value: '-', inline: true},
@@ -104,13 +97,13 @@ export const enlistUsers = {
             .setColor(embedColor)
             .setFooter({text: 'Selecting the "Perhaps" option will not count towards your enlist stats',})
 
-        // send prompt. Not an interaction reply bc interactions are only editable for 15 min
+        // Not an interaction reply bc interactions are only editable for 15 min
         let enlistPrompt: Message = await interaction.channel.send({
             content: `${role}`,
             embeds: [embed],
-            // files: [file],
             components: [row]
-        })
+        });
+
         let enlistUserData: EnlistUserData = {
             enlistedUsers: ['-'],
             enlistedUserIds: [],
@@ -139,8 +132,9 @@ export const enlistUsers = {
 
         enlistCollector.on('collect', async i => {
             const isPerhapsButton = i.customId === perhapsButtonId;
+            const notDuplicateUser = !(enlistUserData.potentialUserIds.includes(i.user.id))
 
-            if (isPerhapsButton && !(enlistUserData.potentialUserIds.includes(i.user.id))) {
+            if (isPerhapsButton && notDuplicateUser) {
                 // Send a time menu for the user to select their availability
                 await i.reply({
                     content: 'please select your availability',
@@ -150,26 +144,30 @@ export const enlistUsers = {
 
                 const timeCollector = interaction.channel.createMessageComponentCollector({
                     componentType: ComponentType.SelectMenu,
-                    time: 5000,
+                    time: 60000,
                     max: 1,
                     filter: (i) => i.customId === 'time',
                 });
 
-                // Update the user's availability when they select a time
-                timeCollector.on('collect', async j => {
-                    const guildMember = j.user.username
-                    const index = enlistUserData.potentialUsers.findIndex(user => user == `> ${guildMember}\n`)
-                    enlistUserData.userAvailabilityMap.set(j.user.id, j.values[0])
-                    enlistUserData.potentialUsers[index] = `> ${guildMember} ~${j.values[0]}\n`
-                });
-
                 timeCollector.on('end', async collected => {
+                    if (collected.size == 0) {
+                        enlistUserData.userAvailabilityMap.set(i.user.id, 'Not sure')
+                    } else {
+                        const userResponse = collected.first()
+                        const guildMember = userResponse.user.username
+                        const index = enlistUserData.potentialUsers.findIndex(user => user == `> ${guildMember}\n`)
+                        if (userResponse?.values[0] == undefined) { // idk why this would happen, but just in case
+                            enlistUserData.userAvailabilityMap.set(userResponse?.user.id, 'Not Sure')
+                            enlistUserData.potentialUsers[index] = `> ${guildMember} ~'Not Sure'\n`
+                        } else {
+                            enlistUserData.userAvailabilityMap.set(userResponse.user.id, userResponse?.values[0])
+                            enlistUserData.potentialUsers[index] = `> ${guildMember} ~${userResponse.values[0]}\n`
+                        }
+                    }
+
                     const updateEmbed = updateEnlistUserEmbed(i, embed, enlistUserData, enlistPrompt, row, role)
                     const deleteReply = i.deleteReply()
-                    // If the user doesn't select a time, mark them as "not sure"
-                    if (collected.size === 0) {
-                        enlistUserData.userAvailabilityMap.set(i.user.id, 'Not sure')
-                    }
+
                     await Promise.all([updateEmbed, deleteReply])
                 });
             } else {
@@ -193,6 +191,7 @@ export const enlistUsers = {
             const updateEnlistedUserData = updateUserData(interaction, enlistUserData.enlistedUserIds, UserStats.enlist);
             const updateRejectedUserData = updateUserData(interaction, enlistUserData.rejectedUserIds, UserStats.reject);
             const updateIgnoredUserData = updateUserData(interaction, enlistUserData.ignoredUserIds, UserStats.ignore);
+
             const updatePrompt = enlistPrompt.edit({content: '⚠ ***ENLISTING ENDED*** ⚠', components: []});
 
             await Promise.all([updateEnlistedUserData, updateRejectedUserData, updateIgnoredUserData, updatePrompt])
