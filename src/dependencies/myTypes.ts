@@ -112,14 +112,12 @@ export interface IGuild extends Document {
     };
 }
 
-export enum UserStats {
-    tttWins = 'tttWins',
-    tttLosses = 'tttLosses',
-    enlist = 'enlist',
-    reject = 'reject',
-    ignore = 'ignore',
-    wzProfile = 'wzProfile',
-    valProfile = 'valProfile',
+export enum UserInfo {
+    Enlist = 'Enlist',
+    Reject = 'Reject',
+    Ignore = 'Ignore',
+    WarzoneProfile = 'WarzoneProfile',
+    ValorantProfile = 'ValorantProfile',
 }
 
 export const embedColor = '#B8CAD1'

@@ -55,4 +55,4 @@ const guildSchema = new Schema({
     },
 });
 
-export default model("Guild", guildSchema);
+export default model("guilds", guildSchema);

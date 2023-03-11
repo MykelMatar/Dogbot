@@ -9,9 +9,11 @@ import {
     EmbedBuilder,
     InteractionCollector,
     Message,
-    SlashCommandBuilder
+    SlashCommandBuilder,
+    Snowflake,
+    userMention
 } from "discord.js";
-import {embedColor, EnlistUserData, IGuild, NewClient, SlashCommand, UserStats} from "../../dependencies/myTypes";
+import {embedColor, EnlistUserData, IGuild, NewClient, SlashCommand, UserInfo} from "../../dependencies/myTypes";
 import {updateEnlistUserEmbed} from "../../dependencies/helpers/updateEnlistUserEmbed";
 import {
     removeTerminationListener,
@@ -19,6 +21,8 @@ import {
     terminationListener
 } from "../../dependencies/helpers/terminationListener";
 import {updateUserData} from "../../dependencies/helpers/updateUserData";
+import guilds from "../../dependencies/schemas/guild-schema";
+import {getLevelFromXp} from "../../dependencies/helpers/getLevelFromXp";
 
 // TODO add edit button to edit fields
 export const enlistUsers: SlashCommand = {
@@ -121,7 +125,7 @@ export const enlistUsers: SlashCommand = {
 
         const enlistCollector = interaction.channel.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: 1.08e+7, // 3 hour (1.08e+7) timer
+            time: 5000, // 1.08e+7, // 3 hour (1.08e+7) timer
             filter: (i) => {
                 if (i.message.id != enlistPrompt.id) return false // prevent simultaneous prompts from affecting each other
                 return [gamingButtonId, perhapsButtonId, rejectButtonId].includes(i.customId);
@@ -188,19 +192,58 @@ export const enlistUsers: SlashCommand = {
             const allEnlistPromptUserIds = [...enlistUserData.enlistedUserIds, ...enlistUserData.rejectedUserIds, ...enlistUserData.potentialUserIds];
             enlistUserData.ignoredUserIds = allUserIds.filter(id => !allEnlistPromptUserIds.includes(id));
 
-            const updateEnlistedUserData = updateUserData(interaction, enlistUserData.enlistedUserIds, UserStats.enlist);
-            const updateRejectedUserData = updateUserData(interaction, enlistUserData.rejectedUserIds, UserStats.reject);
-            const updateIgnoredUserData = updateUserData(interaction, enlistUserData.ignoredUserIds, UserStats.ignore);
+            const enlistUsersWhoGainedXP = [...enlistUserData.enlistedUserIds, ...enlistUserData.rejectedUserIds]
 
+            let userXPMap = new Collection<Snowflake, number>()
+            for (const userId of enlistUsersWhoGainedXP) {
+                let user = userData.find(user => user.id === userId)
+                let oldXPValue = user ? user.enlistStats.enlistXp : 0
+                userXPMap.set(userId, oldXPValue)
+            }
+
+            const updateEnlistedUserData = updateUserData(interaction, enlistUserData.enlistedUserIds, UserInfo.Enlist);
+            const updateRejectedUserData = updateUserData(interaction, enlistUserData.rejectedUserIds, UserInfo.Reject);
+            const updateIgnoredUserData = updateUserData(interaction, enlistUserData.ignoredUserIds, UserInfo.Ignore);
             const updatePrompt = enlistPrompt.edit({content: '⚠ ***ENLISTING ENDED*** ⚠', components: []});
 
             await Promise.all([updateEnlistedUserData, updateRejectedUserData, updateIgnoredUserData, updatePrompt])
+
+            let updatedGuildData: IGuild = await guilds.findOne({guildId: interaction.guildId})
+            let updatedUserData = updatedGuildData.userData
+            let usersWhoLeveledUp: string[] = []
+            let userLevelChange: string[] = []
+            let createLevelEmbed = false
+
+            for (const userId of enlistUsersWhoGainedXP) {
+                let newXPValue = updatedUserData.find(user => user.id === userId).enlistStats.enlistXp
+                let oldXPValue = userXPMap.get(userId)
+                let {level: oldLevel} = getLevelFromXp(oldXPValue)
+                let {level: newLevel} = getLevelFromXp(newXPValue)
+                if (oldXPValue < newXPValue && oldLevel != newLevel) {
+                    createLevelEmbed = true
+                    usersWhoLeveledUp.push(userMention(userId))
+                    userLevelChange.push(`${getLevelFromXp(oldXPValue).prestige}:${oldLevel} → ${getLevelFromXp(newXPValue).prestige}:${newLevel}`)
+                }
+            }
+
+            if (createLevelEmbed) {
+                let levelEmbed = new EmbedBuilder()
+                    .setTitle('Level Summary')
+                    .setDescription('Below are all users who leveled up from the most recent enlist')
+                    .addFields(
+                        {name: 'Users', value: usersWhoLeveledUp.join('\n'), inline: true},
+                        {name: 'Level Change', value: userLevelChange.join('\n'), inline: true}
+                    )
+                    .setColor(embedColor)
+                interaction.channel.send({embeds: [levelEmbed]})
+            }
+
 
             // summon gamers button
             if (enlistUserData.enlistedUserIds.length == 0) return
 
             const formatUserMentions = (userIds: string[]): string[] => {
-                return userIds.map(id => `<@${id}>`);
+                return userIds.map(id => userMention(id));
             };
 
             const enlistedUsers = formatUserMentions(enlistUserData.enlistedUserIds);

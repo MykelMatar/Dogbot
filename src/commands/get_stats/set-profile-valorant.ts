@@ -1,5 +1,5 @@
 import {CommandInteraction, CommandInteractionOption, SlashCommandBuilder} from "discord.js";
-import {GameProfile, NewClient, UserStats} from "../../dependencies/myTypes";
+import {GameProfile, NewClient, UserInfo} from "../../dependencies/myTypes";
 import {updateUserData} from "../../dependencies/helpers/updateUserData";
 
 export const setProfileValorant = {
@@ -26,7 +26,7 @@ export const setProfileValorant = {
             username: usernameOption.value as string,
             tag: tagOption.value as string
         }
-        await updateUserData(interaction, [interaction.user.id], UserStats.valProfile, profile)
+        await updateUserData(interaction, [interaction.user.id], UserInfo.ValorantProfile, profile)
         await interaction.reply({
             content: `profile saved. You can now use get-stats-valorant without inputting your information.`,
             ephemeral: true
