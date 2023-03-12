@@ -92,5 +92,6 @@ export async function updateEnlistUserEmbed(interaction: ButtonInteraction, embe
     embed.data.fields[0].value = enlistUserData.enlistedUsers.join('');
     embed.data.fields[1].value = enlistUserData.rejectedUsers.join('');
     embed.data.fields[2].value = enlistUserData.potentialUsers.join('');
+
     await enlistPrompt.edit({content: `${role}`, embeds: [embed], components: [row]});
 }

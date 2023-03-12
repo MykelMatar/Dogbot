@@ -1,5 +1,5 @@
 import {CommandInteraction, CommandInteractionOption, SlashCommandBuilder} from "discord.js";
-import {GameProfile, NewClient, UserStats} from "../../dependencies/myTypes";
+import {GameProfile, NewClient, UserInfo} from "../../dependencies/myTypes";
 import {platforms} from "call-of-duty-api";
 import {updateUserData} from "../../dependencies/helpers/updateUserData";
 
@@ -34,7 +34,7 @@ export const setProfileWarzone = {
             username: usernameOption.value as string,
             platform: platformOption.value as platforms
         }
-        await updateUserData(interaction, [interaction.user.id], UserStats.wzProfile, profile)
+        await updateUserData(interaction, [interaction.user.id], UserInfo.WarzoneProfile, profile)
         await interaction.reply({
             content: `profile saved. You can now use get-stats-warzone without inputting your information.`,
             ephemeral: true

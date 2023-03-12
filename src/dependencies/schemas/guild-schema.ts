@@ -19,7 +19,7 @@ const guildSchema = new Schema({
                 enlists: Number,
                 rejects: Number,
                 ignores: Number,
-                enlistXp: Number,
+                enlistXP: Number,
                 enlistStreak: Number,
             },
             tttStats: {
@@ -55,4 +55,4 @@ const guildSchema = new Schema({
     },
 });
 
-export default model("Guild", guildSchema);
+export default model("guilds", guildSchema);

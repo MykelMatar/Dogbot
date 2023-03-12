@@ -8,7 +8,7 @@ import {
     SlashCommandBuilder
 } from "discord.js";
 import {updateUserData} from "../../dependencies/helpers/updateUserData";
-import {NewClient, UserStats} from "../../dependencies/myTypes";
+import {NewClient} from "../../dependencies/myTypes";
 import {log} from "../../dependencies/logger";
 
 //TODO: create /endtictactoe command or timeout after 15s of nothing happening
@@ -250,8 +250,8 @@ async function endGame(interaction, collector) {
     collector.stop(); // end collection
 
     // update tic tac toe user data
-    await updateUserData(interaction, [winner], UserStats.tttWins)
-    await updateUserData(interaction, [loser], UserStats.tttLosses)
+    await updateUserData(interaction, [winner])
+    await updateUserData(interaction, [loser])
 
     // reset game options
     selected = Array(9).fill(false)
