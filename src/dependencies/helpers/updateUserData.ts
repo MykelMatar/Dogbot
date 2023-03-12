@@ -19,25 +19,33 @@ export async function updateUserData(interaction: CommandInteraction, userIdArra
     const currentGuild: IGuild = await Guild.findOne({guildId: interaction.guildId})
     const userData = currentGuild.userData
 
+    const XPPerEnlist = 10
+    const XPPerReject = 5
+    const XPPerPerhaps = 5
+
     let defaultEnlistStats = {
         enlists: 0,
         rejects: 0,
         ignores: 0,
-        enlistXp: 0,
+        enlistXP: 0,
         enlistStreak: 0
     }
 
     switch (infoType) {
         case UserInfo.Enlist:
             defaultEnlistStats.enlists = 1
-            defaultEnlistStats.enlistXp = 10
+            defaultEnlistStats.enlistXP = XPPerEnlist
             defaultEnlistStats.enlistStreak = 1
             break;
         case UserInfo.Reject:
             defaultEnlistStats.rejects = 1
+            defaultEnlistStats.enlistXP = XPPerReject
             break;
         case UserInfo.Ignore:
             defaultEnlistStats.ignores = 1
+            break;
+        case UserInfo.Perhaps:
+            defaultEnlistStats.enlistXP = XPPerPerhaps
             break;
         case UserInfo.WarzoneProfile:
         case UserInfo.ValorantProfile:
@@ -53,7 +61,7 @@ export async function updateUserData(interaction: CommandInteraction, userIdArra
 
         if (!userDataIds.has(userId)) {
             log.info(`creating user data for ${guildMember.user.username}...`)
-            if ([UserInfo.Enlist, UserInfo.Reject, UserInfo.Ignore].includes(infoType)) {
+            if ([UserInfo.Enlist, UserInfo.Reject, UserInfo.Ignore, UserInfo.Perhaps].includes(infoType)) {
                 userData.push({
                     username: guildMember.user.username,
                     id: userIdArray[0],
@@ -83,15 +91,19 @@ export async function updateUserData(interaction: CommandInteraction, userIdArra
 
 
         } else {
-            let user = userData.find(user => user.id === userId)
+            const user = userData.find(user => user.id === userId)
+            const maxEnlistStreak = 5
+            const bonusStreakXP = 5
+
             switch (infoType) {
                 case UserInfo.Enlist:
+                    // mongo returns NaN if value does not exist (undefined)
                     if (!isNaN(user.enlistStats.enlists)) {
                         user.enlistStats.enlists++;
-                        if (user.enlistStats.enlistStreak < 5) {
+                        if (user.enlistStats.enlistStreak < maxEnlistStreak) {
                             user.enlistStats.enlistStreak++
                         }
-                        user.enlistStats.enlistXp += 10 + (5 * user.enlistStats.enlistStreak)
+                        user.enlistStats.enlistXP += XPPerEnlist + (bonusStreakXP * user.enlistStats.enlistStreak)
                         break;
                     }
                     user.enlistStats = defaultEnlistStats
@@ -100,7 +112,7 @@ export async function updateUserData(interaction: CommandInteraction, userIdArra
                     if (!isNaN(user.enlistStats.rejects)) {
                         user.enlistStats.rejects++
                         user.enlistStats.enlistStreak = 0
-                        user.enlistStats.enlistXp += 5
+                        user.enlistStats.enlistXP += XPPerReject
                         break;
                     }
                     user.enlistStats = defaultEnlistStats
@@ -108,6 +120,14 @@ export async function updateUserData(interaction: CommandInteraction, userIdArra
                 case UserInfo.Ignore:
                     if (!isNaN(user.enlistStats.ignores)) {
                         user.enlistStats.ignores = 1
+                        break;
+                    }
+                    user.enlistStats = defaultEnlistStats
+                    break;
+                case UserInfo.Perhaps:
+                    if (!isNaN(user.enlistStats.ignores)) {
+                        user.enlistStats.enlistXP += 1
+                        user.enlistStats.enlistStreak = 0
                         break;
                     }
                     user.enlistStats = defaultEnlistStats

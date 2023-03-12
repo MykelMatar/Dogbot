@@ -82,7 +82,7 @@ export interface IGuild extends Document {
             enlists: number;
             rejects: number;
             ignores: number;
-            enlistXp: number;
+            enlistXP: number;
             enlistStreak: number;
         };
         tttStats?: {
@@ -116,6 +116,7 @@ export enum UserInfo {
     Enlist = 'Enlist',
     Reject = 'Reject',
     Ignore = 'Ignore',
+    Perhaps = 'Perhaps',
     WarzoneProfile = 'WarzoneProfile',
     ValorantProfile = 'ValorantProfile',
 }

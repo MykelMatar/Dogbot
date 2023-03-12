@@ -49,20 +49,27 @@ for (let i = 1; i < maxPrestigeMaxLevel; i++) {
 
 // const masterPrestigeXP = xpForLevel[numberOfLevelsBeforeMax - 1]
 
-export function getLevelFromXp(xp: number): { prestige: number | string, level: number } {
-    let level: number, prestige: string | number = 0
+export function getLevelFromXp(xp: number): { prestige: string, level: number } {
+    let level: number, prestigeValue: string | number = 0
 
     for (let i = 0; i < xpForLevel.length; i++) {
         if (xp < xpForLevel[i]) {
             level = i + 1; // levels are 1-indexed
             if (level <= numberOfLevelsBeforeMax) {
-                prestige = Math.floor(level / levelsPerPrestige)
-                level -= Math.floor(levelsPerPrestige * prestige)
+                prestigeValue = Math.floor(level / levelsPerPrestige)
+                level -= Math.floor(levelsPerPrestige * prestigeValue)
             } else {
-                prestige = 'Master Prestige'
+                prestigeValue = 'Master Prestige'
                 level -= Math.floor(levelsPerPrestige * 5)
             }
             level = (level == 0) ? 1 : level
+
+            let prestige
+            if (prestigeValue !== 'Master Prestige') {
+                prestige = `Prestige ${prestigeValue}`
+            } else {
+                prestige = prestigeValue
+            }
 
             return {prestige, level}
         }

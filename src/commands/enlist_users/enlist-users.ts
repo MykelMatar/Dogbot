@@ -197,7 +197,7 @@ export const enlistUsers: SlashCommand = {
             let userXPMap = new Collection<Snowflake, number>()
             for (const userId of enlistUsersWhoGainedXP) {
                 let user = userData.find(user => user.id === userId)
-                let oldXPValue = user ? user.enlistStats.enlistXp : 0
+                let oldXPValue = user ? user.enlistStats.enlistXP : 0
                 userXPMap.set(userId, oldXPValue)
             }
 
@@ -215,10 +215,12 @@ export const enlistUsers: SlashCommand = {
             let createLevelEmbed = false
 
             for (const userId of enlistUsersWhoGainedXP) {
-                let newXPValue = updatedUserData.find(user => user.id === userId).enlistStats.enlistXp
+                let newXPValue = updatedUserData.find(user => user.id === userId).enlistStats.enlistXP
                 let oldXPValue = userXPMap.get(userId)
+
                 let {level: oldLevel} = getLevelFromXp(oldXPValue)
                 let {level: newLevel} = getLevelFromXp(newXPValue)
+
                 if (oldXPValue < newXPValue && oldLevel != newLevel) {
                     createLevelEmbed = true
                     usersWhoLeveledUp.push(userMention(userId))
@@ -235,9 +237,10 @@ export const enlistUsers: SlashCommand = {
                         {name: 'Level Change', value: userLevelChange.join('\n'), inline: true}
                     )
                     .setColor(embedColor)
+                    .setFooter({text: `Use /enlist-stats to see your current level`})
+
                 interaction.channel.send({embeds: [levelEmbed]})
             }
-
 
             // summon gamers button
             if (enlistUserData.enlistedUserIds.length == 0) return

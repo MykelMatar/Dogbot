@@ -19,7 +19,7 @@ const guildSchema = new Schema({
                 enlists: Number,
                 rejects: Number,
                 ignores: Number,
-                enlistXp: Number,
+                enlistXP: Number,
                 enlistStreak: Number,
             },
             tttStats: {
