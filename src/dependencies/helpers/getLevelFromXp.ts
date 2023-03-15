@@ -50,7 +50,8 @@ for (let i = 1; i < maxPrestigeMaxLevel; i++) {
 // const masterPrestigeXP = xpForLevel[numberOfLevelsBeforeMax - 1]
 
 export function getLevelFromXp(xp: number): { prestige: string, level: number } {
-    let level: number, prestigeValue: string | number = 0
+    let level: number = 0, prestigeValue: string | number = 0, prestige: string = 'Prestige 0'
+    if (xp == 0 || xp == undefined) return {prestige, level}
 
     for (let i = 0; i < xpForLevel.length; i++) {
         if (xp < xpForLevel[i]) {
@@ -64,7 +65,6 @@ export function getLevelFromXp(xp: number): { prestige: string, level: number } 
             }
             level = (level == 0) ? 1 : level
 
-            let prestige
             if (prestigeValue !== 'Master Prestige') {
                 prestige = `Prestige ${prestigeValue}`
             } else {
