@@ -19,9 +19,9 @@ export async function updateUserData(interaction: CommandInteraction, userIdArra
     const currentGuild: IGuild = await Guild.findOne({guildId: interaction.guildId})
     const userData = currentGuild.userData
 
-    const XPPerEnlist = 10
-    const XPPerReject = 5
-    const XPPerPerhaps = 5
+    const XPPerEnlist: number = 10
+    const XPPerReject: number = 5
+    const XPPerPerhaps: number = 5
 
     let defaultEnlistStats = {
         enlists: 0,

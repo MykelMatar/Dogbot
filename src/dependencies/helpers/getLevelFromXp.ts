@@ -65,7 +65,6 @@ export function getLevelFromXp(xp: number): { prestige: string, level: number } 
             }
             level = (level == 0) ? 1 : level
 
-            let prestige
             if (prestigeValue !== 'Master Prestige') {
                 prestige = `Prestige ${prestigeValue}`
             } else {
