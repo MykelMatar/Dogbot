@@ -4,7 +4,7 @@
     "@discordjs/voice": "^0.14.0",
     "call-of-duty-api": "^3.4.0",
     "cheerio": "^1.0.0-rc.10",
-    "discord.js": "^14.7.1",
+    "discord.js": "^14.8.0",
     "dotenv": "^10.0.0",
     "ffmpeg-static": "^5.1.0",
     "libsodium-wrappers": "^0.7.10",

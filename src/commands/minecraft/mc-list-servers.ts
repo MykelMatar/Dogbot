@@ -9,7 +9,7 @@ import {
     Message,
     SlashCommandBuilder
 } from "discord.js";
-import {embedColor, IGuild, NewClient, SlashCommand} from "../../dependencies/myTypes";
+import {embedColor, IGuild, NewClient} from "../../dependencies/myTypes";
 import {
     removeTerminationListener,
     terminate,
@@ -17,7 +17,7 @@ import {
 } from "../../dependencies/helpers/terminationListener";
 import {mcListServersGetStatus} from "../../dependencies/helpers/mcListServersGetStatus";
 
-export const mcListServers: SlashCommand = {
+export const mcListServers = {
     data: new SlashCommandBuilder()
         .setName('mc-list-servers')
         .setDescription('Lists all registered MC servers')

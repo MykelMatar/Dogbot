@@ -5,6 +5,7 @@ import {
     ButtonStyle,
     Collection,
     CommandInteraction,
+    CommandInteractionOptionResolver,
     ComponentType,
     EmbedBuilder,
     InteractionCollector,
@@ -13,7 +14,7 @@ import {
     Snowflake,
     userMention
 } from "discord.js";
-import {embedColor, EnlistUserData, IGuild, NewClient, SlashCommand, UserInfo} from "../../dependencies/myTypes";
+import {embedColor, EnlistUserData, IGuild, NewClient, UserInfo} from "../../dependencies/myTypes";
 import {updateEnlistUserEmbed} from "../../dependencies/helpers/updateEnlistUserEmbed";
 import {
     removeTerminationListener,
@@ -25,7 +26,7 @@ import guilds from "../../dependencies/schemas/guild-schema";
 import {getLevelFromXp} from "../../dependencies/helpers/getLevelFromXp";
 
 // TODO add edit button to edit fields
-export const enlistUsers: SlashCommand = {
+export const enlistUsers = {
     data: new SlashCommandBuilder()
         .setName('enlist-users')
         .setDescription('creates prompt that allows users to RSVP for events')
@@ -55,10 +56,11 @@ export const enlistUsers: SlashCommand = {
         const userData = guildData.userData
 
         // retrieve parameters
-        const {value: title = 'Gamer Time'} = interaction.options.data.find(option => option.name === 'title') ?? {};
-        const {value: game} = interaction.options.data.find(option => option.name === 'game');
-        const {value: roleId} = interaction.options.data.find(option => option.name === 'role') ?? {};
-        const {value: minGamers} = interaction.options.data.find(option => option.name === 'minimum');
+        const options = interaction.options as CommandInteractionOptionResolver // ts thinks the .get options dont exist
+        const game = options.getString('game')
+        const minGamers = options.getInteger('minimum')
+        const title = options.getString('title') ?? 'Gamer Time'
+        const roleId = options.getString('role') ?? {}
 
         let role: string = ''
         if (roleId) {
@@ -186,7 +188,10 @@ export const enlistUsers: SlashCommand = {
 
         enlistCollector.on('end', async collected => {
             removeTerminationListener(terminateBound)
-            if (collected.size === 0) return
+            if (collected.size === 0) {
+                await enlistPrompt.edit({content: '⚠ ***ENLISTING ENDED*** ⚠', components: []});
+                return
+            }
             // logic to get users who ignored the enlist prompt for ignore% stat
             const allUserIds = userData.map(user => user.id).flat();
             const allEnlistPromptUserIds = [...enlistUserData.enlistedUserIds, ...enlistUserData.rejectedUserIds, ...enlistUserData.potentialUserIds];

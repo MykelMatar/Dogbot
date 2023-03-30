@@ -9,10 +9,10 @@ import {
 } from "discord.js";
 import {status, statusBedrock} from "minecraft-server-util";
 import {McServerStatusCollector} from "../../dependencies/helpers/mcServerStatusCollector";
-import {embedColor, IGuild, NewClient, SlashCommand} from "../../dependencies/myTypes";
+import {embedColor, IGuild, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
 
-export const mcServerStatus: SlashCommand = {
+export const mcServerStatus = {
     data: new SlashCommandBuilder()
         .setName('mc-server-status')
         .setDescription('Retrieves status of a selected MC server. Only supports Java Servers')
