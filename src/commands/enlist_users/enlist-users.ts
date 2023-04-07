@@ -60,7 +60,7 @@ export const enlistUsers = {
         const game = options.getString('game')
         const minGamers = options.getInteger('minimum')
         const title = options.getString('title') ?? 'Gamer Time'
-        const roleId = options.getString('role') ?? {}
+        const roleId = options.getString('role') ?? undefined
 
         let role: string = ''
         if (roleId) {
