@@ -207,6 +207,8 @@ export const enlistUsers = {
             }
 
             // update user data and push to mongo
+            console.log(enlistUserData.enlistedUserIds)
+            console.log(enlistUserData.rejectedUserIds)
             const updateEnlistedUserData = updateUserData(interaction, enlistUserData.enlistedUserIds, UserInfo.Enlist);
             const updateRejectedUserData = updateUserData(interaction, enlistUserData.rejectedUserIds, UserInfo.Reject);
             const updateIgnoredUserData = updateUserData(interaction, enlistUserData.ignoredUserIds, UserInfo.Ignore);
@@ -214,8 +216,11 @@ export const enlistUsers = {
 
             await Promise.all([updateEnlistedUserData, updateRejectedUserData, updateIgnoredUserData, updatePrompt])
 
+            // wait for 1 second before querying the database to ensure data gets updated
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
             // fetch new user data for xp value comparison
-            const updatedGuildData: IGuild = await guilds.findOneAndUpdate({guildId: interaction.guildId})
+            const updatedGuildData: IGuild = await guilds.findOne({guildId: interaction.guildId})
             const updatedUserData = updatedGuildData.userData
 
             // user arrays for level embed
