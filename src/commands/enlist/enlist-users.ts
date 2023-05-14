@@ -125,7 +125,7 @@ export const enlistUsers = {
 
         const enlistCollector = interaction.channel.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: 10000, // 1.08e+7, // 3 hour (1.08e+7) timer
+            time: 1.08e+7, // 3 hour (1.08e+7) timer
             filter: (i) => {
                 if (i.message.id != enlistPrompt.id) return false // prevent simultaneous prompts from affecting each other
                 return [gamingButtonId, perhapsButtonId, rejectButtonId].includes(i.customId);
@@ -150,7 +150,7 @@ export const enlistUsers = {
 
                 const timeCollector = interaction.channel.createMessageComponentCollector({
                     componentType: ComponentType.SelectMenu,
-                    time: 5000,
+                    time: 45000,
                     max: 1,
                     filter: (i) => i.customId === 'time' && i.user.id === interaction.member.user.id,
                 });
