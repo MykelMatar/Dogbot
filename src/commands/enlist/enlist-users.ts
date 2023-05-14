@@ -50,7 +50,7 @@ export const enlistUsers = {
                 .setDescription('Role to @ when sending this prompt. Can be set automatically via the /enlist-set-role')
                 .setRequired(false)
         ),
-    // cooldown: 10800, // 3 hour cooldown to match the 3 hour enlist timer
+
     async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
         await interaction.reply({content: 'prompt sent', ephemeral: true})
         const userData = guildData.userData
@@ -60,14 +60,11 @@ export const enlistUsers = {
         const game = options.getString('game')
         const minGamers = options.getInteger('minimum')
         const title = options.getString('title') ?? 'Gamer Time'
-        const roleId = options.getString('role') ?? undefined
+        const roleId = options.getRole('role') ?? undefined
 
-        let role: string = ''
+        let role: any = ''
         if (roleId) {
-            const selectedRole = interaction.guild.roles.cache.get(roleId as string);
-            if (selectedRole) {
-                role = `<@&${selectedRole.id}>`;
-            }
+            role = roleId;
         } else {
             const selectedRoleId = guildData.serverData.roles.autoenlist;
             const selectedRole = interaction.guild.roles.cache.get(selectedRoleId);
@@ -124,10 +121,11 @@ export const enlistUsers = {
         const gamingButtonId = row.components[0].data["custom_id"]
         const rejectButtonId = row.components[1].data["custom_id"]
         const perhapsButtonId = row.components[2].data["custom_id"]
+        let pendingResponse = []
 
         const enlistCollector = interaction.channel.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: 1.08e+7, // 1.08e+7, // 3 hour (1.08e+7) timer
+            time: 10000, // 1.08e+7, // 3 hour (1.08e+7) timer
             filter: (i) => {
                 if (i.message.id != enlistPrompt.id) return false // prevent simultaneous prompts from affecting each other
                 return [gamingButtonId, perhapsButtonId, rejectButtonId].includes(i.customId);
@@ -139,29 +137,30 @@ export const enlistUsers = {
         enlistCollector.on('collect', async i => {
             const isPerhapsButton = i.customId === perhapsButtonId;
             const notDuplicateUser = !(enlistUserData.potentialUserIds.includes(i.user.id))
+            const notPendingResponse = !(pendingResponse.includes(i.user.id))
 
-            if (isPerhapsButton && notDuplicateUser) {
+            if (isPerhapsButton && notDuplicateUser && notPendingResponse) {
                 // Send a time menu for the user to select their availability
+                pendingResponse.push(i.user.id)
                 await i.reply({
                     content: 'please select your availability',
                     components: [require('../../dependencies/timeDropdownMenu').timeMenu],
                     ephemeral: true
-                })
+                });
 
                 const timeCollector = interaction.channel.createMessageComponentCollector({
                     componentType: ComponentType.SelectMenu,
-                    time: 60000,
+                    time: 5000,
                     max: 1,
-                    filter: (i) => i.customId === 'time',
+                    filter: (i) => i.customId === 'time' && i.user.id === interaction.member.user.id,
                 });
 
                 timeCollector.on('end', async collected => {
-                    if (collected.size == 0) {
-                        enlistUserData.userAvailabilityMap.set(i.user.id, 'Not sure')
-                    } else {
+                    if (collected.size !== 0) {
                         const userResponse = collected.first()
                         const guildMember = userResponse.user.username
                         const index = enlistUserData.potentialUsers.findIndex(user => user == `> ${guildMember}\n`)
+
                         if (userResponse?.values[0] == undefined) { // idk why this would happen, but just in case
                             enlistUserData.userAvailabilityMap.set(userResponse?.user.id, 'Not Sure')
                             enlistUserData.potentialUsers[index] = `> ${guildMember} ~'Not Sure'\n`
@@ -169,13 +168,14 @@ export const enlistUsers = {
                             enlistUserData.userAvailabilityMap.set(userResponse.user.id, userResponse?.values[0])
                             enlistUserData.potentialUsers[index] = `> ${guildMember} ~${userResponse.values[0]}\n`
                         }
+                        await updateEnlistUserEmbed(i, embed, enlistUserData, enlistPrompt, row, role)
                     }
 
-                    const updateEmbed = updateEnlistUserEmbed(i, embed, enlistUserData, enlistPrompt, row, role)
-                    const deleteReply = i.deleteReply()
-
-                    await Promise.all([updateEmbed, deleteReply])
+                    pendingResponse.splice(pendingResponse.indexOf(i.user.id), 1)
+                    await i.deleteReply()
                 });
+            } else if (isPerhapsButton) { // prevents embed from updating if user tries to spam perhaps button
+                i.deferUpdate(); // do nothing (ignore the input)
             } else {
                 // Defer the interaction update to prevent the "this interaction failed" message
                 const deferUpdate = i.deferUpdate();
@@ -183,12 +183,12 @@ export const enlistUsers = {
 
                 await Promise.all([deferUpdate, updateEmbed])
             }
-
         });
 
         enlistCollector.on('end', async collected => {
             removeTerminationListener(terminateBound)
-            if (collected.size === 0) {
+            const noInteractions = !enlistUserData.enlistedUserIds.length && !enlistUserData.rejectedUserIds.length && !enlistUserData.potentialUserIds.length
+            if (collected.size === 0 || noInteractions) {
                 await enlistPrompt.edit({content: '⚠ ***ENLISTING ENDED*** ⚠', components: []});
                 return
             }
@@ -206,6 +206,7 @@ export const enlistUsers = {
                 userXPMap.set(userId, oldXPValue)
             }
 
+            // update user data and push to mongo
             const updateEnlistedUserData = updateUserData(interaction, enlistUserData.enlistedUserIds, UserInfo.Enlist);
             const updateRejectedUserData = updateUserData(interaction, enlistUserData.rejectedUserIds, UserInfo.Reject);
             const updateIgnoredUserData = updateUserData(interaction, enlistUserData.ignoredUserIds, UserInfo.Ignore);
@@ -213,8 +214,11 @@ export const enlistUsers = {
 
             await Promise.all([updateEnlistedUserData, updateRejectedUserData, updateIgnoredUserData, updatePrompt])
 
-            let updatedGuildData: IGuild = await guilds.findOne({guildId: interaction.guildId})
-            let updatedUserData = updatedGuildData.userData
+            // fetch new user data for xp value comparison
+            const updatedGuildData: IGuild = await guilds.findOneAndUpdate({guildId: interaction.guildId})
+            const updatedUserData = updatedGuildData.userData
+
+            // user arrays for level embed
             let usersWhoLeveledUp: string[] = []
             let userLevelChange: string[] = []
             let createLevelEmbed = false
@@ -269,7 +273,7 @@ export const enlistUsers = {
 
             const summonCollector: InteractionCollector<ButtonInteraction> = interaction.channel.createMessageComponentCollector({
                 componentType: ComponentType.Button,
-                time: (1.08e+7), // 3 hour (1.08e+7 ms) timer
+                time: (3.6e+6), // 1 hour (3.6e+6 ms) 
                 max: 1,
                 filter: i => i.customId === summonButton.components[0].data["custom_id"]
             });
@@ -277,24 +281,21 @@ export const enlistUsers = {
             summonCollector.on('collect', async i => {
                 let content: string;
 
-                if (enlistUserData.enlistedUserIds.length == 1 && enlistUserData.potentialUserIds.length >= 1) {
-                    content = `lol ${enlistedUsers.join(',')} has no friends (except maybe ${potentialUsers.join(',')})`;
-                } else if (enlistUserData.enlistedUserIds.length == 1) {
-                    content = `lol ${enlistedUsers.join(',')} has no friends`;
+                if (enlistUserData.enlistedUserIds.length == 1) {
+                    content = `${enlistedUsers.join(',')} has no friends, everyone point and laugh)`;
                 } else if (enlistUserData.enlistedUserIds.length + enlistUserData.potentialUserIds.length >= minGamers) {
                     content = `${enlistedUsers.join(',')} : You have ${minGamers} gamers if ${potentialUsers.join(',')} play`;
                 } else if (enlistUserData.enlistedUserIds.length == minGamers) {
-                    content = `${enlistedUsers.join(',')} (and maybe ${potentialUsers.join(',')}) : Gamer Time is upon us`;
+                    content = `${enlistedUsers.join(',')} : Gamer Time is upon us`;
                 } else {
                     content = `${enlistedUsers.join(',')} : Insufficient Gamers`;
                 }
 
                 await i.channel.send({content});
-
-            })
+            });
             summonCollector.on('end', async () => {
                 await enlistPrompt.edit({components: []})
-            })
+            });
         });
     }
 }

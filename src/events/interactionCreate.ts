@@ -1,9 +1,9 @@
-import {Collection, CommandInteraction, GuildMember} from "discord.js";
+import {CommandInteraction, GuildMember} from "discord.js";
 import {IGuild, NewClient, SlashCommand} from "../dependencies/myTypes";
 import guilds from "../dependencies/schemas/guild-schema";
 import log from "../dependencies/logger";
 
-const cooldowns = new Map()
+// const cooldowns = new Map()
 
 export async function interactionCreate(client: NewClient, interaction: CommandInteraction) {
     if (!interaction.isChatInputCommand()) return
@@ -12,34 +12,37 @@ export async function interactionCreate(client: NewClient, interaction: CommandI
     if (!command) return;
 
     // cooldown logic for commands
-    if (!cooldowns.has(command.data.name)) {
-        cooldowns.set(command.data.name, new Collection())
-    }
-
-    const currentTime = Date.now();
-    const timeStamps = cooldowns.get(command.data.name)
-    const cooldown_time = (command.cooldown) * 1000 // convert to ms
-
-    if (timeStamps.has(interaction.guild.id)) {
-        const expirationTime = timeStamps.get(interaction.guild.id) + cooldown_time
-
-        if (currentTime < expirationTime) {
-            const timeLeft = (expirationTime - currentTime) / 1000
-            return interaction.reply({
-                ephemeral: true,
-                content: `please wait ${timeLeft.toFixed(1)} more seconds before using ${command.data.name}`
-            })
-        }
-    }
-    timeStamps.set(interaction.guild.id, currentTime)
+    // if (!cooldowns.has(command.data.name)) {
+    //     cooldowns.set(command.data.name, new Collection())
+    // }
+    //
+    // const currentTime = Date.now();
+    // const timeStamps = cooldowns.get(command.data.name)
+    // const cooldown_time = (command.cooldown) * 1000 // convert to ms
+    //
+    // if (timeStamps.has(interaction.guild.id)) {
+    //     const expirationTime = timeStamps.get(interaction.guild.id) + cooldown_time
+    //
+    //     if (currentTime < expirationTime) {
+    //         const timeLeft = (expirationTime - currentTime) / 1000
+    //         return interaction.reply({
+    //             ephemeral: true,
+    //             content: `please wait ${timeLeft.toFixed(1)} more seconds before using ${command.data.name}`
+    //         })
+    //     }
+    // }
+    // timeStamps.set(interaction.guild.id, currentTime)
 
     // global ephemeral interaction handling (for commands w/ optional 'hide' param)
     let hideCommands: string[] = ['mc', 'get-stats', 'server-stats', 'help']
     let ephemeralSetting
 
     let hideOption = interaction.options.data.find(option => option.name === 'hide')
-    if (hideOption === undefined) ephemeralSetting = true
-    else ephemeralSetting = hideOption.value
+    if (hideOption === undefined) {
+        ephemeralSetting = false
+    } else {
+        ephemeralSetting = hideOption.value
+    }
     if (hideCommands.some(com => (command.data.name).startsWith(com))) {
         await interaction.deferReply({ephemeral: ephemeralSetting})
     }
