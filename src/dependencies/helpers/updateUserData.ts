@@ -57,6 +57,7 @@ export async function updateUserData(interaction: CommandInteraction, userIdArra
     const userDataIds = new Set(userData.map(user => user.id)); // make set bc way faster lookup times
 
     for (const userId of userIdArray) {
+        console.log(userId)
         const guildMember = await interaction.guild.members.fetch(userId)
 
         if (!userDataIds.has(userId)) {
