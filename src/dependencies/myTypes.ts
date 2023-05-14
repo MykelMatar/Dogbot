@@ -110,6 +110,7 @@ export interface IGuild extends Document {
             port: number;
         };
     };
+    updatedAt: number
 }
 
 export enum UserInfo {

@@ -5,7 +5,8 @@ import {Routes} from "discord.js"
 
 
 export default (client: NewClient) => {
-    const commandFiles = getFiles('./src/commands', '.ts')
+    let ignore: string[] = client.isTestBot ? ['test'] : [];
+    const commandFiles = getFiles('./src/commands', '.ts', ignore)
     let commands: object[] = []
 
     for (const commandFile of commandFiles) {
