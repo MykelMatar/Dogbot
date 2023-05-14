@@ -88,7 +88,7 @@ export async function updateUserData(interaction: CommandInteraction, userIdArra
                     }
                 })
             }
-
+            log.info('Done')
 
         } else {
             const user = userData.find(user => user.id === userId)
@@ -146,6 +146,7 @@ export async function updateUserData(interaction: CommandInteraction, userIdArra
                     return;
             }
         }
+        log.info('Saving changes to Mongo')
         await currentGuild.save()
     }
 }

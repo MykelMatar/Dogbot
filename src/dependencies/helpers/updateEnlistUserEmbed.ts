@@ -69,7 +69,7 @@ export async function updateEnlistUserEmbed(interaction: ButtonInteraction, embe
         }
     }
 
-    if (selectedUserArray.length === 0) { // makes sure array 1 is never empty
+    if (selectedUserArray.length === 0) { // make sure array 1 is never empty (discord requires fields to have >= 1char)
         selectedUserArray.push('-')
     }
     if (secondUserArray.includes(userString)) { // removes user from other array to ensure there are no duplicates
@@ -80,10 +80,10 @@ export async function updateEnlistUserEmbed(interaction: ButtonInteraction, embe
         thirdUserArray.splice(secondUserArray.indexOf(potentialUserString), 1)
         thirdUserIdArray.splice(secondUserIdArray.indexOf(interaction.user.id, 1))
     }
-    if (secondUserArray.length === 0) { // makes sure array 2 is never empty (will return error)
+    if (secondUserArray.length === 0) {
         secondUserArray.push('-')
     }
-    if (thirdUserArray.length === 0) { // makes sure array 3 is never empty
+    if (thirdUserArray.length === 0) {
         thirdUserArray.push('-')
     }
     if (selectedUserArray.length > 1 && selectedUserArray.includes('-')) {  // removes extra dash if a user is in the array
