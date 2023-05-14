@@ -57,7 +57,6 @@ export async function updateUserData(interaction: CommandInteraction, userIdArra
     const userDataIds = new Set(userData.map(user => user.id)); // make set bc way faster lookup times
 
     for (const userId of userIdArray) {
-        console.log(userId)
         const guildMember = await interaction.guild.members.fetch(userId)
 
         if (!userDataIds.has(userId)) {
@@ -65,7 +64,7 @@ export async function updateUserData(interaction: CommandInteraction, userIdArra
             if ([UserInfo.Enlist, UserInfo.Reject, UserInfo.Ignore, UserInfo.Perhaps].includes(infoType)) {
                 userData.push({
                     username: guildMember.user.username,
-                    id: userIdArray[0],
+                    id: userId,
                     enlistStats: defaultEnlistStats
                 })
             } else if (infoType == UserInfo.ValorantProfile) {

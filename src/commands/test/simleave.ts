@@ -1,7 +1,7 @@
 import {PermissionFlagsBits, SlashCommandBuilder} from "discord.js";
 import {NewClient} from "../../dependencies/myTypes";
 
-const simLeave = {
+export const simLeave = {
     data: new SlashCommandBuilder()
         .setName('simleave')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)

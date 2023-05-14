@@ -1,7 +1,7 @@
 import {PermissionFlagsBits, SlashCommandBuilder} from "discord.js";
 import {NewClient} from "../../dependencies/myTypes";
 
-const simJoin = {
+export const simJoin = {
     data: new SlashCommandBuilder()
         .setName('simjoin')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)

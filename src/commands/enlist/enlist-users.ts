@@ -24,6 +24,7 @@ import {
 import {updateUserData} from "../../dependencies/helpers/updateUserData";
 import guilds from "../../dependencies/schemas/guild-schema";
 import {getLevelFromXp} from "../../dependencies/helpers/getLevelFromXp";
+import log from "../../dependencies/logger";
 
 // TODO add edit button to edit fields
 export const enlistUsers = {
@@ -125,7 +126,7 @@ export const enlistUsers = {
 
         const enlistCollector = interaction.channel.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: 10000, // 1.08e+7, // 3 hour (1.08e+7) timer
+            time: 5000, // 1.08e+7, // 3 hour (1.08e+7) timer
             filter: (i) => {
                 if (i.message.id != enlistPrompt.id) return false // prevent simultaneous prompts from affecting each other
                 return [gamingButtonId, perhapsButtonId, rejectButtonId].includes(i.customId);
@@ -207,8 +208,6 @@ export const enlistUsers = {
             }
 
             // update user data and push to mongo
-            console.log(enlistUserData.enlistedUserIds)
-            console.log(enlistUserData.rejectedUserIds)
             const updateEnlistedUserData = updateUserData(interaction, enlistUserData.enlistedUserIds, UserInfo.Enlist);
             const updateRejectedUserData = updateUserData(interaction, enlistUserData.rejectedUserIds, UserInfo.Reject);
             const updateIgnoredUserData = updateUserData(interaction, enlistUserData.ignoredUserIds, UserInfo.Ignore);
@@ -216,8 +215,12 @@ export const enlistUsers = {
 
             await Promise.all([updateEnlistedUserData, updateRejectedUserData, updateIgnoredUserData, updatePrompt])
 
-            // wait for 1 second before querying the database to ensure data gets updated
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            let updatedRecently = guildData.updatedAt > Date.now() - (10 * 60 * 60 * 1000); // true if updated in the last 10 seconds
+            while (!updatedRecently) {
+                updatedRecently = guildData.updatedAt > Date.now() - (10 * 60 * 60 * 1000);
+                log.info('Waiting for database update...')
+            }
+            log.info('Done')
 
             // fetch new user data for xp value comparison
             const updatedGuildData: IGuild = await guilds.findOne({guildId: interaction.guildId})

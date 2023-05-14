@@ -53,6 +53,6 @@ const guildSchema = new Schema({
             port: Number
         },
     },
-});
+}, {timestamps: true});
 
 export default model("guilds", guildSchema);
