@@ -146,7 +146,6 @@ export async function updateUserData(interaction: CommandInteraction, userIdArra
                     return;
             }
         }
-        log.info('Saving changes to Mongo')
         await currentGuild.save()
     }
 }
