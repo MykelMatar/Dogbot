@@ -65,6 +65,15 @@ export interface EnlistUserData {
     userAvailabilityMap: Collection<Snowflake, string>
 }
 
+export interface PollStats {
+    choice1: number
+    choice2: number
+    choice3: number
+    choice4: number
+    choice5: number
+    total: number
+}
+
 export interface IGuild extends Document {
     guild: string;
     guildId: string;
