@@ -53,23 +53,23 @@ export const poll = {
                     {name: '24 hours', value: 24 * 60},
                 ))
         .addStringOption(option =>
-            option.setName('option1')
+            option.setName('choice1')
                 .setDescription('1st answer')
                 .setRequired(true))
         .addStringOption(option =>
-            option.setName('option2')
+            option.setName('choice2')
                 .setDescription('2nd answer')
                 .setRequired(true))
         .addStringOption(option =>
-            option.setName('option3')
+            option.setName('choice3')
                 .setDescription('3rd answer')
                 .setRequired(false))
         .addStringOption(option =>
-            option.setName('option4')
+            option.setName('choice4')
                 .setDescription('4th answer')
                 .setRequired(false))
         .addStringOption(option =>
-            option.setName('option5')
+            option.setName('choice5')
                 .setDescription('5th answer')
                 .setRequired(false)),
 
@@ -79,13 +79,14 @@ export const poll = {
         const time = commandOptions.getInteger('time')
 
         let allOptions = [
-            commandOptions.getString('option1'),
-            commandOptions.getString('option2'),
-            commandOptions.getString('option3') ?? undefined,
-            commandOptions.getString('option4') ?? undefined,
-            commandOptions.getString('option5') ?? undefined
+            commandOptions.getString('choice1'),
+            commandOptions.getString('choice2'),
+            commandOptions.getString('choice3') ?? undefined,
+            commandOptions.getString('choice4') ?? undefined,
+            commandOptions.getString('choice5') ?? undefined
         ]
         let choices = allOptions.filter(i => i !== undefined)
+        console.log(choices)
 
         let timeUnit = time < 60 ? 'minute' : 'hours';
         let fixedTime = timeUnit === 'hours' ? time / 60 : time;
@@ -132,7 +133,7 @@ export const poll = {
 
         const collector = interaction.channel.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: time * 60000,
+            time: 5000,//time * 60000,
             filter: (i) => {
                 if (i.message.id != sent.id) return false
                 return ['choice1', 'choice2', 'choice3', 'choice4', 'choice5'].includes(i.customId)
@@ -166,17 +167,53 @@ export const poll = {
             await updateProgressBars(sent, pollEmbed, numberOfVotes, choices.length)
         });
 
+
         collector.on('end', async () => {
             await sent.edit({content: 'VOTING ENDED', components: []})
 
             let newMessage = await interaction.channel.send({content: 'Results:'})
+
+            let maxVotes = -Infinity;
+            let maxChoices = [];
+
+            for (const choice in numberOfVotes) {
+                if (choice !== 'total' && numberOfVotes[choice] >= maxVotes) {
+                    if (numberOfVotes[choice] > maxVotes) {
+                        maxVotes = numberOfVotes[choice];
+                        maxChoices = [choice];
+                    } else {
+                        // Tie with current maxVotes, add the choice to the ties
+                        maxChoices.push(choice);
+                    }
+                }
+            }
+            
+            let winningChoices: any[] = []
+            let tie = false
+            if (maxChoices.length > 1) { // tie
+                tie = true;
+                for (let i = 0; i < maxChoices.length; i++) {
+                    winningChoices.push(`**${interaction.options.data.find(option => option.name == maxChoices[i]).value}**`)
+                }
+            } else { // winner
+                winningChoices.push(`**${interaction.options.data.find(option => option.name == maxChoices[0]).value}**`)
+            }
+            console.log(winningChoices)
+
             const resultsEmbed = new EmbedBuilder()
-                .setTitle(`${prompt} **RESULTS**`)
+                .setTitle(`Poll Results:`)
+                .setDescription(`${prompt}: {}`)
                 .addFields(
                     {name: `[1] - ${choices[0]}`, value: '[▱▱▱▱▱▱▱▱▱▱] 0%'},
                     {name: `[2] - ${choices[1]}`, value: '[▱▱▱▱▱▱▱▱▱▱] 0%'},
                 )
                 .setColor(embedColor)
+
+            if (tie) {
+                resultsEmbed.data.description = `${prompt}: TIED between ${winningChoices.join(' and ')}`
+            } else {
+                resultsEmbed.data.description = `${prompt}: ${winningChoices} Wins!`
+            }
 
             if (choices.length > 2) {
                 for (let i = 2; i < choices.length; i++) {
