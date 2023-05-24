@@ -53,7 +53,6 @@ export const enlistUsers = {
         ),
 
     async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
-        await interaction.reply({content: 'prompt sent', ephemeral: true})
         const userData = guildData.userData
 
         // retrieve parameters
@@ -101,9 +100,14 @@ export const enlistUsers = {
             .setColor(embedColor)
             .setFooter({text: 'Selecting the "Perhaps" option will not count towards your enlist stats',})
 
+        if (role != '') {
+            await interaction.reply({content: `${role}`})
+        } else {
+            await interaction.reply({content: `Enlist Active`})
+        }
+
         // Not an interaction reply bc interactions are only editable for 15 min
         let enlistPrompt: Message = await interaction.channel.send({
-            content: `${role}`,
             embeds: [embed],
             components: [row]
         });
