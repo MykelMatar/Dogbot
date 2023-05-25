@@ -27,9 +27,9 @@ import {getLevelFromXp} from "../../dependencies/helpers/getLevelFromXp";
 import log from "../../dependencies/logger";
 
 // TODO add edit button to edit fields
-export const fetchUsers = {
+export const fetchGamers = {
     data: new SlashCommandBuilder()
-        .setName('fetch-users')
+        .setName('fetch-gamers')
         .setDescription('creates prompt that allows users to RSVP for gamer time')
         .addStringOption(option =>
             option.setName('game')
