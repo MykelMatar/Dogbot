@@ -25,7 +25,7 @@
 <img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/mc-list-servers.png" width="25%"></img>
 <img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/mc-list-servers-status.png" width="28%"></img>
 
-**Enlist Commands**  
+**Fetch Commands**  
 <img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/enlist-users.png" width="30%"></img>  
 <img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/enlist-stats.png" width="20%"></img>
 <img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/enlist-leaderboard.png" width="33%"></img>
@@ -40,37 +40,34 @@
 
 ### [minecraft commands](https://github.com/MykelMatar/Dogbot/wiki#minecraft-server-tracking-commands)
 
-| command                                                                                   | description                                              | Status |
-|:------------------------------------------------------------------------------------------|:---------------------------------------------------------|:------:|
-| [/mc-server-status](https://github.com/MykelMatar/Dogbot/wiki#mc-server-status)           | Gets status of selected minecraft server                 |   ✅    |
-| [/mc-single-server-status](https://github.com/MykelMatar/Dogbot/wiki#mc-server-status)    | Gets status of any minecraft server (supports bedrock)   |   ✅    |
-| [/mc-change-server](https://github.com/MykelMatar/Dogbot/wiki#mc-change-server)           | Changes Server that is being tracked by mc-server-status |   ✅    |
-| [/mc-list-servers](https://github.com/MykelMatar/Dogbot/wiki#mc-list-servers)             | Lists registered mc servers                              |   ✅    |
-| [/mc-add-server](https://github.com/MykelMatar/Dogbot/wiki#mc-add-server)                 | Adds a new IP to the server list                         |   ✅    |
-| [/mc-change-server-ip](https://github.com/MykelMatar/Dogbot/wiki#mc-change-server-ip)     | Changes the IP of an existing server                     |   ✅    |
-| [/mc-change-server-name](https://github.com/MykelMatar/Dogbot/wiki#mc-change-server-name) | Changes the name of an existing server                   |   ✅    |
-| [/mc-delete-server](https://github.com/MykelMatar/Dogbot/wiki#mc-delete-server)           | Removes server from server list                          |   ✅    |
+| command                                                                            | description                                       | Status |
+|:-----------------------------------------------------------------------------------|:--------------------------------------------------|:------:|
+| [/mc-status](https://github.com/MykelMatar/Dogbot/wiki#mc-server-status)           | Gets status of a minecraft server                 |   ✅    |
+| [/mc-select-server](https://github.com/MykelMatar/Dogbot/wiki#mc-change-server)    | Changes Server that is being tracked by mc-status |   ✅    |
+| [/mc-list-servers](https://github.com/MykelMatar/Dogbot/wiki#mc-list-servers)      | Lists registered mc servers                       |   ✅    |
+| [/mc-add-server](https://github.com/MykelMatar/Dogbot/wiki#mc-add-server)          | Adds a new IP to the server list                  |   ✅    |
+| [/mc-change-ip](https://github.com/MykelMatar/Dogbot/wiki#mc-change-server-ip)     | Changes the IP of a server                        |   ✅    |
+| [/mc-change-name](https://github.com/MykelMatar/Dogbot/wiki#mc-change-server-name) | Changes the name of a server                      |   ✅    |
+| [/mc-delete-server](https://github.com/MykelMatar/Dogbot/wiki#mc-delete-server)    | Removes server from server list                   |   ✅    |
 
 ### enlist-user commands
 
-| command                                                                             | description                                                           | Status |
-|-------------------------------------------------------------------------------------|-----------------------------------------------------------------------|:------:|
-| [/enlist-users](https://github.com/MykelMatar/Dogbot/wiki#enlist-users)             | Creates interaction to enlist other users for event/group             |   ✅    |
-| [/enlist-stats](https://github.com/MykelMatar/Dogbot/wiki#enlist-stats)             | Shows how many times a user enlisted and rejected the Enlist prompt   |   ✅    |
-| [/enlist-leaderboard](https://github.com/MykelMatar/Dogbot/wiki#enlist-leaderboard) | Displays enlist rankings                                              |   ✅    |
-| [/enlist-set-role](https://github.com/MykelMatar/Dogbot/wiki#enlist-set-role)       | Changes the role mentioned during to enlist (for automated enlisting) |   ✅    |
-| [/enlist-clear-role](https://github.com/MykelMatar/Dogbot/wiki#enlist-clear-role)   | Clears role used to mentioned during to enlist                        |   ✅    |
-| [/enlist-check-role](https://github.com/MykelMatar/Dogbot/wiki#enlist-check-role)   | Checks role used to mentioned during to enlist                        |   ✅    |
+| command                                                                            | description                                                        | Status |
+|------------------------------------------------------------------------------------|--------------------------------------------------------------------|:------:|
+| [/fetch-gamers](https://github.com/MykelMatar/Dogbot/wiki#enlist-users)            | Creates interaction to see if ur friends want to game              |   ✅    |
+| [/fetch-stats](https://github.com/MykelMatar/Dogbot/wiki#enlist-stats)             | Shows how many times a user enlisted and rejected the fetch prompt |   ✅    |
+| [/fetch-leaderboard](https://github.com/MykelMatar/Dogbot/wiki#enlist-leaderboard) | Displays enlist rankings                                           |   ✅    |
+| [/fetch-role](https://github.com/MykelMatar/Dogbot/wiki#enlist-set-role)           | Check, set, or clear the role that Dogbot @ when he fetches        |   ✅    |
 
 ### get-stats commands
 
-| command                                                                               | description                               | Status   |
-|---------------------------------------------------------------------------------------|-------------------------------------------|:--------:|
-| [/get-stats-valorant](https://github.com/MykelMatar/Dogbot/wiki#get-stats-valorant)   | Retrieves valorant stats from tracker.gg  |    ✅     |
-| [/get-stats-warzone](https://github.com/MykelMatar/Dogbot/wiki#get-stats-valorant)    | Retrieves warzone stats                   |    X     |
-| [/set-profile-valorant](https://github.com/MykelMatar/Dogbot/wiki#get-stats-valorant) | sets your valorant profile                |    ✅     |
-| [/set-profile-warzone](https://github.com/MykelMatar/Dogbot/wiki#get-stats-valorant)  | sets your warzone profile                 |    ✅     |
-| [/server-stats](https://github.com/MykelMatar/Dogbot/wiki#server-stats)               | displays relevant server stats            |    ✅     |
+| command                                                                               | description                              | Status |
+|---------------------------------------------------------------------------------------|------------------------------------------|:------:|
+| [/get-stats-valorant](https://github.com/MykelMatar/Dogbot/wiki#get-stats-valorant)   | Retrieves valorant stats from tracker.gg |   ✅    |
+| [/get-stats-warzone](https://github.com/MykelMatar/Dogbot/wiki#get-stats-valorant)    | Retrieves warzone stats                  |   X    |
+| [/set-profile-valorant](https://github.com/MykelMatar/Dogbot/wiki#get-stats-valorant) | sets your valorant profile               |   ✅    |
+| [/set-profile-warzone](https://github.com/MykelMatar/Dogbot/wiki#get-stats-valorant)  | sets your warzone profile                |   ✅    |
+| [/server-stats](https://github.com/MykelMatar/Dogbot/wiki#server-stats)               | displays relevant server stats           |   ✅    |
 
 ### game commands
 
@@ -83,9 +80,10 @@
 
 ### other commands
 
-|                           command                           | description                                        | Status   |
-|:-----------------------------------------------------------:|----------------------------------------------------|:--------:|
-|  [/speak](https://github.com/MykelMatar/Dogbot/wiki#speak)  | send a message through Dogbot                      |    ✅     |
-| [/help](https://github.com/MykelMatar/Dogbot/wiki#elp)      | lists all commands and relevant information        |    ✅     |
+|                                 command                                 | description                                 | Status |
+|:-----------------------------------------------------------------------:|---------------------------------------------|:------:|
+|         [/poll](https://github.com/MykelMatar/Dogbot/wiki#poll)         | creates an anonymous poll                   |   ✅    |
+| [/server-stats](https://github.com/MykelMatar/Dogbot/wiki#server-stats) | shows some stats about your discord server  |   ✅    |
+|         [/help](https://github.com/MykelMatar/Dogbot/wiki#elp)          | lists all commands and relevant information |   ✅    |
 
 
