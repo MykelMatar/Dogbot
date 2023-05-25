@@ -5,7 +5,7 @@ import {Routes} from "discord.js"
 
 
 export default (client: NewClient) => {
-    let ignore: string[] = client.isTestBot ? ['test', 'voice'] : [];
+    let ignore: string[] = !client.isTestBot ? ['test', 'voice'] : [];
     const commandFiles = getFiles('./src/commands', '.ts', ignore)
     let commands: object[] = []
 
@@ -16,6 +16,8 @@ export default (client: NewClient) => {
             commands.push(commandList[command].data.toJSON())
         }
     }
+
+    console.log(commands)
 
     // slash command registration
     if (client.isTestBot) { // Guild bound commands using testing bot
