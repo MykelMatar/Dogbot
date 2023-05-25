@@ -16,8 +16,7 @@ export default (client: NewClient) => {
             commands.push(commandList[command].data.toJSON())
         }
     }
-
-    console.log(commands)
+    
 
     // slash command registration
     if (client.isTestBot) { // Guild bound commands using testing bot
