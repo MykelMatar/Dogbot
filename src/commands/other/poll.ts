@@ -133,7 +133,7 @@ export const poll = {
 
         const collector = interaction.channel.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: 5000,//time * 60000,
+            time: time * 60000,
             filter: (i) => {
                 if (i.message.id != sent.id) return false
                 return ['choice1', 'choice2', 'choice3', 'choice4', 'choice5'].includes(i.customId)
