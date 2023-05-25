@@ -86,7 +86,6 @@ export const poll = {
             commandOptions.getString('choice5') ?? undefined
         ]
         let choices = allOptions.filter(i => i !== undefined)
-        console.log(choices)
 
         let timeUnit = time < 60 ? 'minute' : 'hours';
         let fixedTime = timeUnit === 'hours' ? time / 60 : time;
