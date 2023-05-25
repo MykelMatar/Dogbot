@@ -3,7 +3,6 @@ import {embedColor, IGuild, NewClient} from "../../dependencies/myTypes";
 import {login, platforms, Warzone} from "call-of-duty-api";
 import log from "../../dependencies/logger";
 
-// TODO: set username command so that people dont have to type their username all the time. store in mongo
 export const getStatsWarzone = {
     data: new SlashCommandBuilder()
         .setName('get-stats-warzone')

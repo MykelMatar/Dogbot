@@ -5,7 +5,7 @@ import {embedColor, EnlistLeaderboardUser, IGuild, NewClient} from "../../depend
 /*
  Ranking Algorithm
  methodology: 
-    (Enlist/Reject percentage * percentage weight) + (normalizedEnlists * enlist weight) - (ignore percentage * ignore weight)
+    (Enlist/Reject percentage * percentage weight) + (normalizedEnlists * fetch weight) - (ignore percentage * ignore weight)
     - Enlist value requires normalization bc value its technically infinite
     
         sum normalization: 
@@ -14,15 +14,15 @@ import {embedColor, EnlistLeaderboardUser, IGuild, NewClient} from "../../depend
             ex) several cars with several mpgs. normalize by dividing one mpg by the sum mpg of all other cars mpgs
                              
         Apply weights 
-        (weights determined by you, e.g. 1 for percentage and 0.75 for enlist totals
+        (weights determined by you, e.g. 1 for percentage and 0.75 for fetch totals
             1. as it is: directly multiply the weights to the optimized score
             2. sum: normalize weight via sum logic then multiply
             3. max: normalize weight by max logic, then multiply
 
 */
-export const enlistLeaderboard = {
+export const fetchLeaderboard = {
     data: new SlashCommandBuilder()
-        .setName('enlist-leaderboard')
+        .setName('fetch-leaderboard')
         .setDescription('Displays top 3 and bottom 3 gamers')
         .addBooleanOption(option =>
             option.setName('hide')
@@ -52,7 +52,7 @@ export const enlistLeaderboard = {
             let rejectPercentage = enlists === 0 ? 1 : rejects / totalOfValues;
             let ignorePercentage = enlists === 0 && rejects === 0 ? 100 : (ignores / totalOfValues) * 100;
 
-            // normalization of enlist and reject amount totals 
+            // normalization of fetch and reject amount totals 
             let normalizedEnlistTotal = enlists / totalEnlistValue;
             let normalizedRejectTotal = rejects / totalEnlistValue;
 
@@ -102,7 +102,7 @@ export const enlistLeaderboard = {
             })
         }
 
-        // 2d arrays that store names, percentages, and total enlist values for each user
+        // 2d arrays that store names, percentages, and total fetch values for each user
         // not using objects because the arrays display vertically in the embed, meaning the values each need their own array
         let top3Gamers: string[][] = [[], [], []]
         let top3Losers: string[][] = [[], [], []]

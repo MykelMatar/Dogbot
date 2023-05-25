@@ -20,7 +20,7 @@ import {mcListServersGetStatus} from "../../dependencies/helpers/mcListServersGe
 export const mcListServers = {
     data: new SlashCommandBuilder()
         .setName('mc-list-servers')
-        .setDescription('Lists all registered MC servers')
+        .setDescription('Lists all registered minecraft servers')
         .addBooleanOption(option =>
             option.setName('get-status')
                 .setDescription('Retrieves the status of every server on the list. This may take a while...')
@@ -103,26 +103,41 @@ export const mcListServers = {
         const terminateBound = terminate.bind(null, client, collector)
         await terminationListener(client, collector, terminateBound)
 
+        let gettingStatus = false
+
         collector.on('collect', async i => {
-            let update, execute;
             switch (i.customId) {
                 case 'ListRemove':
-                    update = i.update({embeds: [], content: '*Removing Server...*', components: []});
-                    execute = client.commands.get('mc-delete-server').execute(client, interaction, guildData);
+                    await client.commands.get('mc-delete-server').execute(client, interaction, guildData);
                     break;
                 case 'ListChange':
-                    update = i.update({content: '*Changing Server...*'});
-                    execute = client.commands.get('mc-change-server').execute(client, interaction, guildData);
+                    await client.commands.get('mc-select-server').execute(client, interaction, guildData);
                     break;
                 case 'ListStatus':
+                    i.deferUpdate()
+                    if (gettingStatus) break;
+                    gettingStatus = true;
+
                     serverStatusList = await mcListServersGetStatus(MCServerData);
                     embed.addFields({name: 'Status', value: serverStatusList.join(' \n '), inline: true})
-                    await interaction.editReply({embeds: [embed]})
+
+                    row = new ActionRowBuilder<ButtonBuilder>()
+                        .addComponents(
+                            new ButtonBuilder()
+                                .setCustomId('ListRemove')
+                                .setLabel('Remove')
+                                .setStyle(ButtonStyle.Danger),
+                            new ButtonBuilder()
+                                .setCustomId('ListChange')
+                                .setLabel('Change')
+                                .setStyle(ButtonStyle.Primary),
+                        );
+
+                    await interaction.editReply({embeds: [embed], components: [row]})
                     break;
                 default:
                     return;
             }
-            await Promise.all([update, execute])
         });
 
         collector.on('end', async collected => {

@@ -34,7 +34,7 @@ export const mcDeleteServer = {
         }
         if (serverListSize === 1) {
             return await interaction.editReply(
-                `Cannot remove the only existing server, use /mc-add-server or /mc-list-servers to add servers, or change server information with /mc-change-server-name and /mc-change-server-ip.`
+                `Cannot remove the only existing server, use /mc-add-server to add servers, or change server information with /mc-change-name and /mc-change-ip.`
             )
         }
 

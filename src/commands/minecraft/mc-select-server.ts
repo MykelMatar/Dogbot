@@ -16,9 +16,9 @@ import {
 } from "../../dependencies/helpers/terminationListener";
 import {createMcCommandCollector} from "../../dependencies/helpers/createMcCommandCollector";
 
-export const mcChangeServer = {
+export const mcSelectServer = {
     data: new SlashCommandBuilder()
-        .setName('mc-change-server')
+        .setName('mc-select-server')
         .setDescription('changes the server being tracked by mc-server-status'),
 
     async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
@@ -74,7 +74,7 @@ export const mcChangeServer = {
                     content: `Now tracking **${MCServerData.selectedServer.name}**. Retrieving server status...`,
                     components: []
                 })
-                await client.commands.get('mc-server-status').execute(client, interaction, guildData);
+                await client.commands.get('mc-status').execute(client, interaction, guildData);
             }
         });
     }
