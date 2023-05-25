@@ -27,13 +27,13 @@ import {getLevelFromXp} from "../../dependencies/helpers/getLevelFromXp";
 import log from "../../dependencies/logger";
 
 // TODO add edit button to edit fields
-export const enlistUsers = {
+export const fetchUsers = {
     data: new SlashCommandBuilder()
-        .setName('enlist-users')
-        .setDescription('creates prompt that allows users to RSVP for events')
+        .setName('fetch-users')
+        .setDescription('creates prompt that allows users to RSVP for gamer time')
         .addStringOption(option =>
             option.setName('game')
-                .setDescription('Game to be played')
+                .setDescription('game to be played')
                 .setRequired(true))
         .addIntegerOption(option =>
             option.setName('minimum')
@@ -48,7 +48,7 @@ export const enlistUsers = {
                 .setRequired(false))
         .addRoleOption(option =>
             option.setName('role')
-                .setDescription('Role to @ when sending this prompt. Can be set automatically via the /enlist-set-role')
+                .setDescription('Role to @ when sending this prompt. Can be set automatically via the /fetch-set-role')
                 .setRequired(false)
         ),
 
@@ -98,19 +98,14 @@ export const enlistUsers = {
                 {name: 'Perhaps', value: '-', inline: true},
             )
             .setColor(embedColor)
-            .setFooter({text: 'Selecting the "Perhaps" option will not count towards your enlist stats',})
-
-        if (role != '') {
-            await interaction.reply({content: `${role}`})
-        } else {
-            await interaction.reply({content: `Enlist Active`})
-        }
+            .setFooter({text: 'Selecting the "Perhaps" option will not count towards your fetch stats',})
 
         // Not an interaction reply bc interactions are only editable for 15 min
         let enlistPrompt: Message = await interaction.channel.send({
             embeds: [embed],
             components: [row]
         });
+        await interaction.reply({content: `Enlist sent`})
 
         let enlistUserData: EnlistUserData = {
             enlistedUsers: ['-'],
@@ -197,7 +192,7 @@ export const enlistUsers = {
                 await enlistPrompt.edit({content: '⚠ ***ENLISTING ENDED*** ⚠', components: []});
                 return
             }
-            // logic to get users who ignored the enlist prompt for ignore% stat
+            // logic to get users who ignored the fetch prompt for ignore% stat
             const allUserIds = userData.map(user => user.id).flat();
             const allEnlistPromptUserIds = [...enlistUserData.enlistedUserIds, ...enlistUserData.rejectedUserIds, ...enlistUserData.potentialUserIds];
             enlistUserData.ignoredUserIds = allUserIds.filter(id => !allEnlistPromptUserIds.includes(id));
@@ -252,7 +247,7 @@ export const enlistUsers = {
             if (createLevelEmbed) {
                 let levelEmbed = new EmbedBuilder()
                     .setTitle('Level Summary')
-                    .setDescription('Below are all users who leveled up from the most recent enlist')
+                    .setDescription('Below are all users who leveled up from the most recent fetch')
                     .addFields(
                         {name: 'Users', value: usersWhoLeveledUp.join('\n'), inline: true},
                         {name: 'Level Change', value: userLevelChange.join('\n'), inline: true}

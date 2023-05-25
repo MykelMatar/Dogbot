@@ -2,12 +2,14 @@ import {
     ActionRowBuilder,
     APISelectMenuOption,
     CommandInteraction,
+    CommandInteractionOptionResolver,
     ComponentType,
     Message,
     PermissionFlagsBits,
     SlashCommandBuilder,
     StringSelectMenuBuilder
 } from "discord.js";
+import {status} from "minecraft-server-util";
 import {McMenuOptionGenerator} from "../../dependencies/helpers/mcMenuOptionGenerator";
 import {IGuild, MinecraftServer, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/logger";
@@ -18,47 +20,67 @@ import {
 } from "../../dependencies/helpers/terminationListener";
 import {createMcCommandCollector} from "../../dependencies/helpers/createMcCommandCollector";
 
-export const mcChangeServerName = {
+export const mcChangeIp = {
     data: new SlashCommandBuilder()
-        .setName('mc-change-server-name')
-        .setDescription('Renames an existing server')
+        .setName('mc-change-ip')
+        .setDescription('Changes the IP address of a server')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .addStringOption(option =>
-            option.setName('new-name')
-                .setDescription('The new server name')
-                .setMaxLength(30)
-                .setRequired(true)),
+            option.setName('new-ip')
+                .setDescription('the new IP address')
+                .setRequired(true))
+        .addNumberOption(option =>
+            option.setName('new-port')
+                .setDescription('the new port')
+                .setRequired(false)),
 
     async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
         const MCServerData = guildData.mcServerData
         let serverList: MinecraftServer[] = MCServerData.serverList
         let serverListSize: number = MCServerData.serverList.length
+
         if (serverListSize === 0) {
             await interaction.editReply('*No Registered Servers, use /mc-add-server or /mc-list-servers to add servers.*')
-            return
+            return;
         }
 
-        let newName = interaction.options.data[0].value as string
+        const options = interaction.options as CommandInteractionOptionResolver;
+        const port = options.getInteger('port') ?? 25565
 
-        // verify that name is not already registered under a different IP
-        if (MCServerData.serverList.some(server => server.name === newName)) {
+        let newServer: MinecraftServer = {
+            name: undefined,
+            ip: options.getString('ip'),
+            port: port
+        };
+
+        // verify that IP is not already registered
+        if (MCServerData.serverList.some(server => server.ip === newServer.ip)) {
             await interaction.editReply(
-                "Cannot have duplicate server names, please choose a different name or use /mc-change-server-ip to change the IP of the existing server"
+                "Server already registered, double check the IP or use **mc-change-name** to change the name of an existing server"
             );
-            return log.error("Duplicate Name Detected");
+            return log.warn("Duplicate IP Detected");
         }
 
+        // validate server status
+        try {
+            await status(newServer.ip, newServer.port)
+        } catch {
+            await interaction.editReply('Could not retrieve server status. Double check IP and make sure server is online.')
+            log.warn('Invalid Server IP / Server Offline');
+        }
+
+        // create variables and generate options for select menu
         let menuOptions: APISelectMenuOption[] = await McMenuOptionGenerator(interaction, serverList);
         let row = new ActionRowBuilder<StringSelectMenuBuilder>()
             .addComponents(
                 new StringSelectMenuBuilder()
-                    .setCustomId('change-server-menu')
+                    .setCustomId('change-ip-menu')
                     .setPlaceholder('Nothing selected')
                     .addOptions(menuOptions),
             );
 
         let sent: Message = await interaction.editReply({
-            content: 'Select the server you want to rename',
+            content: 'Select the server you want to change the IP of',
             components: [row]
         });
 
@@ -66,32 +88,30 @@ export const mcChangeServerName = {
         let terminateBound = terminate.bind(null, client, collector)
         await terminationListener(client, collector, terminateBound)
 
-        let selectedServerName
+        let selectedServerName;
         collector.on('collect', async i => {
             const selectedServerIP = i.values[0]
             const selectedServer = MCServerData.serverList.find(server => {
                 return server.ip === selectedServerIP
             })
+            selectedServer.ip = newServer.ip
+            selectedServer.port = newServer.port
             selectedServerName = selectedServer.name
-            selectedServer.name = newName
 
-            if (MCServerData.selectedServer.name === selectedServerName) {
-                MCServerData.selectedServer.name = newName
-            }
             await guildData.save()
-            collector.stop()
         });
 
         collector.on('end', async collected => {
             removeTerminationListener(terminateBound)
             if (collected.size === 0) {
-                await interaction.editReply({content: '*Request Timeout*', components: []});
-                log.error('Request Timeout')
-            } else if (collected.first().customId === 'change-server-menu') {
+                await interaction.editReply({content: 'Request Timeout', components: []});
+                log.warn('Request Timeout')
+            } else if (collected.first().customId === 'change-ip-menu') {
                 await interaction.editReply({
-                    content: ` **${selectedServerName}** renamed successfully to **${newName}**`, components: []
-                })
-                log.info('Server Renamed Successfully')
+                    content: `**${selectedServerName}** IP changed successfully`,
+                    components: []
+                });
+                log.info('Server IP changed Successfully')
             }
         });
     }

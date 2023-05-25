@@ -74,7 +74,7 @@ export const poll = {
                 .setRequired(false)),
 
     async execute(client: NewClient, interaction: CommandInteraction) {
-        const commandOptions = interaction.options as CommandInteractionOptionResolver // ts thinks the .get options dont exist
+        const commandOptions = interaction.options as CommandInteractionOptionResolver // ts thinks the .get options don't exist
         const prompt = commandOptions.getString('prompt')
         const time = commandOptions.getInteger('time')
 
@@ -187,18 +187,6 @@ export const poll = {
                     }
                 }
             }
-            
-            let winningChoices: any[] = []
-            let tie = false
-            if (maxChoices.length > 1) { // tie
-                tie = true;
-                for (let i = 0; i < maxChoices.length; i++) {
-                    winningChoices.push(`**${interaction.options.data.find(option => option.name == maxChoices[i]).value}**`)
-                }
-            } else { // winner
-                winningChoices.push(`**${interaction.options.data.find(option => option.name == maxChoices[0]).value}**`)
-            }
-            console.log(winningChoices)
 
             const resultsEmbed = new EmbedBuilder()
                 .setTitle(`Poll Results:`)
@@ -209,9 +197,14 @@ export const poll = {
                 )
                 .setColor(embedColor)
 
-            if (tie) {
+            let winningChoices: any[] = []
+            if (maxChoices.length > 1) { // tie
+                for (let i = 0; i < maxChoices.length; i++) {
+                    winningChoices.push(`**${interaction.options.data.find(option => option.name == maxChoices[i]).value}**`)
+                }
                 resultsEmbed.data.description = `${prompt}: TIED between ${winningChoices.join(' and ')}`
-            } else {
+            } else { // winner
+                winningChoices.push(`**${interaction.options.data.find(option => option.name == maxChoices[0]).value}**`)
                 resultsEmbed.data.description = `${prompt}: ${winningChoices} Wins!`
             }
 

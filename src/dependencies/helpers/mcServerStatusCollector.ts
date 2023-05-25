@@ -25,21 +25,19 @@ export async function McServerStatusCollector(client: NewClient, interaction: Co
     let terminateBound = terminate.bind(null, client, collector)
     await terminationListener(client, collector, terminateBound)
 
-    collector.on('collect', async i => {
-        let update, execute;
+    collector.on('collect', i => {
         switch (i.customId) {
             case 'Change':
-                update = i.update({content: 'Server Change Requested', components: []});
-                execute = client.commands.get('mc-change-server').execute(client, interaction, guildData);
+                i.update({content: 'Server Change Requested', components: []});
+                client.commands.get('mc-select-server').execute(client, interaction, guildData);
                 break;
             case 'List':
-                update = i.update({content: 'Server List Requested', components: []});
-                execute = client.commands.get('mc-list-servers').execute(client, interaction, guildData);
+                i.update({content: 'Server List Requested', components: []});
+                client.commands.get('mc-list-servers').execute(client, interaction, guildData);
                 break;
             default:
                 return;
         }
-        await Promise.all([update, execute])
     });
 
     collector.on('end', async collected => {

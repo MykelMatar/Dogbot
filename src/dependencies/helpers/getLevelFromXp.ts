@@ -2,14 +2,14 @@
  * Logic for leveling system
  *  - Enlists grant 10 XP, rejects grant 5 (what to do about perhaps gamers that game?)
  *  - Enlist streaks grant more XP
- *  - Reject ends an enlist streak
+ *  - Reject ends an fetch streak
  *  - Each level requires more xp than the last
  *      - everyone starts at level 1
  *      - level 2 requires 10 xp
  *      - every level requires an additional 10xp
  *      - Enlists give base 10xp
  *      - Enlist streak caps out at 10
- *          - Every enlist streak level grants an additional 5xp per enlist (max of 50)
+ *          - Every fetch streak level grants an additional 5xp per fetch (max of 50)
  *      - no streak, lvl 50 = 500/10 = 50 enlists
  *      - with consistent streak, lvl 50 = 500-270 / 50 =  ~14 enlists (i think)
  *  - Prestige leveling after level 50
@@ -25,7 +25,7 @@
 /**
  * prestige after about ~100 enlists (no streak)
  * max prestige at about ~500 enlists (no streak)
- * each enlist gives 10xp, which means 100*50 / 10 = 500 xp per prestige
+ * each fetch gives 10xp, which means 100*50 / 10 = 500 xp per prestige
  */
 // define leveling system
 let xpForLevel = [10];

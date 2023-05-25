@@ -2,7 +2,7 @@ import {EnlistUserData} from "../myTypes";
 import {ButtonInteraction, EmbedBuilder, Message, Role} from "discord.js";
 
 /**
- * updates the arrays used to display names in the enlist prompt. Also updates the ID arrays used
+ * updates the arrays used to display names in the fetch prompt. Also updates the ID arrays used
  * to update info in MongoDB
  *
  * @param interaction button interaction

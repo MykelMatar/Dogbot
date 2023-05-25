@@ -38,7 +38,7 @@ export async function updateProgressBars(interaction, embed, pollStats: PollStat
     }
 
     for (let i = 0; i < numBars; i++) {
-        embed.data.fields[i].value = `[${progressBars[`choice${i + 1}Bar`].join('')}] ${barFillAmounts[i] * 10}%`
+        embed.data.fields[i].value = `[${progressBars[`choice${i + 1}Bar`].join('')}] ${(barFillAmounts[i] * 10).toFixed(2)}%`
 
     }
     await interaction.edit({embeds: [embed]})

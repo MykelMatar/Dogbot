@@ -1,4 +1,3 @@
-import log from "../logger";
 import {APISelectMenuOption, CommandInteraction} from "discord.js";
 import {MinecraftServer} from "../myTypes";
 
@@ -11,8 +10,7 @@ import {MinecraftServer} from "../myTypes";
 export async function McMenuOptionGenerator(interaction: CommandInteraction, serverList: MinecraftServer[]): Promise<APISelectMenuOption[]> {
     let optionsArray: APISelectMenuOption[] = []
     const listSize = serverList.length
-
-    log.info('generating menu options...')
+    
     for (let i = 0; i < listSize; i++) {
         optionsArray.push({
             label: serverList[i].name,
@@ -21,6 +19,5 @@ export async function McMenuOptionGenerator(interaction: CommandInteraction, ser
         })
     }
 
-    log.info('done')
     return optionsArray
 }
