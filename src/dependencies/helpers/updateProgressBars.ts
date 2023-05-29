@@ -12,11 +12,12 @@ export async function updateProgressBars(interaction, embed, pollStats: PollStat
         choice5Bar: []
     }
 
-    const barFillAmounts = [];
+    const barFillAmounts: number[] = [];
     for (let i = 1; i <= numBars; i++) {
         const fillAmount = (pollStats[`choice${i}`] / pollStats.total) * 10;
         barFillAmounts.push(fillAmount);
     }
+    
     const stopIndex = numBars + 1
     let index = 0
 

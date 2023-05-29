@@ -13,7 +13,9 @@ export default (client: NewClient) => {
         let commandList = require(`../.${commandFile}`)
         for (let command in commandList) {
             client.commands.set(commandList[command].data.name, commandList[command])
-            commands.push(commandList[command].data.toJSON())
+            if (commandList[command].data.name != 'reload') {
+                commands.push(commandList[command].data.toJSON())
+            }
         }
     }
     
@@ -32,11 +34,17 @@ export default (client: NewClient) => {
         })();
     } else { // global slash command on Dogbot
         let dogbotId = '848283770041532425'
+        let myServer = '351618107384528897'
+
         const rest = new REST({version: '10'}).setToken(process.env.BOT_TOKEN);
         (async () => {
             await rest.put(
                 Routes.applicationCommands(dogbotId),
                 {body: commands},
+            );
+            await rest.put(
+                Routes.applicationGuildCommands(dogbotId, myServer),
+                {body: [client.commands.get('reload').data.toJSON()]},
             );
         })();
     }
