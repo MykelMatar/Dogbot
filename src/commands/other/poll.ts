@@ -86,7 +86,6 @@ export const poll = {
             commandOptions.getString('choice5') ?? undefined
         ]
         let choices = allOptions.filter(i => i !== undefined)
-        console.log(choices)
 
         let timeUnit = time < 60 ? 'minute' : 'hours';
         let fixedTime = timeUnit === 'hours' ? time / 60 : time;
@@ -133,7 +132,7 @@ export const poll = {
 
         const collector = interaction.channel.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: 5000,//time * 60000,
+            time: time * 60000,
             filter: (i) => {
                 if (i.message.id != sent.id) return false
                 return ['choice1', 'choice2', 'choice3', 'choice4', 'choice5'].includes(i.customId)
