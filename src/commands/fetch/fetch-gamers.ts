@@ -121,7 +121,7 @@ export const fetchGamers = {
             embeds: [embed],
             components: [row]
         });
-        await interaction.reply({content: `Enlist sent`})
+        await interaction.reply({content: `fetch sent`, ephemeral: true})
 
         let enlistUserData: EnlistUserData = {
             enlistedUsers: ['-'],
