@@ -2,7 +2,7 @@
   <img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/Dogbot_Logo_512.png" width="50%">
 </p>
 
-### Dogbot is your Discord gaming companion. Track your favorite minecraft servers, get your Valorant and Warzone stats, enlist fellow gamers for your event, and more! View the [Commands](#all-commands) section below to check whether a command is working or not, or view the [Wiki](https://github.com/MykelMatar/Dogbot/wiki) more information about the commands.
+### Dogbot is your Discord gaming companion. Track your favorite minecraft servers, get your Valorant and Warzone stats, fetch fellow gamers for your event, and more! View the [Commands](#all-commands) section below to check whether a command is working or not, or view the [Wiki](https://github.com/MykelMatar/Dogbot/wiki) more information about the commands.
 
 [Click to add Dogbot to your server](https://discord.com/api/oauth2/authorize?client_id=848283770041532425&permissions=8&scope=bot%20applications.commands)
 <p align="left">
@@ -14,8 +14,10 @@
 * Tracks the status of a Minecraft server (can add up to 10 servers to track)
 * Retrieves Valorant Account Stats from tracker.gg
 * Role selection menu and default roles
-* enlist users for an event or gamer sesh
+* Fetch users for an event or gamer sesh
+* Create an anonymous poll
 * play TicTacToe against other users
+* Ask a magic-8 ball some life changing questions
 * get your discord server's stats
 
 ## Image Gallery
