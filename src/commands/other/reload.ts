@@ -23,6 +23,7 @@ export const reload = {
                 client.commands.set(commandList[command].data.name, commandList[command])
             }
         }
+        await interaction.reply({content: 'Commands Refreshed', ephemeral: true})
         log.info('done')
     }
 }

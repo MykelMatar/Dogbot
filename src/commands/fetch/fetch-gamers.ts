@@ -14,17 +14,18 @@ import {
     Snowflake,
     userMention
 } from "discord.js";
+import guilds from "../../dependencies/schemas/guild-schema";
 import {embedColor, EnlistUserData, IGuild, NewClient, UserInfo} from "../../dependencies/myTypes";
-import {updateEnlistUserEmbed} from "../../dependencies/helpers/updateEnlistUserEmbed";
 import {
     removeTerminationListener,
     terminate,
     terminationListener
 } from "../../dependencies/helpers/terminationListener";
+import {updateEnlistUserEmbed} from "../../dependencies/helpers/updateEnlistUserEmbed";
 import {updateUserData} from "../../dependencies/helpers/updateUserData";
-import guilds from "../../dependencies/schemas/guild-schema";
-import {getLevelFromXp} from "../../dependencies/helpers/getLevelFromXp";
 import log from "../../dependencies/logger";
+import {getLevelFromXp} from "../../dependencies/helpers/getLevelFromXp";
+import {gameTitles} from "../../dependencies/gameTitles";
 
 // TODO add edit button to edit fields
 export const fetchGamers = {
@@ -34,7 +35,8 @@ export const fetchGamers = {
         .addStringOption(option =>
             option.setName('game')
                 .setDescription('game to be played')
-                .setRequired(true))
+                .setRequired(true)
+                .setAutocomplete(true))
         .addIntegerOption(option =>
             option.setName('minimum')
                 .setDescription('minimum number of gamers required to game')
@@ -51,6 +53,15 @@ export const fetchGamers = {
                 .setDescription('Role to @ when sending this prompt. Can be set automatically via the /fetch-set-role')
                 .setRequired(false)
         ),
+
+    async autocomplete(interaction) {
+        const options = interaction.options as CommandInteractionOptionResolver
+        const focusedValue = options.getFocused()?.toLowerCase();
+        const filtered = gameTitles.filter(choice => choice.toLowerCase().startsWith(focusedValue));
+        await interaction.respond(
+            filtered.map(choice => ({name: choice, value: choice})),
+        );
+    },
 
     async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
         const userData = guildData.userData
@@ -99,6 +110,11 @@ export const fetchGamers = {
             )
             .setColor(embedColor)
             .setFooter({text: 'Selecting the "Perhaps" option will not count towards your fetch stats',})
+
+        let {ip, port} = guildData.mcServerData.selectedServer
+        if (['minecraft', 'mc'].includes(game.toLowerCase())) {
+            embed.setDescription(`need ${minGamers} for ${game} ☛ __**${ip}:${port}**__`)
+        }
 
         // Not an interaction reply bc interactions are only editable for 15 min
         let enlistPrompt: Message = await interaction.channel.send({

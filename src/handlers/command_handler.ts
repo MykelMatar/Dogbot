@@ -7,17 +7,16 @@ import {Routes} from "discord.js"
 export default (client: NewClient) => {
     let ignore: string[] = !client.isTestBot ? ['test', 'voice'] : [];
     const commandFiles = getFiles('./src/commands', '.ts', ignore)
-    let commands: object[] = []
+    let commands = []
 
     for (const commandFile of commandFiles) {
         let commandList = require(`../.${commandFile}`)
         for (let command in commandList) {
             client.commands.set(commandList[command].data.name, commandList[command])
-            if (commandList[command].data.name != 'reload') {
-                commands.push(commandList[command].data.toJSON())
-            }
+            commands.push(commandList[command].data.toJSON())
         }
     }
+    const officialCommands = commands.filter(command => command.name != 'reload')
 
     // slash command registration
     if (client.isTestBot) { // Guild bound commands using testing bot
@@ -39,7 +38,7 @@ export default (client: NewClient) => {
         (async () => {
             await rest.put(
                 Routes.applicationCommands(dogbotId),
-                {body: commands},
+                {body: officialCommands},
             );
             await rest.put(
                 Routes.applicationGuildCommands(dogbotId, myServer),

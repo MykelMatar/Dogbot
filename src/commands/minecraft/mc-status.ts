@@ -16,7 +16,7 @@ import log from "../../dependencies/logger";
 export const mcStatus = {
     data: new SlashCommandBuilder()
         .setName('mc-status')
-        .setDescription('Retrieves status of a minecraft server. Set using /mc-change-server or to input your own')
+        .setDescription('Retrieves status of a minecraft server. Set using /mc-select-server or to input your own')
         .addStringOption(option =>
             option.setName('search-user')
                 .setDescription('Check if a player is online. This probably wont work on big server like Hypixel')
