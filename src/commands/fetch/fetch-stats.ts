@@ -32,7 +32,11 @@ export const enlistStats = {
         }
 
         const {prestige, level} = getLevelFromXp(userData.enlistStats.enlistXP)
-        const {enlists: enlistValue, rejects: rejectValue, ignores: ignoreValue} = userData.enlistStats;
+        const {
+            enlists: enlistValue,
+            rejects: rejectValue,
+            ignores: ignoreValue,
+        } = userData.enlistStats;
 
         const embed = new EmbedBuilder()
             .setTitle(`${username}'s Enlist Stats`)
