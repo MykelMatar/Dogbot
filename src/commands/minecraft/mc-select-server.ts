@@ -19,7 +19,7 @@ import {createMcCommandCollector} from "../../dependencies/helpers/createMcComma
 export const mcSelectServer = {
     data: new SlashCommandBuilder()
         .setName('mc-select-server')
-        .setDescription('changes the server being tracked by mc-server-status'),
+        .setDescription('changes the server being tracked by mc-status'),
 
     async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
         const MCServerData = guildData.mcServerData

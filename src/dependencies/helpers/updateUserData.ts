@@ -1,6 +1,6 @@
 import Guild from "../schemas/guild-schema";
 import log from "../logger";
-import {CommandInteraction, Snowflake} from "discord.js";
+import {AutocompleteInteraction, CommandInteraction, Snowflake} from "discord.js";
 import {GameProfile, IGuild, UserInfo} from "../myTypes";
 
 /**
@@ -12,7 +12,7 @@ import {GameProfile, IGuild, UserInfo} from "../myTypes";
  * @param profile
  */
 
-export async function updateUserData(interaction: CommandInteraction, userIdArray: Snowflake[], infoType: UserInfo, profile?: GameProfile) {
+export async function updateUserData(interaction: CommandInteraction | AutocompleteInteraction, userIdArray: Snowflake[], infoType: UserInfo, profile?: GameProfile) {
     if (userIdArray.length === 0) return log.info(`${infoType} user Id Array is empty, skipping user data check`)
     log.info(`Valid ${infoType} user ID array provided`)
 

@@ -1,6 +1,7 @@
 import DiscordJS, {
     APISelectMenuOption,
     ApplicationCommandData,
+    AutocompleteInteraction,
     Collection,
     CommandInteraction,
     Message,
@@ -17,12 +18,13 @@ export interface NewClient extends DiscordJS.Client {
 interface CustomSlashCommandBuilder {
     name: string;
     description: string;
-    toJSON?: () => ApplicationCommandData; // or `ApplicationCommandData` if you need it
+    toJSON?: () => ApplicationCommandData;
 }
 
 export interface SlashCommand {
     data: CustomSlashCommandBuilder;
     cooldown?: number;
+    autocomplete?: (interaction: AutocompleteInteraction) => Promise<void>;
     execute: (client: NewClient, interaction: CommandInteraction, guildData: IGuild) => Promise<void | Message>;
 }
 
