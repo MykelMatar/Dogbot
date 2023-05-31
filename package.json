@@ -25,7 +25,6 @@
   "name": "dogbot",
   "version": "1.2.0",
   "description": "Discord gamer bot",
-  "type": "module",
   "main": "src/index.ts",
   "scripts": {
     "bot": "ts-node src/index.ts",
