@@ -9,16 +9,25 @@ export const gitPull = {
 
     async execute(client: NewClient, interaction: CommandInteraction) {
         if (interaction.user.id != '191754197203550208') return
-        
+
         const git: SimpleGit = simpleGit();
 
-        await git.pull()
-            .then(async r => {
-                console.log(r.summary)
-                await interaction.reply({content: `pulled changes:\n${r.summary}`, ephemeral: true})
-            }).catch(async e => {
-                console.error(e)
-                await interaction.reply({content: `could not pull changes`, ephemeral: true})
-            })
+        try {
+            const result = await git.raw(['pull', '--force']);
+            console.log(result)
+            await interaction.reply({content: `pulled changes`, ephemeral: true})
+        } catch (error) {
+            console.error('Error during git pull:', error);
+            await interaction.reply({content: `could not pull changes`, ephemeral: true})
+        }
+
+        // await git.pull()
+        //     .then(async r => {
+        //         console.log(r.summary)
+        //         await interaction.reply({content: `pulled changes:\n${r.summary}`, ephemeral: true})
+        //     }).catch(async e => {
+        //         console.error(e)
+        //         await interaction.reply({content: `could not pull changes`, ephemeral: true})
+        //     })
     }
 }
