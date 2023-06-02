@@ -1,10 +1,15 @@
 import {ActivityType} from "discord.js";
 import mongoose from "mongoose";
 import {NewClient} from "../../dependencies/myTypes";
-import log from "../../dependencies/logger";
+import log from "../../dependencies/constants/logger";
 
 export async function ready(client: NewClient) {
     await mongoose.connect(process.env.MONGO_URI, {keepAlive: true, dbName: 'Dogbot'})
+        .then(() => {
+            log.info('Connected to Mongo')
+        }).catch(e => {
+            log.error(e)
+        })
 
     // change activity every 10s
     let activities: string[] = ['Fortnite no build', 'Warzone no build', 'with ur mom', 'with ur dad', 'with the bois']
@@ -18,7 +23,7 @@ export async function ready(client: NewClient) {
         }
         client.user.setActivity(activities[index], {type: activityType});
     }, 10000)
-    
+
     if (client.isTestBot) {
         log.info('Test Bot Ready')
     } else {

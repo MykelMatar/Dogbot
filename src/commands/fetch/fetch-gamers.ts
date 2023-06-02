@@ -23,9 +23,9 @@ import {
 } from "../../dependencies/helpers/terminationListener";
 import {updateEnlistUserEmbed} from "../../dependencies/helpers/updateEnlistUserEmbed";
 import {updateUserData} from "../../dependencies/helpers/updateUserData";
-import log from "../../dependencies/logger";
+import log from "../../dependencies/constants/logger";
 import {getLevelFromXp} from "../../dependencies/helpers/getLevelFromXp";
-import {gameTitles} from "../../dependencies/gameTitles";
+import {gameTitles} from "../../dependencies/constants/gameTitles";
 
 // TODO add edit button to edit fields
 export const fetchGamers = {
