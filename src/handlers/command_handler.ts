@@ -5,46 +5,50 @@ import {Routes} from "discord.js"
 
 
 export default (client: NewClient) => {
-    let ignore: string[] = !client.isTestBot ? ['test', 'voice'] : [];
+    const ignore: string[] = !client.isTestBot ? ['test', 'voice'] : [];
+    const adminCommandNames = ['git-pull', 'reload']
+
     const commandFiles = getFiles('./src/commands', '.ts', ignore)
-    let commands = []
+    const commands = []
 
     for (const commandFile of commandFiles) {
-        let commandList = require(`../.${commandFile}`)
+        const commandList = require(`../.${commandFile}`)
         for (let command in commandList) {
-            client.commands.set(commandList[command].data.name, commandList[command])
-            commands.push(commandList[command].data.toJSON())
+            const commandData = commandList[command].data;
+            client.commands.set(commandData.name, commandList[command]);
+            commands.push(commandData.toJSON());
         }
     }
-    const officialCommands = commands.filter(command => command.name != 'reload')
 
-    // slash command registration
-    if (client.isTestBot) { // Guild bound commands using testing bot
-        let testingServer = '715122900021149776'
-        let testBotId = '851186508262408192'
 
-        const rest = new REST({version: '10'}).setToken(process.env.BOT_TEST_TOKEN);
-        (async () => {
+    // command registration
+    (async () => {
+        if (client.isTestBot) {
+            const testingServer = '715122900021149776'
+            const testBotId = '851186508262408192'
+
+            const rest = new REST({version: '10'}).setToken(process.env.BOT_TEST_TOKEN);
             await rest.put(
                 Routes.applicationGuildCommands(testBotId, testingServer),
                 {body: commands},
             );
-        })();
-    } else { // global slash command on Dogbot
-        let dogbotId = '848283770041532425'
-        let myServer = '351618107384528897'
+        } else {
+            const dogbotId = '848283770041532425'
+            const myServer = '351618107384528897'
 
-        const rest = new REST({version: '10'}).setToken(process.env.BOT_TOKEN);
-        (async () => {
+            const officialCommands = commands.filter(command => !adminCommandNames.includes(command.name));
+            const adminCommands = adminCommandNames.map(command => client.commands.get(command).data.toJSON());
+
+            const rest = new REST({version: '10'}).setToken(process.env.BOT_TOKEN);
             await rest.put(
                 Routes.applicationCommands(dogbotId),
                 {body: officialCommands},
             );
             await rest.put(
                 Routes.applicationGuildCommands(dogbotId, myServer),
-                {body: [client.commands.get('reload').data.toJSON()]},
+                {body: adminCommands},
             );
-        })();
-    }
+        }
+    })();
 }
 
