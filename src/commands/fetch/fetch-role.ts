@@ -1,4 +1,9 @@
-import {CommandInteraction, CommandInteractionOptionResolver, SlashCommandBuilder} from "discord.js";
+import {
+    CommandInteraction,
+    CommandInteractionOptionResolver,
+    PermissionFlagsBits,
+    SlashCommandBuilder
+} from "discord.js";
 import {IGuild, NewClient} from "../../dependencies/myTypes";
 
 export const fetchRole = {
@@ -18,10 +23,18 @@ export const fetchRole = {
         const options = interaction.options as CommandInteractionOptionResolver // ts thinks the .get options dont exist
 
         if (options.getRole('role')) {
+            if (!interaction.memberPermissions.has(PermissionFlagsBits.Administrator)) {
+                await interaction.reply({ephemeral: true, content: 'Only administrators can change and clear the role'})
+                return
+            }
             guildData.serverData.roles.autoenlist = options.getRole('role') as unknown as string
             await guildData.save()
             await interaction.reply({ephemeral: true, content: 'Autoenlist role set sucessfully'})
         } else if (options.getBoolean('clear-role')) {
+            if (!interaction.memberPermissions.has(PermissionFlagsBits.Administrator)) {
+                await interaction.reply({ephemeral: true, content: 'Only administrators can change and clear the role'})
+                return
+            }
             guildData.serverData.roles.autoenlist = null;
             await guildData.save()
             await interaction.reply({ephemeral: true, content: 'Role cleared successfully'})

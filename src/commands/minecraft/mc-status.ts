@@ -11,7 +11,7 @@ import {
 import {status, statusBedrock} from "minecraft-server-util";
 import {McServerStatusCollector} from "../../dependencies/helpers/mcServerStatusCollector";
 import {embedColor, IGuild, MinecraftServer, NewClient} from "../../dependencies/myTypes";
-import log from "../../dependencies/logger";
+import log from "../../dependencies/constants/logger";
 
 export const mcStatus = {
     data: new SlashCommandBuilder()

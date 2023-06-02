@@ -20,7 +20,6 @@ export default (client: NewClient) => {
         }
     }
 
-
     // command registration
     (async () => {
         if (client.isTestBot) {

@@ -7,7 +7,7 @@ import {
 } from "discord.js";
 import {status, statusBedrock} from 'minecraft-server-util'
 import {IGuild, MinecraftServer, NewClient} from "../../dependencies/myTypes";
-import log from "../../dependencies/logger";
+import log from "../../dependencies/constants/logger";
 
 export const mcAddServer = {
     data: new SlashCommandBuilder()
@@ -70,7 +70,6 @@ export const mcAddServer = {
         }
 
         if (!validServer) return;
-        // if server is the first added server, make it the selected server to track in /mc-server-status
         if (serverList.length === 0) {
             const {ip, port, name} = newServer;
             guildData.mcServerData.selectedServer = {ip, port, name} // assuming you have variables named ip, port, and name that correspond to mcServer.ip, mcServer.port, and mcServer.name

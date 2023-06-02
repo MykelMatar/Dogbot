@@ -1,5 +1,5 @@
 import Guild from "../schemas/guild-schema";
-import log from "../logger";
+import log from "../constants/logger";
 import {AutocompleteInteraction, CommandInteraction, Snowflake} from "discord.js";
 import {GameProfile, IGuild, UserInfo} from "../myTypes";
 

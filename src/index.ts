@@ -1,7 +1,7 @@
 import {ActivityType, Client, Collection, GatewayIntentBits} from "discord.js";
 import 'dotenv/config'
 import {NewClient} from "./dependencies/myTypes";
-import log from "./dependencies/logger";
+import log from "./dependencies/constants/logger";
 
 // TODO: maybe let dogbot scan chat messages for an IP address, and if one is detected ask if they want to add the ip to the mc server list
 // this feature can be toggleable via a command

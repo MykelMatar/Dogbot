@@ -1,7 +1,7 @@
 import {AutocompleteInteraction, CommandInteraction, GuildMember} from "discord.js";
 import {IGuild, NewClient, SlashCommand} from "../dependencies/myTypes";
 import guilds from "../dependencies/schemas/guild-schema";
-import log from "../dependencies/logger";
+import log from "../dependencies/constants/logger";
 
 // const cooldowns = new Map()
 

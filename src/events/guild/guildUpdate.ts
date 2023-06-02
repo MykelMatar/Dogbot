@@ -1,5 +1,5 @@
 import guilds from '../../dependencies/schemas/guild-schema'
-import log from "../../dependencies/logger";
+import log from "../../dependencies/constants/logger";
 import {NewClient} from "../../dependencies/myTypes";
 import {Guild} from "discord.js";
 

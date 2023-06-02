@@ -10,7 +10,7 @@ import {
 } from "discord.js";
 import {McMenuOptionGenerator} from "../../dependencies/helpers/mcMenuOptionGenerator";
 import {IGuild, MinecraftServer, NewClient} from "../../dependencies/myTypes";
-import log from "../../dependencies/logger";
+import log from "../../dependencies/constants/logger";
 import {
     removeTerminationListener,
     terminate,

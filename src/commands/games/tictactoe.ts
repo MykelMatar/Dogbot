@@ -9,7 +9,7 @@ import {
 } from "discord.js";
 import {updateUserData} from "../../dependencies/helpers/updateUserData";
 import {NewClient} from "../../dependencies/myTypes";
-import {log} from "../../dependencies/logger";
+import {log} from "../../dependencies/constants/logger";
 
 //TODO: create /endtictactoe command or timeout after 15s of nothing happening
 
