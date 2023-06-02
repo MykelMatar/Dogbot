@@ -141,7 +141,7 @@ export const fetchGamers = {
 
         const enlistCollector = interaction.channel.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: 5000, // 1.08e+7, // 3 hour (1.08e+7) timer
+            time: 25000, // 1.08e+7, // 3 hour (1.08e+7) timer
             filter: (i) => {
                 if (i.message.id != enlistPrompt.id) return false // prevent simultaneous prompts from affecting each other
                 return [gamingButtonId, perhapsButtonId, rejectButtonId].includes(i.customId);

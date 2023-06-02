@@ -5,7 +5,7 @@ import {Routes} from "discord.js"
 
 
 export default (client: NewClient) => {
-    const ignore: string[] = !client.isTestBot ? ['test', 'voice'] : [];
+    const ignore: string[] = !client.isTestBot ? ['test', 'voice', 'get_stats'] : [];
     const adminCommandNames = ['git-pull', 'reload']
 
     const commandFiles = getFiles('./src/commands', '.ts', ignore)
