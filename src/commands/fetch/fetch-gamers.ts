@@ -10,6 +10,7 @@ import {
     EmbedBuilder,
     InteractionCollector,
     Message,
+    roleMention,
     SlashCommandBuilder,
     Snowflake,
     userMention
@@ -23,9 +24,9 @@ import {
 } from "../../dependencies/helpers/terminationListener";
 import {updateEnlistUserEmbed} from "../../dependencies/helpers/updateEnlistUserEmbed";
 import {updateUserData} from "../../dependencies/helpers/updateUserData";
-import log from "../../dependencies/logger";
+import log from "../../dependencies/constants/logger";
 import {getLevelFromXp} from "../../dependencies/helpers/getLevelFromXp";
-import {gameTitles} from "../../dependencies/gameTitles";
+import {gameTitles} from "../../dependencies/constants/gameTitles";
 
 // TODO add edit button to edit fields
 export const fetchGamers = {
@@ -73,15 +74,11 @@ export const fetchGamers = {
         const title = options.getString('title') ?? 'Gamer Time'
         const roleId = options.getRole('role') ?? undefined
 
-        let role: any = ''
+        let role: any = 'Gamer Time'
         if (roleId) {
-            role = roleId;
+            role = roleMention(roleId.id);
         } else {
-            const selectedRoleId = guildData.serverData.roles.autoenlist;
-            const selectedRole = interaction.guild.roles.cache.get(selectedRoleId);
-            if (selectedRole) {
-                role = `<@&${selectedRole.id}>`;
-            }
+            role = guildData.serverData.roles.autoenlist;
         }
 
         const row = new ActionRowBuilder<ButtonBuilder>()
@@ -121,7 +118,7 @@ export const fetchGamers = {
             embeds: [embed],
             components: [row]
         });
-        await interaction.reply({content: `Enlist sent`})
+        await interaction.reply({content: role})
 
         let enlistUserData: EnlistUserData = {
             enlistedUsers: ['-'],
@@ -160,7 +157,7 @@ export const fetchGamers = {
                 pendingResponse.push(i.user.id)
                 await i.reply({
                     content: 'please select your availability',
-                    components: [require('../../dependencies/timeDropdownMenu').timeMenu],
+                    components: [require('../../dependencies/constants/timeDropdownMenu').timeMenu],
                     ephemeral: true
                 });
 

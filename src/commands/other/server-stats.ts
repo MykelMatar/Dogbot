@@ -14,7 +14,7 @@ export const serverStats = {
         const guild: Guild = interaction.guild
         let owner: GuildMember = await guild.members.fetch(guild.ownerId)
         let verification: string = guild.verified ? 'Verified ✅' : 'Not Verified';
-        
+
         const embed = new EmbedBuilder()
             .setTitle(`${interaction.guild.name}'s Stats`)
             .addFields(

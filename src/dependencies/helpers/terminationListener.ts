@@ -1,5 +1,5 @@
 import {InteractionCollector} from "discord.js";
-import log from "../logger";
+import log from "../constants/logger";
 import {NewClient} from "../myTypes";
 
 /**

@@ -1,7 +1,7 @@
 import {ActivityType, Client, Collection, GatewayIntentBits} from "discord.js";
 import 'dotenv/config'
 import {NewClient} from "./dependencies/myTypes";
-import log from "./dependencies/logger";
+import log from "./dependencies/constants/logger";
 
 // TODO: maybe let dogbot scan chat messages for an IP address, and if one is detected ask if they want to add the ip to the mc server list
 // this feature can be toggleable via a command
@@ -36,16 +36,3 @@ if (client.isTestBot) {
 } else {
     client.login(process.env.BOT_TOKEN).catch(e => log.error(e))
 }
-
-// change activity every 10s
-let activities: string[] = ['Fortnite no build', 'Warzone no build', 'with ur mom', 'with ur dad', 'with the bois']
-setInterval(function() {
-    let activityType: ActivityType
-    let index = Math.floor(Math.random() * (activities.length - 1))
-    if (index == 0 || index == 1) {
-        activityType = ActivityType.Competing
-    } else {
-        activityType = ActivityType.Playing
-    }
-    client.user.setActivity(activities[index], {type: activityType});
-}, 10000)

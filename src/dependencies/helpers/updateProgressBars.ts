@@ -17,7 +17,7 @@ export async function updateProgressBars(interaction, embed, pollStats: PollStat
         const fillAmount = (pollStats[`choice${i}`] / pollStats.total) * 10;
         barFillAmounts.push(fillAmount);
     }
-    
+
     const stopIndex = numBars + 1
     let index = 0
 

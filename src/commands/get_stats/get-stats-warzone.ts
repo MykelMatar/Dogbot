@@ -1,7 +1,7 @@
 import {CommandInteraction, CommandInteractionOption, EmbedBuilder, SlashCommandBuilder} from "discord.js";
 import {embedColor, IGuild, NewClient} from "../../dependencies/myTypes";
 import {login, platforms, Warzone} from "call-of-duty-api";
-import log from "../../dependencies/logger";
+import log from "../../dependencies/constants/logger";
 
 export const getStatsWarzone = {
     data: new SlashCommandBuilder()

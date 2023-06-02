@@ -1,6 +1,7 @@
 import {CommandInteraction, SlashCommandBuilder} from "discord.js";
 import {NewClient} from "../../dependencies/myTypes";
 import {Octokit} from "@octokit/rest";
+import log from "../../dependencies/constants/logger";
 
 export const gitPull = {
     data: new SlashCommandBuilder()
@@ -29,10 +30,10 @@ export const gitPull = {
                 base: branch,
             });
 
-            console.log('Pull request created:', response.data);
+            log.info('Pull request created:', response.data);
             await interaction.reply(`pulled changes`)
         } catch (error) {
-            console.error('Error pulling changes:', error);
+            log.error('Error pulling changes:', error);
             await interaction.reply(`could not pull changes`)
         }
     }

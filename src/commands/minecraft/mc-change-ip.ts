@@ -12,7 +12,7 @@ import {
 import {status} from "minecraft-server-util";
 import {McMenuOptionGenerator} from "../../dependencies/helpers/mcMenuOptionGenerator";
 import {IGuild, MinecraftServer, NewClient} from "../../dependencies/myTypes";
-import log from "../../dependencies/logger";
+import log from "../../dependencies/constants/logger";
 import {
     removeTerminationListener,
     terminate,

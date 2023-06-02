@@ -2,7 +2,7 @@ import {CommandInteraction, CommandInteractionOption, EmbedBuilder, SlashCommand
 import {fetchHTML} from "../../dependencies/helpers/fetchHTML";
 import {CheerioAPI} from "cheerio";
 import {embedColor, IGuild, NewClient} from "../../dependencies/myTypes";
-import log from "../../dependencies/logger";
+import log from "../../dependencies/constants/logger";
 import {getText} from "../../dependencies/helpers/getText";
 
 export const getStatsValorant = {

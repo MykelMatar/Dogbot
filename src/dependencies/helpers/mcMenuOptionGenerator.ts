@@ -10,7 +10,7 @@ import {MinecraftServer} from "../myTypes";
 export async function McMenuOptionGenerator(interaction: CommandInteraction, serverList: MinecraftServer[]): Promise<APISelectMenuOption[]> {
     let optionsArray: APISelectMenuOption[] = []
     const listSize = serverList.length
-    
+
     for (let i = 0; i < listSize; i++) {
         optionsArray.push({
             label: serverList[i].name,

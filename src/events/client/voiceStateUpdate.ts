@@ -1,4 +1,4 @@
-import log from "../../dependencies/logger";
+import log from "../../dependencies/constants/logger";
 import {NewClient} from "../../dependencies/myTypes";
 import {VoiceState} from "discord.js";
 import {getVoiceConnection, joinVoiceChannel} from "@discordjs/voice";

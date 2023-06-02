@@ -1,6 +1,6 @@
 import {Guild} from "discord.js";
 import guilds from '../../dependencies/schemas/guild-schema'
-import log from "../../dependencies/logger";
+import log from "../../dependencies/constants/logger";
 import {NewClient} from "../../dependencies/myTypes";
 
 export async function guildCreate(client: NewClient, guild: Guild) {
