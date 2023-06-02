@@ -1,7 +1,6 @@
 import {CommandInteraction, SlashCommandBuilder} from "discord.js";
 import {NewClient} from "../../dependencies/myTypes";
-import {Octokit} from "@octokit/rest";
-import log from "../../dependencies/constants/logger";
+import simpleGit, {SimpleGit} from 'simple-git';
 
 export const gitPull = {
     data: new SlashCommandBuilder()
@@ -10,31 +9,16 @@ export const gitPull = {
 
     async execute(client: NewClient, interaction: CommandInteraction) {
         if (interaction.user.id != '191754197203550208') return
+        
+        const git: SimpleGit = simpleGit();
 
-        // Create an instance of the Octokit client
-        const octokit = new Octokit({
-            auth: process.env.GITHUB_TOKEN,
-        });
-
-        // Define the repository and branch information
-        const owner = 'MykelMatar';
-        const repo = 'Dogbot';
-        const branch = 'master';
-
-        // Pull changes from the remote branch
-        try {
-            const response = await octokit.rest.pulls.create({
-                owner: owner,
-                repo: repo,
-                head: `${owner}:${branch}`,
-                base: branch,
-            });
-
-            log.info('Pull request created:', response.data);
-            await interaction.reply(`pulled changes`)
-        } catch (error) {
-            log.error('Error pulling changes:', error);
-            await interaction.reply(`could not pull changes`)
-        }
+        await git.pull()
+            .then(async r => {
+                console.log(r.summary)
+                await interaction.reply({content: `pulled changes:\n${r.summary}`, ephemeral: true})
+            }).catch(async e => {
+                console.error(e)
+                await interaction.reply({content: `could not pull changes`, ephemeral: true})
+            })
     }
 }
