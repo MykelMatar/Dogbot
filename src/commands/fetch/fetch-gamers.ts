@@ -10,6 +10,7 @@ import {
     EmbedBuilder,
     InteractionCollector,
     Message,
+    roleMention,
     SlashCommandBuilder,
     Snowflake,
     userMention
@@ -73,15 +74,11 @@ export const fetchGamers = {
         const title = options.getString('title') ?? 'Gamer Time'
         const roleId = options.getRole('role') ?? undefined
 
-        let role: any = ''
+        let role: any = 'Gamer Time'
         if (roleId) {
-            role = roleId;
+            role = roleMention(roleId.id);
         } else {
-            const selectedRoleId = guildData.serverData.roles.autoenlist;
-            const selectedRole = interaction.guild.roles.cache.get(selectedRoleId);
-            if (selectedRole) {
-                role = `<@&${selectedRole.id}>`;
-            }
+            role = guildData.serverData.roles.autoenlist;
         }
 
         const row = new ActionRowBuilder<ButtonBuilder>()
@@ -121,7 +118,7 @@ export const fetchGamers = {
             embeds: [embed],
             components: [row]
         });
-        await interaction.reply({content: `fetch sent`, ephemeral: true})
+        await interaction.reply({content: role})
 
         let enlistUserData: EnlistUserData = {
             enlistedUsers: ['-'],
@@ -160,13 +157,13 @@ export const fetchGamers = {
                 pendingResponse.push(i.user.id)
                 await i.reply({
                     content: 'please select your availability',
-                    components: [require('../../dependencies/timeDropdownMenu').timeMenu],
+                    components: [require('../../dependencies/constants/timeDropdownMenu').timeMenu],
                     ephemeral: true
                 });
 
                 const timeCollector = interaction.channel.createMessageComponentCollector({
                     componentType: ComponentType.SelectMenu,
-                    time: 45000,
+                    time: 60000,
                     max: 1,
                     filter: (i) => i.customId === 'time' && i.user.id === interaction.member.user.id,
                 });
