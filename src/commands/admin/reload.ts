@@ -45,6 +45,10 @@ export const reload = {
                 );
             } else {
                 const rest = new REST({version: '10'}).setToken(process.env.BOT_TOKEN);
+                await rest.put( // clear commands before pushing again
+                    Routes.applicationCommands(dogbotId),
+                    {body: []},
+                );
                 await rest.put(
                     Routes.applicationCommands(dogbotId),
                     {body: newCommands},
