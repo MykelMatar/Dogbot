@@ -10,7 +10,6 @@ import {ButtonInteraction, EmbedBuilder, Message} from "discord.js";
  * @param enlistUserData object that stores all the user info arrays
  * @param enlistPrompt message containing embed and buttons
  * @param row row of buttons
- * @param role role being mentioned in the message
  */
 export async function updateEnlistUserEmbed(interaction: ButtonInteraction, embed: EmbedBuilder, enlistUserData: EnlistUserData, enlistPrompt: Message, row) {
     let selectedUserArray: string[],
@@ -22,6 +21,7 @@ export async function updateEnlistUserEmbed(interaction: ButtonInteraction, embe
     let perhapsFlag: boolean
     const userString: string = `> ${interaction.user.username}\n`
     const userTime: string | undefined = enlistUserData.userAvailabilityMap.get(interaction.user.id) // can be undefined
+    if (!userTime) return
     const potentialUserString: string = `> ${interaction.user.username} ~${userTime}\n`
 
     if (interaction.customId === 'Gamer') {
@@ -93,5 +93,5 @@ export async function updateEnlistUserEmbed(interaction: ButtonInteraction, embe
     embed.data.fields[1].value = enlistUserData.rejectedUsers.join('');
     embed.data.fields[2].value = enlistUserData.potentialUsers.join('');
 
-    await enlistPrompt.edit({embeds: [embed], components: [row]});
+    await enlistPrompt.edit({embeds: [embed]});
 }

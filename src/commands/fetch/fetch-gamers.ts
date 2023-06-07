@@ -173,21 +173,18 @@ export const fetchGamers = {
                     filter: (i) => i.customId === 'time' && i.user.id === interaction.member.user.id,
                 });
 
-                timeCollector.on('end', async collected => {
-                    if (collected.size !== 0) {
-                        const userResponse = collected.first()
-                        const guildMember = userResponse.user.username
-                        const index = enlistUserData.potentialUsers.findIndex(user => user == `> ${guildMember}\n`)
-
-                        if (userResponse?.values[0] == undefined) { // idk why this would happen, but just in case
-                            enlistUserData.userAvailabilityMap.set(userResponse?.user.id, 'Not Sure')
-                            enlistUserData.potentialUsers[index] = `> ${guildMember} ~'Not Sure'\n`
-                        } else {
-                            enlistUserData.userAvailabilityMap.set(userResponse.user.id, userResponse?.values[0])
-                            enlistUserData.potentialUsers[index] = `> ${guildMember} ~${userResponse.values[0]}\n`
-                        }
-                        await updateEnlistUserEmbed(i, embed, enlistUserData, enlistPrompt, row)
+                timeCollector.on('collect', async collected => {
+                    const guildMember = collected.user.username
+                    const index = enlistUserData.potentialUsers.findIndex(user => user == `> ${guildMember}\n`)
+                    
+                    if (collected.values[0] == undefined) { // idk why this would happen, but just in case
+                        enlistUserData.userAvailabilityMap.set(collected?.user.id, 'Not Sure')
+                        enlistUserData.potentialUsers[index] = `> ${guildMember} ~'Not Sure'\n`
+                    } else {
+                        enlistUserData.userAvailabilityMap.set(collected.user.id, collected.values[0])
+                        enlistUserData.potentialUsers[index] = `> ${guildMember} ~${collected.values[0]}\n`
                     }
+                    await updateEnlistUserEmbed(i, embed, enlistUserData, enlistPrompt, row)
 
                     pendingResponse.splice(pendingResponse.indexOf(i.user.id), 1)
                     await i.deleteReply()
