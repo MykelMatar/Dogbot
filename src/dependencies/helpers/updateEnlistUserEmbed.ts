@@ -1,5 +1,5 @@
 import {EnlistUserData} from "../myTypes";
-import {ButtonInteraction, EmbedBuilder, Message, Role} from "discord.js";
+import {ButtonInteraction, EmbedBuilder, Message} from "discord.js";
 
 /**
  * updates the arrays used to display names in the fetch prompt. Also updates the ID arrays used
@@ -12,7 +12,7 @@ import {ButtonInteraction, EmbedBuilder, Message, Role} from "discord.js";
  * @param row row of buttons
  * @param role role being mentioned in the message
  */
-export async function updateEnlistUserEmbed(interaction: ButtonInteraction, embed: EmbedBuilder, enlistUserData: EnlistUserData, enlistPrompt: Message, row, role: string | Role) {
+export async function updateEnlistUserEmbed(interaction: ButtonInteraction, embed: EmbedBuilder, enlistUserData: EnlistUserData, enlistPrompt: Message, row) {
     let selectedUserArray: string[],
         selectedUserIdArray: string[],
         secondUserArray: string[],
@@ -93,5 +93,5 @@ export async function updateEnlistUserEmbed(interaction: ButtonInteraction, embe
     embed.data.fields[1].value = enlistUserData.rejectedUsers.join('');
     embed.data.fields[2].value = enlistUserData.potentialUsers.join('');
 
-    await enlistPrompt.edit({content: `${role}`, embeds: [embed], components: [row]});
+    await enlistPrompt.edit({embeds: [embed], components: [row]});
 }

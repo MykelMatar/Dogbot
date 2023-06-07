@@ -181,7 +181,7 @@ export const fetchGamers = {
                             enlistUserData.userAvailabilityMap.set(userResponse.user.id, userResponse?.values[0])
                             enlistUserData.potentialUsers[index] = `> ${guildMember} ~${userResponse.values[0]}\n`
                         }
-                        await updateEnlistUserEmbed(i, embed, enlistUserData, enlistPrompt, row, role)
+                        await updateEnlistUserEmbed(i, embed, enlistUserData, enlistPrompt, row)
                     }
 
                     pendingResponse.splice(pendingResponse.indexOf(i.user.id), 1)
@@ -192,7 +192,7 @@ export const fetchGamers = {
             } else {
                 // Defer the interaction update to prevent the "this interaction failed" message
                 const deferUpdate = i.deferUpdate();
-                const updateEmbed = updateEnlistUserEmbed(i, embed, enlistUserData, enlistPrompt, row, role)
+                const updateEmbed = updateEnlistUserEmbed(i, embed, enlistUserData, enlistPrompt, row)
 
                 await Promise.all([deferUpdate, updateEmbed])
             }
