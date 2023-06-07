@@ -21,7 +21,7 @@ export async function updateEnlistUserEmbed(interaction: ButtonInteraction, embe
     let perhapsFlag: boolean
     const userString: string = `> ${interaction.user.username}\n`
     const userTime: string | undefined = enlistUserData.userAvailabilityMap.get(interaction.user.id) // can be undefined
-    if (!userTime) return
+    if (!userTime && interaction.customId == 'Perhaps') return
     const potentialUserString: string = `> ${interaction.user.username} ~${userTime}\n`
 
     if (interaction.customId === 'Gamer') {

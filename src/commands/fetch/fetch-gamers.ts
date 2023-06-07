@@ -176,7 +176,7 @@ export const fetchGamers = {
                 timeCollector.on('collect', async collected => {
                     const guildMember = collected.user.username
                     const index = enlistUserData.potentialUsers.findIndex(user => user == `> ${guildMember}\n`)
-                    
+
                     if (collected.values[0] == undefined) { // idk why this would happen, but just in case
                         enlistUserData.userAvailabilityMap.set(collected?.user.id, 'Not Sure')
                         enlistUserData.potentialUsers[index] = `> ${guildMember} ~'Not Sure'\n`
@@ -192,7 +192,6 @@ export const fetchGamers = {
             } else if (isPerhapsButton) { // prevents embed from updating if user tries to spam perhaps button
                 i.deferUpdate(); // do nothing (ignore the input)
             } else {
-                // Defer the interaction update to prevent the "this interaction failed" message
                 const deferUpdate = i.deferUpdate();
                 const updateEmbed = updateEnlistUserEmbed(i, embed, enlistUserData, enlistPrompt, row)
 
