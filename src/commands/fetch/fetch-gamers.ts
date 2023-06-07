@@ -118,7 +118,12 @@ export const fetchGamers = {
             embeds: [embed],
             components: [row]
         });
-        await interaction.reply({content: role})
+
+        const regex = /<@&(\d+)>/;
+        const match = role.match(regex);
+        const id = match && match[1];
+
+        await interaction.reply({content: role, allowedMentions: {roles: [id]}})
 
         let enlistUserData: EnlistUserData = {
             enlistedUsers: ['-'],
