@@ -1,5 +1,5 @@
 import {EnlistUserData} from "../myTypes";
-import {ButtonInteraction, EmbedBuilder, Message} from "discord.js";
+import {ButtonInteraction, EmbedBuilder, GuildMember, Message} from "discord.js";
 
 /**
  * updates the arrays used to display names in the fetch prompt. Also updates the ID arrays used
@@ -22,6 +22,8 @@ export async function updateFetchEmbed(interaction: ButtonInteraction, embed: Em
         userAvailabilityMap
     } = enlistUserData
 
+    const member = interaction.member as GuildMember;
+
     let selectedUserArray: string[],
         selectedUserIdArray: string[],
         secondUserArray: string[],
@@ -29,9 +31,9 @@ export async function updateFetchEmbed(interaction: ButtonInteraction, embed: Em
         thirdUserArray: string[],
         thirdUserIdArray: string[]
     let perhapsFlag: boolean
-    const userString: string = `> ${interaction.user.username}\n`
+    const userString: string = `> ${member.displayName}\n`
     const userTime: string | undefined = userAvailabilityMap.get(interaction.user.id)
-    const potentialUserString: string = `> ${interaction.user.username} ~${userTime}\n`
+    const potentialUserString: string = `> ${member.displayName} ~${userTime}\n`
 
     if (interaction.customId === 'Gamer') {
         perhapsFlag = false
