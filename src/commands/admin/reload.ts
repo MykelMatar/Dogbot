@@ -31,12 +31,16 @@ export const reload = {
                 newCommands.push(commandData);
             }
         }
+        await interaction.editReply({content: 'Commands Refreshed'})
+
+        if (newCommands.length == 0) return
 
         const testingServer = '715122900021149776'
         const testBotId = '851186508262408192'
         const dogbotId = '848283770041532425'
 
         try {
+            log.info('new commands found')
             if (client.isTestBot) {
                 const rest = new REST({version: '10'}).setToken(process.env.BOT_TEST_TOKEN);
                 await rest.put(
@@ -45,16 +49,12 @@ export const reload = {
                 );
             } else {
                 const rest = new REST({version: '10'}).setToken(process.env.BOT_TOKEN);
-                await rest.put( // clear commands before pushing again
-                    Routes.applicationCommands(dogbotId),
-                    {body: []},
-                );
                 await rest.put(
                     Routes.applicationCommands(dogbotId),
                     {body: newCommands},
                 );
             }
-            await interaction.editReply({content: 'Commands Refreshed'})
+            await interaction.editReply({content: 'New Commands Added'})
             log.info('done')
         } catch (e) {
             await interaction.editReply({content: 'Error refreshing commands'})

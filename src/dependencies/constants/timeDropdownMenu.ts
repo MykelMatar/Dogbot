@@ -1,6 +1,6 @@
 import {ActionRowBuilder, StringSelectMenuBuilder} from "discord.js";
 
-export const timeMenu = new ActionRowBuilder<StringSelectMenuBuilder>()
+const timeMenu = new ActionRowBuilder<StringSelectMenuBuilder>()
     .addComponents(
         new StringSelectMenuBuilder()
             .setCustomId('time')
@@ -108,3 +108,5 @@ export const timeMenu = new ActionRowBuilder<StringSelectMenuBuilder>()
                 },
             )
     )
+
+export default timeMenu;

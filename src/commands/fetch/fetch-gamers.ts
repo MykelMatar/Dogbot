@@ -22,7 +22,7 @@ import {
     terminate,
     terminationListener
 } from "../../dependencies/helpers/terminationListener";
-import {updateEnlistUserEmbed} from "../../dependencies/helpers/updateEnlistUserEmbed";
+import {updateFetchEmbed} from "../../dependencies/helpers/updateFetchEmbed";
 import {updateUserData} from "../../dependencies/helpers/updateUserData";
 import log from "../../dependencies/constants/logger";
 import {getLevelFromXp} from "../../dependencies/helpers/getLevelFromXp";
@@ -72,13 +72,17 @@ export const fetchGamers = {
         const game = options.getString('game')
         const minGamers = options.getInteger('minimum')
         const title = options.getString('title') ?? 'Gamer Time'
-        const roleId = options.getRole('role') ?? undefined
+        const roleValue = options.getRole('role') ?? undefined
 
         let role: any = 'Gamer Time'
-        if (roleId) {
-            role = roleMention(roleId.id);
-        } else {
+        let roleId
+        if (roleValue) {
+            role = roleMention(roleValue.id);
+        } else if (guildData.serverData.roles.autoenlist) {
             role = guildData.serverData.roles.autoenlist;
+            const regex = /<@&(\d+)>/;
+            const match = role.match(regex);
+            roleId = match && match[1];
         }
 
         const row = new ActionRowBuilder<ButtonBuilder>()
@@ -119,11 +123,11 @@ export const fetchGamers = {
             components: [row]
         });
 
-        const regex = /<@&(\d+)>/;
-        const match = role.match(regex);
-        const id = match && match[1];
-
-        await interaction.reply({content: role, allowedMentions: {roles: [id]}})
+        if (role != 'Gamer Time') {
+            await interaction.reply({content: role, allowedMentions: {roles: [roleId]}})
+        } else {
+            await interaction.reply({content: role})
+        }
 
         let enlistUserData: EnlistUserData = {
             enlistedUsers: ['-'],
@@ -139,7 +143,7 @@ export const fetchGamers = {
         const gamingButtonId = row.components[0].data["custom_id"]
         const rejectButtonId = row.components[1].data["custom_id"]
         const perhapsButtonId = row.components[2].data["custom_id"]
-        let pendingResponse = []
+        const pendingResponse = []
 
         const enlistCollector = interaction.channel.createMessageComponentCollector({
             componentType: ComponentType.Button,
@@ -149,20 +153,20 @@ export const fetchGamers = {
                 return [gamingButtonId, perhapsButtonId, rejectButtonId].includes(i.customId);
             },
         });
-        let terminateBound = terminate.bind(null, client, enlistCollector)
+        const terminateBound = terminate.bind(null, client, enlistCollector)
         await terminationListener(client, enlistCollector, terminateBound)
 
-        enlistCollector.on('collect', async i => {
-            const isPerhapsButton = i.customId === perhapsButtonId;
-            const notDuplicateUser = !(enlistUserData.potentialUserIds.includes(i.user.id))
-            const notPendingResponse = !(pendingResponse.includes(i.user.id))
+        enlistCollector.on('collect', async buttonInteraction => {
+            const isPerhapsButton = buttonInteraction.customId === perhapsButtonId;
+            const notDuplicateUser = !(enlistUserData.potentialUserIds.includes(buttonInteraction.user.id))
+            const notPendingResponse = !(pendingResponse.includes(buttonInteraction.user.id))
 
             if (isPerhapsButton && notDuplicateUser && notPendingResponse) {
                 // Send a time menu for the user to select their availability
-                pendingResponse.push(i.user.id)
-                await i.reply({
+                pendingResponse.push(buttonInteraction.user.id)
+                await buttonInteraction.reply({
                     content: 'please select your availability',
-                    components: [require('../../dependencies/constants/timeDropdownMenu').timeMenu],
+                    components: [require('../../dependencies/constants/timeDropdownMenu').default],
                     ephemeral: true
                 });
 
@@ -170,34 +174,38 @@ export const fetchGamers = {
                     componentType: ComponentType.SelectMenu,
                     time: 60000,
                     max: 1,
-                    filter: (i) => i.customId === 'time' && i.user.id === interaction.member.user.id,
+                    filter: (i) =>
+                        i.customId === 'time' &&
+                        i.user.id === buttonInteraction.member.user.id,
                 });
 
-                timeCollector.on('collect', async collected => {
-                    const guildMember = collected.user.username
-                    const index = enlistUserData.potentialUsers.findIndex(user => user == `> ${guildMember}\n`)
+                timeCollector.on('collect', async timeInteraction => {
+                    const username = timeInteraction.user.username
 
-                    if (collected.values[0] == undefined) { // idk why this would happen, but just in case
-                        enlistUserData.userAvailabilityMap.set(collected?.user.id, 'Not Sure')
-                        enlistUserData.potentialUsers[index] = `> ${guildMember} ~'Not Sure'\n`
+                    if (!timeInteraction.values[0]) { // idk why this would happen, but just in case
+                        enlistUserData.userAvailabilityMap.set(timeInteraction.user.id, 'Not Sure')
+                        enlistUserData.potentialUsers.push(`> ${username} ~'Not Sure'\n`)
+                        enlistUserData.potentialUserIds.push(timeInteraction.user.id)
                     } else {
-                        enlistUserData.userAvailabilityMap.set(collected.user.id, collected.values[0])
-                        enlistUserData.potentialUsers[index] = `> ${guildMember} ~${collected.values[0]}\n`
+                        enlistUserData.userAvailabilityMap.set(timeInteraction.user.id, timeInteraction.values[0])
+                        enlistUserData.potentialUsers.push(`> ${username} ~${timeInteraction.values[0]}\n`)
+                        enlistUserData.potentialUserIds.push(timeInteraction.user.id)
                     }
-                    await updateEnlistUserEmbed(i, embed, enlistUserData, enlistPrompt, row)
+                    await updateFetchEmbed(buttonInteraction, embed, enlistUserData, enlistPrompt)
 
-                    pendingResponse.splice(pendingResponse.indexOf(i.user.id), 1)
-                    await i.deleteReply()
+                    pendingResponse.splice(pendingResponse.indexOf(buttonInteraction.user.id), 1)
+                    await buttonInteraction.deleteReply()
                 });
             } else if (isPerhapsButton) { // prevents embed from updating if user tries to spam perhaps button
-                i.deferUpdate(); // do nothing (ignore the input)
+                buttonInteraction.deferUpdate();
             } else {
-                const deferUpdate = i.deferUpdate();
-                const updateEmbed = updateEnlistUserEmbed(i, embed, enlistUserData, enlistPrompt, row)
+                const deferUpdate = buttonInteraction.deferUpdate();
+                const updateEmbed = updateFetchEmbed(buttonInteraction, embed, enlistUserData, enlistPrompt)
 
                 await Promise.all([deferUpdate, updateEmbed])
             }
         });
+
 
         enlistCollector.on('end', async collected => {
             removeTerminationListener(terminateBound)
