@@ -8,6 +8,7 @@ import {
     CommandInteractionOptionResolver,
     ComponentType,
     EmbedBuilder,
+    GuildMember,
     InteractionCollector,
     Message,
     roleMention,
@@ -180,7 +181,8 @@ export const fetchGamers = {
                 });
 
                 timeCollector.on('collect', async timeInteraction => {
-                    const username = timeInteraction.user.username
+                    const member = interaction.member as GuildMember;
+                    const username = member.displayName
 
                     if (!timeInteraction.values[0]) { // idk why this would happen, but just in case
                         enlistUserData.userAvailabilityMap.set(timeInteraction.user.id, 'Not Sure')

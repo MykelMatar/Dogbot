@@ -23,6 +23,7 @@ export async function updateFetchEmbed(interaction: ButtonInteraction, embed: Em
     } = enlistUserData
 
     const member = interaction.member as GuildMember;
+    const userId = interaction.user.id
 
     let selectedUserArray: string[],
         selectedUserIdArray: string[],
@@ -32,7 +33,7 @@ export async function updateFetchEmbed(interaction: ButtonInteraction, embed: Em
         thirdUserIdArray: string[]
     let perhapsFlag: boolean
     const userString: string = `> ${member.displayName}\n`
-    const userTime: string | undefined = userAvailabilityMap.get(interaction.user.id)
+    const userTime: string | undefined = userAvailabilityMap.get(userId)
     const potentialUserString: string = `> ${member.displayName} ~${userTime}\n`
 
     if (interaction.customId === 'Gamer') {
@@ -62,15 +63,15 @@ export async function updateFetchEmbed(interaction: ButtonInteraction, embed: Em
     } else return
 
     if (!perhapsFlag) {
-        if (!selectedUserArray.includes(userString)) {
+        if (!selectedUserIdArray.includes(userId)) {
             selectedUserArray.push(userString)
-            selectedUserIdArray.push(interaction.user.id)
+            selectedUserIdArray.push(userId)
         }
-        if (thirdUserArray.includes(potentialUserString)) {
+        if (thirdUserIdArray.includes(userId)) {
             thirdUserArray.splice(thirdUserArray.indexOf(potentialUserString), 1)
-            thirdUserIdArray.splice(thirdUserIdArray.indexOf(interaction.user.id, 1))
+            thirdUserIdArray.splice(thirdUserIdArray.indexOf(userId, 1))
             if (userTime != undefined) {
-                userAvailabilityMap.delete(interaction.user.id)
+                userAvailabilityMap.delete(userId)
             }
         }
     }
@@ -80,13 +81,13 @@ export async function updateFetchEmbed(interaction: ButtonInteraction, embed: Em
     } else if (selectedUserArray.includes('-')) {
         selectedUserArray.splice(selectedUserArray.indexOf('-'), 1);
     }
-    if (secondUserArray.includes(userString)) {
+    if (secondUserIdArray.includes(userId)) {
         secondUserArray.splice(secondUserArray.indexOf(userString), 1)
-        secondUserIdArray.splice(secondUserIdArray.indexOf(interaction.user.id, 1))
+        secondUserIdArray.splice(secondUserIdArray.indexOf(userId, 1))
     }
-    if (thirdUserArray.includes(userString)) {
+    if (thirdUserIdArray.includes(userId)) {
         thirdUserArray.splice(secondUserArray.indexOf(potentialUserString), 1)
-        thirdUserIdArray.splice(secondUserIdArray.indexOf(interaction.user.id, 1))
+        thirdUserIdArray.splice(secondUserIdArray.indexOf(userId, 1))
     }
     if (secondUserArray.length === 0) {
         secondUserArray.push('-')

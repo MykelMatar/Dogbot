@@ -11,8 +11,11 @@ import {platforms} from "call-of-duty-api";
 import {Document} from "mongoose";
 
 export interface NewClient extends DiscordJS.Client {
-    commands: DiscordJS.Collection<string, SlashCommand> // allows commands to be bound to the client instance for global retrieval
-    isTestBot: boolean // whether it is the test bot or not
+    commands: DiscordJS.Collection<string, SlashCommand>
+    isTestBot: boolean
+    settings: {
+        autoFetchIP: boolean
+    }
 }
 
 interface CustomSlashCommandBuilder {
