@@ -161,7 +161,6 @@ export const prediction = {
                                 ephemeral: !modalInteraction.replied
                             });
 
-
                             targetArray.push(`> ${member.displayName} ${targetEmoji.toString()} *${betAmount} points* \n`);
                             targetIds.push(i.user.id);
 
@@ -169,6 +168,9 @@ export const prediction = {
                             totalPool += betAmount
 
                             if (targetArray.length > 0) {
+                                const winMultiplier = isBeliever ? totalPool / yesPool : totalPool / noPool;
+                                const userType = isBeliever ? 'Believers' : 'Doubters'
+                                predictionEmbed.data.fields[targetFieldIndex].name = `${userType} *(${winMultiplier.toFixed(1)}x multiplier)*`
                                 predictionEmbed.data.fields[targetFieldIndex].value = targetArray.join('');
                             }
 
@@ -288,9 +290,11 @@ export const prediction = {
                         await updatePredictionResults(doubterIds, winMultiplier, UserInfo.CorrectPrediction);
                     }
                 } catch (e) {
+                    sent.edit({components: []})
                     log.warn('Response Timeout')
                 }
             } catch (e) {
+                sent.edit({components: []})
                 log.warn('Response Timeout')
             }
         })
