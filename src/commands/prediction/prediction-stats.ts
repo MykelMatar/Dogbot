@@ -6,12 +6,11 @@ import {
     SlashCommandBuilder
 } from "discord.js";
 import {embedColor, IGuild, NewClient} from "../../dependencies/myTypes";
-import {getLevelFromXp} from "../../dependencies/helpers/getLevelFromXp";
 
-export const enlistStats = {
+export const predictionStats = {
     data: new SlashCommandBuilder()
-        .setName('fetch-stats')
-        .setDescription('Displays users fetch stats')
+        .setName('prediction-stats')
+        .setDescription('Displays your prediction stats')
         .addUserOption(option =>
             option.setName('user')
                 .setDescription("User's stats to display. Default is yourself. ")
@@ -32,30 +31,28 @@ export const enlistStats = {
         const userId = user ? user.id : member.id
 
         let userData = guildData.userData.find(user => user.id === userId)
-        if (!userData.fetchStats || JSON.stringify(userData.fetchStats) == '{}') {
+        if (!userData.predictionStats || JSON.stringify(userData.predictionStats) == '{}') {
             return interaction.reply({
                 ephemeral: true,
-                content: 'User does not have any data. Data is created upon interacting with the fetch-gamers prompt'
+                content: 'User does not have any data. Data is created upon interacting with the prediction prompt'
             })
         }
 
-        const {prestige, level} = getLevelFromXp(userData.fetchStats.fetchXP)
         const {
-            enlists: enlistValue,
-            rejects: rejectValue,
-            ignores: ignoreValue,
-        } = userData.fetchStats;
+            points,
+            correctPredictions,
+            incorrectPredictions
+        } = userData.predictionStats
 
         const embed = new EmbedBuilder()
-            .setTitle(`${username}'s Enlist Stats`)
-            .setDescription(`${prestige} level ${level}`)
+            .setTitle(`${username}'s Prediction Stats`)
             .addFields([
-                {name: 'Enlists ✓', value: enlistValue.toString(), inline: true},
-                {name: 'Rejects ✘', value: rejectValue.toString(), inline: true},
-                {name: 'Ignores ~', value: ignoreValue.toString(), inline: true}
+                {name: 'Points ', value: points.toString(), inline: true},
+                {name: 'Correct Predictions ✓', value: correctPredictions.toString(), inline: true},
+                {name: 'Incorrect Predictions ✘', value: incorrectPredictions.toString(), inline: true}
             ])
             .setColor(embedColor)
 
-        await interaction.reply({ephemeral: ephemeralSetting as boolean, embeds: [embed]})
+        await interaction.reply({ephemeral: ephemeralSetting, embeds: [embed]})
     }
 }

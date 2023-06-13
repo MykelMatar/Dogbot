@@ -17,7 +17,7 @@ import {
     userMention
 } from "discord.js";
 import guilds from "../../dependencies/schemas/guild-schema";
-import {embedColor, EnlistUserData, IGuild, NewClient, UserInfo} from "../../dependencies/myTypes";
+import {embedColor, FetchUserData, IGuild, NewClient, UserInfo} from "../../dependencies/myTypes";
 import {
     removeTerminationListener,
     terminate,
@@ -28,6 +28,7 @@ import {updateUserData} from "../../dependencies/helpers/updateUserData";
 import log from "../../dependencies/constants/logger";
 import {getLevelFromXp} from "../../dependencies/helpers/getLevelFromXp";
 import {gameTitles} from "../../dependencies/constants/gameTitles";
+import {waitForUpdate} from "../../dependencies/helpers/waitForUpdate";
 
 // TODO add edit button to edit fields
 export const fetchGamers = {
@@ -130,7 +131,7 @@ export const fetchGamers = {
             await interaction.reply({content: role})
         }
 
-        let enlistUserData: EnlistUserData = {
+        let enlistUserData: FetchUserData = {
             enlistedUsers: ['-'],
             enlistedUserIds: [],
             rejectedUsers: ['-'],
@@ -226,7 +227,7 @@ export const fetchGamers = {
             let userXPMap = new Collection<Snowflake, number>()
             for (const userId of enlistUsersWhoGainedXP) {
                 let user = userData.find(user => user.id === userId)
-                let oldXPValue = user ? user.enlistStats.enlistXP : 0
+                let oldXPValue = user ? user.fetchStats.fetchXP : 0
                 userXPMap.set(userId, oldXPValue)
             }
 
@@ -238,11 +239,7 @@ export const fetchGamers = {
 
             await Promise.all([updateEnlistedUserData, updateRejectedUserData, updateIgnoredUserData, updatePrompt])
 
-            let updatedRecently = guildData.updatedAt > Date.now() - (10 * 60 * 60 * 1000); // true if updated in the last 10 seconds
-            while (!updatedRecently) {
-                updatedRecently = guildData.updatedAt > Date.now() - (10 * 60 * 60 * 1000);
-                log.info('Waiting for database update...')
-            }
+            waitForUpdate(guildData)
             log.info('Done')
 
             // fetch new user data for xp value comparison
@@ -255,7 +252,7 @@ export const fetchGamers = {
             let createLevelEmbed = false
 
             for (const userId of enlistUsersWhoGainedXP) {
-                let newXPValue = updatedUserData.find(user => user.id === userId).enlistStats.enlistXP
+                let newXPValue = updatedUserData.find(user => user.id === userId).fetchStats.fetchXP
                 let oldXPValue = userXPMap.get(userId)
 
                 let {level: oldLevel} = getLevelFromXp(oldXPValue)

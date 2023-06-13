@@ -15,12 +15,12 @@ const guildSchema = new Schema({
         {
             username: String,
             id: String,
-            enlistStats: {
+            fetchStats: {
                 enlists: Number,
                 rejects: Number,
                 ignores: Number,
-                enlistXP: Number,
-                enlistStreak: Number,
+                fetchXP: Number,
+                fetchStreak: Number,
             },
             tttStats: {
                 wins: Number,
@@ -36,6 +36,11 @@ const guildSchema = new Schema({
             valorantProfile: {
                 username: String,
                 tag: String,
+            },
+            predictionStats: {
+                points: Number,
+                correctPredictions: Number,
+                incorrectPredictions: Number
             }
         },
     ],

@@ -10,9 +10,10 @@ import {GameProfile, IGuild, UserInfo} from "../myTypes";
  * @param userIdArray
  * @param infoType
  * @param profile
+ * @param pointChange - amount of prediction points gained or lost
  */
 
-export async function updateUserData(interaction: CommandInteraction | AutocompleteInteraction, userIdArray: Snowflake[], infoType: UserInfo, profile?: GameProfile) {
+export async function updateUserData(interaction: CommandInteraction | AutocompleteInteraction, userIdArray: Snowflake[], infoType: UserInfo, profile?: GameProfile, pointChange?: Map<string, number>) {
     if (userIdArray.length === 0) return log.info(`${infoType} user Id Array is empty, skipping user data check`)
     log.info(`Valid ${infoType} user ID array provided`)
 
@@ -27,26 +28,38 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
         enlists: 0,
         rejects: 0,
         ignores: 0,
-        enlistXP: 0,
-        enlistStreak: 0
+        fetchXP: 0,
+        fetchStreak: 0
+    }
+
+    let defaultPredictionStats = {
+        points: 1000,
+        correctPredictions: 0,
+        incorrectPredictions: 0
     }
 
     switch (infoType) {
         case UserInfo.Enlist:
             defaultEnlistStats.enlists = 1
-            defaultEnlistStats.enlistXP = XPPerEnlist
-            defaultEnlistStats.enlistStreak = 1
+            defaultEnlistStats.fetchXP = XPPerEnlist
+            defaultEnlistStats.fetchStreak = 1
             break;
         case UserInfo.Reject:
             defaultEnlistStats.rejects = 1
-            defaultEnlistStats.enlistXP = XPPerReject
+            defaultEnlistStats.fetchXP = XPPerReject
             break;
         case UserInfo.Ignore:
             defaultEnlistStats.ignores = 1
             break;
         case UserInfo.Perhaps:
-            defaultEnlistStats.enlistXP = XPPerPerhaps
+            defaultEnlistStats.fetchXP = XPPerPerhaps
             break;
+        case UserInfo.PredictionCreate:
+            defaultPredictionStats.correctPredictions = 0
+            defaultPredictionStats.incorrectPredictions = 0
+            break;
+        case UserInfo.CorrectPrediction:
+        case UserInfo.IncorrectPrediction:
         case UserInfo.WarzoneProfile:
         case UserInfo.ValorantProfile:
             break;
@@ -65,7 +78,7 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
                 userData.push({
                     username: guildMember.user.username,
                     id: userId,
-                    enlistStats: defaultEnlistStats
+                    fetchStats: defaultEnlistStats
                 })
             } else if (infoType == UserInfo.ValorantProfile) {
                 if (!("tag" in profile)) return log.error('Incorrect profile type (Need Valorant Profile)')
@@ -87,6 +100,16 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
                         platform: profile.platform,
                     }
                 })
+            } else if (infoType == UserInfo.PredictionCreate) {
+                userData.push({
+                    username: guildMember.user.username,
+                    id: userId,
+                    predictionStats: {
+                        points: 1000,
+                        correctPredictions: 0,
+                        incorrectPredictions: 0,
+                    }
+                })
             }
             log.info('Done')
 
@@ -94,43 +117,45 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
             const user = userData.find(user => user.id === userId)
             const maxEnlistStreak = 5
             const bonusStreakXP = 5
+            const maxPoints = 1_000_000_000
+            const minPoints = 1
 
             switch (infoType) {
                 case UserInfo.Enlist:
                     // mongo returns NaN if value does not exist (undefined)
-                    if (!isNaN(user.enlistStats.enlists)) {
-                        user.enlistStats.enlists++;
-                        if (user.enlistStats.enlistStreak < maxEnlistStreak) {
-                            user.enlistStats.enlistStreak++
+                    if (!isNaN(user.fetchStats.enlists)) {
+                        user.fetchStats.enlists++;
+                        if (user.fetchStats.fetchStreak < maxEnlistStreak) {
+                            user.fetchStats.fetchStreak++
                         }
-                        user.enlistStats.enlistXP += XPPerEnlist + (bonusStreakXP * user.enlistStats.enlistStreak)
+                        user.fetchStats.fetchXP += XPPerEnlist + (bonusStreakXP * user.fetchStats.fetchStreak)
                         break;
                     }
-                    user.enlistStats = defaultEnlistStats
+                    user.fetchStats = defaultEnlistStats
                     break;
                 case UserInfo.Reject:
-                    if (!isNaN(user.enlistStats.rejects)) {
-                        user.enlistStats.rejects++
-                        user.enlistStats.enlistStreak = 0
-                        user.enlistStats.enlistXP += XPPerReject
+                    if (!isNaN(user.fetchStats.rejects)) {
+                        user.fetchStats.rejects++
+                        user.fetchStats.fetchStreak = 0
+                        user.fetchStats.fetchXP += XPPerReject
                         break;
                     }
-                    user.enlistStats = defaultEnlistStats
+                    user.fetchStats = defaultEnlistStats
                     break;
                 case UserInfo.Ignore:
-                    if (!isNaN(user.enlistStats.ignores)) {
-                        user.enlistStats.ignores = 1
+                    if (!isNaN(user.fetchStats.ignores)) {
+                        user.fetchStats.ignores = 1
                         break;
                     }
-                    user.enlistStats = defaultEnlistStats
+                    user.fetchStats = defaultEnlistStats
                     break;
                 case UserInfo.Perhaps:
-                    if (!isNaN(user.enlistStats.ignores)) {
-                        user.enlistStats.enlistXP += 1
-                        user.enlistStats.enlistStreak = 0
+                    if (!isNaN(user.fetchStats.ignores)) {
+                        user.fetchStats.fetchXP += 1
+                        user.fetchStats.fetchStreak = 0
                         break;
                     }
-                    user.enlistStats = defaultEnlistStats
+                    user.fetchStats = defaultEnlistStats
                     break;
                 case UserInfo.ValorantProfile:
                     if (!("tag" in profile)) return log.error('Incorrect profile type (Need Valorant Profile)')
@@ -141,6 +166,29 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
                     if (!("platform" in profile)) return log.error('Incorrect profile type (Need Warzone Profile)')
                     user.warzoneProfile.username = profile.username
                     user.warzoneProfile.platform = profile.platform
+                    break;
+                case UserInfo.PredictionCreate:
+                    user.predictionStats.points = 1000
+                    user.predictionStats.incorrectPredictions = 0
+                    user.predictionStats.correctPredictions = 0
+                    break;
+                case UserInfo.CorrectPrediction:
+                    if (!isNaN(user.predictionStats.correctPredictions)) {
+                        const pointIncrease = pointChange.get(userId)
+                        user.predictionStats.correctPredictions++;
+                        user.predictionStats.points = Math.min(user.predictionStats.points + pointIncrease, maxPoints);
+                        break;
+                    }
+                    user.predictionStats = defaultPredictionStats
+                    break;
+                case UserInfo.IncorrectPrediction:
+                    if (!isNaN(user.predictionStats.incorrectPredictions)) {
+                        const pointDecrease = pointChange.get(userId)
+                        user.predictionStats.incorrectPredictions++
+                        user.predictionStats.points = Math.max(user.predictionStats.points - pointDecrease, minPoints);
+                        break;
+                    }
+                    user.predictionStats = defaultPredictionStats
                     break;
                 default:
                     return;

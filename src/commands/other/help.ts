@@ -19,7 +19,7 @@ export const help = {
             .setDescription('Please visit the [wiki](https://github.com/MykelMatar/Dogbot/wiki) for a comprehensive list of every command')
             .setImage('attachment://Dogbot_Logo_512.png')
             .setURL('https://github.com/MykelMatar/Dogbot/wiki')
-            .setFooter({text: 'This bot is created and maintained by Dogbert'})
+            .setFooter({text: 'This bot is created and maintained by .dogbert'})
             .setColor(embedColor)
 
         await interaction.editReply({embeds: [embed], files: [file]})

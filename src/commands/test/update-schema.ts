@@ -1,5 +1,5 @@
+// @ts-nocheck
 import {SlashCommandBuilder} from "discord.js";
-import guilds from "../../dependencies/schemas/guild-schema";
 
 export const updateSchema = {
     data: new SlashCommandBuilder()
@@ -7,12 +7,28 @@ export const updateSchema = {
         .setDescription('update mongo schema (for test bot only)'),
 
     async execute() {
-        guilds.updateMany({}, {timestamps: true}, (err, res) => {
-            if (err) {
-                console.error(err);
-            } else {
-                console.log(res.nModified + ' documents updated');
-            }
-        });
+
+
+        // guilds.bulkWrite([
+        //     {
+        //         updateMany: {
+        //             filter: {},
+        //             update: {
+        //                 $rename: {
+        //                     "userData.$[].enlistStats": "userData.$[].fetchStats",
+        //                     // "userData.$[].fetchStats.enlistXP": "userData.$[].fetchStats.fetchXP",
+        //                     // "userData.$[].fetchStats.enlistStreak": "userData.$[].fetchStats.fetchStreak",
+        //                 },
+        //             },
+        //         },
+        //     },
+        // ])
+        //     .then(() => {
+        //         console.log("Documents updated successfully.");
+        //     })
+        //     .catch((error) => {
+        //         console.error("Error updating documents:", error);
+        //     });
     }
+
 }

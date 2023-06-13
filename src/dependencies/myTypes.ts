@@ -49,7 +49,7 @@ export interface MinecraftServer {
     port: number
 }
 
-export interface EnlistLeaderboardUser {
+export interface FetchLeaderboardUser {
     name: string
     enlists: number
     rejects: number
@@ -59,9 +59,16 @@ export interface EnlistLeaderboardUser {
     RejectRankValue: number
 }
 
-export interface EnlistUserData {
+export interface predictionLeaderboardUser {
+    name: string
+    correctPredicions: number
+    incorrectPredicions: number
+    points: number
+}
+
+export interface FetchUserData {
     enlistedUsers: string[]
-    enlistedUserIds: Snowflake[] // for pushing user data to mongoDB
+    enlistedUserIds: Snowflake[]
     rejectedUsers: string[]
     rejectedUserIds: Snowflake[]
     potentialUsers: string[]
@@ -92,12 +99,12 @@ export interface IGuild extends Document {
     userData: {
         username: string;
         id: string;
-        enlistStats?: {
+        fetchStats?: {
             enlists: number;
             rejects: number;
             ignores: number;
-            enlistXP: number;
-            enlistStreak: number;
+            fetchXP: number;
+            fetchStreak: number;
         };
         tttStats?: {
             wins: number;
@@ -111,6 +118,11 @@ export interface IGuild extends Document {
             username: string;
             tag: string;
         };
+        predictionStats?: {
+            points: number;
+            correctPredictions: number;
+            incorrectPredictions: number;
+        }
     }[];
     mcServerData: {
         serverList: {
@@ -134,6 +146,9 @@ export enum UserInfo {
     Perhaps = 'Perhaps',
     WarzoneProfile = 'WarzoneProfile',
     ValorantProfile = 'ValorantProfile',
+    PredictionCreate = 'PredictionCreate',
+    CorrectPrediction = 'CorrectPrediction',
+    IncorrectPrediction = 'IncorrectPrediction',
 }
 
 export const embedColor = '#B8CAD1'

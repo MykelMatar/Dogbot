@@ -94,7 +94,6 @@ export const poll = {
             timeUnit = 'hour';
         }
 
-        // generate embed w/ poll
         const pollEmbed = new EmbedBuilder()
             .setTitle(`${prompt}`)
             .setDescription(`This poll will be active for ${fixedTime} ${timeUnit}`)

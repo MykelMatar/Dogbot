@@ -1,6 +1,4 @@
-import {PollStats} from "../myTypes";
-
-export async function updateProgressBars(interaction, embed, pollStats: PollStats, numBars: number) {
+export async function updateProgressBars(interaction, embed, pollStats, numBars: number) {
     const fillChar = '▰'
     const emptyChar = '▱'
 

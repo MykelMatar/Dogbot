@@ -1,4 +1,4 @@
-import {EnlistUserData} from "../myTypes";
+import {FetchUserData} from "../myTypes";
 import {ButtonInteraction, EmbedBuilder, GuildMember, Message} from "discord.js";
 
 /**
@@ -11,7 +11,7 @@ import {ButtonInteraction, EmbedBuilder, GuildMember, Message} from "discord.js"
  * @param enlistPrompt message containing embed and buttons
  */
 
-export async function updateFetchEmbed(interaction: ButtonInteraction, embed: EmbedBuilder, enlistUserData: EnlistUserData, enlistPrompt: Message) {
+export async function updateFetchEmbed(interaction: ButtonInteraction, embed: EmbedBuilder, enlistUserData: FetchUserData, enlistPrompt: Message) {
     const {
         enlistedUsers,
         enlistedUserIds,

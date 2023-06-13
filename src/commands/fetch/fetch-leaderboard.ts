@@ -1,5 +1,5 @@
 import {CommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js";
-import {embedColor, EnlistLeaderboardUser, IGuild, NewClient} from "../../dependencies/myTypes";
+import {embedColor, FetchLeaderboardUser, IGuild, NewClient} from "../../dependencies/myTypes";
 
 //TODO if user changes username, does it affect any commands?
 /*
@@ -39,13 +39,13 @@ export const fetchLeaderboard = {
         const ignoreWeight: number = 0 // using ignore values in rank calculations generated very odd leaderboards
 
         const totalEnlistValue = userData.reduce((acc, user) => {
-            const {enlists, rejects} = user.enlistStats
+            const {enlists, rejects} = user.fetchStats
             return acc + enlists + rejects;
         }, 0);
 
-        let userArray: EnlistLeaderboardUser[] = []
+        let userArray: FetchLeaderboardUser[] = []
         for (const user of userData) {
-            const {enlists, rejects, ignores} = user.enlistStats
+            const {enlists, rejects, ignores} = user.fetchStats
             const totalOfValues = enlists + rejects + ignores;
 
             let enlistPercentage = rejects === 0 ? 1 : enlists / totalOfValues;
@@ -78,7 +78,7 @@ export const fetchLeaderboard = {
                 weightedRejectPercentage + weightedRejectTotal - weightedIgnorePercentage,
             ];
 
-            let leaderboardUser: EnlistLeaderboardUser = {
+            let leaderboardUser: FetchLeaderboardUser = {
                 name: user.username,
                 enlists: enlists,
                 rejects: rejects,
@@ -107,8 +107,8 @@ export const fetchLeaderboard = {
         let top3Gamers: string[][] = [[], [], []]
         let top3Losers: string[][] = [[], [], []]
 
-        let enlistRankings: EnlistLeaderboardUser[] = [...userArray].sort((a, b) => (b.EnlistRankValue - a.EnlistRankValue))
-        let rejectRankings: EnlistLeaderboardUser[] = [...userArray].sort((a, b) => (a.RejectRankValue < b.RejectRankValue ? 1 : -1))
+        let enlistRankings: FetchLeaderboardUser[] = [...userArray].sort((a, b) => (b.EnlistRankValue - a.EnlistRankValue))
+        let rejectRankings: FetchLeaderboardUser[] = [...userArray].sort((a, b) => (a.RejectRankValue < b.RejectRankValue ? 1 : -1))
         for (let i = 0; i < 3; i++) {
             top3Gamers[0].push(`**${i + 1}.** ${enlistRankings[i].name}\n`,)
             top3Gamers[1].push(`**${i + 1}.** ${(enlistRankings[i].enlistPercentage * 100).toFixed(2)}\n`)
@@ -121,8 +121,8 @@ export const fetchLeaderboard = {
         const embed = new EmbedBuilder()
             .setTitle(`Enlist Leaderboard`)
             .addFields([
-                {name: 'Top 3 Gamers⠀⠀⠀⠀⠀', value: top3Gamers[0].join(''), inline: true},
-                {name: 'Enlist Percentage⠀⠀⠀', value: top3Gamers[1].join(''), inline: true},
+                {name: 'Top 3 Gamers', value: top3Gamers[0].join(''), inline: true},
+                {name: 'Enlist Percentage', value: top3Gamers[1].join(''), inline: true},
                 {name: 'Total Interactions', value: top3Gamers[2].join(''), inline: true},
                 {name: 'Top 3 Cringelords', value: top3Losers[0].join(''), inline: true},
                 {name: 'Reject Percentage', value: top3Losers[1].join(''), inline: true},
