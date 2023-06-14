@@ -66,7 +66,7 @@ export const prediction = {
 
         const collector = interaction.channel.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: 8000, // 120 * 60000,
+            time: 120 * 60000,
             filter: (i) => {
                 if (i.message.id != sent.id) return false
                 return ['predict-yes', 'predict-no'].includes(i.customId)

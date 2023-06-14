@@ -19,6 +19,7 @@ export const reload = {
         let ignore: string[] = !client.isTestBot ? ['test', 'voice'] : [];
         const commandFiles = getFiles('./src/commands', '.ts', ignore)
 
+        const existingCommands = new Set(client.commands.map((command) => command.data.name));
         const newCommands = [];
 
         for (const commandFile of commandFiles) {
@@ -28,19 +29,25 @@ export const reload = {
                 const commandData = commandList[command].data;
                 client.commands.delete(commandData.name); // must delete to remove cached commands
                 client.commands.set(commandData.name, commandList[command])
-                newCommands.push(commandData);
+                if (!existingCommands.has(commandData.name)) {
+                    newCommands.push(commandData);
+                }
             }
         }
         await interaction.editReply({content: 'Commands Refreshed'})
 
         if (newCommands.length == 0) return
+        
+        for (const command of client.commands) {
+            newCommands.push(command)
+        }
 
         const testingServer = '715122900021149776'
         const testBotId = '851186508262408192'
         const dogbotId = '848283770041532425'
 
         try {
-            log.info('new commands found')
+            log.info('new commands found, reloading all commands.')
             if (client.isTestBot) {
                 const rest = new REST({version: '10'}).setToken(process.env.BOT_TEST_TOKEN);
                 await rest.put(
