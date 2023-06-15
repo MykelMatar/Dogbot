@@ -14,13 +14,13 @@ import {
     TextInputBuilder,
     TextInputStyle
 } from "discord.js";
-import {embedColor, IGuild, NewClient, UserInfo} from "../../dependencies/myTypes";
+import {embedColor, IGuild, NewClient, PredictionStats, UserInfo} from "../../dependencies/myTypes";
 import {terminate, terminationListener} from "../../dependencies/helpers/terminationListener";
 import {updateUserData} from "../../dependencies/helpers/updateUserData";
-import {waitForUpdate} from "../../dependencies/helpers/waitForUpdate";
 import guilds from "../../dependencies/schemas/guild-schema";
 import log from "../../dependencies/constants/logger";
 import {updateProgressBars} from "../../dependencies/helpers/updateProgressBars";
+import {waitForUpdate} from "../../dependencies/helpers/waitForUpdate";
 
 export const prediction = {
     data: new SlashCommandBuilder()
@@ -32,10 +32,10 @@ export const prediction = {
                 .setRequired(true)),
 
     async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
-
-        const commandOptions = interaction.options as CommandInteractionOptionResolver // ts thinks the .get options don't exist
+        const commandOptions = interaction.options as CommandInteractionOptionResolver
         const prompt = commandOptions.getString('prediction')
 
+        // initialize embed and button row
         const predictionEmbed = new EmbedBuilder()
             .setTitle(`${prompt}`)
             .setDescription(`Point Pool 💰 0 💰`)
@@ -64,9 +64,28 @@ export const prediction = {
         await interaction.reply({content: '*Prediction Active*'})
         const sent = await interaction.channel.send({embeds: [predictionEmbed], components: [row]})
 
+        // initialize data structures
+        const predictors: Map<Snowflake, string> = new Map()
+        const betAmountMap = new Map<string, number>()
+        const believers: string[] | Snowflake[] = []
+        const believerIds: string[] | Snowflake[] = []
+        const doubters: string[] | Snowflake[] = []
+        const doubterIds: string[] | Snowflake[] = []
+        const pendingResponse = []
+
+        let totalPool = 0
+        let yesPool = 0
+        let noPool = 0
+
+        let numberOfVotes: PredictionStats = {
+            choice1: 0, // yes (named this way bc of the updateProgressBars Function)
+            choice2: 0, // no
+            total: 0
+        }
+
         const collector = interaction.channel.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: 120 * 60000,
+            time: 120_000,
             filter: (i) => {
                 if (i.message.id != sent.id) return false
                 return ['predict-yes', 'predict-no'].includes(i.customId)
@@ -75,46 +94,31 @@ export const prediction = {
         const terminateBound = terminate.bind(null, client, collector)
         await terminationListener(client, collector, terminateBound)
 
-        let numberOfVotes = {
-            choice1: 0, // yes (named this way bc of the updateProgressBars Function)
-            choice2: 0, // no
-            total: 0
-        }
-
-        const predictors: Map<Snowflake, string> = new Map()
-        const betAmountMap = new Map<string, number>()
-        const believers: string[] | Snowflake[] = []
-        const believerIds: string[] | Snowflake[] = []
-        const doubters: string[] | Snowflake[] = []
-        const doubterIds: string[] | Snowflake[] = []
-        const pendingResponse = []
-        let totalPool = 0
-        let yesPool = 0
-        let noPool = 0
-
+        // start collector
         collector.on('collect', async i => {
             if (pendingResponse.includes(i.user.id)) {
                 await i.reply({content: `Please wait 15s before trying again`, ephemeral: true})
                 return
             }
 
+            // get user data or create user data if it doesn't exist
             const user = guildData.userData.find(user => user.id === i.user.id);
             if (user == undefined || JSON.stringify(user.predictionStats) === '{}') {
                 await updateUserData(interaction, [i.user.id], UserInfo.PredictionCreate)
-                waitForUpdate(guildData)
+                await waitForUpdate(guildData)
                 guildData = await guilds.findOne({guildId: interaction.guildId})
             }
 
             const member = i.member as GuildMember;
             const isBeliever = i.customId === 'predict-yes';
+
             const targetArray = isBeliever ? believers : doubters;
             const targetIds = isBeliever ? believerIds : doubterIds;
             const targetFieldIndex = isBeliever ? 3 : 5;
-            const targetEmoji = isBeliever ? client.emojis.cache.get("900906521800622121") : client.emojis.cache.get("877632254568964096")
-            const progressBarCustomId = isBeliever ? 'choice1' : 'choice2'
-            let userPoints = guildData.userData.find(user => user.id === i.user.id).predictionStats.points
 
-            userPoints = userPoints == undefined ? 1000 : userPoints
+            const progressBarCustomId = isBeliever ? 'choice1' : 'choice2'
+            let userPoints = guildData.userData.find(user => user.id === i.user.id)?.predictionStats?.points
+            userPoints = userPoints == undefined ? 1000 : userPoints // just in case database issue occurs
 
             if (believerIds.includes(i.user.id) || doubterIds.includes(i.user.id)) {
                 await i.reply({
@@ -143,62 +147,63 @@ export const prediction = {
 
             i.showModal(modal)
 
-            const filter = (modalInteraction) => modalInteraction.customId === 'betModal' && modalInteraction.user.id == i.user.id;
-            i.awaitModalSubmit({filter, time: 15_000})
+            const modalFilter = (modalInteraction) =>
+                modalInteraction.customId === 'betModal' &&
+                modalInteraction.user.id == i.user.id;
+
+            i.awaitModalSubmit({filter: modalFilter, time: 15_000})
                 .then(async (modalInteraction) => {
                     const input = modalInteraction.fields.getTextInputValue('amountInput')
                     const isNumeric = /^\d+$/.test(input);
                     const isAllIn = input.toLowerCase().replace(/\s/g, "") == 'allin'
+                    const betAmount = isAllIn ? userPoints : parseInt(input, 10)
+                    const betConfirmation = isAllIn ? 'went all in' : `bet ${input} points`
+                    const choice = isBeliever ? '**Yes**' : '**No**'
 
-                    if (isNumeric || isAllIn) {
-                        const betAmount = isAllIn ? userPoints : parseInt(input, 10)
-                        const replyString = isAllIn ? 'went all in' : `bet ${input} points`
-                        const choice = isBeliever ? '**Yes**' : '**No**'
+                    // invalid input
+                    if (!(isNumeric || isAllIn)) {
+                        pendingResponse.splice(pendingResponse.indexOf(i.user.id), 1)
 
-                        if (betAmount <= userPoints) {
-                            await modalInteraction[modalInteraction.replied ? 'editReply' : 'reply']({
-                                content: `you ${replyString} on **${choice}**`,
-                                ephemeral: !modalInteraction.replied
-                            });
-
-                            targetArray.push(`> ${member.displayName} » ${betAmount} \n`);
-                            targetIds.push(i.user.id);
-
-                            isBeliever ? yesPool += betAmount : noPool += betAmount;
-                            totalPool += betAmount
-
-                            if (targetArray.length > 0) {
-                                const winMultiplier = isBeliever ? totalPool / yesPool : totalPool / noPool;
-                                const userType = isBeliever ? 'Believers' : 'Doubters'
-                                predictionEmbed.data.description = `Point Pool 💰 ${totalPool} 💰`
-                                predictionEmbed.data.fields[targetFieldIndex].name = `${userType} ― *${winMultiplier.toFixed(1)}x*`
-                                predictionEmbed.data.fields[targetFieldIndex].value = targetArray.join('');
-                            }
-
-                            betAmountMap.set(i.user.id, betAmount)
-
-                            if (predictors.has(i.user.id)) {
-                                numberOfVotes[predictors.get(i.user.id)] -= 1;
-                            } else {
-                                numberOfVotes.total++
-                            }
-                            predictors.set(i.user.id, progressBarCustomId)
-                            numberOfVotes[predictors.get(i.user.id)] += 1;
-                            await updateProgressBars(sent, predictionEmbed, numberOfVotes, 2, true)
-
-                        } else {
-                            await modalInteraction[modalInteraction.replied ? 'editReply' : 'reply']({
-                                content: `You don't have that many points pal. Try again`,
-                                ephemeral: !modalInteraction.replied
-                            });
-                        }
-                    } else {
-                        await modalInteraction[modalInteraction.replied ? 'editReply' : 'reply']({
+                        return modalInteraction[modalInteraction.replied ? 'editReply' : 'reply']({
                             content: `Input a valid number.`,
                             ephemeral: !modalInteraction.replied
                         });
+                    } else if (betAmount > userPoints) {
                         pendingResponse.splice(pendingResponse.indexOf(i.user.id), 1)
+
+                        return modalInteraction[modalInteraction.replied ? 'editReply' : 'reply']({
+                            content: `You don't have that many points pal. Try again`,
+                            ephemeral: !modalInteraction.replied
+                        });
                     }
+
+                    // valid input (send confirmation)
+                    await modalInteraction[modalInteraction.replied ? 'editReply' : 'reply']({
+                        content: `you ${betConfirmation} on **${choice}**`,
+                        ephemeral: !modalInteraction.replied
+                    });
+
+                    // add bet to pools and betmap 
+                    isBeliever ? yesPool += betAmount : noPool += betAmount;
+                    totalPool += betAmount
+                    betAmountMap.set(i.user.id, betAmount)
+
+                    // add user to predictor map and increase vote count
+                    predictors.set(i.user.id, progressBarCustomId)
+                    numberOfVotes[predictors.get(i.user.id)] += 1;
+                    numberOfVotes.total++;
+
+                    // update arrays and embed
+                    targetArray.push(`> ${member.displayName} » ${betAmount} \n`);
+                    targetIds.push(i.user.id);
+
+                    const winMultiplier = isBeliever ? totalPool / yesPool : totalPool / noPool;
+                    const userType = isBeliever ? 'Believers' : 'Doubters'
+                    predictionEmbed.data.description = `Point Pool 💰 ${totalPool} 💰`
+                    predictionEmbed.data.fields[targetFieldIndex].name = `${userType} ― *${winMultiplier.toFixed(1)}x*`
+                    predictionEmbed.data.fields[targetFieldIndex].value = targetArray.join('');
+
+                    await updateProgressBars(sent, predictionEmbed, numberOfVotes, 2, true)
                     pendingResponse.splice(pendingResponse.indexOf(i.user.id), 1)
                 })
                 .catch(() => {
@@ -206,6 +211,7 @@ export const prediction = {
                 })
         });
 
+        // ask for winner, distribute funds, and update user data
         collector.on('end', async () => {
             // send interaction to ask who won
             const selectWinnerButton = new ActionRowBuilder<ButtonBuilder>()
@@ -219,7 +225,8 @@ export const prediction = {
             sent.edit({components: [selectWinnerButton]})
 
             try {
-                const selectCollectorFilter = async (i) => {
+                // send button to be able to set winner
+                const winnerSelectionFilter = async (i) => {
                     if (i.message.id != sent.id) return false // prevent simultaneous prompts from affecting each other
                     if (i.user.id != interaction.user.id) {
                         await interaction.channel.send(`Only the person who started the prediction can select the winner`)
@@ -227,9 +234,10 @@ export const prediction = {
                     }
                     return ['predict-choose'].includes(i.customId);
                 };
+
                 const selectWinnerInteraction = await sent.awaitMessageComponent({
-                    filter: selectCollectorFilter,
-                    time: 3.6e+6
+                    filter: winnerSelectionFilter,
+                    time: 60 * 60_000 // 3.6e6 = 1 hour (in ms) 
                 })
 
                 const winnerInteraction = await selectWinnerInteraction.reply({
@@ -237,63 +245,60 @@ export const prediction = {
                     components: [row]
                 });
 
-                try {
-                    await sent.edit({components: []})
-                    const winCollectorFilter = async (i) => {
-                        const message = await selectWinnerInteraction.fetchReply()
-                        if (i.message.id != message.id || i.user.id != interaction.user.id) return false
-                        return ['predict-yes', 'predict-no'].includes(i.customId);
-                    };
-                    const winCollector = await winnerInteraction.awaitMessageComponent({
-                        filter: winCollectorFilter,
-                        time: 120000
-                    })
-                    const winner = winCollector.customId == 'predict-yes' ? 'Yes' : 'No'
-                    const winString = winner === 'Yes' ? `Belivers Win!` : 'Doubters Win!'
+                // ask for winner
+                await sent.edit({components: []})
+                const winCollectorFilter = async (i) => {
+                    const message = await selectWinnerInteraction.fetchReply()
+                    if (i.message.id != message.id || i.user.id != interaction.user.id) return false
+                    return ['predict-yes', 'predict-no'].includes(i.customId);
+                };
 
-                    // Pari-mutuel betting system - the win/lose multipliers are determined by the total amount of money wagered on each outcome
-                    // Win Multiplier = (Total Pool - Deductions) / Amount Bet on the Winning Outcome
-                    const winningPool = winner === 'Yes' ? yesPool : noPool
-                    const bettingFormula = totalPool / winningPool
-                    const winMultiplier = winningPool !== 0 ? bettingFormula : 1;
-                    let totalWinnings = 0
+                const winCollector = await winnerInteraction.awaitMessageComponent({
+                    filter: winCollectorFilter,
+                    time: 120_000
+                })
 
-                    for (const [key, value] of betAmountMap.entries()) {
-                        const winnings = (value * winMultiplier).toFixed(0)
-                        totalWinnings += parseInt(winnings)
-                    }
+                const winner = winCollector.customId == 'predict-yes' ? 'Yes' : 'No'
+                const winString = winner === 'Yes' ? `Belivers Win!` : 'Doubters Win!'
 
-                    const peepoBus = client.emojis.cache.get("994786993777160263")
-                    const what = client.emojis.cache.get("1117689831657578538")
+                // Pari-mutuel betting system math + other constant declarations
+                const winningPool = winner === 'Yes' ? yesPool : noPool
+                const bettingFormula = totalPool / winningPool
+                const winMultiplier = winningPool !== 0 ? bettingFormula : 1;
+                const peepoBus = client.emojis.cache.get("994786993777160263")
+                const what = client.emojis.cache.get("1117689831657578538")
+                const pointChangeMap = new Map<string, number>()
 
-                    await selectWinnerInteraction.editReply({
-                        content: `${winString} ${what.toString()}.  ${totalWinnings} points distributed amongst winners.`,
-                        components: []
-                    });
-
-                    const pointChangeMap = new Map<string, number>()
-
-                    const updatePredictionResults = async (ids: string[], multiplier: number, userInfoType: UserInfo) => {
-                        for (const id of ids) {
-                            const betAmount = betAmountMap.get(id) || 0;
-                            const pointChange = (betAmount * multiplier).toFixed(0);
-                            pointChangeMap.set(id, parseInt(pointChange));
-                        }
-
-                        await updateUserData(interaction, ids, userInfoType, null, pointChangeMap);
-                    };
-
-                    if (winner === 'Yes') {
-                        await updatePredictionResults(believerIds, winMultiplier, UserInfo.CorrectPrediction);
-                        await updatePredictionResults(doubterIds, 1, UserInfo.IncorrectPrediction);
-                    } else {
-                        await updatePredictionResults(believerIds, 1, UserInfo.IncorrectPrediction);
-                        await updatePredictionResults(doubterIds, winMultiplier, UserInfo.CorrectPrediction);
-                    }
-                } catch (e) {
-                    sent.edit({components: []})
-                    log.warn('Response Timeout')
+                let totalWinnings = 0
+                for (const [key, value] of betAmountMap.entries()) {
+                    const winnings = (value * winMultiplier).toFixed(0)
+                    totalWinnings += parseInt(winnings)
                 }
+
+                await selectWinnerInteraction.editReply({
+                    content: `${winString} ${what.toString()}.  ${totalWinnings} points distributed amongst winners.`,
+                    components: []
+                });
+
+                // update user data
+                const updatePredictionResults = async (ids: string[], multiplier: number, userInfoType: UserInfo) => {
+                    for (const id of ids) {
+                        const betAmount = betAmountMap.get(id) || 0;
+                        const pointChange = (betAmount * multiplier).toFixed(0);
+                        pointChangeMap.set(id, parseInt(pointChange));
+                    }
+
+                    await updateUserData(interaction, ids, userInfoType, null, pointChangeMap);
+                };
+
+                if (winner === 'Yes') {
+                    await updatePredictionResults(believerIds, winMultiplier, UserInfo.CorrectPrediction);
+                    await updatePredictionResults(doubterIds, 1, UserInfo.IncorrectPrediction);
+                } else {
+                    await updatePredictionResults(believerIds, 1, UserInfo.IncorrectPrediction);
+                    await updatePredictionResults(doubterIds, winMultiplier, UserInfo.CorrectPrediction);
+                }
+
             } catch (e) {
                 sent.edit({components: []})
                 log.warn('Response Timeout')

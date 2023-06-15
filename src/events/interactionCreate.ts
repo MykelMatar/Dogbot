@@ -55,7 +55,7 @@ export async function interactionCreate(client: NewClient, interaction: CommandI
             if ((interaction.member instanceof GuildMember)) {
                 log.info(`${interaction.commandName} requested by ${interaction.member.user.username} in ${interaction.member.guild.name}`)
             }
-            let guildData: IGuild = await guilds.findOne({guildId: interaction.guildId})
+            const guildData: IGuild = await guilds.findOne({guildId: interaction.guildId})
             await command.execute(client, interaction, guildData);
         } catch (error) {
             log.error(error)

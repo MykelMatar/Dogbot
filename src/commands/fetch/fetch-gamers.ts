@@ -27,10 +27,9 @@ import {updateFetchEmbed} from "../../dependencies/helpers/updateFetchEmbed";
 import {updateUserData} from "../../dependencies/helpers/updateUserData";
 import log from "../../dependencies/constants/logger";
 import {getLevelFromXp} from "../../dependencies/helpers/getLevelFromXp";
-import {gameTitles} from "../../dependencies/constants/gameTitles";
+import {multiplayerGameTitles} from "../../dependencies/constants/gameTitles";
 import {waitForUpdate} from "../../dependencies/helpers/waitForUpdate";
 
-// TODO add edit button to edit fields
 export const fetchGamers = {
     data: new SlashCommandBuilder()
         .setName('fetch-gamers')
@@ -60,7 +59,10 @@ export const fetchGamers = {
     async autocomplete(interaction) {
         const options = interaction.options as CommandInteractionOptionResolver
         const focusedValue = options.getFocused()?.toLowerCase();
-        const filtered = gameTitles.filter(choice => choice.toLowerCase().startsWith(focusedValue));
+        const focusedLetter = focusedValue.charAt(0)
+        const index = (focusedLetter != '' && isNaN(Number(focusedLetter))) ? focusedLetter.toUpperCase() : 'Top25'
+        const filtered = multiplayerGameTitles[index].filter(choice => choice.toLowerCase().startsWith(focusedValue));
+
         await interaction.respond(
             filtered.map(choice => ({name: choice, value: choice})),
         );
@@ -69,12 +71,12 @@ export const fetchGamers = {
     async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
         const userData = guildData.userData
 
-        // retrieve parameters
+        // retrieve options
         const options = interaction.options as CommandInteractionOptionResolver // ts thinks the .get options dont exist
         const game = options.getString('game')
         const minGamers = options.getInteger('minimum')
         const title = options.getString('title') ?? 'Gamer Time'
-        const roleValue = options.getRole('role') ?? undefined
+        const roleValue = options.getRole('role')
 
         let role: any = 'Gamer Time'
         let roleId
@@ -115,7 +117,7 @@ export const fetchGamers = {
             .setFooter({text: 'Selecting the "Perhaps" option will not count towards your fetch stats',})
 
         let {ip, port} = guildData.mcServerData.selectedServer
-        if (['minecraft', 'mc'].includes(game.toLowerCase())) {
+        if (['minecraft', 'mc'].includes(game.toLowerCase().replace(/\s/g, ""))) {
             embed.setDescription(`need ${minGamers} for ${game} ☛ __**${ip}:${port}**__`)
         }
 
@@ -239,12 +241,12 @@ export const fetchGamers = {
 
             await Promise.all([updateEnlistedUserData, updateRejectedUserData, updateIgnoredUserData, updatePrompt])
 
-            waitForUpdate(guildData)
+            await waitForUpdate(guildData)
             log.info('Done')
 
             // fetch new user data for xp value comparison
-            const updatedGuildData: IGuild = await guilds.findOne({guildId: interaction.guildId})
-            const updatedUserData = updatedGuildData.userData
+            guildData = await guilds.findOne({guildId: interaction.guildId})
+            const updatedUserData = guildData.userData
 
             // user arrays for level embed
             let usersWhoLeveledUp: string[] = []

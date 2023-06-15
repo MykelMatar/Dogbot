@@ -1,4 +1,5 @@
 import DiscordJS, {
+    ActivityType,
     APISelectMenuOption,
     ApplicationCommandData,
     AutocompleteInteraction,
@@ -29,6 +30,11 @@ export interface SlashCommand {
     cooldown?: number;
     autocomplete?: (interaction: AutocompleteInteraction) => Promise<void>;
     execute: (client: NewClient, interaction: CommandInteraction, guildData: IGuild) => Promise<void | Message>;
+}
+
+export interface Activity {
+    activity: string
+    type: ActivityType.Playing | ActivityType.Streaming | ActivityType.Listening | ActivityType.Watching | ActivityType.Competing
 }
 
 export interface ValorantProfile {
@@ -85,6 +91,8 @@ export interface PollStats {
     choice5: number
     total: number
 }
+
+export type PredictionStats = Partial<PollStats>;
 
 export interface IGuild extends Document {
     guild: string;

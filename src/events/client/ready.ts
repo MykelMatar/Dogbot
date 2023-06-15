@@ -1,6 +1,6 @@
 import {ActivityType} from "discord.js";
-import mongoose from "mongoose";
-import {NewClient} from "../../dependencies/myTypes";
+import mongoose, {Error} from "mongoose";
+import {Activity, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/constants/logger";
 
 export async function ready(client: NewClient) {
@@ -8,21 +8,31 @@ export async function ready(client: NewClient) {
         .then(() => {
             log.info('Connected to Mongo')
         }).catch(e => {
-            log.error(e)
+            return new Error(e)
         })
 
     // change activity every 10s
-    let activities: string[] = ['Fortnite no build', 'Warzone no build', 'with ur mom', 'with ur dad', 'with the bois']
+    const activities: Activity[] = [
+        {activity: 'Fortnite no build', type: ActivityType.Competing},
+        {activity: 'Warzone no build', type: ActivityType.Competing},
+        {activity: 'with the bois', type: ActivityType.Playing},
+        {activity: 'the voices', type: ActivityType.Listening},
+        {activity: 'Cars 3', type: ActivityType.Watching},
+        {activity: 'fetch', type: ActivityType.Playing},
+    ]
+
+    let lastActivity: Activity | null = null;
+
     setInterval(function() {
-        let activityType: ActivityType
-        let index = Math.floor(Math.random() * (activities.length - 1))
-        if (index == 0 || index == 1) {
-            activityType = ActivityType.Competing
-        } else {
-            activityType = ActivityType.Playing
+        let index = Math.floor(Math.random() * (activities.length))
+
+        while (activities.length > 1 && activities[index] === lastActivity) {
+            index = Math.floor(Math.random() * activities.length);
         }
-        client.user.setActivity(activities[index], {type: activityType});
-    }, 10000)
+
+        lastActivity = activities[index];
+        client.user.setActivity(activities[index].activity, {type: activities[index].type});
+    }, 10_000)
 
     if (client.isTestBot) {
         log.info('Test Bot Ready')

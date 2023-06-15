@@ -11,7 +11,19 @@ export const magic8 = {
                 .setRequired(true)),
 
     async execute(client: NewClient, interaction: CommandInteraction) {
-        let responses: string[] = ['yes', 'no', 'perhaps', 'definitely not', 'absolutely', 'how would I know?', 'shut up bitch', 'lol no']
+        let responses: string[] = [
+            'yes',
+            'no',
+            'perhaps',
+            'definitely not',
+            'absolutely',
+            'without a doubt',
+            'with much doubt',
+            'how would I know?',
+            'shut up not now',
+            'lol no'
+        ]
+
         let response = responses[Math.floor(Math.random() * responses.length)]
         let responseEmbed = new EmbedBuilder()
             .setTitle(response)

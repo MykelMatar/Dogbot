@@ -86,7 +86,7 @@ export const fetchLeaderboard = {
                 rejectPercentage: rejectPercentage,
                 EnlistRankValue: EnlistRank,
                 RejectRankValue: RejectRank,
-            }
+            } as const
             userArray.push(leaderboardUser)
         }
         userArray = userArray.filter(user => (user.enlists + user.rejects >= 10)) // reduce outliers
