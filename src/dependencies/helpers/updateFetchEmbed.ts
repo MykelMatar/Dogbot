@@ -62,6 +62,21 @@ export async function updateFetchEmbed(interaction: ButtonInteraction, embed: Em
         thirdUserIdArray = rejectedUserIds
     } else return
 
+    // const charLeft =
+    //     embedLimits.totalCharLimit -
+    //     (
+    //         embed.data.description.length +
+    //         embed.data.title.length +
+    //         embed.data.footer.text.length +
+    //         embed.data.fields[0].name.length +
+    //         embed.data.fields[0].value.length +
+    //         embed.data.fields[1].name.length +
+    //         embed.data.fields[1].value.length
+    //     );
+    //
+    // const charLimit = (charLeft < embedLimits.fields.value) ? (charLeft / 2) - 32 : (embedLimits.fields.value / 2) - 32
+    // let isExceedingCharLimit = isExceedingCharacterLimit(selectedUserArray, charLimit)
+
     if (!perhapsFlag) {
         if (!selectedUserIdArray.includes(userId)) {
             selectedUserArray.push(userString)
@@ -69,8 +84,8 @@ export async function updateFetchEmbed(interaction: ButtonInteraction, embed: Em
         }
         if (thirdUserIdArray.includes(userId)) {
             thirdUserArray.splice(thirdUserArray.indexOf(potentialUserString), 1)
-            thirdUserIdArray.splice(thirdUserIdArray.indexOf(userId, 1))
-            if (userTime != undefined) {
+            thirdUserIdArray.splice(thirdUserIdArray.indexOf(userId), 1)
+            if (userTime) {
                 userAvailabilityMap.delete(userId)
             }
         }
@@ -83,11 +98,11 @@ export async function updateFetchEmbed(interaction: ButtonInteraction, embed: Em
     }
     if (secondUserIdArray.includes(userId)) {
         secondUserArray.splice(secondUserArray.indexOf(userString), 1)
-        secondUserIdArray.splice(secondUserIdArray.indexOf(userId, 1))
+        secondUserIdArray.splice(secondUserIdArray.indexOf(userId), 1)
     }
     if (thirdUserIdArray.includes(userId)) {
-        thirdUserArray.splice(secondUserArray.indexOf(potentialUserString), 1)
-        thirdUserIdArray.splice(secondUserIdArray.indexOf(userId, 1))
+        thirdUserArray.splice(thirdUserArray.indexOf(potentialUserString), 1)
+        thirdUserIdArray.splice(thirdUserArray.indexOf(userId), 1)
     }
     if (secondUserArray.length === 0) {
         secondUserArray.push('-')

@@ -29,6 +29,7 @@ import log from "../../dependencies/constants/logger";
 import {getLevelFromXp} from "../../dependencies/helpers/getLevelFromXp";
 import {multiplayerGameTitles} from "../../dependencies/constants/gameTitles";
 import {waitForUpdate} from "../../dependencies/helpers/waitForUpdate";
+import {embedLimits} from "../../dependencies/constants/embedLimits";
 
 export const fetchGamers = {
     data: new SlashCommandBuilder()
@@ -38,7 +39,7 @@ export const fetchGamers = {
             option.setName('game')
                 .setDescription('game to be played')
                 .setRequired(true)
-                .setMaxLength(4000)
+                .setMaxLength(embedLimits.description)
                 .setAutocomplete(true))
         .addIntegerOption(option =>
             option.setName('minimum')
@@ -50,7 +51,7 @@ export const fetchGamers = {
         .addStringOption(option =>
             option.setName('title')
                 .setDescription('Title of the event')
-                .setMaxLength(250)
+                .setMaxLength(embedLimits.title)
                 .setRequired(false))
         .addRoleOption(option =>
             option.setName('role')
