@@ -1,4 +1,4 @@
-export async function updateProgressBars(interaction, embed, pollStats, numBars: number) {
+export async function updateProgressBars(interaction, embed, pollStats, numBars: number, isPrediction: boolean = false) {
     const fillChar = '▰'
     const emptyChar = '▱'
 
@@ -36,9 +36,14 @@ export async function updateProgressBars(interaction, embed, pollStats, numBars:
         index++;
     }
 
-    for (let i = 0; i < numBars; i++) {
-        embed.data.fields[i].value = `[${progressBars[`choice${i + 1}Bar`].join('')}] ${(barFillAmounts[i] * 10).toFixed(2)}%`
-
+    if (!isPrediction) {
+        for (let i = 0; i < numBars; i++) {
+            embed.data.fields[i].value = `[${progressBars[`choice${i + 1}Bar`].join('')}] ${(barFillAmounts[i] * 10).toFixed(2)}%`
+        }
+    } else {
+        embed.data.fields[0].value = `[${progressBars[`choice${1}Bar`].join('')}] ${(barFillAmounts[0] * 10).toFixed(2)}%`
+        embed.data.fields[2].value = `[${progressBars[`choice${2}Bar`].join('')}] ${(barFillAmounts[1] * 10).toFixed(2)}%`
     }
+
     await interaction.edit({embeds: [embed]})
 }

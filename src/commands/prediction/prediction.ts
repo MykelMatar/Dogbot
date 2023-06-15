@@ -16,11 +16,11 @@ import {
 } from "discord.js";
 import {embedColor, IGuild, NewClient, UserInfo} from "../../dependencies/myTypes";
 import {terminate, terminationListener} from "../../dependencies/helpers/terminationListener";
-import {updateProgressBars} from "../../dependencies/helpers/updateProgressBars";
 import {updateUserData} from "../../dependencies/helpers/updateUserData";
 import {waitForUpdate} from "../../dependencies/helpers/waitForUpdate";
 import guilds from "../../dependencies/schemas/guild-schema";
 import log from "../../dependencies/constants/logger";
+import {updateProgressBars} from "../../dependencies/helpers/updateProgressBars";
 
 export const prediction = {
     data: new SlashCommandBuilder()
@@ -38,14 +38,14 @@ export const prediction = {
 
         const predictionEmbed = new EmbedBuilder()
             .setTitle(`${prompt}`)
+            .setDescription(`Point Pool 💰 0 💰`)
             .addFields(
                 {name: `Yes`, value: '[▱▱▱▱▱▱▱▱▱▱] 0%', inline: true},
+                {name: `\u200B`, value: '\u200B', inline: true},
                 {name: `No`, value: '[▱▱▱▱▱▱▱▱▱▱] 0%', inline: true},
+                {name: `Believers ― *1.0x*`, value: '-', inline: true},
                 {name: `\u200B`, value: '\u200B', inline: true},
-                {name: `Believers`, value: '-', inline: true},
-                {name: `Doubters`, value: '-', inline: true},
-                {name: `\u200B`, value: '\u200B', inline: true},
-            )
+                {name: `Doubters ― *1.0x*`, value: '-', inline: true})
             .setFooter({text: `This prediction will be active for 2 min`})
             .setColor(embedColor)
 
@@ -109,7 +109,7 @@ export const prediction = {
             const isBeliever = i.customId === 'predict-yes';
             const targetArray = isBeliever ? believers : doubters;
             const targetIds = isBeliever ? believerIds : doubterIds;
-            const targetFieldIndex = isBeliever ? 3 : 4;
+            const targetFieldIndex = isBeliever ? 3 : 5;
             const targetEmoji = isBeliever ? client.emojis.cache.get("900906521800622121") : client.emojis.cache.get("877632254568964096")
             const progressBarCustomId = isBeliever ? 'choice1' : 'choice2'
             let userPoints = guildData.userData.find(user => user.id === i.user.id).predictionStats.points
@@ -161,7 +161,7 @@ export const prediction = {
                                 ephemeral: !modalInteraction.replied
                             });
 
-                            targetArray.push(`> ${member.displayName} ${targetEmoji.toString()} *${betAmount} points* \n`);
+                            targetArray.push(`> ${member.displayName} » ${betAmount} \n`);
                             targetIds.push(i.user.id);
 
                             isBeliever ? yesPool += betAmount : noPool += betAmount;
@@ -170,7 +170,8 @@ export const prediction = {
                             if (targetArray.length > 0) {
                                 const winMultiplier = isBeliever ? totalPool / yesPool : totalPool / noPool;
                                 const userType = isBeliever ? 'Believers' : 'Doubters'
-                                predictionEmbed.data.fields[targetFieldIndex].name = `${userType} *(${winMultiplier.toFixed(1)}x multiplier)*`
+                                predictionEmbed.data.description = `Point Pool 💰 ${totalPool} 💰`
+                                predictionEmbed.data.fields[targetFieldIndex].name = `${userType} ― *${winMultiplier.toFixed(1)}x*`
                                 predictionEmbed.data.fields[targetFieldIndex].value = targetArray.join('');
                             }
 
@@ -183,7 +184,8 @@ export const prediction = {
                             }
                             predictors.set(i.user.id, progressBarCustomId)
                             numberOfVotes[predictors.get(i.user.id)] += 1;
-                            await updateProgressBars(sent, predictionEmbed, numberOfVotes, 2)
+                            await updateProgressBars(sent, predictionEmbed, numberOfVotes, 2, true)
+
                         } else {
                             await modalInteraction[modalInteraction.replied ? 'editReply' : 'reply']({
                                 content: `You don't have that many points pal. Try again`,
@@ -249,12 +251,11 @@ export const prediction = {
                     const winner = winCollector.customId == 'predict-yes' ? 'Yes' : 'No'
                     const winString = winner === 'Yes' ? `Belivers Win!` : 'Doubters Win!'
 
-                    /*
-                    Pari-mutuel betting system - the win/lose multipliers are determined by the total amount of money wagered on each outcome
-                    Win Multiplier = (Total Pool - Deductions) / Amount Bet on the Winning Outcome
-                     */
+                    // Pari-mutuel betting system - the win/lose multipliers are determined by the total amount of money wagered on each outcome
+                    // Win Multiplier = (Total Pool - Deductions) / Amount Bet on the Winning Outcome
                     const winningPool = winner === 'Yes' ? yesPool : noPool
-                    const winMultiplier = winningPool !== 0 ? totalPool / winningPool : 1;
+                    const bettingFormula = totalPool / winningPool
+                    const winMultiplier = winningPool !== 0 ? bettingFormula : 1;
                     let totalWinnings = 0
 
                     for (const [key, value] of betAmountMap.entries()) {
