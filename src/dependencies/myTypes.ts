@@ -98,7 +98,8 @@ export interface IGuild extends Document {
     guild: string;
     guildId: string;
     settings: {
-        autoDetectIP: boolean
+        autoDetectIP: boolean,
+        fetchRole: string | Snowflake
     },
     userData: {
         username: string;

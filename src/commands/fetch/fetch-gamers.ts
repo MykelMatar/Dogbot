@@ -38,6 +38,7 @@ export const fetchGamers = {
             option.setName('game')
                 .setDescription('game to be played')
                 .setRequired(true)
+                .setMaxLength(4000)
                 .setAutocomplete(true))
         .addIntegerOption(option =>
             option.setName('minimum')
@@ -49,6 +50,7 @@ export const fetchGamers = {
         .addStringOption(option =>
             option.setName('title')
                 .setDescription('Title of the event')
+                .setMaxLength(250)
                 .setRequired(false))
         .addRoleOption(option =>
             option.setName('role')
@@ -82,8 +84,8 @@ export const fetchGamers = {
         let roleId
         if (roleValue) {
             role = roleMention(roleValue.id);
-        } else if (guildData.serverData.roles.autoenlist) {
-            role = guildData.serverData.roles.autoenlist;
+        } else if (guildData?.settings?.fetchRole) {
+            role = guildData?.settings?.fetchRole;
             const regex = /<@&(\d+)>/;
             const match = role.match(regex);
             roleId = match && match[1];

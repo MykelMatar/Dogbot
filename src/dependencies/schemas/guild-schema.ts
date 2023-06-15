@@ -5,7 +5,8 @@ const guildSchema = new Schema({
     guild: String,
     guildId: String,
     settings: {
-        autoDetectIP: Boolean
+        autoDetectIP: Boolean,
+        fetchRole: String
     },
     userData: [
         {
