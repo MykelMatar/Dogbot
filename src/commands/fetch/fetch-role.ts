@@ -27,7 +27,7 @@ export const fetchRole = {
                 await interaction.reply({ephemeral: true, content: 'Only administrators can change and clear the role'})
                 return
             }
-            guildData.serverData.roles.autoenlist = options.getRole('role') as unknown as string
+            guildData.settings.fetchRole = options.getRole('role') as unknown as string
             await guildData.save()
             await interaction.reply({ephemeral: true, content: 'Autoenlist role set sucessfully'})
         } else if (options.getBoolean('clear-role')) {
@@ -35,11 +35,11 @@ export const fetchRole = {
                 await interaction.reply({ephemeral: true, content: 'Only administrators can change and clear the role'})
                 return
             }
-            guildData.serverData.roles.autoenlist = null;
+            guildData.settings.fetchRole = null;
             await guildData.save()
             await interaction.reply({ephemeral: true, content: 'Role cleared successfully'})
         } else {
-            let selectedRole = guildData.serverData.roles.autoenlist
+            let selectedRole = guildData.settings.fetchRole
 
             await interaction.reply({
                 content: selectedRole != null ? `${selectedRole}` : `No role selected`,
