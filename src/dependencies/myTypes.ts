@@ -97,13 +97,9 @@ export type PredictionStats = Partial<PollStats>;
 export interface IGuild extends Document {
     guild: string;
     guildId: string;
-    serverData: {
-        welcomeChannel: string;
-        roles: {
-            autoenlist: string;
-            default: string;
-        };
-    };
+    settings: {
+        autoDetectIP: boolean
+    },
     userData: {
         username: string;
         id: string;

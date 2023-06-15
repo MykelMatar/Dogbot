@@ -4,12 +4,8 @@ import {platforms} from "call-of-duty-api";
 const guildSchema = new Schema({
     guild: String,
     guildId: String,
-    serverData: {
-        welcomeChannel: String,
-        roles: {
-            autoenlist: String,
-            default: String,
-        },
+    settings: {
+        autoDetectIP: Boolean
     },
     userData: [
         {

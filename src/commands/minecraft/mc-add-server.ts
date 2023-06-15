@@ -42,7 +42,7 @@ export const mcAddServer = {
 
         if (serverList.some(server => server.ip === ip)) {
             await interaction.editReply(
-                {content: "Duplicate IP found. Check servers using /mc-list-servers or use /mc-change-server-name to change its name"}
+                {content: "Duplicate IP found. Check servers using /mc-list-servers or use /mc-change-name to change its name"}
             );
             return log.warn("Duplicate IP Detected");
         }

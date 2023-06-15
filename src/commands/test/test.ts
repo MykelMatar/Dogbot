@@ -7,5 +7,6 @@ export const test = {
         .setDescription('test'),
 
     async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
+        client.emit('guildCreate', interaction.guild)
     }
 }

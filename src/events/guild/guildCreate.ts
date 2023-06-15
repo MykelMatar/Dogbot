@@ -8,27 +8,23 @@ export async function guildCreate(client: NewClient, guild: Guild) {
 
     const guildName = guild.name.replace(/\s+/g, ""); //removes whitespace from string
     const existingGuild = await guilds.findOne({guildId: guild.id})
-    if (existingGuild !== null) return
+    if (existingGuild) return
 
     log.info('Creating database entry...')
     await guilds.create({
         guild: guildName,
         guildId: guild.id,
-        ServerData: {
-            welcomeChannel: null,
-            roles: {
-                autoenlist: null,
-                default: null
-            }
+        settings: {
+            autoDetectIP: true
         },
-        UserData: [],
         mcServerData: {
             serverList: [],
             selectedServer: {
                 name: null,
                 ip: null
             }
-        }
+        },
+        userData: []
     })
     log.info('Done!')
 }

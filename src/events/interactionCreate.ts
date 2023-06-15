@@ -38,7 +38,7 @@ export async function interactionCreate(client: NewClient, interaction: CommandI
     // execute command
     if (interaction.isChatInputCommand()) {
         // global ephemeral interaction handling (for commands w/ optional 'hide' param)
-        let hideCommands: string[] = ['mc', 'get-stats', 'server-stats', 'help']
+        const hideCommands: string[] = ['mc', 'get-stats', 'server-stats', 'help']
         let ephemeralSetting
 
         let hideOption = interaction.options.data.find(option => option.name === 'hide')
