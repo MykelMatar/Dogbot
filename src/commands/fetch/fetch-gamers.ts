@@ -186,7 +186,7 @@ export const fetchGamers = {
                 });
 
                 timeCollector.on('collect', async timeInteraction => {
-                    const member = interaction.member as GuildMember;
+                    const member = timeInteraction.member as GuildMember;
                     const username = member.displayName
 
                     if (!timeInteraction.values[0]) { // idk why this would happen, but just in case
