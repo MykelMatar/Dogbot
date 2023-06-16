@@ -11,7 +11,7 @@ export function getText($: CheerioAPI, selector: string, singleLine?: boolean): 
     if (singleLine == undefined) singleLine = false;
     if (singleLine) {
         let text: string
-        $(selector).each(function(i) {
+        $(selector).each(function() {
             text = $(this).text();
         });
         return text
