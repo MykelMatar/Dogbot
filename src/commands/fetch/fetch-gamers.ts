@@ -22,13 +22,13 @@ import {
     removeTerminationListener,
     terminate,
     terminationListener
-} from "../../dependencies/helpers/terminationListener";
-import {updateFetchEmbed} from "../../dependencies/helpers/updateFetchEmbed";
-import {updateUserData} from "../../dependencies/helpers/updateUserData";
+} from "../../dependencies/helpers/otherHelpers/terminationListener";
+import {updateFetchEmbed} from "../../dependencies/helpers/fetchHelpers/updateFetchEmbed";
+import {updateUserData} from "../../dependencies/helpers/otherHelpers/updateUserData";
 import log from "../../dependencies/constants/logger";
-import {getLevelFromXp} from "../../dependencies/helpers/getLevelFromXp";
+import {getLevelFromXp} from "../../dependencies/helpers/fetchHelpers/getLevelFromXp";
 import {multiplayerGameTitles} from "../../dependencies/constants/gameTitles";
-import {waitForUpdate} from "../../dependencies/helpers/waitForUpdate";
+import {waitForUpdate} from "../../dependencies/helpers/otherHelpers/waitForUpdate";
 import {embedLimits} from "../../dependencies/constants/embedLimits";
 
 export const fetchGamers = {
@@ -96,15 +96,15 @@ export const fetchGamers = {
             .addComponents(
                 new ButtonBuilder()
                     .setLabel(`✓`)
-                    .setCustomId('Gamer')
+                    .setCustomId('gamer')
                     .setStyle(ButtonStyle.Success),
                 new ButtonBuilder()
                     .setLabel(`✘`)
-                    .setCustomId('Cringe')
+                    .setCustomId('cringe')
                     .setStyle(ButtonStyle.Danger),
                 new ButtonBuilder()
                     .setLabel(`❔`)
-                    .setCustomId('Perhaps')
+                    .setCustomId('perhaps')
                     .setStyle(ButtonStyle.Primary),
             );
 
@@ -252,16 +252,16 @@ export const fetchGamers = {
             const updatedUserData = guildData.userData
 
             // user arrays for level embed
-            let usersWhoLeveledUp: string[] = []
-            let userLevelChange: string[] = []
+            const usersWhoLeveledUp: string[] = []
+            const userLevelChange: string[] = []
             let createLevelEmbed = false
 
             for (const userId of enlistUsersWhoGainedXP) {
-                let newXPValue = updatedUserData.find(user => user.id === userId).fetchStats.fetchXP
-                let oldXPValue = userXPMap.get(userId)
+                const newXPValue = updatedUserData.find(user => user.id === userId).fetchStats.fetchXP
+                const oldXPValue = userXPMap.get(userId)
 
-                let {level: oldLevel} = getLevelFromXp(oldXPValue)
-                let {level: newLevel} = getLevelFromXp(newXPValue)
+                const {level: oldLevel} = getLevelFromXp(oldXPValue)
+                const {level: newLevel} = getLevelFromXp(newXPValue)
 
                 if (oldXPValue < newXPValue && oldLevel != newLevel) {
                     createLevelEmbed = true
@@ -271,7 +271,7 @@ export const fetchGamers = {
             }
 
             if (createLevelEmbed) {
-                let levelEmbed = new EmbedBuilder()
+                const levelEmbed = new EmbedBuilder()
                     .setTitle('Level Summary')
                     .setDescription('Below are all users who leveled up from the most recent fetch')
                     .addFields(
@@ -298,7 +298,7 @@ export const fetchGamers = {
                 .addComponents(
                     new ButtonBuilder()
                         .setCustomId('Summon')
-                        .setLabel('Summon Gamers')
+                        .setLabel('summonGamers')
                         .setStyle(ButtonStyle.Success),
                 );
 

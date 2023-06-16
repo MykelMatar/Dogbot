@@ -1,6 +1,6 @@
 import {InteractionCollector} from "discord.js";
-import log from "../constants/logger";
-import {NewClient} from "../myTypes";
+import log from "../../constants/logger";
+import {NewClient} from "../../myTypes";
 
 /**
  * graceful shutdown function. ends collectors to collect data

@@ -15,12 +15,12 @@ import {
     TextInputStyle
 } from "discord.js";
 import {embedColor, IGuild, NewClient, PredictionStats, UserInfo} from "../../dependencies/myTypes";
-import {terminate, terminationListener} from "../../dependencies/helpers/terminationListener";
-import {updateUserData} from "../../dependencies/helpers/updateUserData";
+import {terminate, terminationListener} from "../../dependencies/helpers/otherHelpers/terminationListener";
+import {updateUserData} from "../../dependencies/helpers/otherHelpers/updateUserData";
 import guilds from "../../dependencies/schemas/guild-schema";
 import log from "../../dependencies/constants/logger";
-import {updateProgressBars} from "../../dependencies/helpers/updateProgressBars";
-import {waitForUpdate} from "../../dependencies/helpers/waitForUpdate";
+import {updateProgressBars} from "../../dependencies/helpers/otherHelpers/updateProgressBars";
+import {waitForUpdate} from "../../dependencies/helpers/otherHelpers/waitForUpdate";
 
 export const prediction = {
     data: new SlashCommandBuilder()
@@ -218,7 +218,7 @@ export const prediction = {
                 .addComponents(
                     new ButtonBuilder()
                         .setLabel(`Choose Winner`)
-                        .setCustomId('predict-choose')
+                        .setCustomId('predictChooseWinner')
                         .setStyle(ButtonStyle.Success),
                 );
 
@@ -232,7 +232,7 @@ export const prediction = {
                         await interaction.channel.send(`Only the person who started the prediction can select the winner`)
                         return false
                     }
-                    return ['predict-choose'].includes(i.customId);
+                    return ['predictChooseWinner'].includes(i.customId);
                 };
 
                 const selectWinnerInteraction = await sent.awaitMessageComponent({

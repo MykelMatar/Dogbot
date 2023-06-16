@@ -1,4 +1,4 @@
-import {FetchUserData} from "../myTypes";
+import {FetchUserData} from "../../myTypes";
 import {ButtonInteraction, EmbedBuilder, GuildMember, Message} from "discord.js";
 
 /**

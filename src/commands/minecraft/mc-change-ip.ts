@@ -10,15 +10,15 @@ import {
     StringSelectMenuBuilder
 } from "discord.js";
 import {status} from "minecraft-server-util";
-import {McMenuOptionGenerator} from "../../dependencies/helpers/mcMenuOptionGenerator";
+import {selectMenuOptionGenerator} from "../../dependencies/helpers/mcHelpers/selectMenuOptionGenerator";
 import {IGuild, MinecraftServer, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/constants/logger";
 import {
     removeTerminationListener,
     terminate,
     terminationListener
-} from "../../dependencies/helpers/terminationListener";
-import {createMcCommandCollector} from "../../dependencies/helpers/createMcCommandCollector";
+} from "../../dependencies/helpers/otherHelpers/terminationListener";
+import {createMcCommandCollector} from "../../dependencies/helpers/mcHelpers/createMcCommandCollector";
 
 export const mcChangeIp = {
     data: new SlashCommandBuilder()
@@ -70,22 +70,22 @@ export const mcChangeIp = {
         }
 
         // create variables and generate options for select menu
-        let menuOptions: APISelectMenuOption[] = await McMenuOptionGenerator(interaction, serverList);
+        let menuOptions: APISelectMenuOption[] = await selectMenuOptionGenerator(interaction, serverList);
         let row = new ActionRowBuilder<StringSelectMenuBuilder>()
             .addComponents(
                 new StringSelectMenuBuilder()
-                    .setCustomId('change-ip-menu')
+                    .setCustomId('changeIPMenu')
                     .setPlaceholder('Nothing selected')
                     .addOptions(menuOptions),
             );
 
-        let sent: Message = await interaction.editReply({
+        const sent: Message = await interaction.editReply({
             content: 'Select the server you want to change the IP of',
             components: [row]
         });
 
-        const collector = createMcCommandCollector(interaction, sent)
-        let terminateBound = terminate.bind(null, client, collector)
+        const collector = createMcCommandCollector(interaction, sent, ['changeIPMenu'])
+        const terminateBound = terminate.bind(null, client, collector)
         await terminationListener(client, collector, terminateBound)
 
         let selectedServerName;
@@ -106,7 +106,7 @@ export const mcChangeIp = {
             if (collected.size === 0) {
                 await interaction.editReply({content: 'Request Timeout', components: []});
                 log.warn('Request Timeout')
-            } else if (collected.first().customId === 'change-ip-menu') {
+            } else if (collected.first().customId === 'changeIPMenu') {
                 await interaction.editReply({
                     content: `**${selectedServerName}** IP changed successfully`,
                     components: []

@@ -1,6 +1,6 @@
 import {CommandInteraction, ComponentType, Message} from "discord.js";
-import {NewClient} from "../myTypes";
-import {removeTerminationListener, terminate, terminationListener} from "./terminationListener";
+import {NewClient} from "../../myTypes";
+import {removeTerminationListener, terminate, terminationListener} from "../otherHelpers/terminationListener";
 
 /**
  * button collector for mc-server-status command. In a seperate function because it is used twice and writing
@@ -11,7 +11,7 @@ import {removeTerminationListener, terminate, terminationListener} from "./termi
  * @param guildData
  * @param statusPrompt
  */
-export async function McServerStatusCollector(client: NewClient, interaction: CommandInteraction, guildData, statusPrompt: Message) {
+export async function statusButtonCollector(client: NewClient, interaction: CommandInteraction, guildData, statusPrompt: Message) {
 
     const collector = interaction.channel.createMessageComponentCollector({
         componentType: ComponentType.Button,

@@ -6,7 +6,7 @@ import {
     SlashCommandBuilder
 } from "discord.js";
 import {embedColor, IGuild, NewClient} from "../../dependencies/myTypes";
-import {getLevelFromXp} from "../../dependencies/helpers/getLevelFromXp";
+import {getLevelFromXp} from "../../dependencies/helpers/fetchHelpers/getLevelFromXp";
 
 export const enlistStats = {
     data: new SlashCommandBuilder()

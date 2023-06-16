@@ -1,7 +1,7 @@
-import Guild from "../schemas/guild-schema";
-import log from "../constants/logger";
+import Guild from "../../schemas/guild-schema";
+import log from "../../constants/logger";
 import {AutocompleteInteraction, CommandInteraction, Snowflake} from "discord.js";
-import {GameProfile, IGuild, UserInfo} from "../myTypes";
+import {GameProfile, IGuild, UserInfo} from "../../myTypes";
 
 /**
  * updates mongoDB UserData

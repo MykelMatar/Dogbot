@@ -3,7 +3,7 @@ import {
     ButtonBuilder,
     ButtonStyle,
     CommandInteraction,
-    CommandInteractionOption,
+    CommandInteractionOptionResolver,
     ComponentType,
     EmbedBuilder,
     Message,
@@ -14,8 +14,8 @@ import {
     removeTerminationListener,
     terminate,
     terminationListener
-} from "../../dependencies/helpers/terminationListener";
-import {mcListServersGetStatus} from "../../dependencies/helpers/mcListServersGetStatus";
+} from "../../dependencies/helpers/otherHelpers/terminationListener";
+import {checkListServerStatus} from "../../dependencies/helpers/mcHelpers/checkListServerStatus";
 
 export const mcListServers = {
     data: new SlashCommandBuilder()
@@ -34,13 +34,14 @@ export const mcListServers = {
         const MCServerData = guildData.mcServerData
 
         let serverStatusList: string[] = []
-        let {value: getStatus} = (interaction.options.data.find(option => option.name === 'get-status') ?? {}) as CommandInteractionOption
+        const options = interaction.options as CommandInteractionOptionResolver // ts thinks the .get options dont exist
+        const getStatus = options.getBoolean('game')
 
         let serverNameList: string[] = MCServerData.serverList.map(server => server.name);
         let serverIPList: string[] = MCServerData.serverList.map(server => server.ip);
 
-        let selectedNameIndex = serverNameList.findIndex(name => name == MCServerData.selectedServer.name)
-        let selectedIpIndex = serverIPList.findIndex(ip => ip == MCServerData.selectedServer.ip)
+        const selectedNameIndex = serverNameList.findIndex(name => name == MCServerData.selectedServer.name)
+        const selectedIpIndex = serverIPList.findIndex(ip => ip == MCServerData.selectedServer.ip)
         serverNameList[selectedNameIndex] = `**${serverNameList[selectedNameIndex]}**`
         serverIPList[selectedIpIndex] = `**${serverIPList[selectedIpIndex]}**`
 
@@ -54,24 +55,24 @@ export const mcListServers = {
             row = new ActionRowBuilder<ButtonBuilder>()
                 .addComponents(
                     new ButtonBuilder()
-                        .setCustomId('ListStatus')
                         .setLabel('Status')
+                        .setCustomId('listStatus')
                         .setStyle(ButtonStyle.Success),
                 );
         } else {
             row = new ActionRowBuilder<ButtonBuilder>()
                 .addComponents(
                     new ButtonBuilder()
-                        .setCustomId('ListStatus')
                         .setLabel('Status')
+                        .setCustomId('listStatus')
                         .setStyle(ButtonStyle.Success),
                     new ButtonBuilder()
-                        .setCustomId('ListRemove')
                         .setLabel('Remove')
+                        .setCustomId('listRemove')
                         .setStyle(ButtonStyle.Danger),
                     new ButtonBuilder()
-                        .setCustomId('ListChange')
                         .setLabel('Change')
+                        .setCustomId('listChange')
                         .setStyle(ButtonStyle.Primary),
                 );
         }
@@ -83,10 +84,10 @@ export const mcListServers = {
                 {name: 'IP', value: serverIPList.join(' \n '), inline: true},
             )
             .setColor(embedColor)
-            .setFooter({text: MCServerData.serverList.length + ' / 10 Servers Registered'})
+            .setFooter({text: `${MCServerData.serverList.length} / 10 Servers Registered`})
 
         if (getStatus) {
-            serverStatusList = await mcListServersGetStatus(MCServerData);
+            serverStatusList = await checkListServerStatus(MCServerData);
             embed.addFields({name: 'Status', value: serverStatusList.join(' \n '), inline: true})
         }
 
@@ -94,7 +95,7 @@ export const mcListServers = {
 
         const collector = interaction.channel.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: 120000,
+            time: 600000,
             filter: (i) => {
                 if (i.user.id !== interaction.member.user.id) return false;
                 return i.message.id === sent.id;
@@ -115,10 +116,11 @@ export const mcListServers = {
                     break;
                 case 'ListStatus':
                     i.deferUpdate()
+                    
                     if (gettingStatus) break;
                     gettingStatus = true;
 
-                    serverStatusList = await mcListServersGetStatus(MCServerData);
+                    serverStatusList = await checkListServerStatus(MCServerData);
                     embed.addFields({name: 'Status', value: serverStatusList.join(' \n '), inline: true})
 
                     row = new ActionRowBuilder<ButtonBuilder>()

@@ -9,7 +9,7 @@ import {
     SlashCommandBuilder
 } from "discord.js";
 import {status, statusBedrock} from "minecraft-server-util";
-import {McServerStatusCollector} from "../../dependencies/helpers/mcServerStatusCollector";
+import {statusButtonCollector} from "../../dependencies/helpers/mcHelpers/statusButtonCollector";
 import {embedColor, IGuild, MinecraftServer, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/constants/logger";
 
@@ -70,7 +70,7 @@ export const mcStatus = {
 
         let embed
         try {
-            let javaResponse = await status(ip, port, {timeout: 3000})
+            const javaResponse = await status(ip, port, {timeout: 3000})
 
             embed = new EmbedBuilder()
                 .setTitle(name)
@@ -84,17 +84,18 @@ export const mcStatus = {
                 .setFooter({text: 'Server Online'})
 
             if (searchedPlayer) {
-                const isOnline = javaResponse.players.sample.some(player => {
-                    if (player.name === searchedPlayer) {
+                javaResponse.players.sample.some(player => {
+                    const sanitizedPlayerName = player.name.toLowerCase().replace(/\s/g, "")
+                    if (sanitizedPlayerName === searchedPlayer.toLowerCase().replace(/\s/g, "")) {
                         embed.addFields({name: 'Searched User', value: `>  ${player.name} is online`, inline: true});
-                        return true;
+                    } else {
+                        embed.addFields({
+                            name: 'Searched User',
+                            value: `>  ${searchedPlayer} is offline`,
+                            inline: true
+                        });
                     }
-                    return false;
                 });
-
-                if (!isOnline) {
-                    embed.addFields({name: 'Searched User', value: `>  ${searchedPlayer} is offline`, inline: true});
-                }
             }
         } catch {
             try {
@@ -132,6 +133,6 @@ export const mcStatus = {
         } else {
             sent = await interaction.editReply({embeds: [embed]})
         }
-        await McServerStatusCollector(client, interaction, guildData, sent)
+        await statusButtonCollector(client, interaction, guildData, sent)
     }
 }

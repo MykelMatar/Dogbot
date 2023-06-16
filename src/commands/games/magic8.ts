@@ -11,7 +11,7 @@ export const magic8 = {
                 .setRequired(true)),
 
     async execute(client: NewClient, interaction: CommandInteraction) {
-        let responses: string[] = [
+        const responses: string[] = [
             'yes',
             'no',
             'perhaps',
@@ -24,8 +24,8 @@ export const magic8 = {
             'lol no'
         ]
 
-        let response = responses[Math.floor(Math.random() * responses.length)]
-        let responseEmbed = new EmbedBuilder()
+        const response = responses[Math.floor(Math.random() * responses.length)]
+        const responseEmbed = new EmbedBuilder()
             .setTitle(response)
             .setColor(embedColor)
 

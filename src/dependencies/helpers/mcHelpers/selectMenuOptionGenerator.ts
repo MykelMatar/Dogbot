@@ -1,5 +1,5 @@
 import {APISelectMenuOption, CommandInteraction} from "discord.js";
-import {MinecraftServer} from "../myTypes";
+import {MinecraftServer} from "../../myTypes";
 
 /**
  * Generates interaction menu options for minecraft commands
@@ -7,8 +7,8 @@ import {MinecraftServer} from "../myTypes";
  * @param interaction
  * @param serverList
  */
-export async function McMenuOptionGenerator(interaction: CommandInteraction, serverList: MinecraftServer[]): Promise<APISelectMenuOption[]> {
-    let optionsArray: APISelectMenuOption[] = []
+export async function selectMenuOptionGenerator(interaction: CommandInteraction, serverList: MinecraftServer[]): Promise<APISelectMenuOption[]> {
+    const optionsArray: APISelectMenuOption[] = []
     const listSize = serverList.length
 
     for (let i = 0; i < listSize; i++) {

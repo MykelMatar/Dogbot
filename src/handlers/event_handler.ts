@@ -1,5 +1,5 @@
 import {Client} from "discord.js";
-import {getFiles} from "../dependencies/helpers/getFiles";
+import {getFiles} from "../dependencies/helpers/otherHelpers/getFiles";
 
 export default (client: Client) => {
     const eventFiles = getFiles('./src/events', '.ts')

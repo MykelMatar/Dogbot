@@ -10,8 +10,8 @@ import {
     Snowflake
 } from "discord.js";
 import {embedColor, NewClient, PollStats} from "../../dependencies/myTypes";
-import {terminate, terminationListener} from "../../dependencies/helpers/terminationListener";
-import {updateProgressBars} from "../../dependencies/helpers/updateProgressBars";
+import {terminate, terminationListener} from "../../dependencies/helpers/otherHelpers/terminationListener";
+import {updateProgressBars} from "../../dependencies/helpers/otherHelpers/updateProgressBars";
 
 export const poll = {
     data: new SlashCommandBuilder()

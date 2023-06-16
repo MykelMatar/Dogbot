@@ -1,9 +1,9 @@
 import {CommandInteraction, CommandInteractionOption, EmbedBuilder, SlashCommandBuilder} from "discord.js";
-import {fetchHTML} from "../../dependencies/helpers/fetchHTML";
+import {fetchHTML} from "../../dependencies/helpers/otherHelpers/fetchHTML";
 import {CheerioAPI} from "cheerio";
 import {embedColor, IGuild, NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/constants/logger";
-import {getText} from "../../dependencies/helpers/getText";
+import {getText} from "../../dependencies/helpers/otherHelpers/getText";
 
 export const getStatsValorant = {
     data: new SlashCommandBuilder()

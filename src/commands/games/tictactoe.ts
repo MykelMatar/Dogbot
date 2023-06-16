@@ -7,7 +7,7 @@ import {
     ComponentType,
     SlashCommandBuilder
 } from "discord.js";
-import {updateUserData} from "../../dependencies/helpers/updateUserData";
+import {updateUserData} from "../../dependencies/helpers/otherHelpers/updateUserData";
 import {NewClient} from "../../dependencies/myTypes";
 import {log} from "../../dependencies/constants/logger";
 

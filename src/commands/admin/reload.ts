@@ -1,7 +1,7 @@
 import {CommandInteraction, Routes, SlashCommandBuilder} from "discord.js";
 import {NewClient} from "../../dependencies/myTypes";
 import log from "../../dependencies/constants/logger";
-import {getFiles} from "../../dependencies/helpers/getFiles";
+import {getFiles} from "../../dependencies/helpers/otherHelpers/getFiles";
 import {REST} from "@discordjs/rest";
 import {test} from "../test/test";
 
@@ -37,7 +37,7 @@ export const reload = {
         await interaction.editReply({content: 'Commands Refreshed'})
 
         if (newCommands.length == 0) return
-        
+
         for (const command of client.commands) {
             newCommands.push(command)
         }

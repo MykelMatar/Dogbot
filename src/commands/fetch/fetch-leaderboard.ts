@@ -64,7 +64,13 @@ export const fetchLeaderboard = {
             ignorePercentage ||= 0;
 
             // Apply weights 
-            const [weightedEnlistPercentage, weightedRejectPercentage, weightedIgnorePercentage, weightedEnlistTotal, weightedRejectTotal] = [
+            const [
+                weightedEnlistPercentage,
+                weightedRejectPercentage,
+                weightedIgnorePercentage,
+                weightedEnlistTotal,
+                weightedRejectTotal
+            ] = [
                 enlistPercentage * percentageWeight,
                 rejectPercentage * percentageWeight,
                 ignorePercentage * ignoreWeight,

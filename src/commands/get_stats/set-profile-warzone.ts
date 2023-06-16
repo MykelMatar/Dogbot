@@ -1,7 +1,7 @@
 import {CommandInteraction, CommandInteractionOption, SlashCommandBuilder} from "discord.js";
 import {GameProfile, NewClient, UserInfo} from "../../dependencies/myTypes";
 import {platforms} from "call-of-duty-api";
-import {updateUserData} from "../../dependencies/helpers/updateUserData";
+import {updateUserData} from "../../dependencies/helpers/otherHelpers/updateUserData";
 
 export const setProfileWarzone = {
     data: new SlashCommandBuilder()

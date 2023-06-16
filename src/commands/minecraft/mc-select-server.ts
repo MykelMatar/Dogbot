@@ -1,4 +1,4 @@
-import {McMenuOptionGenerator} from "../../dependencies/helpers/mcMenuOptionGenerator";
+import {selectMenuOptionGenerator} from "../../dependencies/helpers/mcHelpers/selectMenuOptionGenerator";
 import {
     ActionRowBuilder,
     APISelectMenuOption,
@@ -13,8 +13,8 @@ import {
     removeTerminationListener,
     terminate,
     terminationListener
-} from "../../dependencies/helpers/terminationListener";
-import {createMcCommandCollector} from "../../dependencies/helpers/createMcCommandCollector";
+} from "../../dependencies/helpers/otherHelpers/terminationListener";
+import {createMcCommandCollector} from "../../dependencies/helpers/mcHelpers/createMcCommandCollector";
 
 export const mcSelectServer = {
     data: new SlashCommandBuilder()
@@ -23,8 +23,8 @@ export const mcSelectServer = {
 
     async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
         const MCServerData = guildData.mcServerData
-        let serverList: MinecraftServer[] = MCServerData.serverList
-        let serverListSize: number = MCServerData.serverList.length
+        const serverList: MinecraftServer[] = MCServerData.serverList
+        const serverListSize: number = MCServerData.serverList.length
 
         if (serverListSize === 0) {
             await interaction.editReply('No Registered Servers, use /mc-add-server or /mc-list-servers to add servers.')
@@ -34,30 +34,28 @@ export const mcSelectServer = {
             return;
         }
 
-        let menuOptions: APISelectMenuOption[] = await McMenuOptionGenerator(interaction, serverList);
-
-        let row = new ActionRowBuilder<StringSelectMenuBuilder>()
+        const menuOptions: APISelectMenuOption[] = await selectMenuOptionGenerator(interaction, serverList);
+        const row = new ActionRowBuilder<StringSelectMenuBuilder>()
             .addComponents(
                 new StringSelectMenuBuilder()
-                    .setCustomId('change-menu')
+                    .setCustomId('changeSelectMenu')
                     .setPlaceholder('Nothing selected')
                     .addOptions(menuOptions),
             );
 
-        let sent: Message = await interaction.editReply({
+        const sent: Message = await interaction.editReply({
             content: 'Select a Different Server to Check',
             components: [row]
         });
 
-        const collector = createMcCommandCollector(interaction, sent)
-        let terminateBound = terminate.bind(null, client, collector)
+        const collector = createMcCommandCollector(interaction, sent, ['changeSelectMenu'])
+        const terminateBound = terminate.bind(null, client, collector)
         await terminationListener(client, collector, terminateBound)
 
         collector.on('collect', async i => {
             const selectedServerIP = i.values[0]
-            const selectedServer = MCServerData.serverList.find(server => {
-                return server.ip === selectedServerIP
-            })
+            const selectedServer = MCServerData.serverList.find(server => server.ip === selectedServerIP)
+            
             MCServerData.selectedServer.name = selectedServer.name;
             MCServerData.selectedServer.ip = selectedServer.ip;
             MCServerData.selectedServer.port = selectedServer.port
@@ -69,7 +67,7 @@ export const mcSelectServer = {
             removeTerminationListener(terminateBound)
             if (collected.size === 0) {
                 await interaction.editReply({content: 'Request Timeout', components: []})
-            } else if (collected.first().customId === 'change-menu') {
+            } else if (collected.first().customId === 'changeSelectMenu') {
                 await interaction.editReply({
                     content: `Now tracking **${MCServerData.selectedServer.name}**. Retrieving server status...`,
                     components: []
