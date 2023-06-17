@@ -11,7 +11,7 @@ import {
 } from "discord.js";
 import {status} from "minecraft-server-util";
 import {selectMenuOptionGenerator} from "../../dependencies/helpers/mcHelpers/selectMenuOptionGenerator";
-import {IGuild, MinecraftServer, NewClient} from "../../dependencies/myTypes";
+import {CustomClient, MinecraftServer, MongoGuild, SlashCommand} from "../../dependencies/myTypes";
 import log from "../../dependencies/constants/logger";
 import {
     removeTerminationListener,
@@ -20,7 +20,7 @@ import {
 } from "../../dependencies/helpers/otherHelpers/terminationListener";
 import {createMcCommandCollector} from "../../dependencies/helpers/mcHelpers/createMcCommandCollector";
 
-export const mcChangeIp = {
+export const mcChangeIp: SlashCommand = {
     data: new SlashCommandBuilder()
         .setName('mc-change-ip')
         .setDescription('Changes the IP address of a server')
@@ -34,7 +34,7 @@ export const mcChangeIp = {
                 .setDescription('the new port')
                 .setRequired(false)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
+    async execute(client: CustomClient, interaction: CommandInteraction, guildData: MongoGuild) {
         const MCServerData = guildData.mcServerData
         let serverList: MinecraftServer[] = MCServerData.serverList
         let serverListSize: number = MCServerData.serverList.length

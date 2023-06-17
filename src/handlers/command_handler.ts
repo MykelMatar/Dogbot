@@ -1,10 +1,10 @@
 import {getFiles} from "../dependencies/helpers/otherHelpers/getFiles";
-import {NewClient} from "../dependencies/myTypes";
+import {CustomClient} from "../dependencies/myTypes";
 import {REST} from "@discordjs/rest";
 import {Routes} from "discord.js"
 
 
-export default (client: NewClient) => {
+export default (client: CustomClient) => {
     const ignore: string[] = !client.isTestBot ? ['test', 'voice', 'get_stats'] : [];
     const adminCommandNames = ['git-pull', 'reload']
 

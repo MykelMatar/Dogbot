@@ -5,11 +5,11 @@ import {
     SlashCommandBuilder,
     TextInputStyle
 } from "discord.js";
-import {IGuild, MinecraftServer, NewClient} from "../../dependencies/myTypes";
+import {CustomClient, MinecraftServer, MongoGuild, SlashCommand} from "../../dependencies/myTypes";
 import log from "../../dependencies/constants/logger";
 import {checkServerStatus} from "../../dependencies/helpers/mcHelpers/checkServerStatus";
 
-export const mcAddServer = {
+export const mcAddServer: SlashCommand = {
     data: new SlashCommandBuilder()
         .setName('mc-add-server')
         .setDescription('Adds a new minecraft server to the server list. Server must be online. ')
@@ -29,7 +29,7 @@ export const mcAddServer = {
                 .setRequired(false)
                 .setMaxValue(65535)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
+    async execute(client: CustomClient, interaction: CommandInteraction, guildData: MongoGuild) {
         const serverList: MinecraftServer[] = guildData.mcServerData.serverList
         if (serverList.length === 10) {
             return interaction.editReply("Max number of servers reached (Limit of **10**).");
@@ -69,7 +69,7 @@ export const mcAddServer = {
         const saveData = guildData.save()
         const editReply = interaction.editReply({content: "Server added successfully"})
         const getStatus = client.commands.get('mc-status').execute(client, interaction, guildData)
-        
+
         await Promise.all([saveData, editReply, getStatus]);
     }
 }

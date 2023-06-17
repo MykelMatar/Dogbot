@@ -4,9 +4,9 @@ import {
     PermissionFlagsBits,
     SlashCommandBuilder
 } from "discord.js";
-import {IGuild, NewClient} from "../../dependencies/myTypes";
+import {CustomClient, MongoGuild, SlashCommand} from "../../dependencies/myTypes";
 
-export const fetchRole = {
+export const fetchRole: SlashCommand = {
     data: new SlashCommandBuilder()
         .setName('fetch-role')
         .setDescription('Role settings for the role that is used when /fetch-users is sent')
@@ -19,7 +19,7 @@ export const fetchRole = {
                 .setDescription('Clears the role used by Dogbot when fetching gamers')
                 .setRequired(false)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild): Promise<void> {
+    async execute(client: CustomClient, interaction: CommandInteraction, guildData: MongoGuild): Promise<void> {
         const options = interaction.options as CommandInteractionOptionResolver // ts thinks the .get options dont exist
 
         if (options.getRole('role')) {

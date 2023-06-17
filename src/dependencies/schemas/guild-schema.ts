@@ -1,5 +1,4 @@
 import {model, Schema} from "mongoose";
-import {platforms} from "call-of-duty-api";
 
 const guildSchema = new Schema({
     guild: String,
@@ -18,17 +17,6 @@ const guildSchema = new Schema({
                 ignores: Number,
                 fetchXP: Number,
                 fetchStreak: Number,
-            },
-            tttStats: {
-                wins: Number,
-                losses: Number,
-            },
-            warzoneProfile: {
-                username: String,
-                platform: {
-                    type: String,
-                    enum: platforms,
-                },
             },
             valorantProfile: {
                 username: String,

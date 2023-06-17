@@ -1,11 +1,11 @@
 import {AutocompleteInteraction, CommandInteraction, GuildMember} from "discord.js";
-import {IGuild, NewClient, SlashCommand} from "../dependencies/myTypes";
+import {CustomClient, MongoGuild, SlashCommand} from "../dependencies/myTypes";
 import guilds from "../dependencies/schemas/guild-schema";
 import log from "../dependencies/constants/logger";
 
 // const cooldowns = new Map()
 
-export async function interactionCreate(client: NewClient, interaction: CommandInteraction | AutocompleteInteraction) {
+export async function interactionCreate(client: CustomClient, interaction: CommandInteraction | AutocompleteInteraction) {
     if (!interaction.isChatInputCommand() && !interaction.isAutocomplete()) return
 
     interaction = interaction as CommandInteraction | AutocompleteInteraction; // idk why i need this but i do
@@ -55,7 +55,7 @@ export async function interactionCreate(client: NewClient, interaction: CommandI
             if ((interaction.member instanceof GuildMember)) {
                 log.info(`${interaction.commandName} requested by ${interaction.member.user.username} in ${interaction.member.guild.name}`)
             }
-            const guildData: IGuild = await guilds.findOne({guildId: interaction.guildId})
+            const guildData: MongoGuild = await guilds.findOne({guildId: interaction.guildId})
             await command.execute(client, interaction, guildData);
         } catch (error) {
             log.error(error)

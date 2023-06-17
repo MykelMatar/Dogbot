@@ -1,4 +1,4 @@
-import {MinecraftServer, NewClient} from "../dependencies/myTypes";
+import {CustomClient, MinecraftServer} from "../dependencies/myTypes";
 import {ActionRowBuilder, ButtonBuilder, ButtonStyle, Message} from "discord.js";
 import {popularMinecraftServers} from "../dependencies/constants/popularMinecraftServers";
 import log from "../dependencies/constants/logger";
@@ -6,7 +6,7 @@ import guilds from "../dependencies/schemas/guild-schema";
 import {status, statusBedrock} from "minecraft-server-util";
 
 
-export async function messageCreate(client: NewClient, message: Message) {
+export async function messageCreate(client: CustomClient, message: Message) {
 
     let guildData = await guilds.findOne({guildId: message.guildId})
     if (!guildData?.settings?.autoDetectIP) return
@@ -57,7 +57,7 @@ export async function messageCreate(client: NewClient, message: Message) {
 
         if (confirmation.customId !== yesId) return
         log.info('adding server')
-        
+
         let newServer: MinecraftServer = {
             name: ip,
             ip: ip,

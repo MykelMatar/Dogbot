@@ -1,7 +1,7 @@
 import {CommandInteraction, EmbedBuilder, Guild, GuildMember, SlashCommandBuilder} from "discord.js";
-import {embedColor, NewClient} from "../../dependencies/myTypes";
+import {CustomClient, embedColor, SlashCommand} from "../../dependencies/myTypes";
 
-export const serverStats = {
+export const serverStats: SlashCommand = {
     data: new SlashCommandBuilder()
         .setName('server-stats')
         .setDescription('Displays some stats of the discord server')
@@ -10,7 +10,7 @@ export const serverStats = {
                 .setDescription('Whether to hide the response or not')
                 .setRequired(false)),
 
-    async execute(client: NewClient, interaction: CommandInteraction) {
+    async execute(client: CustomClient, interaction: CommandInteraction) {
         const guild: Guild = interaction.guild
         let owner: GuildMember = await guild.members.fetch(guild.ownerId)
         let verification: string = guild.verified ? 'Verified ✅' : 'Not Verified';

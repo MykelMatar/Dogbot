@@ -1,9 +1,9 @@
 import guilds from '../../dependencies/schemas/guild-schema'
 import log from "../../dependencies/constants/logger";
-import {NewClient} from "../../dependencies/myTypes";
+import {CustomClient} from "../../dependencies/myTypes";
 import {GuildMember} from "discord.js";
 
-async function guildMemberRemove(client: NewClient, guildMember: GuildMember) {
+async function guildMemberRemove(client: CustomClient, guildMember: GuildMember) {
     log.info(`${guildMember.user.username} has left ${guildMember.guild.name}`);
     guilds.findOneAndUpdate(
         {guildId: guildMember.guild.id},

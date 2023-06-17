@@ -1,5 +1,5 @@
 import {CommandInteraction, ComponentType, Message} from "discord.js";
-import {NewClient} from "../../myTypes";
+import {CustomClient} from "../../myTypes";
 import {removeTerminationListener, terminate, terminationListener} from "../otherHelpers/terminationListener";
 
 /**
@@ -11,7 +11,7 @@ import {removeTerminationListener, terminate, terminationListener} from "../othe
  * @param guildData
  * @param statusPrompt
  */
-export async function statusButtonCollector(client: NewClient, interaction: CommandInteraction, guildData, statusPrompt: Message) {
+export async function statusButtonCollector(client: CustomClient, interaction: CommandInteraction, guildData, statusPrompt: Message) {
 
     const collector = interaction.channel.createMessageComponentCollector({
         componentType: ComponentType.Button,

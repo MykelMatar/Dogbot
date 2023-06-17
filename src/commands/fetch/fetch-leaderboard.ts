@@ -1,5 +1,5 @@
 import {CommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js";
-import {embedColor, FetchLeaderboardUser, IGuild, NewClient} from "../../dependencies/myTypes";
+import {CustomClient, embedColor, FetchLeaderboardUser, MongoGuild, SlashCommand} from "../../dependencies/myTypes";
 
 //TODO if user changes username, does it affect any commands?
 /*
@@ -20,7 +20,7 @@ import {embedColor, FetchLeaderboardUser, IGuild, NewClient} from "../../depende
             3. max: normalize weight by max logic, then multiply
 
 */
-export const fetchLeaderboard = {
+export const fetchLeaderboard: SlashCommand = {
     data: new SlashCommandBuilder()
         .setName('fetch-leaderboard')
         .setDescription('Displays top 3 and bottom 3 gamers')
@@ -29,7 +29,7 @@ export const fetchLeaderboard = {
                 .setDescription('Whether to display the leaderboard or not')
                 .setRequired(false)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
+    async execute(client: CustomClient, interaction: CommandInteraction, guildData: MongoGuild) {
         const hideOption = interaction.options.data.find(option => option.name === 'hide')
         const ephemeralSetting = Boolean(hideOption?.value ?? true)
 
@@ -90,22 +90,24 @@ export const fetchLeaderboard = {
                 rejects: rejects,
                 enlistPercentage: enlistPercentage,
                 rejectPercentage: rejectPercentage,
-                EnlistRankValue: EnlistRank,
-                RejectRankValue: RejectRank,
+                enlistRankValue: EnlistRank,
+                rejectRankValue: RejectRank,
             } as const
             userArray.push(leaderboardUser)
         }
         userArray = userArray.filter(user => (user.enlists + user.rejects >= 10)) // reduce outliers
         if (userArray.length == 0) {
-            return interaction.reply({
+            await interaction.reply({
                 content: 'No users have enlisted more than 10 times.',
                 ephemeral: ephemeralSetting
             })
+            return
         } else if (userArray.length < 3) {
-            return interaction.reply({
+            await interaction.reply({
                 content: 'Not enough users have enlisted more than 10 times (need at least 3).',
                 ephemeral: ephemeralSetting
             })
+            return
         }
 
         // 2d arrays that store names, percentages, and total fetch values for each user
@@ -113,8 +115,8 @@ export const fetchLeaderboard = {
         let top3Gamers: string[][] = [[], [], []]
         let top3Losers: string[][] = [[], [], []]
 
-        let enlistRankings: FetchLeaderboardUser[] = [...userArray].sort((a, b) => (b.EnlistRankValue - a.EnlistRankValue))
-        let rejectRankings: FetchLeaderboardUser[] = [...userArray].sort((a, b) => (a.RejectRankValue < b.RejectRankValue ? 1 : -1))
+        let enlistRankings: FetchLeaderboardUser[] = [...userArray].sort((a, b) => (b.enlistRankValue - a.enlistRankValue))
+        let rejectRankings: FetchLeaderboardUser[] = [...userArray].sort((a, b) => (a.rejectRankValue < b.rejectRankValue ? 1 : -1))
         for (let i = 0; i < 3; i++) {
             top3Gamers[0].push(`**${i + 1}.** ${enlistRankings[i].name}\n`,)
             top3Gamers[1].push(`**${i + 1}.** ${(enlistRankings[i].enlistPercentage * 100).toFixed(2)}\n`)

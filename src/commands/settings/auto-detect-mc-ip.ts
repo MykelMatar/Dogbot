@@ -1,7 +1,7 @@
 import {CommandInteraction, CommandInteractionOptionResolver, SlashCommandBuilder} from "discord.js";
-import {IGuild, NewClient} from "../../dependencies/myTypes";
+import {CustomClient, MongoGuild, SlashCommand} from "../../dependencies/myTypes";
 
-export const autoDetectMcIp = {
+export const autoDetectMcIp: SlashCommand = {
     data: new SlashCommandBuilder()
         .setName('auto-detect-mc-ip')
         .setDescription('toggles whether dogbot scans chat messages for server IPs or not')
@@ -10,7 +10,7 @@ export const autoDetectMcIp = {
                 .setDescription('set True to scan and False to stop')
                 .setRequired(true)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
+    async execute(client: CustomClient, interaction: CommandInteraction, guildData: MongoGuild) {
         const commandOptions = interaction.options as CommandInteractionOptionResolver
         const set = commandOptions.getBoolean('set')
 

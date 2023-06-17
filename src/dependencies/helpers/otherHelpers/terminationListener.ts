@@ -1,6 +1,6 @@
 import {InteractionCollector} from "discord.js";
 import log from "../../constants/logger";
-import {NewClient} from "../../myTypes";
+import {CustomClient} from "../../myTypes";
 
 /**
  * graceful shutdown function. ends collectors to collect data
@@ -9,7 +9,7 @@ import {NewClient} from "../../myTypes";
  * @param collector
  * @param terminateInstance
  */
-export function terminationListener(client: NewClient, collector: InteractionCollector<any>, terminateInstance) {
+export function terminationListener(client: CustomClient, collector: InteractionCollector<any>, terminateInstance) {
     process.on('SIGINT', terminateInstance)
 }
 

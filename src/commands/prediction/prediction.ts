@@ -14,7 +14,14 @@ import {
     TextInputBuilder,
     TextInputStyle
 } from "discord.js";
-import {embedColor, IGuild, NewClient, PredictionStats, UserInfo} from "../../dependencies/myTypes";
+import {
+    CustomClient,
+    embedColor,
+    MongoGuild,
+    PredictionStats,
+    SlashCommand,
+    UserInfo
+} from "../../dependencies/myTypes";
 import {terminate, terminationListener} from "../../dependencies/helpers/otherHelpers/terminationListener";
 import {updateUserData} from "../../dependencies/helpers/otherHelpers/updateUserData";
 import guilds from "../../dependencies/schemas/guild-schema";
@@ -22,7 +29,7 @@ import log from "../../dependencies/constants/logger";
 import {updateProgressBars} from "../../dependencies/helpers/otherHelpers/updateProgressBars";
 import {waitForUpdate} from "../../dependencies/helpers/otherHelpers/waitForUpdate";
 
-export const prediction = {
+export const prediction: SlashCommand = {
     data: new SlashCommandBuilder()
         .setName('prediction')
         .setDescription('Create a prediction and gamble with your prediction points')
@@ -31,7 +38,7 @@ export const prediction = {
                 .setDescription('what you want to predict')
                 .setRequired(true)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
+    async execute(client: CustomClient, interaction: CommandInteraction, guildData: MongoGuild) {
         const commandOptions = interaction.options as CommandInteractionOptionResolver
         const prompt = commandOptions.getString('prediction')
 

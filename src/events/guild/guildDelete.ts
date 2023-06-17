@@ -1,10 +1,10 @@
 import {Guild} from "discord.js";
 import log from "../../dependencies/constants/logger";
-import {NewClient} from "../../dependencies/myTypes";
+import {CustomClient} from "../../dependencies/myTypes";
 import guilds from "../../dependencies/schemas/guild-schema";
 
 // don't want to use this right now. maybe later.
-async function guildDelete(client: NewClient, guild: Guild) {
+async function guildDelete(client: CustomClient, guild: Guild) {
     log.info(`Dogbot removed from guild ${guild.name}`);
 
     // delete guilds that have not seen activity for over a month

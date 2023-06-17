@@ -9,7 +9,7 @@ import {
     Message,
     SlashCommandBuilder
 } from "discord.js";
-import {embedColor, IGuild, NewClient} from "../../dependencies/myTypes";
+import {CustomClient, embedColor, MongoGuild, SlashCommand} from "../../dependencies/myTypes";
 import {
     removeTerminationListener,
     terminate,
@@ -17,7 +17,7 @@ import {
 } from "../../dependencies/helpers/otherHelpers/terminationListener";
 import {checkListServerStatus} from "../../dependencies/helpers/mcHelpers/checkListServerStatus";
 
-export const mcListServers = {
+export const mcListServers: SlashCommand = {
     data: new SlashCommandBuilder()
         .setName('mc-list-servers')
         .setDescription('Lists all registered minecraft servers')
@@ -30,7 +30,7 @@ export const mcListServers = {
                 .setDescription('Whether to display the leaderboard or not')
                 .setRequired(false)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
+    async execute(client: CustomClient, interaction: CommandInteraction, guildData: MongoGuild) {
         const MCServerData = guildData.mcServerData
 
         let serverStatusList: string[] = []
@@ -116,7 +116,7 @@ export const mcListServers = {
                     break;
                 case 'ListStatus':
                     i.deferUpdate()
-                    
+
                     if (gettingStatus) break;
                     gettingStatus = true;
 

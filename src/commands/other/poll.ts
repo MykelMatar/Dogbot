@@ -9,11 +9,11 @@ import {
     SlashCommandBuilder,
     Snowflake
 } from "discord.js";
-import {embedColor, NewClient, PollStats} from "../../dependencies/myTypes";
+import {CustomClient, embedColor, PollStats, SlashCommand} from "../../dependencies/myTypes";
 import {terminate, terminationListener} from "../../dependencies/helpers/otherHelpers/terminationListener";
 import {updateProgressBars} from "../../dependencies/helpers/otherHelpers/updateProgressBars";
 
-export const poll = {
+export const poll: SlashCommand = {
     data: new SlashCommandBuilder()
         .setName('poll')
         .setDescription('generate an anonymous poll')
@@ -73,7 +73,7 @@ export const poll = {
                 .setDescription('5th answer')
                 .setRequired(false)),
 
-    async execute(client: NewClient, interaction: CommandInteraction) {
+    async execute(client: CustomClient, interaction: CommandInteraction) {
         const commandOptions = interaction.options as CommandInteractionOptionResolver // ts thinks the .get options don't exist
         const prompt = commandOptions.getString('prompt')
         const time = commandOptions.getInteger('time')

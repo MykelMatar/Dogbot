@@ -5,9 +5,9 @@ import {
     GuildMember,
     SlashCommandBuilder
 } from "discord.js";
-import {embedColor, IGuild, NewClient} from "../../dependencies/myTypes";
+import {CustomClient, embedColor, MongoGuild, SlashCommand} from "../../dependencies/myTypes";
 
-export const predictionStats = {
+export const predictionStats: SlashCommand = {
     data: new SlashCommandBuilder()
         .setName('prediction-stats')
         .setDescription('Displays your prediction stats')
@@ -20,7 +20,7 @@ export const predictionStats = {
                 .setDescription('Whether to hide the response or not')
                 .setRequired(false)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
+    async execute(client: CustomClient, interaction: CommandInteraction, guildData: MongoGuild) {
         const options = interaction.options as CommandInteractionOptionResolver // ts thinks the .get options dont exist
         const user = options.getMember('user') as GuildMember
         const hide = options.getBoolean('hide', false)
@@ -32,10 +32,11 @@ export const predictionStats = {
 
         let userData = guildData.userData.find(user => user.id === userId)
         if (!userData.predictionStats || JSON.stringify(userData.predictionStats) == '{}') {
-            return interaction.reply({
+            await interaction.reply({
                 ephemeral: true,
                 content: 'User does not have any data. Data is created upon interacting with the prediction prompt'
             })
+            return
         }
 
         const {

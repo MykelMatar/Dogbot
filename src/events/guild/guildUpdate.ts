@@ -1,9 +1,9 @@
 import guilds from '../../dependencies/schemas/guild-schema'
 import log from "../../dependencies/constants/logger";
-import {NewClient} from "../../dependencies/myTypes";
+import {CustomClient} from "../../dependencies/myTypes";
 import {Guild} from "discord.js";
 
-export async function guildUpdate(client: NewClient, oldGuild: Guild, newGuild: Guild) {
+export async function guildUpdate(client: CustomClient, oldGuild: Guild, newGuild: Guild) {
     log.info(`Guild ${oldGuild.id} has been changed`);
     guilds.findOneAndUpdate(
         {guildId: oldGuild.id},

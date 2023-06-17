@@ -1,5 +1,5 @@
 import {CommandInteraction, CommandInteractionOption, SlashCommandBuilder} from "discord.js";
-import {GameProfile, NewClient, UserInfo} from "../../dependencies/myTypes";
+import {CustomClient, GameProfile, UserInfo} from "../../dependencies/myTypes";
 import {updateUserData} from "../../dependencies/helpers/otherHelpers/updateUserData";
 
 export const setProfileValorant = {
@@ -19,7 +19,7 @@ export const setProfileValorant = {
                 .setDescription('Whether to hide response or not')
                 .setRequired(false)),
 
-    async execute(client: NewClient, interaction: CommandInteraction) {
+    async execute(client: CustomClient, interaction: CommandInteraction) {
         let tagOption: CommandInteractionOption = interaction.options.data.find(option => option.name === 'tag')
         let usernameOption: CommandInteractionOption = interaction.options.data.find(option => option.name === 'username')
         let profile: GameProfile = {

@@ -1,7 +1,13 @@
 import {CommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js";
-import {embedColor, IGuild, NewClient, predictionLeaderboardUser} from "../../dependencies/myTypes";
+import {
+    CustomClient,
+    embedColor,
+    MongoGuild,
+    PredictionLeaderboardUser,
+    SlashCommand
+} from "../../dependencies/myTypes";
 
-export const predictionLeaderboard = {
+export const predictionLeaderboard: SlashCommand = {
     data: new SlashCommandBuilder()
         .setName('prediction-leaderboard')
         .setDescription('Displays leaderboard of users with the most prediction points')
@@ -10,14 +16,14 @@ export const predictionLeaderboard = {
                 .setDescription('Whether to display response or not')
                 .setRequired(false)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
+    async execute(client: CustomClient, interaction: CommandInteraction, guildData: MongoGuild) {
 
-        const userArray: predictionLeaderboardUser[] = []
+        const userArray: PredictionLeaderboardUser[] = []
         for (const user of guildData.userData) {
             userArray.push({
                 name: user.username,
-                correctPredicions: user.predictionStats.correctPredictions,
-                incorrectPredicions: user.predictionStats.incorrectPredictions,
+                correctPredictions: user.predictionStats.correctPredictions,
+                incorrectPredictions: user.predictionStats.incorrectPredictions,
                 points: user.predictionStats.points
             })
         }
@@ -30,7 +36,7 @@ export const predictionLeaderboard = {
         pointRanking.forEach((user, index) => {
             displayedUser[0].push(`**${user.name}**`)
             displayedUser[1].push(`*${user.points} points*`)
-            displayedUser[2].push(`*${user.correctPredicions}:${user.incorrectPredicions}*`)
+            displayedUser[2].push(`*${user.correctPredictions}:${user.incorrectPredictions}*`)
         })
 
         const leaderboardEmbed = new EmbedBuilder()

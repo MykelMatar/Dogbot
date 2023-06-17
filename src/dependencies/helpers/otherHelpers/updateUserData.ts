@@ -1,7 +1,7 @@
-import Guild from "../../schemas/guild-schema";
+import guilds from "../../schemas/guild-schema";
 import log from "../../constants/logger";
 import {AutocompleteInteraction, CommandInteraction, Snowflake} from "discord.js";
-import {GameProfile, IGuild, UserInfo} from "../../myTypes";
+import {MongoGuild, UserInfo, ValorantProfile} from "../../myTypes";
 
 /**
  * updates mongoDB UserData
@@ -13,11 +13,11 @@ import {GameProfile, IGuild, UserInfo} from "../../myTypes";
  * @param pointChange - amount of prediction points gained or lost
  */
 
-export async function updateUserData(interaction: CommandInteraction | AutocompleteInteraction, userIdArray: Snowflake[], infoType: UserInfo, profile?: GameProfile, pointChange?: Map<string, number>) {
+export async function updateUserData(interaction: CommandInteraction | AutocompleteInteraction, userIdArray: Snowflake[], infoType: UserInfo, profile?: ValorantProfile, pointChange?: Map<string, number>) {
     if (userIdArray.length === 0) return log.info(`${infoType} user Id Array is empty, skipping user data check`)
     log.info(`Valid ${infoType} user ID array provided`)
 
-    const currentGuild: IGuild = await Guild.findOne({guildId: interaction.guildId})
+    const currentGuild: MongoGuild = await guilds.findOne({guildId: interaction.guildId})
     const userData = currentGuild.userData
 
     const XPPerEnlist: number = 10
@@ -60,7 +60,6 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
             break;
         case UserInfo.CorrectPrediction:
         case UserInfo.IncorrectPrediction:
-        case UserInfo.WarzoneProfile:
         case UserInfo.ValorantProfile:
             break;
         default:
@@ -80,8 +79,7 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
                     id: userId,
                     fetchStats: defaultEnlistStats
                 })
-            } else if (infoType == UserInfo.ValorantProfile) {
-                if (!("tag" in profile)) return log.error('Incorrect profile type (Need Valorant Profile)')
+            } else if (infoType === UserInfo.ValorantProfile) {
                 userData.push({
                     username: guildMember.user.username,
                     id: userId,
@@ -90,17 +88,7 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
                         tag: profile.tag,
                     }
                 })
-            } else if (infoType == UserInfo.WarzoneProfile) {
-                if (!("platform" in profile)) return log.error('Incorrect profile type (Need Warzone Profile)')
-                userData.push({
-                    username: guildMember.user.username,
-                    id: userId,
-                    warzoneProfile: {
-                        username: profile.username,
-                        platform: profile.platform,
-                    }
-                })
-            } else if (infoType == UserInfo.PredictionCreate) {
+            } else if (infoType === UserInfo.PredictionCreate) {
                 userData.push({
                     username: guildMember.user.username,
                     id: userId,
@@ -158,14 +146,8 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
                     user.fetchStats = defaultEnlistStats
                     break;
                 case UserInfo.ValorantProfile:
-                    if (!("tag" in profile)) return log.error('Incorrect profile type (Need Valorant Profile)')
                     user.valorantProfile.username = profile.username
                     user.valorantProfile.tag = profile.tag
-                    break;
-                case UserInfo.WarzoneProfile:
-                    if (!("platform" in profile)) return log.error('Incorrect profile type (Need Warzone Profile)')
-                    user.warzoneProfile.username = profile.username
-                    user.warzoneProfile.platform = profile.platform
                     break;
                 case UserInfo.PredictionCreate:
                     user.predictionStats.points = 1000

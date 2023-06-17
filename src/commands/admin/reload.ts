@@ -1,17 +1,17 @@
 import {CommandInteraction, Routes, SlashCommandBuilder} from "discord.js";
-import {NewClient} from "../../dependencies/myTypes";
+import {CustomClient, SlashCommand} from "../../dependencies/myTypes";
 import log from "../../dependencies/constants/logger";
 import {getFiles} from "../../dependencies/helpers/otherHelpers/getFiles";
 import {REST} from "@discordjs/rest";
 import {test} from "../test/test";
 
 
-export const reload = {
+export const reload: SlashCommand = {
     data: new SlashCommandBuilder()
         .setName('reload')
         .setDescription('reload all commands'),
 
-    async execute(client: NewClient, interaction: CommandInteraction) {
+    async execute(client: CustomClient, interaction: CommandInteraction) {
         if (interaction.user.id != '191754197203550208') return
         log.info('refreshing all commands...')
         await interaction.deferReply({ephemeral: true})

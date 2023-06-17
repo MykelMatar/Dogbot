@@ -5,10 +5,10 @@ import {
     GuildMember,
     SlashCommandBuilder
 } from "discord.js";
-import {embedColor, IGuild, NewClient} from "../../dependencies/myTypes";
+import {CustomClient, embedColor, MongoGuild, SlashCommand} from "../../dependencies/myTypes";
 import {getLevelFromXp} from "../../dependencies/helpers/fetchHelpers/getLevelFromXp";
 
-export const enlistStats = {
+export const enlistStats: SlashCommand = {
     data: new SlashCommandBuilder()
         .setName('fetch-stats')
         .setDescription('Displays users fetch stats')
@@ -21,7 +21,7 @@ export const enlistStats = {
                 .setDescription('Whether to hide the response or not')
                 .setRequired(false)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
+    async execute(client: CustomClient, interaction: CommandInteraction, guildData: MongoGuild) {
         const options = interaction.options as CommandInteractionOptionResolver // ts thinks the .get options dont exist
         const user = options.getMember('user') as GuildMember
         const hide = options.getBoolean('hide', false)
@@ -33,10 +33,11 @@ export const enlistStats = {
 
         let userData = guildData.userData.find(user => user.id === userId)
         if (!userData.fetchStats || JSON.stringify(userData.fetchStats) == '{}') {
-            return interaction.reply({
+            await interaction.reply({
                 ephemeral: true,
                 content: 'User does not have any data. Data is created upon interacting with the fetch-gamers prompt'
             })
+            return
         }
 
         const {prestige, level} = getLevelFromXp(userData.fetchStats.fetchXP)

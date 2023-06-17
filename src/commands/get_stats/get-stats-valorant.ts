@@ -1,7 +1,7 @@
 import {CommandInteraction, CommandInteractionOption, EmbedBuilder, SlashCommandBuilder} from "discord.js";
 import {fetchHTML} from "../../dependencies/helpers/otherHelpers/fetchHTML";
 import {CheerioAPI} from "cheerio";
-import {embedColor, IGuild, NewClient} from "../../dependencies/myTypes";
+import {CustomClient, embedColor, MongoGuild} from "../../dependencies/myTypes";
 import log from "../../dependencies/constants/logger";
 import {getText} from "../../dependencies/helpers/otherHelpers/getText";
 
@@ -22,7 +22,7 @@ export const getStatsValorant = {
                 .setDescription('Whether to hide response or not')
                 .setRequired(false)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
+    async execute(client: CustomClient, interaction: CommandInteraction, guildData: MongoGuild) {
         let userOption: CommandInteractionOption = interaction.options.data.find(option => option.name === 'username')
         let tagOption: CommandInteractionOption = interaction.options.data.find(option => option.name === 'tag')
         let userData, user: string, tag: string

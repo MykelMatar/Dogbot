@@ -10,10 +10,10 @@ import {
 } from "discord.js";
 import {status, statusBedrock} from "minecraft-server-util";
 import {statusButtonCollector} from "../../dependencies/helpers/mcHelpers/statusButtonCollector";
-import {embedColor, IGuild, MinecraftServer, NewClient} from "../../dependencies/myTypes";
+import {CustomClient, embedColor, MinecraftServer, MongoGuild, SlashCommand} from "../../dependencies/myTypes";
 import log from "../../dependencies/constants/logger";
 
-export const mcStatus = {
+export const mcStatus: SlashCommand = {
     data: new SlashCommandBuilder()
         .setName('mc-status')
         .setDescription('Retrieves status of a minecraft server. Set using /mc-select-server or to input your own')
@@ -35,7 +35,7 @@ export const mcStatus = {
                 .setDescription('Whether to display response or not')
                 .setRequired(false)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild, listButton?: boolean): Promise<void | Message> {
+    async execute(client: CustomClient, interaction: CommandInteraction, guildData: MongoGuild, listButton?: boolean): Promise<void | Message> {
         const MCServerData = guildData.mcServerData
         const {serverList}: { serverList: MinecraftServer[] } = MCServerData;
 

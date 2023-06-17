@@ -17,7 +17,7 @@ import {
     userMention
 } from "discord.js";
 import guilds from "../../dependencies/schemas/guild-schema";
-import {embedColor, FetchUserData, IGuild, NewClient, UserInfo} from "../../dependencies/myTypes";
+import {CustomClient, embedColor, FetchUserData, MongoGuild, SlashCommand, UserInfo} from "../../dependencies/myTypes";
 import {
     removeTerminationListener,
     terminate,
@@ -31,7 +31,7 @@ import {multiplayerGameTitles} from "../../dependencies/constants/gameTitles";
 import {waitForUpdate} from "../../dependencies/helpers/otherHelpers/waitForUpdate";
 import {embedLimits} from "../../dependencies/constants/embedLimits";
 
-export const fetchGamers = {
+export const fetchGamers: SlashCommand = {
     data: new SlashCommandBuilder()
         .setName('fetch-gamers')
         .setDescription('creates prompt that allows users to RSVP for gamer time')
@@ -71,7 +71,7 @@ export const fetchGamers = {
         );
     },
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
+    async execute(client: CustomClient, interaction: CommandInteraction, guildData: MongoGuild) {
         const userData = guildData.userData
 
         // retrieve options
@@ -150,6 +150,7 @@ export const fetchGamers = {
         const gamingButtonId = row.components[0].data["custom_id"]
         const rejectButtonId = row.components[1].data["custom_id"]
         const perhapsButtonId = row.components[2].data["custom_id"]
+        const customIds = [gamingButtonId, rejectButtonId, perhapsButtonId]
         const pendingResponse = []
 
         const enlistCollector = interaction.channel.createMessageComponentCollector({
@@ -157,7 +158,7 @@ export const fetchGamers = {
             time: 1.08e+7, // 3 hour (1.08e+7) timer
             filter: (i) => {
                 if (i.message.id != enlistPrompt.id) return false // prevent simultaneous prompts from affecting each other
-                return [gamingButtonId, perhapsButtonId, rejectButtonId].includes(i.customId);
+                return customIds.includes(i.customId);
             },
         });
         const terminateBound = terminate.bind(null, client, enlistCollector)
@@ -199,7 +200,7 @@ export const fetchGamers = {
                         enlistUserData.potentialUsers.push(`> ${username} ~${timeInteraction.values[0]}\n`)
                         enlistUserData.potentialUserIds.push(timeInteraction.user.id)
                     }
-                    await updateFetchEmbed(buttonInteraction, embed, enlistUserData, enlistPrompt)
+                    await updateFetchEmbed(buttonInteraction, embed, enlistUserData, enlistPrompt, customIds)
 
                     pendingResponse.splice(pendingResponse.indexOf(buttonInteraction.user.id), 1)
                     await buttonInteraction.deleteReply()
@@ -208,7 +209,7 @@ export const fetchGamers = {
                 buttonInteraction.deferUpdate();
             } else {
                 const deferUpdate = buttonInteraction.deferUpdate();
-                const updateEmbed = updateFetchEmbed(buttonInteraction, embed, enlistUserData, enlistPrompt)
+                const updateEmbed = updateFetchEmbed(buttonInteraction, embed, enlistUserData, enlistPrompt, customIds)
 
                 await Promise.all([deferUpdate, updateEmbed])
             }

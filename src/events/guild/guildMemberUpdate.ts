@@ -1,9 +1,9 @@
 import Guild from '../../dependencies/schemas/guild-schema'
 import log from "../../dependencies/constants/logger";
-import {NewClient} from "../../dependencies/myTypes";
+import {CustomClient} from "../../dependencies/myTypes";
 import {GuildMember} from "discord.js";
 
-export async function guildMemberUpdate(client: NewClient, oldMember: GuildMember, newMember: GuildMember) {
+export async function guildMemberUpdate(client: CustomClient, oldMember: GuildMember, newMember: GuildMember) {
     log.info(`Guild member info changed has been changed`);
     if (oldMember.user.username != newMember.user.username) {
         const filter = {guildId: oldMember.guild.id, 'userData.id': oldMember.user.id};

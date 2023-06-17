@@ -1,7 +1,7 @@
 import {AttachmentBuilder, CommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js";
-import {embedColor, NewClient} from "../../dependencies/myTypes";
+import {CustomClient, embedColor, SlashCommand} from "../../dependencies/myTypes";
 
-export const help = {
+export const help: SlashCommand = {
     data: new SlashCommandBuilder()
         .setName('help')
         .setDescription('lists all commands and relevant information')
@@ -10,7 +10,7 @@ export const help = {
                 .setDescription('Whether to hide response or not')
                 .setRequired(false)),
 
-    async execute(client: NewClient, interaction: CommandInteraction) {
+    async execute(client: CustomClient, interaction: CommandInteraction) {
 
         const file = new AttachmentBuilder('./src/dependencies/images/Dogbot_Logo_512.png')
 

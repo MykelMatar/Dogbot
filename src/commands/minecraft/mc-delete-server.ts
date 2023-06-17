@@ -9,7 +9,7 @@ import {
     StringSelectMenuBuilder
 } from "discord.js";
 import {selectMenuOptionGenerator} from "../../dependencies/helpers/mcHelpers/selectMenuOptionGenerator";
-import {IGuild, MinecraftServer, NewClient} from "../../dependencies/myTypes";
+import {CustomClient, MinecraftServer, MongoGuild, SlashCommand} from "../../dependencies/myTypes";
 import log from "../../dependencies/constants/logger";
 import {
     removeTerminationListener,
@@ -19,13 +19,13 @@ import {
 import {createMcCommandCollector} from "../../dependencies/helpers/mcHelpers/createMcCommandCollector";
 
 
-export const mcDeleteServer = {
+export const mcDeleteServer: SlashCommand = {
     data: new SlashCommandBuilder()
         .setName('mc-delete-server')
         .setDescription('Deletes a registered MC server')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
+    async execute(client: CustomClient, interaction: CommandInteraction, guildData: MongoGuild) {
         const MCServerData = guildData.mcServerData
         const serverList: MinecraftServer[] = MCServerData.serverList
         const serverListSize: number = MCServerData.serverList.length

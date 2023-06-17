@@ -10,7 +10,7 @@ import {
     StringSelectMenuBuilder
 } from "discord.js";
 import {selectMenuOptionGenerator} from "../../dependencies/helpers/mcHelpers/selectMenuOptionGenerator";
-import {IGuild, MinecraftServer, NewClient} from "../../dependencies/myTypes";
+import {CustomClient, MinecraftServer, MongoGuild, SlashCommand} from "../../dependencies/myTypes";
 import log from "../../dependencies/constants/logger";
 import {
     removeTerminationListener,
@@ -19,7 +19,7 @@ import {
 } from "../../dependencies/helpers/otherHelpers/terminationListener";
 import {createMcCommandCollector} from "../../dependencies/helpers/mcHelpers/createMcCommandCollector";
 
-export const mcChangeName = {
+export const mcChangeName: SlashCommand = {
     data: new SlashCommandBuilder()
         .setName('mc-change-name')
         .setDescription('Renames a minecraft server')
@@ -30,7 +30,7 @@ export const mcChangeName = {
                 .setMaxLength(30)
                 .setRequired(true)),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
+    async execute(client: CustomClient, interaction: CommandInteraction, guildData: MongoGuild) {
         const MCServerData = guildData.mcServerData
         const serverList: MinecraftServer[] = MCServerData.serverList
         const serverListSize: number = MCServerData.serverList.length

@@ -1,5 +1,5 @@
 import {PermissionFlagsBits, SlashCommandBuilder} from "discord.js";
-import {NewClient} from "../../dependencies/myTypes";
+import {CustomClient} from "../../dependencies/myTypes";
 
 export const simJoin = {
     data: new SlashCommandBuilder()
@@ -7,7 +7,7 @@ export const simJoin = {
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .setDescription('simulates user joining'),
 
-    async execute(client: NewClient, message) {
+    async execute(client: CustomClient, message) {
         client.emit('guildMemberAdd', message.member)
     }
 }

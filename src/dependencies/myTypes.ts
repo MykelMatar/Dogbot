@@ -1,35 +1,25 @@
 import DiscordJS, {
     ActivityType,
     APISelectMenuOption,
-    ApplicationCommandData,
     AutocompleteInteraction,
     Collection,
     CommandInteraction,
     Message,
+    SlashCommandBuilder,
     Snowflake
 } from "discord.js";
-import {platforms} from "call-of-duty-api";
 import {Document} from "mongoose";
 
-export interface NewClient extends DiscordJS.Client {
+export interface CustomClient extends DiscordJS.Client {
     commands: DiscordJS.Collection<string, SlashCommand>
     isTestBot: boolean
-    settings: {
-        autoFetchIP: boolean
-    }
-}
-
-interface CustomSlashCommandBuilder {
-    name: string;
-    description: string;
-    toJSON?: () => ApplicationCommandData;
 }
 
 export interface SlashCommand {
-    data: CustomSlashCommandBuilder;
+    data: Partial<SlashCommandBuilder>;
     cooldown?: number;
     autocomplete?: (interaction: AutocompleteInteraction) => Promise<void>;
-    execute: (client: NewClient, interaction: CommandInteraction, guildData: IGuild) => Promise<void | Message>;
+    execute: (client: CustomClient, interaction: CommandInteraction, guildData: MongoGuild) => Promise<void | Message>;
 }
 
 export interface Activity {
@@ -41,13 +31,6 @@ export interface ValorantProfile {
     username: string
     tag: string
 }
-
-export interface WarzoneProfile {
-    username: string
-    platform: platforms
-}
-
-export type GameProfile = ValorantProfile | WarzoneProfile
 
 export interface MinecraftServer {
     name: string
@@ -61,14 +44,14 @@ export interface FetchLeaderboardUser {
     rejects: number
     enlistPercentage: number
     rejectPercentage: number
-    EnlistRankValue: number
-    RejectRankValue: number
+    enlistRankValue: number
+    rejectRankValue: number
 }
 
-export interface predictionLeaderboardUser {
+export interface PredictionLeaderboardUser {
     name: string
-    correctPredicions: number
-    incorrectPredicions: number
+    correctPredictions: number
+    incorrectPredictions: number
     points: number
 }
 
@@ -94,7 +77,7 @@ export interface PollStats {
 
 export type PredictionStats = Partial<PollStats>;
 
-export interface IGuild extends Document {
+export interface MongoGuild extends Document {
     guild: string;
     guildId: string;
     settings: {
@@ -110,14 +93,6 @@ export interface IGuild extends Document {
             ignores: number;
             fetchXP: number;
             fetchStreak: number;
-        };
-        tttStats?: {
-            wins: number;
-            losses: number;
-        };
-        warzoneProfile?: {
-            username: string;
-            platform: platforms;
         };
         valorantProfile?: {
             username: string;
@@ -149,7 +124,6 @@ export enum UserInfo {
     Reject = 'Reject',
     Ignore = 'Ignore',
     Perhaps = 'Perhaps',
-    WarzoneProfile = 'WarzoneProfile',
     ValorantProfile = 'ValorantProfile',
     PredictionCreate = 'PredictionCreate',
     CorrectPrediction = 'CorrectPrediction',

@@ -9,9 +9,10 @@ import {ButtonInteraction, EmbedBuilder, GuildMember, Message} from "discord.js"
  * @param embed embed in the enlistPrompt message
  * @param enlistUserData object that stores all the user info arrays
  * @param enlistPrompt message containing embed and buttons
+ * @param customIds button custom Ids
  */
 
-export async function updateFetchEmbed(interaction: ButtonInteraction, embed: EmbedBuilder, enlistUserData: FetchUserData, enlistPrompt: Message) {
+export async function updateFetchEmbed(interaction: ButtonInteraction, embed: EmbedBuilder, enlistUserData: FetchUserData, enlistPrompt: Message, customIds: string[]) {
     const {
         enlistedUsers,
         enlistedUserIds,
@@ -36,7 +37,7 @@ export async function updateFetchEmbed(interaction: ButtonInteraction, embed: Em
     const userTime: string | undefined = userAvailabilityMap.get(userId)
     const potentialUserString: string = `> ${member.displayName} ~${userTime}\n`
 
-    if (interaction.customId === 'Gamer') {
+    if (interaction.customId === customIds[0]) {
         perhapsFlag = false
         selectedUserArray = enlistedUsers
         selectedUserIdArray = enlistedUserIds
@@ -44,7 +45,7 @@ export async function updateFetchEmbed(interaction: ButtonInteraction, embed: Em
         secondUserIdArray = rejectedUserIds
         thirdUserArray = potentialUsers
         thirdUserIdArray = potentialUserIds
-    } else if (interaction.customId === 'Cringe') {
+    } else if (interaction.customId === customIds[1]) {
         perhapsFlag = false
         selectedUserArray = rejectedUsers
         selectedUserIdArray = rejectedUserIds
@@ -52,7 +53,7 @@ export async function updateFetchEmbed(interaction: ButtonInteraction, embed: Em
         secondUserIdArray = enlistedUserIds
         thirdUserArray = potentialUsers
         thirdUserIdArray = potentialUserIds
-    } else if (interaction.customId === 'Perhaps') {
+    } else if (interaction.customId === customIds[2]) {
         perhapsFlag = true
         selectedUserArray = potentialUsers
         selectedUserIdArray = potentialUserIds
@@ -61,21 +62,6 @@ export async function updateFetchEmbed(interaction: ButtonInteraction, embed: Em
         thirdUserArray = rejectedUsers
         thirdUserIdArray = rejectedUserIds
     } else return
-
-    // const charLeft =
-    //     embedLimits.totalCharLimit -
-    //     (
-    //         embed.data.description.length +
-    //         embed.data.title.length +
-    //         embed.data.footer.text.length +
-    //         embed.data.fields[0].name.length +
-    //         embed.data.fields[0].value.length +
-    //         embed.data.fields[1].name.length +
-    //         embed.data.fields[1].value.length
-    //     );
-    //
-    // const charLimit = (charLeft < embedLimits.fields.value) ? (charLeft / 2) - 32 : (embedLimits.fields.value / 2) - 32
-    // let isExceedingCharLimit = isExceedingCharacterLimit(selectedUserArray, charLimit)
 
     if (!perhapsFlag) {
         if (!selectedUserIdArray.includes(userId)) {

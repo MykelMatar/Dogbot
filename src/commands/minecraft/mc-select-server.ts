@@ -8,7 +8,7 @@ import {
     SlashCommandBuilder,
     StringSelectMenuBuilder
 } from "discord.js";
-import {IGuild, MinecraftServer, NewClient} from "../../dependencies/myTypes";
+import {CustomClient, MinecraftServer, MongoGuild, SlashCommand} from "../../dependencies/myTypes";
 import {
     removeTerminationListener,
     terminate,
@@ -16,12 +16,12 @@ import {
 } from "../../dependencies/helpers/otherHelpers/terminationListener";
 import {createMcCommandCollector} from "../../dependencies/helpers/mcHelpers/createMcCommandCollector";
 
-export const mcSelectServer = {
+export const mcSelectServer: SlashCommand = {
     data: new SlashCommandBuilder()
         .setName('mc-select-server')
         .setDescription('changes the server being tracked by mc-status'),
 
-    async execute(client: NewClient, interaction: CommandInteraction, guildData: IGuild) {
+    async execute(client: CustomClient, interaction: CommandInteraction, guildData: MongoGuild) {
         const MCServerData = guildData.mcServerData
         const serverList: MinecraftServer[] = MCServerData.serverList
         const serverListSize: number = MCServerData.serverList.length
@@ -55,7 +55,7 @@ export const mcSelectServer = {
         collector.on('collect', async i => {
             const selectedServerIP = i.values[0]
             const selectedServer = MCServerData.serverList.find(server => server.ip === selectedServerIP)
-            
+
             MCServerData.selectedServer.name = selectedServer.name;
             MCServerData.selectedServer.ip = selectedServer.ip;
             MCServerData.selectedServer.port = selectedServer.port

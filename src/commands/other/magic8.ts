@@ -1,7 +1,7 @@
 import {CommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js";
-import {embedColor, NewClient} from "../../dependencies/myTypes";
+import {CustomClient, embedColor, SlashCommand} from "../../dependencies/myTypes";
 
-export const magic8 = {
+export const magic8: SlashCommand = {
     data: new SlashCommandBuilder()
         .setName('magic8')
         .setDescription('Predicts via a magic8 ball')
@@ -10,7 +10,7 @@ export const magic8 = {
                 .setDescription('prompt you want Dogbot to predict')
                 .setRequired(true)),
 
-    async execute(client: NewClient, interaction: CommandInteraction) {
+    async execute(client: CustomClient, interaction: CommandInteraction) {
         const responses: string[] = [
             'yes',
             'no',
