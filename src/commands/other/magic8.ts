@@ -12,16 +12,19 @@ export const magic8: SlashCommand = {
 
     async execute(client: CustomClient, interaction: CommandInteraction) {
         const responses: string[] = [
+            // yes responses
             'yes',
-            'no',
-            'perhaps',
-            'definitely not',
             'absolutely',
             'without a doubt',
-            'with much doubt',
+
+            // no responses
+            'no',
+            'lol no',
+            'definitely not',
+
+            // other responses
+            'perhaps',
             'how would I know?',
-            'shut up not now',
-            'lol no'
         ]
 
         const response = responses[Math.floor(Math.random() * responses.length)]

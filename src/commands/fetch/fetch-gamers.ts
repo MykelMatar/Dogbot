@@ -8,12 +8,12 @@ import {
     CommandInteractionOptionResolver,
     ComponentType,
     EmbedBuilder,
-    GuildMember,
     InteractionCollector,
     Message,
     roleMention,
     SlashCommandBuilder,
     Snowflake,
+    TextInputStyle,
     userMention
 } from "discord.js";
 import guilds from "../../dependencies/schemas/guild-schema";
@@ -27,9 +27,12 @@ import {updateFetchEmbed} from "../../dependencies/helpers/fetchHelpers/updateFe
 import {updateUserData} from "../../dependencies/helpers/otherHelpers/updateUserData";
 import log from "../../dependencies/constants/logger";
 import {getLevelFromXp} from "../../dependencies/helpers/fetchHelpers/getLevelFromXp";
-import {multiplayerGameTitles} from "../../dependencies/constants/gameTitles";
 import {waitForUpdate} from "../../dependencies/helpers/otherHelpers/waitForUpdate";
 import {embedLimits} from "../../dependencies/constants/embedLimits";
+import {multiplayerGameTitles} from "../../dependencies/constants/multiplayerGameTitles";
+import {autocompleteTimes} from "../../dependencies/constants/autocompleteTimes";
+import {collectTime} from "../../dependencies/helpers/fetchHelpers/collectTime";
+import {collectEmbedChanges} from "../../dependencies/helpers/fetchHelpers/collectEmbedChanges";
 
 export const fetchGamers: SlashCommand = {
     data: new SlashCommandBuilder()
@@ -49,6 +52,12 @@ export const fetchGamers: SlashCommand = {
                 .setMinValue(1)
         )
         .addStringOption(option =>
+            option.setName('time')
+                .setDescription('time you want the event to take place. Type "any" for no time.')
+                .setMaxLength(40)
+                .setAutocomplete(true)
+                .setRequired(false))
+        .addStringOption(option =>
             option.setName('title')
                 .setDescription('Title of the event')
                 .setMaxLength(embedLimits.title)
@@ -61,14 +70,26 @@ export const fetchGamers: SlashCommand = {
 
     async autocomplete(interaction) {
         const options = interaction.options as CommandInteractionOptionResolver
-        const focusedValue = options.getFocused()?.toLowerCase();
-        const focusedLetter = focusedValue.charAt(0)
-        const index = (focusedLetter != '' && isNaN(Number(focusedLetter))) ? focusedLetter.toUpperCase() : 'Top25'
-        const filtered = multiplayerGameTitles[index].filter(choice => choice.toLowerCase().startsWith(focusedValue));
+        const focusedValue = options.getFocused(true)
 
-        await interaction.respond(
-            filtered.map(choice => ({name: choice, value: choice})),
-        );
+        if (focusedValue.name == 'game') {
+            const focusedLetter = focusedValue.value.toLowerCase().charAt(0)
+            const index = (focusedLetter != '' && isNaN(Number(focusedLetter))) ? focusedLetter.toUpperCase() : 'Top25'
+            const filtered = multiplayerGameTitles[index].filter(choice => choice.toLowerCase().startsWith(focusedValue.value));
+
+            await interaction.respond(
+                filtered.map(choice => ({name: choice, value: choice})),
+            );
+        } else if (focusedValue.name == 'time') {
+            const focusedLetter = focusedValue.value.toLowerCase().charAt(0)
+            const index = (focusedLetter != '' && !isNaN(Number(focusedLetter))) ? focusedLetter.toUpperCase() : 'default'
+            const filtered = autocompleteTimes[index].filter(choice => choice.toLowerCase().startsWith(focusedValue.value));
+
+            await interaction.respond(
+                filtered.map(choice => ({name: choice, value: choice})),
+            );
+        }
+
     },
 
     async execute(client: CustomClient, interaction: CommandInteraction, guildData: MongoGuild) {
@@ -76,10 +97,13 @@ export const fetchGamers: SlashCommand = {
 
         // retrieve options
         const options = interaction.options as CommandInteractionOptionResolver // ts thinks the .get options dont exist
-        const game = options.getString('game')
-        const minGamers = options.getInteger('minimum')
+        const game = options.getString('game', true)
+        const minGamers = options.getInteger('minimum', true)
+        let time = options.getString('time') ?? 'any time'
+        time = time.toLowerCase() == 'any' ? 'any time' : time;
         const title = options.getString('title') ?? 'Gamer Time'
         const roleValue = options.getRole('role')
+
 
         let role: any = 'Gamer Time'
         let roleId
@@ -106,11 +130,15 @@ export const fetchGamers: SlashCommand = {
                     .setLabel(`❔`)
                     .setCustomId('perhaps')
                     .setStyle(ButtonStyle.Primary),
+                new ButtonBuilder()
+                    .setLabel(`⚙️`)
+                    .setCustomId('settings')
+                    .setStyle(ButtonStyle.Secondary),
             );
 
         const embed = new EmbedBuilder()
             .setTitle(`${title}`)
-            .setDescription(`need ${minGamers} for ${game}`)
+            .setDescription(`need ${minGamers} for ${game}\n*Set for ${time}*`)
             .addFields(
                 {name: 'Gaming', value: '-', inline: true},
                 {name: 'Not Gaming', value: '-', inline: true},
@@ -125,7 +153,7 @@ export const fetchGamers: SlashCommand = {
         }
 
         // Not an interaction reply bc interactions are only editable for 15 min
-        let enlistPrompt: Message = await interaction.channel.send({
+        const enlistPrompt: Message = await interaction.channel.send({
             embeds: [embed],
             components: [row]
         });
@@ -136,7 +164,7 @@ export const fetchGamers: SlashCommand = {
             await interaction.reply({content: role})
         }
 
-        let enlistUserData: FetchUserData = {
+        let fetchUserData: FetchUserData = {
             enlistedUsers: ['-'],
             enlistedUserIds: [],
             rejectedUsers: ['-'],
@@ -150,7 +178,8 @@ export const fetchGamers: SlashCommand = {
         const gamingButtonId = row.components[0].data["custom_id"]
         const rejectButtonId = row.components[1].data["custom_id"]
         const perhapsButtonId = row.components[2].data["custom_id"]
-        const customIds = [gamingButtonId, rejectButtonId, perhapsButtonId]
+        const editButtonId = row.components[3].data["custom_id"]
+        const customIds = [gamingButtonId, rejectButtonId, perhapsButtonId, editButtonId]
         const pendingResponse = []
 
         const enlistCollector = interaction.channel.createMessageComponentCollector({
@@ -166,7 +195,7 @@ export const fetchGamers: SlashCommand = {
 
         enlistCollector.on('collect', async buttonInteraction => {
             const isPerhapsButton = buttonInteraction.customId === perhapsButtonId;
-            const notDuplicateUser = !(enlistUserData.potentialUserIds.includes(buttonInteraction.user.id))
+            const notDuplicateUser = !(fetchUserData.potentialUserIds.includes(buttonInteraction.user.id))
             const notPendingResponse = !(pendingResponse.includes(buttonInteraction.user.id))
 
             if (isPerhapsButton && notDuplicateUser && notPendingResponse) {
@@ -178,38 +207,14 @@ export const fetchGamers: SlashCommand = {
                     ephemeral: true
                 });
 
-                const timeCollector = interaction.channel.createMessageComponentCollector({
-                    componentType: ComponentType.SelectMenu,
-                    time: 60000,
-                    max: 1,
-                    filter: (i) =>
-                        i.customId === 'time' &&
-                        i.user.id === buttonInteraction.member.user.id,
-                });
-
-                timeCollector.on('collect', async timeInteraction => {
-                    const member = timeInteraction.member as GuildMember;
-                    const username = member.displayName
-
-                    if (!timeInteraction.values[0]) { // idk why this would happen, but just in case
-                        enlistUserData.userAvailabilityMap.set(timeInteraction.user.id, 'Not Sure')
-                        enlistUserData.potentialUsers.push(`> ${username} ~'Not Sure'\n`)
-                        enlistUserData.potentialUserIds.push(timeInteraction.user.id)
-                    } else {
-                        enlistUserData.userAvailabilityMap.set(timeInteraction.user.id, timeInteraction.values[0])
-                        enlistUserData.potentialUsers.push(`> ${username} ~${timeInteraction.values[0]}\n`)
-                        enlistUserData.potentialUserIds.push(timeInteraction.user.id)
-                    }
-                    await updateFetchEmbed(buttonInteraction, embed, enlistUserData, enlistPrompt, customIds)
-
-                    pendingResponse.splice(pendingResponse.indexOf(buttonInteraction.user.id), 1)
-                    await buttonInteraction.deleteReply()
-                });
+                await collectTime(interaction, buttonInteraction, fetchUserData, embed, enlistPrompt, customIds, pendingResponse);
             } else if (isPerhapsButton) { // prevents embed from updating if user tries to spam perhaps button
                 buttonInteraction.deferUpdate();
+            } else if (buttonInteraction.customId === 'settings') {
+                await collectEmbedChanges(buttonInteraction, embed, enlistPrompt)
             } else {
                 const deferUpdate = buttonInteraction.deferUpdate();
-                const updateEmbed = updateFetchEmbed(buttonInteraction, embed, enlistUserData, enlistPrompt, customIds)
+                const updateEmbed = updateFetchEmbed(buttonInteraction, embed, fetchUserData, enlistPrompt, customIds)
 
                 await Promise.all([deferUpdate, updateEmbed])
             }
@@ -218,17 +223,17 @@ export const fetchGamers: SlashCommand = {
 
         enlistCollector.on('end', async collected => {
             removeTerminationListener(terminateBound)
-            const noInteractions = !enlistUserData.enlistedUserIds.length && !enlistUserData.rejectedUserIds.length && !enlistUserData.potentialUserIds.length
+            const noInteractions = !fetchUserData.enlistedUserIds.length && !fetchUserData.rejectedUserIds.length && !fetchUserData.potentialUserIds.length
             if (collected.size === 0 || noInteractions) {
                 await enlistPrompt.edit({content: '⚠ ***ENLISTING ENDED*** ⚠', components: []});
                 return
             }
             // logic to get users who ignored the fetch prompt for ignore% stat
             const allUserIds = userData.map(user => user.id).flat();
-            const allEnlistPromptUserIds = [...enlistUserData.enlistedUserIds, ...enlistUserData.rejectedUserIds, ...enlistUserData.potentialUserIds];
-            enlistUserData.ignoredUserIds = allUserIds.filter(id => !allEnlistPromptUserIds.includes(id));
+            const allEnlistPromptUserIds = [...fetchUserData.enlistedUserIds, ...fetchUserData.rejectedUserIds, ...fetchUserData.potentialUserIds];
+            fetchUserData.ignoredUserIds = allUserIds.filter(id => !allEnlistPromptUserIds.includes(id));
 
-            const enlistUsersWhoGainedXP = [...enlistUserData.enlistedUserIds, ...enlistUserData.rejectedUserIds]
+            const enlistUsersWhoGainedXP = [...fetchUserData.enlistedUserIds, ...fetchUserData.rejectedUserIds]
 
             let userXPMap = new Collection<Snowflake, number>()
             for (const userId of enlistUsersWhoGainedXP) {
@@ -238,9 +243,9 @@ export const fetchGamers: SlashCommand = {
             }
 
             // update user data and push to mongo
-            const updateEnlistedUserData = updateUserData(interaction, enlistUserData.enlistedUserIds, UserInfo.Enlist);
-            const updateRejectedUserData = updateUserData(interaction, enlistUserData.rejectedUserIds, UserInfo.Reject);
-            const updateIgnoredUserData = updateUserData(interaction, enlistUserData.ignoredUserIds, UserInfo.Ignore);
+            const updateEnlistedUserData = updateUserData(interaction, fetchUserData.enlistedUserIds, UserInfo.Enlist);
+            const updateRejectedUserData = updateUserData(interaction, fetchUserData.rejectedUserIds, UserInfo.Reject);
+            const updateIgnoredUserData = updateUserData(interaction, fetchUserData.ignoredUserIds, UserInfo.Ignore);
             const updatePrompt = enlistPrompt.edit({content: '⚠ ***ENLISTING ENDED*** ⚠', components: []});
 
             await Promise.all([updateEnlistedUserData, updateRejectedUserData, updateIgnoredUserData, updatePrompt])
@@ -286,14 +291,14 @@ export const fetchGamers: SlashCommand = {
             }
 
             // summon gamers button
-            if (enlistUserData.enlistedUserIds.length == 0) return
+            if (fetchUserData.enlistedUserIds.length == 0) return
 
             const formatUserMentions = (userIds: string[]): string[] => {
                 return userIds.map(id => userMention(id));
             };
 
-            const enlistedUsers = formatUserMentions(enlistUserData.enlistedUserIds);
-            const potentialUsers = formatUserMentions(enlistUserData.potentialUserIds);
+            const enlistedUsers = formatUserMentions(fetchUserData.enlistedUserIds);
+            const potentialUsers = formatUserMentions(fetchUserData.potentialUserIds);
 
             const summonButton = new ActionRowBuilder<ButtonBuilder>()
                 .addComponents(
@@ -315,11 +320,11 @@ export const fetchGamers: SlashCommand = {
             summonCollector.on('collect', async i => {
                 let content: string;
 
-                if (enlistUserData.enlistedUserIds.length == 1) {
+                if (fetchUserData.enlistedUserIds.length == 1) {
                     content = `${enlistedUsers.join(',')} has no friends, everyone point and laugh)`;
-                } else if (enlistUserData.enlistedUserIds.length + enlistUserData.potentialUserIds.length >= minGamers) {
+                } else if (fetchUserData.enlistedUserIds.length + fetchUserData.potentialUserIds.length >= minGamers) {
                     content = `${enlistedUsers.join(',')} : You have ${minGamers} gamers if ${potentialUsers.join(',')} play`;
-                } else if (enlistUserData.enlistedUserIds.length == minGamers) {
+                } else if (fetchUserData.enlistedUserIds.length == minGamers) {
                     content = `${enlistedUsers.join(',')} : Gamer Time is upon us`;
                 } else {
                     content = `${enlistedUsers.join(',')} : Insufficient Gamers`;

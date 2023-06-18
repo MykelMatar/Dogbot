@@ -38,8 +38,8 @@ export const mcAddServer: SlashCommand = {
         const options = interaction.options as CommandInteractionOptionResolver;
 
         let newServer: MinecraftServer = {
-            name: options.getString('name'),
-            ip: options.getString('ip'),
+            name: options.getString('name', true),
+            ip: options.getString('ip', true),
             port: options.getInteger('port') ?? 25565
         };
 
