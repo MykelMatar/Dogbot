@@ -152,19 +152,19 @@ export const fetchGamers: SlashCommand = {
             embed.setDescription(`need ${minGamers} for ${game} ☛ __**${ip}:${port}**__`)
         }
 
-        // Not an interaction reply bc interactions are only editable for 15 min
-        const enlistPrompt: Message = await interaction.channel.send({
-            embeds: [embed],
-            components: [row]
-        });
-
         if (role != 'Gamer Time') {
             await interaction.reply({content: role, allowedMentions: {roles: [roleId]}})
         } else {
             await interaction.reply({content: role})
         }
 
-        let fetchUserData: FetchUserData = {
+        // Not an interaction reply bc interactions are only editable for 15 min
+        const enlistPrompt: Message = await interaction.channel.send({
+            embeds: [embed],
+            components: [row]
+        });
+        
+        const fetchUserData: FetchUserData = {
             enlistedUsers: ['-'],
             enlistedUserIds: [],
             rejectedUsers: ['-'],
