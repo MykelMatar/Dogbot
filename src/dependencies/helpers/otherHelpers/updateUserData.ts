@@ -1,7 +1,7 @@
 import guilds from "../../schemas/guild-schema";
 import log from "../../constants/logger";
 import {AutocompleteInteraction, CommandInteraction, Snowflake} from "discord.js";
-import {MongoGuild, UserInfo, ValorantProfile} from "../../myTypes";
+import {GameProfile, MongoGuild, UserInfo} from "../../myTypes";
 
 /**
  * updates mongoDB UserData
@@ -13,7 +13,7 @@ import {MongoGuild, UserInfo, ValorantProfile} from "../../myTypes";
  * @param pointChange - amount of prediction points gained or lost
  */
 
-export async function updateUserData(interaction: CommandInteraction | AutocompleteInteraction, userIdArray: Snowflake[], infoType: UserInfo, profile?: ValorantProfile, pointChange?: Map<string, number>) {
+export async function updateUserData(interaction: CommandInteraction | AutocompleteInteraction, userIdArray: Snowflake[], infoType: UserInfo, profile?: GameProfile, pointChange?: Map<string, number>) {
     if (userIdArray.length === 0) return log.info(`${infoType} user Id Array is empty, skipping user data check`)
     log.info(`Valid ${infoType} user ID array provided`)
 
@@ -61,6 +61,7 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
         case UserInfo.CorrectPrediction:
         case UserInfo.IncorrectPrediction:
         case UserInfo.ValorantProfile:
+        case UserInfo.R6Profile:
             break;
         default:
             return;
@@ -80,6 +81,7 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
                     fetchStats: defaultEnlistStats
                 })
             } else if (infoType === UserInfo.ValorantProfile) {
+                if (!("tag" in profile)) return log.error('wrong profile type. need valorant profile')
                 userData.push({
                     username: guildMember.user.username,
                     id: userId,
@@ -88,6 +90,17 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
                         tag: profile.tag,
                     }
                 })
+            } else if (infoType === UserInfo.R6Profile) {
+                if (!("platform" in profile)) return log.error('wrong profile type. need r6 profile')
+                userData.push({
+                    username: guildMember.user.username,
+                    id: userId,
+                    r6Profile: {
+                        username: profile.username,
+                        platform: profile.platform,
+                    }
+                })
+
             } else if (infoType === UserInfo.PredictionCreate) {
                 userData.push({
                     username: guildMember.user.username,
@@ -147,7 +160,13 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
                     break;
                 case UserInfo.ValorantProfile:
                     user.valorantProfile.username = profile.username
+                    if (!("tag" in profile)) return log.error('wrong profile type. need valorant profile')
                     user.valorantProfile.tag = profile.tag
+                    break;
+                case UserInfo.R6Profile:
+                    user.r6Profile.username = profile.username
+                    if (!("platform" in profile)) return log.error('wrong profile type. need r6 profile')
+                    user.r6Profile.platform = profile.platform
                     break;
                 case UserInfo.PredictionCreate:
                     user.predictionStats.points = 1000

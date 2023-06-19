@@ -22,6 +22,10 @@ const guildSchema = new Schema({
                 username: String,
                 tag: String,
             },
+            r6Profile: {
+                username: String,
+                platform: String,
+            },
             predictionStats: {
                 points: Number,
                 correctPredictions: Number,

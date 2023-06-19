@@ -60,11 +60,11 @@ export const prediction: SlashCommand = {
             .addComponents(
                 new ButtonBuilder()
                     .setLabel(`Yes`)
-                    .setCustomId('predict-yes')
+                    .setCustomId('predictYes')
                     .setStyle(ButtonStyle.Success),
                 new ButtonBuilder()
                     .setLabel(`No`)
-                    .setCustomId('predict-no')
+                    .setCustomId('predictNo')
                     .setStyle(ButtonStyle.Danger),
             );
 
@@ -95,7 +95,7 @@ export const prediction: SlashCommand = {
             time: 120_000,
             filter: (i) => {
                 if (i.message.id != sent.id) return false
-                return ['predict-yes', 'predict-no'].includes(i.customId)
+                return ['predictYes', 'predictNo'].includes(i.customId)
             }
         });
         const terminateBound = terminate.bind(null, client, collector)
@@ -117,7 +117,7 @@ export const prediction: SlashCommand = {
             }
 
             const member = i.member as GuildMember;
-            const isBeliever = i.customId === 'predict-yes';
+            const isBeliever = i.customId === 'predictYes';
 
             const targetArray = isBeliever ? believers : doubters;
             const targetIds = isBeliever ? believerIds : doubterIds;
@@ -257,7 +257,7 @@ export const prediction: SlashCommand = {
                 const winCollectorFilter = async (i) => {
                     const message = await selectWinnerInteraction.fetchReply()
                     if (i.message.id != message.id || i.user.id != interaction.user.id) return false
-                    return ['predict-yes', 'predict-no'].includes(i.customId);
+                    return ['predictYes', 'predictNo'].includes(i.customId);
                 };
 
                 const winCollector = await winnerInteraction.awaitMessageComponent({
@@ -265,7 +265,7 @@ export const prediction: SlashCommand = {
                     time: 120_000
                 })
 
-                const winner = winCollector.customId == 'predict-yes' ? 'Yes' : 'No'
+                const winner = winCollector.customId == 'predictYes' ? 'Yes' : 'No'
                 const winString = winner === 'Yes' ? `Belivers Win!` : 'Doubters Win!'
 
                 // Pari-mutuel betting system math + other constant declarations

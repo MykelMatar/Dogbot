@@ -32,6 +32,13 @@ export interface ValorantProfile {
     tag: string
 }
 
+export interface R6Profile {
+    username: string
+    platform: string | 'pc' | 'xbox' | 'psn'
+}
+
+export type GameProfile = ValorantProfile | R6Profile
+
 export interface MinecraftServer {
     name: string
     ip: string
@@ -98,6 +105,10 @@ export interface MongoGuild extends Document {
             username: string;
             tag: string;
         };
+        r6Profile?: {
+            username: string,
+            platform: string,
+        };
         predictionStats?: {
             points: number;
             correctPredictions: number;
@@ -125,6 +136,7 @@ export enum UserInfo {
     Ignore = 'Ignore',
     Perhaps = 'Perhaps',
     ValorantProfile = 'ValorantProfile',
+    R6Profile = 'R6Profile',
     PredictionCreate = 'PredictionCreate',
     CorrectPrediction = 'CorrectPrediction',
     IncorrectPrediction = 'IncorrectPrediction',
