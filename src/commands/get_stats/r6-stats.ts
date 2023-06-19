@@ -60,11 +60,11 @@ export const r6Stats: SlashCommand = {
                 .setDescription(`**${rankedStats.rank}**`)
                 .addFields(
                     {name: `K/D ${spacer}${spacer}`, value: rankedStats.kd, inline: true},
-                    {name: `HS %${spacer}`, value: generalStats.headshot_, inline: true},
-                    {name: `Win %${spacer}`, value: rankedStats.win_, inline: true},
+                    {name: `HS %${spacer}${spacer}`, value: generalStats.headshot_, inline: true},
+                    {name: `Win %`, value: rankedStats.win_, inline: true},
                     {name: `KPM`, value: rankedStats.kills_match, inline: true},
                     {name: `Kills ${spacer}${spacer}`, value: rankedStats.kills, inline: true},
-                    {name: `Deaths ${spacer}`, value: rankedStats.deaths, inline: true},
+                    {name: `Deaths `, value: rankedStats.deaths, inline: true},
                     // {name: `Matches`, value: rankedStats.matches, inline: true},
                     // {name: `Hours`, value: generalStats.time_played, inline: true},
                 )
