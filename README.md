@@ -27,7 +27,7 @@
 <img src="src/dependencies/images/mc-list-servers-status.png" width="31%"></img>
 
 **Fetch Commands**  
-<img src="src/dependencies/images/fetch-users.png" width="30%"></img>  
+<img src="src/dependencies/images/fetch-users.png" width="31%"></img>  
 <img src="src/dependencies/images/fetch-stats.png" width="35%"></img>
 <img src="src/dependencies/images/enlist-leaderboard.png" width="33%"></img>
 
