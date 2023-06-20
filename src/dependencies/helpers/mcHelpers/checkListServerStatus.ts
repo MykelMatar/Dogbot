@@ -7,10 +7,10 @@ import {status, statusBedrock} from "minecraft-server-util";
  */
 export const checkListServerStatus = async (MCServerData): Promise<string[]> => {
     const statusPromises = MCServerData.serverList.map(MCServer => {
-        return status(MCServer.ip, MCServer.port, {timeout: 2000})
+        return status(MCServer.ip, MCServer.port, {timeout: 5000})
             .then(() => '*Online*')
             .catch(() =>
-                statusBedrock(MCServer.ip, MCServer.port, {timeout: 2000})
+                statusBedrock(MCServer.ip, MCServer.port, {timeout: 5000})
                     .then(() => '*Online*')
                     .catch(() => '*Offline*'));
     });

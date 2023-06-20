@@ -108,13 +108,13 @@ export const mcListServers: SlashCommand = {
 
         collector.on('collect', async i => {
             switch (i.customId) {
-                case 'ListRemove':
+                case 'listRemove':
                     await client.commands.get('mc-delete-server').execute(client, interaction, guildData);
                     break;
-                case 'ListChange':
+                case 'listChange':
                     await client.commands.get('mc-select-server').execute(client, interaction, guildData);
                     break;
-                case 'ListStatus':
+                case 'listStatus':
                     i.deferUpdate()
 
                     if (gettingStatus) break;
@@ -126,11 +126,11 @@ export const mcListServers: SlashCommand = {
                     row = new ActionRowBuilder<ButtonBuilder>()
                         .addComponents(
                             new ButtonBuilder()
-                                .setCustomId('ListRemove')
+                                .setCustomId('listRemove')
                                 .setLabel('Remove')
                                 .setStyle(ButtonStyle.Danger),
                             new ButtonBuilder()
-                                .setCustomId('ListChange')
+                                .setCustomId('listChange')
                                 .setLabel('Change')
                                 .setStyle(ButtonStyle.Primary),
                         );
@@ -146,7 +146,7 @@ export const mcListServers: SlashCommand = {
             removeTerminationListener(terminateBound)
             if (collected.size === 0) {
                 await interaction.editReply({components: []})
-            } else if (['ListStatus', 'ListRemove', 'ListChange'].includes(collected.first().customId)) {
+            } else if (['listStatus', 'listRemove', 'listChange'].includes(collected.first().customId)) {
                 await interaction.editReply({embeds: [embed], components: []})
             }
         });

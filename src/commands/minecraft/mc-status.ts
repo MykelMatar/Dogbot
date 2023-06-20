@@ -70,7 +70,7 @@ export const mcStatus: SlashCommand = {
 
         let embed
         try {
-            const javaResponse = await status(ip, port, {timeout: 3000})
+            const javaResponse = await status(ip, port, {timeout: 5000})
 
             embed = new EmbedBuilder()
                 .setTitle(name)
@@ -100,7 +100,7 @@ export const mcStatus: SlashCommand = {
         } catch {
             try {
                 log.warn('java response failed, checking bedrock...')
-                let bedrockResponse = await statusBedrock(ip, port, {timeout: 3000})
+                let bedrockResponse = await statusBedrock(ip, port, {timeout: 5000})
 
                 embed = new EmbedBuilder()
                     .setTitle(name)

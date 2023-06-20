@@ -22,18 +22,18 @@
 ## Image Gallery
 
 **Minecraft Commands**  
-<img src="/src/dependencies/images/mc-server-status" width="25%"></img>
-<img src="src/dependencies/images/mc-list-servers" width="25%"></img>
-<img src="./src/dependencies/images/mc-list-servers-status" width="28%"></img>
+<img src="src/dependencies/images/mc-status.png" width="25%"></img>
+<img src="src/dependencies/images/mc-list-servers.png" width="30%"></img>
+<img src="src/dependencies/images/mc-list-servers-status.png" width="31%"></img>
 
 **Fetch Commands**  
-<img src="https://github.com/MykelMatar/Dogbot/blob/master/src/dependencies/images/enlist-users.png" width="30%"></img>  
-<img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/enlist-stats.png" width="20%"></img>
-<img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/enlist-leaderboard.png" width="33%"></img>
+<img src="src/dependencies/images/fetch-users.png" width="30%"></img>  
+<img src="src/dependencies/images/fetch-stats.png" width="35%"></img>
+<img src="src/dependencies/images/enlist-leaderboard.png" width="33%"></img>
 
 **Other Commands**  
-<img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/get-stats-valorant.png" width="50%"></img>   
-<img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/server-stats.png" width="60%"></img>
+<img src="src/dependencies/images/get-stats-valorant.png" width="50%"></img>   
+<img src="src/dependencies/images/server-stats.png" width="60%"></img>
 
 ## All Commands
 
