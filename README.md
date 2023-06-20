@@ -22,8 +22,8 @@
 ## Image Gallery
 
 **Minecraft Commands**  
-<img src="./src/dependencies/images/mc-server-status" width="25%"></img>
-<img src="./src/dependencies/images/mc-list-servers" width="25%"></img>
+<img src="/src/dependencies/images/mc-server-status" width="25%"></img>
+<img src="src/dependencies/images/mc-list-servers" width="25%"></img>
 <img src="./src/dependencies/images/mc-list-servers-status" width="28%"></img>
 
 **Fetch Commands**  
