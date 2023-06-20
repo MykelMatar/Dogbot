@@ -22,9 +22,9 @@
 ## Image Gallery
 
 **Minecraft Commands**  
-<img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/mc-server-status.png" width="25%"></img>
-<img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/mc-list-servers.png" width="25%"></img>
-<img src="https://github.com/MykelMatar/Dogbot/blob/Discord.js14/src/dependencies/images/mc-list-servers-status.png" width="28%"></img>
+<img src="./src/dependencies/images/mc-server-status" width="25%"></img>
+<img src="./src/dependencies/images/mc-list-servers" width="25%"></img>
+<img src="./src/dependencies/images/mc-list-servers-status" width="28%"></img>
 
 **Fetch Commands**  
 <img src="https://github.com/MykelMatar/Dogbot/blob/master/src/dependencies/images/enlist-users.png" width="30%"></img>  
@@ -51,7 +51,7 @@
 | [/mc-change-name](https://github.com/MykelMatar/Dogbot/wiki#mc-change-server-name) | Changes the name of a server                      |   ✅    |
 | [/mc-delete-server](https://github.com/MykelMatar/Dogbot/wiki#mc-delete-server)    | Removes server from server list                   |   ✅    |
 
-### enlist-user commands
+### Fetch commands
 
 | command                                                                            | description                                                        | Status |
 |------------------------------------------------------------------------------------|--------------------------------------------------------------------|:------:|
@@ -60,24 +60,21 @@
 | [/fetch-leaderboard](https://github.com/MykelMatar/Dogbot/wiki#enlist-leaderboard) | Displays enlist rankings                                           |   ✅    |
 | [/fetch-role](https://github.com/MykelMatar/Dogbot/wiki#enlist-set-role)           | Check, set, or clear the role that Dogbot @ when he fetches        |   ✅    |
 
+### Prediction commands
+
+| command                                                                                 | description                                                | Status |
+|-----------------------------------------------------------------------------------------|------------------------------------------------------------|:------:|
+| [/prediction](https://github.com/MykelMatar/Dogbot/wiki#enlist-users)                   | Creates prediction to bet points on                        |   ✅    |
+| [/prediction-stats](https://github.com/MykelMatar/Dogbot/wiki#enlist-stats)             | Shows wins, losses, and points earned from predictions     |   ✅    |
+| [/prediction-leaderboard](https://github.com/MykelMatar/Dogbot/wiki#enlist-leaderboard) | Displays which users have the most points from predictions |   ✅    |
+
 ### get-stats commands
 
 | command                                                                               | description                              | Status |
 |---------------------------------------------------------------------------------------|------------------------------------------|:------:|
 | [/get-stats-valorant](https://github.com/MykelMatar/Dogbot/wiki#get-stats-valorant)   | Retrieves valorant stats from tracker.gg |   ✅    |
-| [/get-stats-warzone](https://github.com/MykelMatar/Dogbot/wiki#get-stats-valorant)    | Retrieves warzone stats                  |   X    |
 | [/set-profile-valorant](https://github.com/MykelMatar/Dogbot/wiki#get-stats-valorant) | sets your valorant profile               |   ✅    |
-| [/set-profile-warzone](https://github.com/MykelMatar/Dogbot/wiki#get-stats-valorant)  | sets your warzone profile                |   ✅    |
 | [/server-stats](https://github.com/MykelMatar/Dogbot/wiki#server-stats)               | displays relevant server stats           |   ✅    |
-
-### game commands
-
-| command                                                           | description                           | Status |
-|-------------------------------------------------------------------|---------------------------------------|:------:|
-| [/tictactoe](https://github.com/MykelMatar/Dogbot/wiki#tictactoe) | Play tic tac toe against another user |   ✅*   |
-| [/magic8](https://github.com/MykelMatar/Dogbot/wiki#magic8)       | Predicts via a Magic 8 ball           |   ✅    |
-
-    *implemented but not thoroughly tested
 
 ### other commands
 
@@ -85,6 +82,7 @@
 |:-----------------------------------------------------------------------:|---------------------------------------------|:------:|
 |         [/poll](https://github.com/MykelMatar/Dogbot/wiki#poll)         | creates an anonymous poll                   |   ✅    |
 | [/server-stats](https://github.com/MykelMatar/Dogbot/wiki#server-stats) | shows some stats about your discord server  |   ✅    |
+|       [/magic8](https://github.com/MykelMatar/Dogbot/wiki#magic8)       | Predicts via a Magic 8 ball                 |   ✅    |
 |         [/help](https://github.com/MykelMatar/Dogbot/wiki#elp)          | lists all commands and relevant information |   ✅    |
 
 
