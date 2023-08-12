@@ -28,7 +28,7 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
         enlists: 0,
         rejects: 0,
         ignores: 0,
-        fetchXP: 0,
+        fetchXP: -1, // if you enlist start at level 1 instead of skipping to level 2
         fetchStreak: 0
     }
 
@@ -117,7 +117,7 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
         } else {
             const user = userData.find(user => user.id === userId)
             const maxEnlistStreak = 5
-            const bonusStreakXP = 5
+            const bonusXP = 2
             const maxPoints = 1_000_000_000
             const minPoints = 1
 
@@ -129,7 +129,7 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
                         if (user.fetchStats.fetchStreak < maxEnlistStreak) {
                             user.fetchStats.fetchStreak++
                         }
-                        user.fetchStats.fetchXP += XPPerEnlist + (bonusStreakXP * user.fetchStats.fetchStreak)
+                        user.fetchStats.fetchXP += XPPerEnlist + (bonusXP * user.fetchStats.fetchStreak)
                         break;
                     }
                     user.fetchStats = defaultEnlistStats

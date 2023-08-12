@@ -34,17 +34,18 @@ const numberOfPrestiges = 5
 const numberOfLevelsBeforeMax = maxLevel * numberOfPrestiges
 const maxPrestigeMaxLevel = 1000 + numberOfLevelsBeforeMax // pseudo infinite leveling after hitting max prestige
 const levelsPerPrestige = 50
-const baseXPIncreasePerLevel = 10
+const baseXPIncreasePerLevel = 7
 
 // create array of xp values for each level (1 indexed bc lvl 0 does not exist)
 for (let i = 1; i < maxPrestigeMaxLevel; i++) {
-    let scalingFunction
-    if (i < 50) {
-        scalingFunction = Math.floor((i + 5) ^ 2)
-    } else {
-        scalingFunction = Math.floor(i / 3)
-    }
-    xpForLevel.push(xpForLevel[i - 1] + (baseXPIncreasePerLevel + scalingFunction));
+    // let scalingFunction
+    // if (i < 50) {
+    //     scalingFunction = Math.floor((i + 5) ^ 2)
+    // } else {
+    //     scalingFunction = Math.floor(i / 3)
+    // }
+    // xpForLevel.push(xpForLevel[i - 1] + (baseXPIncreasePerLevel + scalingFunction));
+    xpForLevel.push(xpForLevel[i - 1] + (baseXPIncreasePerLevel));
 }
 
 export function getLevelFromXp(xp: number): { prestige: string, level: number } {
