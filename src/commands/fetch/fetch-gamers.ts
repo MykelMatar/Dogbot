@@ -34,6 +34,7 @@ import {autocompleteTimes} from "../../dependencies/constants/autocompleteTimes"
 import {collectTime} from "../../dependencies/helpers/fetchHelpers/collectTime";
 import {collectEmbedChanges} from "../../dependencies/helpers/fetchHelpers/collectEmbedChanges";
 
+
 export const fetchGamers: SlashCommand = {
     data: new SlashCommandBuilder()
         .setName('fetch-gamers')
@@ -53,7 +54,7 @@ export const fetchGamers: SlashCommand = {
         )
         .addStringOption(option =>
             option.setName('time')
-                .setDescription('time you want the event to take place. Type "any" for no time.')
+                .setDescription('time (in "00:00 am" format). Type "any" for no time.')
                 .setMaxLength(40)
                 .setAutocomplete(true)
                 .setRequired(false))
@@ -93,6 +94,13 @@ export const fetchGamers: SlashCommand = {
     },
 
     async execute(client: CustomClient, interaction: CommandInteraction, guildData: MongoGuild) {
+        // check if user has time zone set. if not, ask them to input it.
+        const timeZone = guildData.settings.timeZone
+        console.log(timeZone)
+        if (!timeZone) {
+            await client.commands.get('set-timezone').execute(client, interaction, guildData)
+        }
+
         const userData = guildData.userData
 
         // retrieve options
@@ -145,7 +153,7 @@ export const fetchGamers: SlashCommand = {
                 {name: 'Perhaps', value: '-', inline: true},
             )
             .setColor(embedColor)
-            .setFooter({text: 'Selecting the "Perhaps" option will not count towards your fetch stats',})
+        // .setFooter({text: 'Selecting the "Perhaps" option will not count towards your fetch stats',})
 
         let {ip, port} = guildData.mcServerData.selectedServer
         if (['minecraft', 'mc'].includes(game.toLowerCase().replace(/\s/g, ""))) {
@@ -163,7 +171,7 @@ export const fetchGamers: SlashCommand = {
             embeds: [embed],
             components: [row]
         });
-        
+
         const fetchUserData: FetchUserData = {
             enlistedUsers: ['-'],
             enlistedUserIds: [],
@@ -181,6 +189,45 @@ export const fetchGamers: SlashCommand = {
         const editButtonId = row.components[3].data["custom_id"]
         const customIds = [gamingButtonId, rejectButtonId, perhapsButtonId, editButtonId]
         const pendingResponse = []
+
+        // TODO add timezone stuff
+
+        // calculate time until gamer time
+        // const getDateTime = (timeString: string): DateTime | undefined => {
+        //     const normalizedTimeString = timeString.replace(/\s+(am|pm)$/i, '$1');
+        //     const formats = ['h:mma', 'ha']; // Add more formats as needed
+        //
+        //     for (const format of formats) {
+        //         const parsedTime = DateTime.fromFormat(normalizedTimeString, format);
+        //         if (parsedTime.isValid) {
+        //             return parsedTime;
+        //         }
+        //     }
+        //
+        //     return undefined;
+        // };
+
+        // let validTime = getDateTime(time)
+        // if (validTime) {
+        //     console.log(interaction.createdTimestamp)
+        //     console.log(validTime.toMillis())
+        //     const now = DateTime.local();
+        //     const currentTime = interaction.createdTimestamp // should get users local time? not sure
+        //
+        //     // If the future time is earlier than the current time, add one day to the future time
+        //     if (validTime <= now) {
+        //         validTime = validTime.plus({days: 1});
+        //     }
+        //
+        //     const diff = validTime.diff(now, ['hours', 'minutes']);
+        //     console.log(diff.milliseconds, diff.minutes)
+        //
+        //     // let timeLeft
+        //     // const currentTime = DateTime.now()
+        //     // console.log(currentTime.hour, validTime.hour)
+        //
+        //     // console.log(timeLeft.toFormat("h 'hours' m 'minutes'"))
+        // }
 
         const enlistCollector = interaction.channel.createMessageComponentCollector({
             componentType: ComponentType.Button,

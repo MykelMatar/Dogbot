@@ -89,7 +89,8 @@ export interface MongoGuild extends Document {
     guildId: string;
     settings: {
         autoDetectIP: boolean,
-        fetchRole: string | Snowflake
+        fetchRole: string | Snowflake,
+        timeZone: string
     },
     userData: {
         username: string;
@@ -97,6 +98,7 @@ export interface MongoGuild extends Document {
         fetchStats?: {
             enlists: number;
             rejects: number;
+            perhaps: number;
             ignores: number;
             fetchXP: number;
             fetchStreak: number;

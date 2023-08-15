@@ -23,16 +23,25 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
     const XPPerEnlist: number = 10
     const XPPerReject: number = 5
     const XPPerPerhaps: number = 5
+    const maxEnlistStreak = 5
+    const bonusXP = 2
 
-    let defaultEnlistStats = {
+    const pointsPerEnlist = 200
+    const pointsPerReject = 100
+    const pointsPerPerhaps = 100
+    const maxPoints = 1_000_000_000
+    const minPoints = 1
+
+    const defaultEnlistStats = {
         enlists: 0,
         rejects: 0,
+        perhaps: 0,
         ignores: 0,
         fetchXP: -1, // if you enlist start at level 1 instead of skipping to level 2
         fetchStreak: 0
     }
 
-    let defaultPredictionStats = {
+    const defaultPredictionStats = {
         points: 1000,
         correctPredictions: 0,
         incorrectPredictions: 0
@@ -48,18 +57,20 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
             defaultEnlistStats.rejects = 1
             defaultEnlistStats.fetchXP = XPPerReject
             break;
+        case UserInfo.Perhaps:
+            defaultEnlistStats.perhaps = 1
+            defaultEnlistStats.fetchXP = XPPerPerhaps
+            break;
         case UserInfo.Ignore:
             defaultEnlistStats.ignores = 1
             break;
-        case UserInfo.Perhaps:
-            defaultEnlistStats.fetchXP = XPPerPerhaps
+        case UserInfo.CorrectPrediction:
+            defaultPredictionStats.correctPredictions = 1
+            break;
+        case UserInfo.IncorrectPrediction:
+            defaultPredictionStats.incorrectPredictions = 1
             break;
         case UserInfo.PredictionCreate:
-            defaultPredictionStats.correctPredictions = 0
-            defaultPredictionStats.incorrectPredictions = 0
-            break;
-        case UserInfo.CorrectPrediction:
-        case UserInfo.IncorrectPrediction:
         case UserInfo.ValorantProfile:
         case UserInfo.R6Profile:
             break;
@@ -116,10 +127,6 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
 
         } else {
             const user = userData.find(user => user.id === userId)
-            const maxEnlistStreak = 5
-            const bonusXP = 2
-            const maxPoints = 1_000_000_000
-            const minPoints = 1
 
             switch (infoType) {
                 case UserInfo.Enlist:
@@ -151,8 +158,8 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
                     user.fetchStats = defaultEnlistStats
                     break;
                 case UserInfo.Perhaps:
-                    if (!isNaN(user.fetchStats.ignores)) {
-                        user.fetchStats.fetchXP += 1
+                    if (!isNaN(user.fetchStats.perhaps)) {
+                        user.fetchStats.fetchXP += XPPerPerhaps
                         user.fetchStats.fetchStreak = 0
                         break;
                     }
