@@ -9,6 +9,7 @@ import {
     GuildMember,
     ModalActionRowComponentBuilder,
     ModalBuilder,
+    PermissionFlagsBits,
     SlashCommandBuilder,
     Snowflake,
     TextInputBuilder,
@@ -33,6 +34,7 @@ export const prediction: SlashCommand = {
     data: new SlashCommandBuilder()
         .setName('prediction')
         .setDescription('Create a prediction and gamble with your prediction points')
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .addStringOption(option =>
             option.setName('prediction')
                 .setDescription('what you want to predict')
