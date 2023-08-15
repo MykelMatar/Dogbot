@@ -256,9 +256,7 @@ export const prediction: SlashCommand = {
                 await sent.edit({components: []})
                 const winCollectorFilter = async (i) => {
                     const message = await selectWinnerInteraction.fetchReply()
-                    console.log(i.message.id != message.id)
-                    console.log(i.user.id != interaction.user.id)
-                    // if (i.message.id != message.id || i.user.id != interaction.user.id) return false
+                    if (i.message.id != message.id || i.user.id != interaction.user.id) return false
                     return ['predictYes', 'predictNo'].includes(i.customId);
                 };
 

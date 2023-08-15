@@ -38,8 +38,6 @@ export default (client: CustomClient) => {
             const officialCommands = commands.filter(command => !adminCommandNames.includes(command.name));
             const adminCommands = adminCommandNames.map(command => client.commands.get(command).data.toJSON());
 
-            console.log(officialCommands)
-
             const rest = new REST({version: '10'}).setToken(process.env.BOT_TOKEN);
             await rest.put(
                 Routes.applicationCommands(dogbotId),
