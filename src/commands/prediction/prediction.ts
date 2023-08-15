@@ -94,7 +94,7 @@ export const prediction: SlashCommand = {
 
         const collector = interaction.channel.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: 120_000,
+            time: 10_000,
             filter: (i) => {
                 if (i.message.id != sent.id) return false
                 return ['predictYes', 'predictNo'].includes(i.customId)
@@ -245,7 +245,7 @@ export const prediction: SlashCommand = {
                 };
 
                 const selectWinnerInteraction = await sent.awaitMessageComponent({
-                    filter: winnerSelectionFilter,
+                    // filter: winnerSelectionFilter,
                     time: 60 * 60_000 // 3.6e6 = 1 hour (in ms) 
                 })
 
