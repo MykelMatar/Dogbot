@@ -95,11 +95,11 @@ export const fetchGamers: SlashCommand = {
 
     async execute(client: CustomClient, interaction: CommandInteraction, guildData: MongoGuild) {
         // check if user has time zone set. if not, ask them to input it.
-        const timeZone = guildData.settings.timeZone
-        console.log(timeZone)
-        if (!timeZone) {
-            await client.commands.get('set-timezone').execute(client, interaction, guildData)
-        }
+        // const timeZone = guildData.settings.timeZone
+        // console.log(timeZone)
+        // if (!timeZone) {
+        //     await client.commands.get('set-timezone').execute(client, interaction, guildData)
+        // }
 
         const userData = guildData.userData
 
@@ -203,10 +203,9 @@ export const fetchGamers: SlashCommand = {
         //             return parsedTime;
         //         }
         //     }
-        //
         //     return undefined;
         // };
-
+        //
         // let validTime = getDateTime(time)
         // if (validTime) {
         //     console.log(interaction.createdTimestamp)
@@ -221,12 +220,12 @@ export const fetchGamers: SlashCommand = {
         //
         //     const diff = validTime.diff(now, ['hours', 'minutes']);
         //     console.log(diff.milliseconds, diff.minutes)
-        //
-        //     // let timeLeft
-        //     // const currentTime = DateTime.now()
-        //     // console.log(currentTime.hour, validTime.hour)
-        //
-        //     // console.log(timeLeft.toFormat("h 'hours' m 'minutes'"))
+
+        // let timeLeft
+        // const currentTime = DateTime.now()
+        // console.log(currentTime.hour, validTime.hour)
+
+        // console.log(timeLeft.toFormat("h 'hours' m 'minutes'"))
         // }
 
         const enlistCollector = interaction.channel.createMessageComponentCollector({

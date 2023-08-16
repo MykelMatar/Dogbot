@@ -94,7 +94,7 @@ export const prediction: SlashCommand = {
 
         const collector = interaction.channel.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: 10_000,
+            time: 120_000,
             filter: (i) => {
                 if (i.message.id != sent.id) return false
                 return ['predictYes', 'predictNo'].includes(i.customId)
@@ -221,7 +221,8 @@ export const prediction: SlashCommand = {
         });
 
         // ask for winner, distribute funds, and update user data
-        collector.on('end', async () => {
+        collector.on('end', async (collected) => {
+            if (collected.size == 0) return;
             // send interaction to ask who won
             const selectWinnerButton = new ActionRowBuilder<ButtonBuilder>()
                 .addComponents(
@@ -245,7 +246,7 @@ export const prediction: SlashCommand = {
                 };
 
                 const selectWinnerInteraction = await sent.awaitMessageComponent({
-                    // filter: winnerSelectionFilter,
+                    filter: winnerSelectionFilter,
                     time: 60 * 60_000 // 3.6e6 = 1 hour (in ms) 
                 })
 
@@ -262,52 +263,62 @@ export const prediction: SlashCommand = {
                     return ['predictYes', 'predictNo'].includes(i.customId);
                 };
 
-                const winCollector = await winnerInteraction.awaitMessageComponent({
-                    filter: winCollectorFilter,
-                    time: 120_000
-                })
+                // this code doesnt work on the server??? but works if i run it locally??? idk why
+                // const winCollector = await winnerInteraction.awaitMessageComponent({
+                //     filter: winCollectorFilter,
+                //     time: 120_000
+                // })
 
-                const winner = winCollector.customId == 'predictYes' ? 'Yes' : 'No'
-                const winString = winner === 'Yes' ? `Belivers Win!` : 'Doubters Win!'
-
-                // Pari-mutuel betting system math + other constant declarations
-                const winningPool = winner === 'Yes' ? yesPool : noPool
-                const bettingFormula = totalPool / winningPool
-                const winMultiplier = winningPool !== 0 ? bettingFormula : 1;
-                const peepoBus = client.emojis.cache.get("994786993777160263")
-                const what = client.emojis.cache.get("1117689831657578538")
-                const pointChangeMap = new Map<string, number>()
-
-                let totalWinnings = 0
-                for (const [key, value] of betAmountMap.entries()) {
-                    const winnings = (value * winMultiplier).toFixed(0)
-                    totalWinnings += parseInt(winnings)
-                }
-
-                await selectWinnerInteraction.editReply({
-                    content: `${winString} ${what.toString()}.  ${totalWinnings} points distributed amongst winners.`,
-                    components: []
+                const winCollector = interaction.channel.createMessageComponentCollector({
+                    componentType: ComponentType.Button,
+                    time: 120_000,
+                    max: 1,
+                    filter: winCollectorFilter
                 });
 
-                // update user data
-                const updatePredictionResults = async (ids: string[], multiplier: number, userInfoType: UserInfo) => {
-                    for (const id of ids) {
-                        const betAmount = betAmountMap.get(id) || 0;
-                        const pointChange = (betAmount * multiplier).toFixed(0);
-                        pointChangeMap.set(id, parseInt(pointChange));
+                winCollector.on('collect', async winCollectorResponse => {
+                    const winner = winCollectorResponse.customId == 'predictYes' ? 'Yes' : 'No'
+                    const winString = winner === 'Yes' ? `Belivers Win!` : 'Doubters Win!'
+
+                    // Pari-mutuel betting system math + other constant declarations
+                    const winningPool = winner === 'Yes' ? yesPool : noPool
+                    const bettingFormula = totalPool / winningPool
+                    const winMultiplier = winningPool !== 0 ? bettingFormula : 1;
+                    const peepoBus = client.emojis.cache.get("994786993777160263")
+                    const what = client.emojis.cache.get("1117689831657578538")
+                    const pointChangeMap = new Map<string, number>()
+
+                    let totalWinnings = 0
+                    for (const [key, value] of betAmountMap.entries()) {
+                        const winnings = (value * winMultiplier).toFixed(0)
+                        totalWinnings += parseInt(winnings)
                     }
 
-                    await updateUserData(interaction, ids, userInfoType, null, pointChangeMap);
-                };
+                    await selectWinnerInteraction.editReply({
+                        content: `${winString} ${what.toString()}.  ${totalWinnings} points distributed amongst winners.`,
+                        components: []
+                    });
 
-                if (winner === 'Yes') {
-                    await updatePredictionResults(believerIds, winMultiplier, UserInfo.CorrectPrediction);
-                    await updatePredictionResults(doubterIds, 1, UserInfo.IncorrectPrediction);
-                } else {
-                    await updatePredictionResults(believerIds, 1, UserInfo.IncorrectPrediction);
-                    await updatePredictionResults(doubterIds, winMultiplier, UserInfo.CorrectPrediction);
-                }
+                    // update user data
+                    const updatePredictionResults = async (ids: string[], multiplier: number, userInfoType: UserInfo) => {
+                        for (const id of ids) {
+                            const betAmount = betAmountMap.get(id) || 0;
+                            const pointChange = (betAmount * multiplier).toFixed(0);
+                            pointChangeMap.set(id, parseInt(pointChange));
+                        }
 
+                        await updateUserData(interaction, ids, userInfoType, null, pointChangeMap);
+                    };
+
+                    if (winner === 'Yes') {
+                        await updatePredictionResults(believerIds, winMultiplier, UserInfo.CorrectPrediction);
+                        await updatePredictionResults(doubterIds, 1, UserInfo.IncorrectPrediction);
+                    } else {
+                        await updatePredictionResults(believerIds, 1, UserInfo.IncorrectPrediction);
+                        await updatePredictionResults(doubterIds, winMultiplier, UserInfo.CorrectPrediction);
+                    }
+                });
+                
             } catch (e) {
                 sent.edit({components: []})
                 log.warn('Response Timeout')
