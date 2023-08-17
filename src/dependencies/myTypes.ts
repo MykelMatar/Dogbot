@@ -90,7 +90,10 @@ export interface MongoGuild extends Document {
     settings: {
         autoDetectIP: boolean,
         fetchRole: string | Snowflake,
-        timeZone: string
+        timeZone: {
+            offset: string,
+            name: string
+        }
     },
     userData: {
         username: string;

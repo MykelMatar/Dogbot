@@ -6,7 +6,10 @@ const guildSchema = new Schema({
     settings: {
         autoDetectIP: Boolean,
         fetchRole: String,
-        timeZone: String
+        timeZone: {
+            offset: String,
+            name: String
+        }
     },
     userData: [
         {

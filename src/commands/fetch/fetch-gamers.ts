@@ -94,13 +94,6 @@ export const fetchGamers: SlashCommand = {
     },
 
     async execute(client: CustomClient, interaction: CommandInteraction, guildData: MongoGuild) {
-        // check if user has time zone set. if not, ask them to input it.
-        // const timeZone = guildData.settings.timeZone
-        // console.log(timeZone)
-        // if (!timeZone) {
-        //     await client.commands.get('set-timezone').execute(client, interaction, guildData)
-        // }
-
         const userData = guildData.userData
 
         // retrieve options
@@ -112,6 +105,14 @@ export const fetchGamers: SlashCommand = {
         const title = options.getString('title') ?? 'Gamer Time'
         const roleValue = options.getRole('role')
 
+        // if (time !== 'any time') {
+        //     // check if user has time zone set. if not, ask them to input it.
+        //     const timeZone = guildData.settings.timeZone
+        //     console.log(timeZone)
+        //     if (!timeZone) {
+        //         await client.commands.get('set-timezone').execute(client, interaction, guildData)
+        //     }
+        // }
 
         let role: any = 'Gamer Time'
         let roleId
@@ -205,7 +206,14 @@ export const fetchGamers: SlashCommand = {
         //     }
         //     return undefined;
         // };
-        //
+
+        // end nov 5 this year 
+        // starts march 10 next year
+
+        // const local = DateTime.local()
+        // const rezoned = local.setZone(offset)
+        // console.log(rezoned)
+
         // let validTime = getDateTime(time)
         // if (validTime) {
         //     console.log(interaction.createdTimestamp)
