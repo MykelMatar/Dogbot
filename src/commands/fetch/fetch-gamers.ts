@@ -154,6 +154,7 @@ export const fetchGamers: SlashCommand = {
                 {name: 'Perhaps', value: '-', inline: true},
             )
             .setColor(embedColor)
+            .setFooter({text: `⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀`})
         // .setFooter({text: 'Selecting the "Perhaps" option will not count towards your fetch stats',})
 
         let {ip, port} = guildData.mcServerData.selectedServer
