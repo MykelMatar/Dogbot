@@ -340,7 +340,7 @@ export const fetchGamers: SlashCommand = {
                         {name: 'Level Change', value: userLevelChange.join('\n'), inline: true}
                     )
                     .setColor(embedColor)
-                    .setFooter({text: `Use /enlist-stats to see your current level`})
+                    .setFooter({text: `Use /fetch-stats to see your current level`})
 
                 interaction.channel.send({embeds: [levelEmbed]})
             }
