@@ -128,6 +128,19 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
         } else {
             const user = userData.find(user => user.id === userId)
 
+            // make sure users who have gambled can still get points when interacting with fetch prompt (also prevents crash)
+            const alternativePredictionPointEvents = [
+                UserInfo.Enlist,
+                UserInfo.Reject,
+                UserInfo.Perhaps,
+            ]
+
+            if (alternativePredictionPointEvents.includes(infoType)) {
+                if (!isNaN(user.predictionStats.points)) {
+                    user.predictionStats.points = defaultPredictionStats.points
+                }
+            }
+
             switch (infoType) {
                 case UserInfo.Enlist:
                     // mongo returns NaN if value does not exist (undefined)
@@ -137,10 +150,6 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
                             user.fetchStats.fetchStreak++
                         }
                         user.fetchStats.fetchXP += XPPerEnlist + (bonusXP * user.fetchStats.fetchStreak)
-                        
-                        if (!isNaN(user.predictionStats.points)) {
-                            user.predictionStats.points = defaultPredictionStats.points
-                        }
                         user.predictionStats.points = Math.max(user.predictionStats.points + pointsPerEnlist, maxPoints);
                         break;
                     }
@@ -151,10 +160,6 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
                         user.fetchStats.rejects++
                         user.fetchStats.fetchStreak = 0
                         user.fetchStats.fetchXP += XPPerReject
-
-                        if (!isNaN(user.predictionStats.points)) {
-                            user.predictionStats.points = defaultPredictionStats.points
-                        }
                         user.predictionStats.points = Math.max(user.predictionStats.points + pointsPerReject, maxPoints);
                         break;
                     }
@@ -171,24 +176,10 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
                     if (!isNaN(user.fetchStats.perhaps)) {
                         user.fetchStats.fetchXP += XPPerPerhaps
                         user.fetchStats.fetchStreak = 0
-
-                        if (!isNaN(user.predictionStats.points)) {
-                            user.predictionStats.points = defaultPredictionStats.points
-                        }
                         user.predictionStats.points = Math.max(user.predictionStats.points + pointsPerPerhaps, maxPoints);
                         break;
                     }
                     user.fetchStats = defaultEnlistStats
-                    break;
-                case UserInfo.ValorantProfile:
-                    user.valorantProfile.username = profile.username
-                    if (!("tag" in profile)) return log.error('wrong profile type. need valorant profile')
-                    user.valorantProfile.tag = profile.tag
-                    break;
-                case UserInfo.R6Profile:
-                    user.r6Profile.username = profile.username
-                    if (!("platform" in profile)) return log.error('wrong profile type. need r6 profile')
-                    user.r6Profile.platform = profile.platform
                     break;
                 case UserInfo.PredictionCreate:
                     user.predictionStats.points = 1000
@@ -212,6 +203,16 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
                         break;
                     }
                     user.predictionStats = defaultPredictionStats
+                    break;
+                case UserInfo.ValorantProfile:
+                    user.valorantProfile.username = profile.username
+                    if (!("tag" in profile)) return log.error('wrong profile type. need valorant profile')
+                    user.valorantProfile.tag = profile.tag
+                    break;
+                case UserInfo.R6Profile:
+                    user.r6Profile.username = profile.username
+                    if (!("platform" in profile)) return log.error('wrong profile type. need r6 profile')
+                    user.r6Profile.platform = profile.platform
                     break;
                 default:
                     return;
