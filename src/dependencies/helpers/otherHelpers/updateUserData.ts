@@ -136,8 +136,10 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
                         if (user.fetchStats.fetchStreak < maxEnlistStreak) {
                             user.fetchStats.fetchStreak++
                         }
-                        user.predictionStats.points = Math.max(user.predictionStats.points + pointsPerEnlist, maxPoints);
                         user.fetchStats.fetchXP += XPPerEnlist + (bonusXP * user.fetchStats.fetchStreak)
+                        if (!isNaN(user.predictionStats.points)) {
+                            user.predictionStats.points = Math.max(user.predictionStats.points + pointsPerEnlist, maxPoints);
+                        }
                         break;
                     }
                     user.fetchStats = defaultEnlistStats
@@ -147,7 +149,9 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
                         user.fetchStats.rejects++
                         user.fetchStats.fetchStreak = 0
                         user.fetchStats.fetchXP += XPPerReject
-                        user.predictionStats.points = Math.max(user.predictionStats.points + pointsPerReject, maxPoints);
+                        if (!isNaN(user.predictionStats.points)) {
+                            user.predictionStats.points = Math.max(user.predictionStats.points + pointsPerReject, maxPoints);
+                        }
                         break;
                     }
                     user.fetchStats = defaultEnlistStats
@@ -163,7 +167,9 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
                     if (!isNaN(user.fetchStats.perhaps)) {
                         user.fetchStats.fetchXP += XPPerPerhaps
                         user.fetchStats.fetchStreak = 0
-                        user.predictionStats.points = Math.max(user.predictionStats.points + pointsPerPerhaps, maxPoints);
+                        if (!isNaN(user.predictionStats.points)) {
+                            user.predictionStats.points = Math.max(user.predictionStats.points + pointsPerPerhaps, maxPoints);
+                        }
                         break;
                     }
                     user.fetchStats = defaultEnlistStats
