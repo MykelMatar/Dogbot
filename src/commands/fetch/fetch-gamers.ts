@@ -287,7 +287,7 @@ export const fetchGamers: SlashCommand = {
             removeTerminationListener(terminateBound)
             const noInteractions = !fetchUserData.acceptedUserIds.length && !fetchUserData.rejectedUserIds.length && !fetchUserData.potentialUserIds.length
             if (collected.size === 0 || noInteractions) {
-                await fetchPrompt.edit({content: '⚠ ***ENLISTING ENDED*** ⚠', components: []});
+                await fetchPrompt.edit({content: '⚠ ***FETCH ENDED*** ⚠', components: []});
                 return
             }
             // logic to get users who ignored the fetch prompt for ignore% stat

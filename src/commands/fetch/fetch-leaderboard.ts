@@ -1,7 +1,6 @@
 import {CommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js";
 import {CustomClient, embedColor, FetchLeaderboardUser, MongoGuild, SlashCommand} from "../../dependencies/myTypes";
 
-//TODO if user changes username, does it affect any commands?
 /*
  Ranking Algorithm
  methodology: 
@@ -35,29 +34,29 @@ export const fetchLeaderboard: SlashCommand = {
 
         const userData = guildData.userData
         const percentageWeight: number = .9
-        const enlistWeight: number = 1
+        const acceptWeight: number = 1
         const ignoreWeight: number = 0 // using ignore values in rank calculations generated very odd leaderboards
 
-        const totalEnlistValue = userData.reduce((acc, user) => {
-            const {enlists, rejects} = user.fetchStats
-            return acc + enlists + rejects;
+        const totalAcceptValue = userData.reduce((acc, user) => {
+            const {accepts, rejects} = user.fetchStats
+            return acc + accepts + rejects;
         }, 0);
 
         let userArray: FetchLeaderboardUser[] = []
         for (const user of userData) {
-            const {enlists, rejects, ignores} = user.fetchStats
-            const totalOfValues = enlists + rejects + ignores;
+            const {accepts, rejects, ignores} = user.fetchStats
+            const totalOfValues = accepts + rejects + ignores;
 
-            let enlistPercentage = rejects === 0 ? 1 : enlists / totalOfValues;
-            let rejectPercentage = enlists === 0 ? 1 : rejects / totalOfValues;
-            let ignorePercentage = enlists === 0 && rejects === 0 ? 100 : (ignores / totalOfValues) * 100;
+            let acceptPercentage = rejects === 0 ? 1 : accepts / totalOfValues;
+            let rejectPercentage = accepts === 0 ? 1 : rejects / totalOfValues;
+            let ignorePercentage = accepts === 0 && rejects === 0 ? 100 : (ignores / totalOfValues) * 100;
 
             // normalization of fetch and reject amount totals 
-            let normalizedEnlistTotal = enlists / totalEnlistValue;
-            let normalizedRejectTotal = rejects / totalEnlistValue;
+            let normalizedEnlistTotal = accepts / totalAcceptValue;
+            let normalizedRejectTotal = rejects / totalAcceptValue;
 
             // avoids NaN values (in case of 0 values)
-            enlistPercentage ||= 0;
+            acceptPercentage ||= 0;
             rejectPercentage ||= 0;
             normalizedEnlistTotal ||= 0;
             normalizedRejectTotal ||= 0;
@@ -71,40 +70,40 @@ export const fetchLeaderboard: SlashCommand = {
                 weightedEnlistTotal,
                 weightedRejectTotal
             ] = [
-                enlistPercentage * percentageWeight,
+                acceptPercentage * percentageWeight,
                 rejectPercentage * percentageWeight,
                 ignorePercentage * ignoreWeight,
-                normalizedEnlistTotal * enlistWeight,
-                normalizedRejectTotal * enlistWeight,
+                normalizedEnlistTotal * acceptWeight,
+                normalizedRejectTotal * acceptWeight,
             ];
 
             // Get final ranking value
-            const [EnlistRank, RejectRank] = [
+            const [acceptRank, rejectRank] = [
                 weightedEnlistPercentage + weightedEnlistTotal - weightedIgnorePercentage,
                 weightedRejectPercentage + weightedRejectTotal - weightedIgnorePercentage,
             ];
 
             let leaderboardUser: FetchLeaderboardUser = {
                 name: user.username,
-                enlists: enlists,
+                accepts: accepts,
                 rejects: rejects,
-                enlistPercentage: enlistPercentage,
+                acceptPercentage: acceptPercentage,
                 rejectPercentage: rejectPercentage,
-                enlistRankValue: EnlistRank,
-                rejectRankValue: RejectRank,
+                acceptRankValue: acceptRank,
+                rejectRankValue: rejectRank,
             } as const
             userArray.push(leaderboardUser)
         }
-        userArray = userArray.filter(user => (user.enlists + user.rejects >= 10)) // reduce outliers
+        userArray = userArray.filter(user => (user.accepts + user.rejects >= 10)) // reduce outliers
         if (userArray.length == 0) {
             await interaction.reply({
-                content: 'No users have enlisted more than 10 times.',
+                content: 'No users have interacted more than 10 times.',
                 ephemeral: ephemeralSetting
             })
             return
         } else if (userArray.length < 3) {
             await interaction.reply({
-                content: 'Not enough users have enlisted more than 10 times (need at least 3).',
+                content: 'Not enough users have interacted more than 10 times (need at least 3).',
                 ephemeral: ephemeralSetting
             })
             return
@@ -115,15 +114,15 @@ export const fetchLeaderboard: SlashCommand = {
         let top3Gamers: string[][] = [[], [], []]
         let top3Losers: string[][] = [[], [], []]
 
-        let enlistRankings: FetchLeaderboardUser[] = [...userArray].sort((a, b) => (b.enlistRankValue - a.enlistRankValue))
+        let acceptRankings: FetchLeaderboardUser[] = [...userArray].sort((a, b) => (b.acceptRankValue - a.acceptRankValue))
         let rejectRankings: FetchLeaderboardUser[] = [...userArray].sort((a, b) => (a.rejectRankValue < b.rejectRankValue ? 1 : -1))
         for (let i = 0; i < 3; i++) {
-            top3Gamers[0].push(`**${i + 1}.** ${enlistRankings[i].name}\n`,)
-            top3Gamers[1].push(`**${i + 1}.** ${(enlistRankings[i].enlistPercentage * 100).toFixed(2)}\n`)
-            top3Gamers[2].push(`**${i + 1}.** ${enlistRankings[i].enlists + enlistRankings[i].rejects}\n`)
+            top3Gamers[0].push(`**${i + 1}.** ${acceptRankings[i].name}\n`,)
+            top3Gamers[1].push(`**${i + 1}.** ${(acceptRankings[i].acceptPercentage * 100).toFixed(2)}\n`)
+            top3Gamers[2].push(`**${i + 1}.** ${acceptRankings[i].accepts + acceptRankings[i].rejects}\n`)
             top3Losers[0].push(`**${i + 1}.** ${rejectRankings[i].name}\n`)
             top3Losers[1].push(`**${i + 1}.** ${(rejectRankings[i].rejectPercentage * 100).toFixed(2)}\n`,)
-            top3Losers[2].push(`**${i + 1}.** ${rejectRankings[i].enlists + rejectRankings[i].rejects}\n`)
+            top3Losers[2].push(`**${i + 1}.** ${rejectRankings[i].accepts + rejectRankings[i].rejects}\n`)
         }
 
         const embed = new EmbedBuilder()
