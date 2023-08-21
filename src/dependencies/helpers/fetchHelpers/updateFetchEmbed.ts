@@ -14,8 +14,8 @@ import {ButtonInteraction, EmbedBuilder, GuildMember, Message} from "discord.js"
 
 export async function updateFetchEmbed(interaction: ButtonInteraction, embed: EmbedBuilder, enlistUserData: FetchUserData, enlistPrompt: Message, customIds: string[]) {
     const {
-        enlistedUsers,
-        enlistedUserIds,
+        acceptedUsers,
+        acceptedUserIds,
         rejectedUsers,
         rejectedUserIds,
         potentialUsers,
@@ -39,8 +39,8 @@ export async function updateFetchEmbed(interaction: ButtonInteraction, embed: Em
 
     if (interaction.customId === customIds[0]) {
         perhapsFlag = false
-        selectedUserArray = enlistedUsers
-        selectedUserIdArray = enlistedUserIds
+        selectedUserArray = acceptedUsers
+        selectedUserIdArray = acceptedUserIds
         secondUserArray = rejectedUsers
         secondUserIdArray = rejectedUserIds
         thirdUserArray = potentialUsers
@@ -49,16 +49,16 @@ export async function updateFetchEmbed(interaction: ButtonInteraction, embed: Em
         perhapsFlag = false
         selectedUserArray = rejectedUsers
         selectedUserIdArray = rejectedUserIds
-        secondUserArray = enlistedUsers
-        secondUserIdArray = enlistedUserIds
+        secondUserArray = acceptedUsers
+        secondUserIdArray = acceptedUserIds
         thirdUserArray = potentialUsers
         thirdUserIdArray = potentialUserIds
     } else if (interaction.customId === customIds[2]) {
         perhapsFlag = true
         selectedUserArray = potentialUsers
         selectedUserIdArray = potentialUserIds
-        secondUserArray = enlistedUsers
-        secondUserIdArray = enlistedUserIds
+        secondUserArray = acceptedUsers
+        secondUserIdArray = acceptedUserIds
         thirdUserArray = rejectedUsers
         thirdUserIdArray = rejectedUserIds
     } else return
@@ -97,7 +97,7 @@ export async function updateFetchEmbed(interaction: ButtonInteraction, embed: Em
         thirdUserArray.push('-')
     }
 
-    embed.data.fields[0].value = enlistedUsers.join('');
+    embed.data.fields[0].value = acceptedUsers.join('');
     embed.data.fields[1].value = rejectedUsers.join('');
     embed.data.fields[2].value = potentialUsers.join('');
 

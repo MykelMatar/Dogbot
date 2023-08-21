@@ -8,7 +8,7 @@ import {
 import {CustomClient, embedColor, MongoGuild, SlashCommand} from "../../dependencies/myTypes";
 import {getLevelFromXp} from "../../dependencies/helpers/fetchHelpers/getLevelFromXp";
 
-export const enlistStats: SlashCommand = {
+export const fetchStats: SlashCommand = {
     data: new SlashCommandBuilder()
         .setName('fetch-stats')
         .setDescription('Displays users fetch stats')
@@ -42,18 +42,40 @@ export const enlistStats: SlashCommand = {
 
         const {prestige, level} = getLevelFromXp(userData.fetchStats.fetchXP)
         const {
-            enlists: enlistValue,
+            accepts: acceptValue,
             rejects: rejectValue,
+            perhaps: perhapsValue,
             ignores: ignoreValue,
+            fetchStreak: fetchStreak
         } = userData.fetchStats;
 
+        // new stat so some users might now have it
+        const tempPerhapsValue = isNaN(perhapsValue) ? 0 : perhapsValue
+
         const embed = new EmbedBuilder()
-            .setTitle(`${username}'s Enlist Stats`)
+            .setTitle(`${username}'s Fetch Stats`)
             .setDescription(`${prestige} level ${level}`)
             .addFields([
-                {name: 'Enlists ✓', value: enlistValue.toString(), inline: true},
-                {name: 'Rejects ✘', value: rejectValue.toString(), inline: true},
-                {name: 'Ignores ~', value: ignoreValue.toString(), inline: true}
+                {
+                    name: 'Accepts ✓',
+                    value: `${acceptValue.toString()}*(${fetchStreak.toString()}x streak)*`,
+                    // inline: true
+                },
+                {
+                    name: 'Rejects ✘',
+                    value: rejectValue.toString(),
+                    // inline: true
+                },
+                {
+                    name: 'Perhaps ❔',
+                    value: tempPerhapsValue.toString(),
+                    // inline: true
+                },
+                {
+                    name: 'Ignores ~',
+                    value: ignoreValue.toString(),
+                    // inline: true
+                }
             ])
             .setColor(embedColor)
 

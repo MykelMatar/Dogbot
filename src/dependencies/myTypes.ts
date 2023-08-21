@@ -47,11 +47,11 @@ export interface MinecraftServer {
 
 export interface FetchLeaderboardUser {
     name: string
-    enlists: number
+    accepts: number
     rejects: number
-    enlistPercentage: number
+    acceptPercentage: number
     rejectPercentage: number
-    enlistRankValue: number
+    acceptRankValue: number
     rejectRankValue: number
 }
 
@@ -63,8 +63,8 @@ export interface PredictionLeaderboardUser {
 }
 
 export interface FetchUserData {
-    enlistedUsers: string[]
-    enlistedUserIds: Snowflake[]
+    acceptedUsers: string[]
+    acceptedUserIds: Snowflake[]
     rejectedUsers: string[]
     rejectedUserIds: Snowflake[]
     potentialUsers: string[]
@@ -99,7 +99,7 @@ export interface MongoGuild extends Document {
         username: string;
         id: string;
         fetchStats?: {
-            enlists: number;
+            accepts: number;
             rejects: number;
             perhaps: number;
             ignores: number;
@@ -136,7 +136,7 @@ export interface MongoGuild extends Document {
 }
 
 export enum UserInfo {
-    Enlist = 'Enlist',
+    Accept = 'Accept',
     Reject = 'Reject',
     Ignore = 'Ignore',
     Perhaps = 'Perhaps',

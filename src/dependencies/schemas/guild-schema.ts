@@ -16,7 +16,7 @@ const guildSchema = new Schema({
             username: String,
             id: String,
             fetchStats: {
-                enlists: Number,
+                accepts: Number,
                 rejects: Number,
                 perhaps: Number,
                 ignores: Number,

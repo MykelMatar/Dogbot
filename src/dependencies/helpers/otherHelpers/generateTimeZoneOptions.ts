@@ -8,7 +8,7 @@ export function generateMenuOptions(timezones: Record<string, string>): APISelec
 
         menuOptions.push({
             label: timezone,
-            description: UTCvalue,
+            description: `UTC${UTCvalue}`,
             value: UTCvalue,
         });
     }

@@ -20,20 +20,20 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
     const currentGuild: MongoGuild = await guilds.findOne({guildId: interaction.guildId})
     const userData = currentGuild.userData
 
-    const XPPerEnlist: number = 10
+    const XPPerAccept: number = 10
     const XPPerReject: number = 5
     const XPPerPerhaps: number = 5
-    const maxEnlistStreak = 5
+    const maxAcceptStreak = 5
     const bonusXP = 2
 
-    const pointsPerEnlist = 200
+    const pointsPerAccept = 200
     const pointsPerReject = 100
     const pointsPerPerhaps = 100
     const maxPoints = 1_000_000_000
     const minPoints = 1
 
-    const defaultEnlistStats = {
-        enlists: 0,
+    const defaultFetchStats = {
+        accepts: 0,
         rejects: 0,
         perhaps: 0,
         ignores: 0,
@@ -48,21 +48,21 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
     }
 
     switch (infoType) {
-        case UserInfo.Enlist:
-            defaultEnlistStats.enlists = 1
-            defaultEnlistStats.fetchXP = XPPerEnlist
-            defaultEnlistStats.fetchStreak = 1
+        case UserInfo.Accept:
+            defaultFetchStats.accepts = 1
+            defaultFetchStats.fetchXP = XPPerAccept - 1
+            defaultFetchStats.fetchStreak = 1
             break;
         case UserInfo.Reject:
-            defaultEnlistStats.rejects = 1
-            defaultEnlistStats.fetchXP = XPPerReject
+            defaultFetchStats.rejects = 1
+            defaultFetchStats.fetchXP = XPPerReject - 1
             break;
         case UserInfo.Perhaps:
-            defaultEnlistStats.perhaps = 1
-            defaultEnlistStats.fetchXP = XPPerPerhaps
+            defaultFetchStats.perhaps = 1
+            defaultFetchStats.fetchXP = XPPerPerhaps - 1
             break;
         case UserInfo.Ignore:
-            defaultEnlistStats.ignores = 1
+            defaultFetchStats.ignores = 1
             break;
         case UserInfo.CorrectPrediction:
             defaultPredictionStats.correctPredictions = 1
@@ -85,11 +85,11 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
 
         if (!userDataIds.has(userId)) {
             log.info(`creating user data for ${guildMember.user.username}...`)
-            if ([UserInfo.Enlist, UserInfo.Reject, UserInfo.Ignore, UserInfo.Perhaps].includes(infoType)) {
+            if ([UserInfo.Accept, UserInfo.Reject, UserInfo.Ignore, UserInfo.Perhaps].includes(infoType)) {
                 userData.push({
                     username: guildMember.user.username,
                     id: userId,
-                    fetchStats: defaultEnlistStats
+                    fetchStats: defaultFetchStats
                 })
             } else if (infoType === UserInfo.ValorantProfile) {
                 if (!("tag" in profile)) return log.error('wrong profile type. need valorant profile')
@@ -130,7 +130,7 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
 
             // make sure users who have gambled can still get points when interacting with fetch prompt (also prevents crash)
             const alternativePredictionPointEvents = [
-                UserInfo.Enlist,
+                UserInfo.Accept,
                 UserInfo.Reject,
                 UserInfo.Perhaps,
             ]
@@ -142,18 +142,18 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
             }
 
             switch (infoType) {
-                case UserInfo.Enlist:
+                case UserInfo.Accept:
                     // mongo returns NaN if value does not exist (undefined)
-                    if (!isNaN(user.fetchStats.enlists)) {
-                        user.fetchStats.enlists++;
-                        if (user.fetchStats.fetchStreak < maxEnlistStreak) {
+                    if (!isNaN(user.fetchStats.accepts)) {
+                        user.fetchStats.accepts++;
+                        if (user.fetchStats.fetchStreak < maxAcceptStreak) {
                             user.fetchStats.fetchStreak++
                         }
-                        user.fetchStats.fetchXP += XPPerEnlist + (bonusXP * user.fetchStats.fetchStreak)
-                        user.predictionStats.points = Math.max(user.predictionStats.points + pointsPerEnlist, maxPoints);
+                        user.fetchStats.fetchXP += XPPerAccept + (bonusXP * user.fetchStats.fetchStreak)
+                        user.predictionStats.points = Math.max(user.predictionStats.points + pointsPerAccept, maxPoints);
                         break;
                     }
-                    user.fetchStats = defaultEnlistStats
+                    user.fetchStats = defaultFetchStats
                     break;
                 case UserInfo.Reject:
                     if (!isNaN(user.fetchStats.rejects)) {
@@ -163,14 +163,14 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
                         user.predictionStats.points = Math.max(user.predictionStats.points + pointsPerReject, maxPoints);
                         break;
                     }
-                    user.fetchStats = defaultEnlistStats
+                    user.fetchStats = defaultFetchStats
                     break;
                 case UserInfo.Ignore:
                     if (!isNaN(user.fetchStats.ignores)) {
                         user.fetchStats.ignores = 1
                         break;
                     }
-                    user.fetchStats = defaultEnlistStats
+                    user.fetchStats = defaultFetchStats
                     break;
                 case UserInfo.Perhaps:
                     if (!isNaN(user.fetchStats.perhaps)) {
@@ -179,7 +179,7 @@ export async function updateUserData(interaction: CommandInteraction | Autocompl
                         user.predictionStats.points = Math.max(user.predictionStats.points + pointsPerPerhaps, maxPoints);
                         break;
                     }
-                    user.fetchStats = defaultEnlistStats
+                    user.fetchStats = defaultFetchStats
                     break;
                 case UserInfo.PredictionCreate:
                     user.predictionStats.points = 1000
