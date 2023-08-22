@@ -158,7 +158,7 @@ export const fetchGamers: SlashCommand = {
             .setFooter({text: `Interact with this prompt to get XP and Prediction Points`})
 
         let {ip, port} = guildData.mcServerData.selectedServer
-        if (['minecraft', 'mc'].includes(game.toLowerCase().replace(/\s/g, ""))) {
+        if (['minecraft', 'mc'].includes(game.toLowerCase().replace(/\s/g, "")) && ip) {
             embed.setDescription(`need ${minGamers} for ${game} ☛ __**${ip}:${port}**__`)
         }
 
