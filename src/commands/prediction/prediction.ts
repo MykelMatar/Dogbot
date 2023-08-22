@@ -250,7 +250,7 @@ export const prediction: SlashCommand = {
                     time: 60 * 60_000 // 3.6e6 = 1 hour (in ms) 
                 })
 
-                const winnerInteraction = await selectWinnerInteraction.reply({
+                await selectWinnerInteraction.reply({
                     content: 'Please select a winner (Only the person who created the prediction can choose).',
                     components: [row]
                 });
