@@ -13,7 +13,7 @@ import {GameProfile, MongoGuild, UserInfo} from "../../myTypes";
  * @param pointChange - amount of prediction points gained or lost
  */
 
-export async function updateUserData(interaction: CommandInteraction | AutocompleteInteraction, userIdArray: Snowflake[], infoType: UserInfo, profile?: GameProfile, pointChange?: Map<string, number>) {
+export default async function updateUserData(interaction: CommandInteraction | AutocompleteInteraction, userIdArray: Snowflake[], infoType: UserInfo, profile?: GameProfile, pointChange?: Map<string, number>) {
     if (userIdArray.length === 0) return log.info(`${infoType} user Id Array is empty, skipping user data check`)
     log.info(`Valid ${infoType} user ID array provided`)
 

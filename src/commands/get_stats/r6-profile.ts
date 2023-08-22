@@ -1,6 +1,6 @@
 import {CommandInteraction, CommandInteractionOptionResolver, SlashCommandBuilder} from "discord.js";
 import {CustomClient, R6Profile, SlashCommand, UserInfo} from "../../dependencies/myTypes";
-import {updateUserData} from "../../dependencies/helpers/otherHelpers/updateUserData";
+import updateUserData from "../../dependencies/helpers/otherHelpers/updateUserData";
 
 export const r6Profile: SlashCommand = {
     data: new SlashCommandBuilder()

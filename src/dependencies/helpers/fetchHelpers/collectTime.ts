@@ -1,9 +1,9 @@
 import {ButtonInteraction, CommandInteraction, ComponentType, GuildMember} from "discord.js";
 import {FetchUserData} from "../../myTypes";
-import {updateFetchEmbed} from "./updateFetchEmbed";
+import updateFetchEmbed from "./updateFetchEmbed";
 
 
-export async function collectTime(interaction: CommandInteraction, buttonInteraction: ButtonInteraction, fetchUserData: FetchUserData, embed, enlistPrompt, customIds, pendingResponse) {
+export default async function(interaction: CommandInteraction, buttonInteraction: ButtonInteraction, fetchUserData: FetchUserData, embed, enlistPrompt, customIds, pendingResponse) {
     const timeCollector = interaction.channel.createMessageComponentCollector({
         componentType: ComponentType.SelectMenu,
         time: 60000,

@@ -1,4 +1,4 @@
-export const autocompleteTimes = {
+export default {
     default: [
         '12:00 am',
         '1:00 am',

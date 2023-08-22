@@ -1,7 +1,7 @@
 import log from "../../constants/logger";
 import guilds from "../../schemas/guild-schema";
 
-export function waitForUpdate(guildData, timeoutMs: number = 2000): Promise<void> {
+export default function(guildData, timeoutMs: number = 2000): Promise<void> {
     const maxUpdateDelay = 10_000 // Maximum delay between updates in milliseconds
 
     const startTime = Date.now();

@@ -14,7 +14,7 @@ import {
 } from "discord.js";
 import {embedLimits} from "../../constants/embedLimits";
 
-export async function collectEmbedChanges(interaction: ButtonInteraction, fetchEmbed: EmbedBuilder, enlistPrompt: Message) {
+export default async function(interaction: ButtonInteraction, fetchEmbed: EmbedBuilder, enlistPrompt: Message) {
 
     const selectMenu = new ActionRowBuilder<StringSelectMenuBuilder>()
         .addComponents(

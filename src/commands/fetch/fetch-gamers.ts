@@ -21,18 +21,19 @@ import {
     terminate,
     terminationListener
 } from "../../dependencies/helpers/otherHelpers/terminationListener";
-import {updateFetchEmbed} from "../../dependencies/helpers/fetchHelpers/updateFetchEmbed";
-import {updateUserData} from "../../dependencies/helpers/otherHelpers/updateUserData";
+import updateFetchEmbed from "../../dependencies/helpers/fetchHelpers/updateFetchEmbed";
+import updateUserData from "../../dependencies/helpers/otherHelpers/updateUserData";
 import log from "../../dependencies/constants/logger";
-import {getLevelFromXp} from "../../dependencies/helpers/fetchHelpers/getLevelFromXp";
-import {waitForUpdate} from "../../dependencies/helpers/otherHelpers/waitForUpdate";
-import {embedLimits} from "../../dependencies/constants/embedLimits";
+import getLevelFromXp from "../../dependencies/helpers/fetchHelpers/getLevelFromXp";
+import waitForUpdate from "../../dependencies/helpers/otherHelpers/waitForUpdate";
+import embedLimits from "../../dependencies/constants/embedLimits";
 import {multiplayerGameTitles} from "../../dependencies/constants/multiplayerGameTitles";
-import {autocompleteTimes} from "../../dependencies/constants/autocompleteTimes";
-import {collectTime} from "../../dependencies/helpers/fetchHelpers/collectTime";
-import {collectEmbedChanges} from "../../dependencies/helpers/fetchHelpers/collectEmbedChanges";
-import {DateTime} from "luxon";
+import autocompleteTimes from "../../dependencies/constants/autocompleteTimes";
+import collectTime from "../../dependencies/helpers/fetchHelpers/collectTime";
+import collectEmbedChanges from "../../dependencies/helpers/fetchHelpers/collectEmbedChanges";
 import {abbreviations} from "../../dependencies/constants/timeZones";
+import summonGamers from "../../dependencies/helpers/fetchHelpers/summonGamers";
+import calculateFetchTimer from "../../dependencies/helpers/fetchHelpers/calculateFetchTimer";
 
 
 export const fetchGamers: SlashCommand = {
@@ -90,7 +91,6 @@ export const fetchGamers: SlashCommand = {
                 filtered.map(choice => ({name: choice, value: choice})),
             );
         }
-
     },
 
     async execute(client: CustomClient, interaction: CommandInteraction, guildData: MongoGuild) {
@@ -100,13 +100,14 @@ export const fetchGamers: SlashCommand = {
         const options = interaction.options as CommandInteractionOptionResolver // ts thinks the .get options dont exist
         const game = options.getString('game', true)
         const minGamers = options.getInteger('minimum', true)
-        let time = options.getString('time') ?? 'any time'
-        time = time.toLowerCase() == 'any' ? 'any time' : time;
         const title = options.getString('title') ?? 'Gamer Time'
         const roleValue = options.getRole('role')
+        const timeValue = options.getString('time') ?? 'any time'
+        const time = timeValue.toLowerCase() == 'any' ? 'any time' : timeValue;
+        let role: any = 'Gamer Time'
+        let roleId
 
         if (time !== 'any time') {
-            // check if user has time zone set. if not, ask them to input it.
             const timeZone = guildData.settings.timeZone
             if (timeZone.offset == undefined) {
                 await client.commands.get('set-timezone').execute(client, interaction, guildData)
@@ -114,8 +115,6 @@ export const fetchGamers: SlashCommand = {
             }
         }
 
-        let role: any = 'Gamer Time'
-        let roleId
         if (roleValue) {
             role = roleMention(roleValue.id);
         } else if (guildData?.settings?.fetchRole) {
@@ -200,48 +199,7 @@ export const fetchGamers: SlashCommand = {
         const pendingResponse = []
 
         // calculate time until gamer time
-        const getDateTime = (timeString: string): DateTime | undefined => {
-            const normalizedTimeString = timeString.replace(/\s+(am|pm)$/i, '$1');
-            const formats = ['h:mma', 'ha', 'H:mm']; // Add more formats as needed
-
-            for (const format of formats) {
-                const parsedTime = DateTime.fromFormat(normalizedTimeString, format);
-                if (parsedTime.isValid) {
-                    return parsedTime;
-                }
-            }
-            return undefined;
-        };
-
-        let validTime = getDateTime(time)
-        let timer: number = 1.08e+7 // 3 hour default timer
-
-        if (validTime) {
-            let offset = guildData.settings.timeZone.offset
-
-            const now = DateTime.local();
-
-            // daylight savings check
-            const daylightSavingsZones = ['-10', '-9', '-8', '-7', '-6', '-5', '-4']
-
-            // this works bc bot server is in NY, so now.isInDST will always be valid
-            if (daylightSavingsZones.includes(offset) && now.isInDST) {
-                let newOffset = parseInt(offset, 10) + 1
-                offset = newOffset.toString()
-            }
-            console.log(offset)
-            validTime = validTime.setZone(`UTC${offset}`, {keepLocalTime: true})
-            const nowRezoned = now.setZone(`UTC${offset}`)
-            console.log(validTime.toFormat('h":"m'))
-            console.log(nowRezoned.toFormat('h":"m'))
-            // If the future time is earlier than the current time, add one day to the future time
-            if (validTime <= now) {
-                validTime = validTime.plus({days: 1});
-            }
-
-            timer = validTime.diff(nowRezoned).as('milliseconds');
-            timer = timer > 8.28e+7 ? 1.08e+7 : timer // if timer is greater than 24 hours default to 3 hour time
-        }
+        const timer = calculateFetchTimer(time, guildData)
 
         const fetchCollector = interaction.channel.createMessageComponentCollector({
             componentType: ComponentType.Button,
@@ -282,18 +240,20 @@ export const fetchGamers: SlashCommand = {
         });
 
         fetchCollector.on('end', async collected => {
-            interaction.channel.sendTyping()
             removeTerminationListener(terminateBound)
+
             const noInteractions = !fetchUserData.acceptedUserIds.length && !fetchUserData.rejectedUserIds.length && !fetchUserData.potentialUserIds.length
             if (collected.size === 0 || noInteractions) {
                 await fetchPrompt.edit({content: '⚠ ***FETCH ENDED*** ⚠', components: []});
                 return
             }
-            // logic to get users who ignored the fetch prompt for ignore% stat
+
+            // logic to get users who ignored the fetch prompt for ignore stat
             const allUserIds = userData.map(user => user.id).flat();
             const allEnlistPromptUserIds = [...fetchUserData.acceptedUserIds, ...fetchUserData.rejectedUserIds, ...fetchUserData.potentialUserIds];
             fetchUserData.ignoredUserIds = allUserIds.filter(id => !allEnlistPromptUserIds.includes(id));
 
+            // get all users who gained xp
             const usersWhoGainedXP = [...fetchUserData.acceptedUserIds, ...fetchUserData.rejectedUserIds]
 
             let userXPMap = new Collection<Snowflake, number>()
@@ -350,29 +310,7 @@ export const fetchGamers: SlashCommand = {
                 interaction.channel.send({embeds: [levelEmbed]})
             }
 
-            // summon gamers button
-            if (fetchUserData.acceptedUserIds.length == 0) return
-
-            const formatUserMentions = (userIds: string[]): string[] => {
-                return userIds.map(id => userMention(id));
-            };
-
-            const acceptedUsers = formatUserMentions(fetchUserData.acceptedUserIds);
-            const potentialUsers = formatUserMentions(fetchUserData.potentialUserIds);
-
-            let content: string;
-
-            if (fetchUserData.acceptedUserIds.length == 1 && minGamers !== 1) {
-                content = `${acceptedUsers.join(',')} has no friends, everyone point and laugh)`;
-            } else if (fetchUserData.acceptedUserIds.length + fetchUserData.potentialUserIds.length >= minGamers && fetchUserData.potentialUserIds.length !== 0) {
-                content = `${acceptedUsers.join(',')} : Gamer Time is upon us (**${minGamers}** gamers available if ${potentialUsers.join(',')} play)`;
-            } else if (fetchUserData.acceptedUserIds.length >= minGamers) {
-                content = `${acceptedUsers.join(',')} : Gamer Time is upon us`;
-            } else {
-                content = `${acceptedUsers.join(',')} : Insufficient Gamers`;
-            }
-
-            await interaction.channel.send({content});
+            await summonGamers(interaction, fetchUserData, minGamers)
         });
     }
 }

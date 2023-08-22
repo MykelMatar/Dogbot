@@ -12,7 +12,7 @@ import {ButtonInteraction, EmbedBuilder, GuildMember, Message} from "discord.js"
  * @param customIds button custom Ids
  */
 
-export async function updateFetchEmbed(interaction: ButtonInteraction, embed: EmbedBuilder, enlistUserData: FetchUserData, enlistPrompt: Message, customIds: string[]) {
+export default async function(interaction: ButtonInteraction, embed: EmbedBuilder, enlistUserData: FetchUserData, enlistPrompt: Message, customIds: string[]) {
     const {
         acceptedUsers,
         acceptedUserIds,

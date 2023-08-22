@@ -6,7 +6,7 @@ import {
     SlashCommandBuilder
 } from "discord.js";
 import {CustomClient, embedColor, MongoGuild, SlashCommand} from "../../dependencies/myTypes";
-import {getLevelFromXp} from "../../dependencies/helpers/fetchHelpers/getLevelFromXp";
+import getLevelFromXp from "../../dependencies/helpers/fetchHelpers/getLevelFromXp";
 
 export const fetchStats: SlashCommand = {
     data: new SlashCommandBuilder()

@@ -1,4 +1,4 @@
-export const embedLimits = {
+export default {
     title: 256,
     description: 4096,
     fields: {

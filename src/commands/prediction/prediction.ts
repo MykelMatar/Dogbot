@@ -24,11 +24,11 @@ import {
     UserInfo
 } from "../../dependencies/myTypes";
 import {terminate, terminationListener} from "../../dependencies/helpers/otherHelpers/terminationListener";
-import {updateUserData} from "../../dependencies/helpers/otherHelpers/updateUserData";
+import updateUserData from "../../dependencies/helpers/otherHelpers/updateUserData";
 import guilds from "../../dependencies/schemas/guild-schema";
 import log from "../../dependencies/constants/logger";
 import {updateProgressBars} from "../../dependencies/helpers/otherHelpers/updateProgressBars";
-import {waitForUpdate} from "../../dependencies/helpers/otherHelpers/waitForUpdate";
+import waitForUpdate from "../../dependencies/helpers/otherHelpers/waitForUpdate";
 
 export const prediction: SlashCommand = {
     data: new SlashCommandBuilder()
@@ -318,7 +318,7 @@ export const prediction: SlashCommand = {
                         await updatePredictionResults(doubterIds, winMultiplier, UserInfo.CorrectPrediction);
                     }
                 });
-                
+
             } catch (e) {
                 sent.edit({components: []})
                 log.warn('Response Timeout')
