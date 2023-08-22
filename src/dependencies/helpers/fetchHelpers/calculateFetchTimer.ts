@@ -21,7 +21,6 @@ export default function(client, time, guildData: MongoGuild): number {
     if (validTime) {
         const now = DateTime.local();
         const centralTime = now.setZone('America/Chicago')
-        console.log({centralTime})
         // daylight savings check
         let offset = guildData.settings.timeZone.offset
         const daylightSavingsZones = ['-10', '-9', '-8', '-7', '-6', '-5', '-4']
@@ -31,9 +30,7 @@ export default function(client, time, guildData: MongoGuild): number {
             offset = newOffset.toString()
         }
 
-        if (!client.isTestBot) { // not sure why but server is 1 day ahead??
-            validTime.minus({days: 1})
-        }
+        validTime.minus({days: 1}) // server is 1 day ahead or something not sure whats goin on
         validTime = validTime.setZone(`UTC${offset}`, {keepLocalTime: true})
         const nowRezoned = now.setZone(`UTC${offset}`)
         console.log(`UTC${offset}`, {validTime}, {nowRezoned})
