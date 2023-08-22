@@ -1,7 +1,7 @@
 import {DateTime} from "luxon";
 import {MongoGuild} from "../../myTypes";
 
-export default function(time, guildData: MongoGuild): number {
+export default function(client, time, guildData: MongoGuild): number {
     const getDateTime = (timeString: string): DateTime | undefined => {
         const normalizedTimeString = timeString.replace(/\s+(am|pm)$/i, '$1');
         const formats = ['h:mma', 'ha', 'H:mm']; // Add more formats as needed
@@ -31,6 +31,9 @@ export default function(time, guildData: MongoGuild): number {
         }
 
         validTime = validTime.setZone(`UTC${offset}`, {keepLocalTime: true})
+        if (!client.isTestBot) { // not sure why but server is 1 day ahead??
+            validTime.minus({days: 1})
+        }
         const nowRezoned = now.setZone(`UTC${offset}`)
         console.log(`UTC${offset}`, validTime, nowRezoned)
         // If the future time is earlier than the current time, add one day to the future time

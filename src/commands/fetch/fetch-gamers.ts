@@ -199,7 +199,7 @@ export const fetchGamers: SlashCommand = {
         const pendingResponse = []
 
         // calculate time until gamer time
-        const timer = calculateFetchTimer(time, guildData)
+        const timer = calculateFetchTimer(client, time, guildData)
 
         const fetchCollector = interaction.channel.createMessageComponentCollector({
             componentType: ComponentType.Button,
