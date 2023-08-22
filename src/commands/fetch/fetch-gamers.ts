@@ -146,7 +146,6 @@ export const fetchGamers: SlashCommand = {
             );
 
         const timeZoneAbbr = abbreviations[guildData.settings.timeZone.name]
-        console.log(timeZoneAbbr)
 
         const embed = new EmbedBuilder()
             .setTitle(`${title}`)
