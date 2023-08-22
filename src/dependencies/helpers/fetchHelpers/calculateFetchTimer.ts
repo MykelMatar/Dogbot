@@ -7,7 +7,7 @@ export default function(client, time, guildData: MongoGuild): number {
         const formats = ['h:mma', 'ha', 'H:mm']; // Add more formats as needed
 
         for (const format of formats) {
-            const parsedTime = DateTime.fromFormat(normalizedTimeString, format);
+            const parsedTime = DateTime.fromFormat(normalizedTimeString, format, {locale: 'en-us'});
             if (parsedTime.isValid) {
                 return parsedTime;
             }
@@ -30,7 +30,7 @@ export default function(client, time, guildData: MongoGuild): number {
             offset = newOffset.toString()
         }
 
-        validTime.minus({days: 1}) // server is 1 day ahead or something not sure whats goin on
+        validTime = validTime.minus({days: 1}) // server is 1 day ahead or something not sure whats goin on
         validTime = validTime.setZone(`UTC${offset}`, {keepLocalTime: true})
         const nowRezoned = now.setZone(`UTC${offset}`)
         console.log(`UTC${offset}`, {validTime}, {nowRezoned})
