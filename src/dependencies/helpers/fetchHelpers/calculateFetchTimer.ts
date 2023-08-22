@@ -36,7 +36,7 @@ export default function(client, time, guildData: MongoGuild): number {
         }
         validTime = validTime.setZone(`UTC${offset}`, {keepLocalTime: true})
         const nowRezoned = now.setZone(`UTC${offset}`)
-        console.log(`UTC${offset}`, validTime, nowRezoned)
+        console.log(`UTC${offset}`, {validTime}, {nowRezoned})
         // If the future time is earlier than the current time, add one day to the future time
         if (validTime <= now) {
             validTime = validTime.plus({days: 1});
