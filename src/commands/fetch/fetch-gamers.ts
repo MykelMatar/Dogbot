@@ -230,10 +230,11 @@ export const fetchGamers: SlashCommand = {
                 let newOffset = parseInt(offset, 10) + 1
                 offset = newOffset.toString()
             }
-
+            console.log(offset)
             validTime = validTime.setZone(`UTC${offset}`, {keepLocalTime: true})
             const nowRezoned = now.setZone(`UTC${offset}`)
-
+            console.log(validTime.toFormat('h":"m'))
+            console.log(nowRezoned.toFormat('h":"m'))
             // If the future time is earlier than the current time, add one day to the future time
             if (validTime <= now) {
                 validTime = validTime.plus({days: 1});
@@ -280,7 +281,6 @@ export const fetchGamers: SlashCommand = {
                 await Promise.all([deferUpdate, updateEmbed])
             }
         });
-
 
         fetchCollector.on('end', async collected => {
             interaction.channel.sendTyping()
@@ -365,9 +365,9 @@ export const fetchGamers: SlashCommand = {
 
             if (fetchUserData.acceptedUserIds.length == 1 && minGamers !== 1) {
                 content = `${acceptedUsers.join(',')} has no friends, everyone point and laugh)`;
-            } else if (fetchUserData.acceptedUserIds.length + fetchUserData.potentialUserIds.length >= minGamers) {
+            } else if (fetchUserData.acceptedUserIds.length + fetchUserData.potentialUserIds.length >= minGamers && fetchUserData.potentialUserIds.length !== 0) {
                 content = `${acceptedUsers.join(',')} : Gamer Time is upon us (**${minGamers}** gamers available if ${potentialUsers.join(',')} play)`;
-            } else if (fetchUserData.acceptedUserIds.length == minGamers) {
+            } else if (fetchUserData.acceptedUserIds.length >= minGamers) {
                 content = `${acceptedUsers.join(',')} : Gamer Time is upon us`;
             } else {
                 content = `${acceptedUsers.join(',')} : Insufficient Gamers`;
