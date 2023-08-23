@@ -28,7 +28,8 @@ export const patchNotes: SlashCommand = {
                 },
                 {
                     name: 'misc',
-                    value: `• renamed all instances of 'enlist' to 'accept'`
+                    value: `• renamed all instances of 'enlist' to 'accept'
+                            • deleting interactions like 'fetch-gamers' or 'prediction' no longer crashes Dogbot`
                 },
             )
             .setColor(embedColor)
