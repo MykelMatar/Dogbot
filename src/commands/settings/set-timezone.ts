@@ -9,6 +9,7 @@ import {
 import {CustomClient, MongoGuild, SlashCommand} from "../../dependencies/myTypes";
 import {timezonesNegative, timezonesPositive} from "../../dependencies/constants/timeZones";
 import {generateMenuOptions} from "../../dependencies/helpers/otherHelpers/generateTimeZoneOptions";
+import log from "../../dependencies/constants/logger";
 
 export const setTimezone: SlashCommand = {
     data: new SlashCommandBuilder()
@@ -52,7 +53,7 @@ export const setTimezone: SlashCommand = {
             const timeZoneInteraction = await sent.awaitMessageComponent({
                 componentType: ComponentType.StringSelect,
                 filter: timeZoneSelectionFilter,
-                time: 240_000
+                time: 5000//240_000
             })
 
             // get name of timezone
@@ -83,7 +84,7 @@ export const setTimezone: SlashCommand = {
 
             await sent.edit({content: `Timezone set to ${timeZoneName}`, components: []})
         } catch (e) {
-            console.log(e)
+            log.error(e.message)
             await sent.edit({content: `Response Timeout`, components: []})
         }
 

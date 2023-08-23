@@ -29,6 +29,7 @@ import guilds from "../../dependencies/schemas/guild-schema";
 import log from "../../dependencies/constants/logger";
 import {updateProgressBars} from "../../dependencies/helpers/otherHelpers/updateProgressBars";
 import waitForUpdate from "../../dependencies/helpers/otherHelpers/waitForUpdate";
+import messageStillExists from "../../dependencies/helpers/otherHelpers/messageStillExists";
 
 export const prediction: SlashCommand = {
     data: new SlashCommandBuilder()
@@ -58,6 +59,7 @@ export const prediction: SlashCommand = {
             .setFooter({text: `This prediction will be active for 2 min`})
             .setColor(embedColor)
 
+        // TODO add settings button to edit fields (just like fetch-gamers)
         const row = new ActionRowBuilder<ButtonBuilder>()
             .addComponents(
                 new ButtonBuilder()
@@ -105,6 +107,7 @@ export const prediction: SlashCommand = {
 
         // start collector
         collector.on('collect', async i => {
+            if (!(await messageStillExists(sent, terminateBound))) return
             if (pendingResponse.includes(i.user.id)) {
                 await i.reply({content: `Please wait 15s before trying again`, ephemeral: true})
                 return
@@ -212,6 +215,7 @@ export const prediction: SlashCommand = {
                     predictionEmbed.data.fields[targetFieldIndex].name = `${userType} ― *${winMultiplier.toFixed(1)}x*`
                     predictionEmbed.data.fields[targetFieldIndex].value = targetArray.join('');
 
+                    if (!(await messageStillExists(sent, terminateBound))) return
                     await updateProgressBars(sent, predictionEmbed, numberOfVotes, 2, true)
                     pendingResponse.splice(pendingResponse.indexOf(i.user.id), 1)
                 })
@@ -222,6 +226,7 @@ export const prediction: SlashCommand = {
 
         // ask for winner, distribute funds, and update user data
         collector.on('end', async (collected) => {
+            if (!(await messageStillExists(sent, terminateBound))) return
             if (collected.size == 0) return;
             // send interaction to ask who won
             const selectWinnerButton = new ActionRowBuilder<ButtonBuilder>()
@@ -256,6 +261,7 @@ export const prediction: SlashCommand = {
                 });
 
                 // ask for winner
+                if (!(await messageStillExists(sent, terminateBound))) return
                 await sent.edit({components: []})
                 const winCollectorFilter = async (i) => {
                     const message = await selectWinnerInteraction.fetchReply()
@@ -320,6 +326,7 @@ export const prediction: SlashCommand = {
                 });
 
             } catch (e) {
+                if (!(await messageStillExists(sent, terminateBound))) return
                 sent.edit({components: []})
                 log.warn('Response Timeout')
             }

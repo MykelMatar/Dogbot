@@ -16,6 +16,7 @@ import {
     terminationListener
 } from "../../dependencies/helpers/otherHelpers/terminationListener";
 import {checkListServerStatus} from "../../dependencies/helpers/mcHelpers/checkListServerStatus";
+import messageStillExists from "../../dependencies/helpers/otherHelpers/messageStillExists";
 
 export const mcListServers: SlashCommand = {
     data: new SlashCommandBuilder()
@@ -95,7 +96,6 @@ export const mcListServers: SlashCommand = {
 
         const collector = interaction.channel.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: 600000,
             filter: (i) => {
                 if (i.user.id !== interaction.member.user.id) return false;
                 return i.message.id === sent.id;
@@ -135,6 +135,7 @@ export const mcListServers: SlashCommand = {
                                 .setStyle(ButtonStyle.Primary),
                         );
 
+                    if (!(await messageStillExists(sent, terminateBound))) return // highly unlikely but just in case
                     await interaction.editReply({embeds: [embed], components: [row]})
                     break;
                 default:
@@ -144,6 +145,7 @@ export const mcListServers: SlashCommand = {
 
         collector.on('end', async collected => {
             removeTerminationListener(terminateBound)
+            if (!(await messageStillExists(sent))) return
             if (collected.size === 0) {
                 await interaction.editReply({components: []})
             } else if (['listStatus', 'listRemove', 'listChange'].includes(collected.first().customId)) {

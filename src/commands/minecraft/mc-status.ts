@@ -53,7 +53,7 @@ export const mcStatus: SlashCommand = {
             name = 'Server Status'
             port = !port ? 25565 : port
         } else if (!ip && port) {
-            await interaction.editReply({content: 'Cannot have a port without an ip. How would I even find that server?'})
+            await interaction.editReply({content: 'Cannot have a port without an ip.'})
         } else {
             name = MCServerData.selectedServer.name
             ip = MCServerData.selectedServer.ip
@@ -63,7 +63,7 @@ export const mcStatus: SlashCommand = {
         const row: ActionRowBuilder<ButtonBuilder> = new ActionRowBuilder<ButtonBuilder>()
             .addComponents(
                 new ButtonBuilder()
-                    .setCustomId('Change')
+                    .setCustomId('change')
                     .setLabel('Change Server')
                     .setStyle(ButtonStyle.Primary),
             )

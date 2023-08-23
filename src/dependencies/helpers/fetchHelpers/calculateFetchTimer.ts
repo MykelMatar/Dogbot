@@ -30,10 +30,13 @@ export default function(client, time, guildData: MongoGuild): number {
             offset = newOffset.toString()
         }
 
-        validTime = validTime.minus({days: 1}) // server is 1 day ahead or something not sure whats goin on
+        if (!client.isTestBot) {
+            validTime = validTime.minus({days: 1}) // server is 1 day ahead or something not sure whats goin on
+        }
         validTime = validTime.setZone(`UTC${offset}`, {keepLocalTime: true})
         const nowRezoned = now.setZone(`UTC${offset}`)
         console.log(`UTC${offset}`, {validTime}, {nowRezoned})
+        
         // If the future time is earlier than the current time, add one day to the future time
         if (validTime <= now) {
             validTime = validTime.plus({days: 1});

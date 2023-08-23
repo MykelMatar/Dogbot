@@ -34,6 +34,7 @@ import collectEmbedChanges from "../../dependencies/helpers/fetchHelpers/collect
 import {abbreviations} from "../../dependencies/constants/timeZones";
 import summonGamers from "../../dependencies/helpers/fetchHelpers/summonGamers";
 import calculateFetchTimer from "../../dependencies/helpers/fetchHelpers/calculateFetchTimer";
+import messageStillExists from "../../dependencies/helpers/otherHelpers/messageStillExists";
 
 
 export const fetchGamers: SlashCommand = {
@@ -213,6 +214,7 @@ export const fetchGamers: SlashCommand = {
         await terminationListener(client, fetchCollector, terminateBound)
 
         fetchCollector.on('collect', async buttonInteraction => {
+            if (!(await messageStillExists(fetchPrompt, terminateBound))) return
             const isPerhapsButton = buttonInteraction.customId === perhapsButtonId;
             const notDuplicateUser = !(fetchUserData.potentialUserIds.includes(buttonInteraction.user.id))
             const notPendingResponse = !(pendingResponse.includes(buttonInteraction.user.id))
@@ -241,6 +243,7 @@ export const fetchGamers: SlashCommand = {
 
         fetchCollector.on('end', async collected => {
             removeTerminationListener(terminateBound)
+            if (!(await messageStillExists(fetchPrompt))) return
 
             const noInteractions = !fetchUserData.acceptedUserIds.length && !fetchUserData.rejectedUserIds.length && !fetchUserData.potentialUserIds.length
             if (collected.size === 0 || noInteractions) {
@@ -297,6 +300,7 @@ export const fetchGamers: SlashCommand = {
                 }
             }
 
+            if (!(await messageStillExists(fetchPrompt))) return
             if (createLevelEmbed) {
                 const levelEmbed = new EmbedBuilder()
                     .setTitle('Level Summary')

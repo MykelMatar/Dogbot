@@ -18,6 +18,7 @@ import {
     terminationListener
 } from "../../dependencies/helpers/otherHelpers/terminationListener";
 import {createMcCommandCollector} from "../../dependencies/helpers/mcHelpers/createMcCommandCollector";
+import messageStillExists from "../../dependencies/helpers/otherHelpers/messageStillExists";
 
 export const mcChangeName: SlashCommand = {
     data: new SlashCommandBuilder()
@@ -86,6 +87,8 @@ export const mcChangeName: SlashCommand = {
 
         collector.on('end', async collected => {
             removeTerminationListener(terminateBound)
+            if (!(await messageStillExists(sent))) return
+            
             if (collected.size === 0) {
                 await interaction.editReply({content: '*Request Timeout*', components: []});
                 log.warn('Request Timeout')

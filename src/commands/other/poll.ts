@@ -12,6 +12,7 @@ import {
 import {CustomClient, embedColor, PollStats, SlashCommand} from "../../dependencies/myTypes";
 import {terminate, terminationListener} from "../../dependencies/helpers/otherHelpers/terminationListener";
 import {updateProgressBars} from "../../dependencies/helpers/otherHelpers/updateProgressBars";
+import messageStillExists from "../../dependencies/helpers/otherHelpers/messageStillExists";
 
 export const poll: SlashCommand = {
     data: new SlashCommandBuilder()
@@ -162,11 +163,13 @@ export const poll: SlashCommand = {
             voters.set(i.user.id, i.customId)
             numberOfVotes[voters.get(i.user.id)] += 1;
 
+            if (!(await messageStillExists(sent, terminateBound))) return
             await updateProgressBars(sent, pollEmbed, numberOfVotes, choices.length)
         });
 
 
         collector.on('end', async () => {
+            if (!(await messageStillExists(sent, terminateBound))) return
             await sent.edit({content: 'VOTING ENDED', components: []})
 
             let newMessage = await interaction.channel.send({content: 'Results:'})
