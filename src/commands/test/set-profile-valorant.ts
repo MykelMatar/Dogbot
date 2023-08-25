@@ -1,6 +1,6 @@
 import {CommandInteraction, CommandInteractionOption, SlashCommandBuilder} from "discord.js";
 import {CustomClient, GameProfile, UserInfo} from "../../dependencies/myTypes";
-import {updateUserData} from "../../dependencies/helpers/otherHelpers/updateUserData";
+import updateUserData from "../../dependencies/helpers/otherHelpers/updateUserData";
 
 export const setProfileValorant = {
     data: new SlashCommandBuilder()

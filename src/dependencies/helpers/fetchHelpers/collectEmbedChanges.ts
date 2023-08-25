@@ -12,7 +12,7 @@ import {
     TextInputBuilder,
     TextInputStyle
 } from "discord.js";
-import {embedLimits} from "../../constants/embedLimits";
+import embedLimits from "../../constants/embedLimits";
 
 export default async function(interaction: ButtonInteraction, fetchEmbed: EmbedBuilder, enlistPrompt: Message) {
 

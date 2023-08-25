@@ -34,7 +34,9 @@ const guildSchema = new Schema({
             predictionStats: {
                 points: Number,
                 correctPredictions: Number,
-                incorrectPredictions: Number
+                incorrectPredictions: Number,
+                biggestWin: Number,
+                biggestLoss: Number
             }
         },
     ],

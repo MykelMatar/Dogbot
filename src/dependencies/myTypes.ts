@@ -118,6 +118,8 @@ export interface MongoGuild extends Document {
             points: number;
             correctPredictions: number;
             incorrectPredictions: number;
+            biggestWin: number;
+            biggestLoss: number;
         }
     }[];
     mcServerData: {
@@ -147,4 +149,5 @@ export enum UserInfo {
     IncorrectPrediction = 'IncorrectPrediction',
 }
 
-export const embedColor = '#B8CAD1'
+// export const embedColor = '#B8CAD1'
+export const embedColor = '#8570C1'

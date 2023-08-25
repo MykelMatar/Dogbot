@@ -44,7 +44,9 @@ export default async function updateUserData(interaction: CommandInteraction | A
     const defaultPredictionStats = {
         points: 1000,
         correctPredictions: 0,
-        incorrectPredictions: 0
+        incorrectPredictions: 0,
+        biggestWin: 0,
+        biggestLoss: 0
     }
 
     switch (infoType) {
@@ -120,6 +122,8 @@ export default async function updateUserData(interaction: CommandInteraction | A
                         points: 1000,
                         correctPredictions: 0,
                         incorrectPredictions: 0,
+                        biggestWin: 0,
+                        biggestLoss: 0,
                     }
                 })
             }
@@ -189,6 +193,12 @@ export default async function updateUserData(interaction: CommandInteraction | A
                 case UserInfo.CorrectPrediction:
                     if (!isNaN(user.predictionStats.correctPredictions)) {
                         const pointIncrease = pointChange.get(userId)
+                        if (isNaN(user.predictionStats.biggestWin)) {
+                            user.predictionStats.biggestWin = 0
+                        }
+                        if (pointIncrease > user.predictionStats.biggestWin) {
+                            user.predictionStats.biggestWin = pointIncrease
+                        }
                         user.predictionStats.correctPredictions++;
                         user.predictionStats.points = Math.min(user.predictionStats.points + pointIncrease, maxPoints);
                         break;
@@ -198,6 +208,12 @@ export default async function updateUserData(interaction: CommandInteraction | A
                 case UserInfo.IncorrectPrediction:
                     if (!isNaN(user.predictionStats.incorrectPredictions)) {
                         const pointDecrease = pointChange.get(userId)
+                        if (isNaN(user.predictionStats.biggestLoss)) {
+                            user.predictionStats.biggestLoss = 0
+                        }
+                        if (pointDecrease > user.predictionStats.biggestLoss) {
+                            user.predictionStats.biggestLoss = pointDecrease
+                        }
                         user.predictionStats.incorrectPredictions++
                         user.predictionStats.points = Math.max(user.predictionStats.points - pointDecrease, minPoints);
                         break;

@@ -59,13 +59,16 @@ export async function interactionCreate(client: CustomClient, interaction: Comma
             await command.execute(client, interaction, guildData);
         } catch (error) {
             log.error(error)
-            await interaction.reply({content: 'There was an error while executing this command!', ephemeral: true});
+            await interaction[interaction.replied ? 'editReply' : 'reply']({
+                content: 'There was an error while executing this command!',
+                ephemeral: true
+            });
         }
     } else if (interaction.isAutocomplete()) {
         try {
             await command.autocomplete(interaction);
         } catch (error) {
-            log.error(error)
+            log.error(error.message)
         }
     }
 
