@@ -1,15 +1,24 @@
-import {CommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js";
-import {CustomClient, embedColor, MongoGuild, SlashCommand} from "../../dependencies/myTypes";
+import {
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    CommandInteraction,
+    ComponentType,
+    EmbedBuilder,
+    SlashCommandBuilder
+} from "discord.js";
+import {CustomClient, embedColor, SlashCommand} from "../../dependencies/myTypes";
+import handlePageChange from "../../dependencies/helpers/otherHelpers/handlePageChange";
 
 export const patchNotes: SlashCommand = {
     data: new SlashCommandBuilder()
         .setName('patch-notes')
         .setDescription('gets most recent Dogbot patch notes'),
 
-    async execute(client: CustomClient, interaction: CommandInteraction, guildData: MongoGuild) {
+    async execute(client: CustomClient, interaction: CommandInteraction) {
         const dogbotInfo = require('../../../package.json')
 
-        const embed = new EmbedBuilder()
+        const pn8_20_2023 = new EmbedBuilder()
             .setTitle(`Dogbot Patch Notes (v${dogbotInfo.version})`)
             .setDescription(`August 20, 2023`)
             .addFields(
@@ -28,12 +37,48 @@ export const patchNotes: SlashCommand = {
                 },
                 {
                     name: 'misc',
-                    value: `• renamed all instances of 'enlist' to 'accept'
-                            • deleting interactions like 'fetch-gamers' or 'prediction' no longer crashes Dogbot`
+                    value: `• renamed all instances of 'enlist' to 'accept'`
                 },
             )
             .setColor(embedColor)
 
-        await interaction.reply({embeds: [embed]})
+        const pn8_25_2023 = new EmbedBuilder()
+            .setTitle(`Dogbot Patch Notes (v${dogbotInfo.version})`)
+            .setDescription(`August 25, 2023`)
+            .addFields(
+                {
+                    name: 'help',
+                    value: `• revamped command, has details on every single command now instead of just linking to wiki. more user friendly`
+                },
+                {
+                    name: 'predictions',
+                    value: `• Added 'biggest loss' and 'biggest win' prediction stats`
+                },
+                {
+                    name: 'misc',
+                    value: `• deleting interactions like 'fetch-gamers' or 'prediction' no longer crashes Dogbot`
+                },
+            )
+            .setColor(embedColor)
+
+        const row = new ActionRowBuilder<ButtonBuilder>()
+            .addComponents(
+                new ButtonBuilder()
+                    .setLabel(`← `)
+                    .setCustomId('prevPage')
+                    .setStyle(ButtonStyle.Primary),
+                new ButtonBuilder()
+                    .setLabel(`→`)
+                    .setCustomId('nextPage')
+                    .setStyle(ButtonStyle.Primary),
+            );
+
+        const pages = {
+            0: pn8_25_2023, // always set as newest
+            1: pn8_20_2023,
+        }
+
+        await handlePageChange(interaction, row, pages, 'patch-notes')
+
     }
 }

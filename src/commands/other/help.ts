@@ -8,6 +8,7 @@ import {
     SlashCommandBuilder
 } from "discord.js";
 import {CustomClient, embedColor, SlashCommand} from "../../dependencies/myTypes";
+import handlePageChange from "../../dependencies/helpers/otherHelpers/handlePageChange";
 
 export const help: SlashCommand = {
     data: new SlashCommandBuilder()
@@ -40,9 +41,6 @@ export const help: SlashCommand = {
             )
             .setFooter({text: '🗏 Page 0/5 -- maintained by .dogbert'})
             .setColor(embedColor)
-
-        // paginated help command again? or at least describe the basic ones
-        // also add invite link and vote button and support server
 
         const fetch = new EmbedBuilder()
             .setTitle('🎮 fetch commands 🎮')
@@ -159,44 +157,7 @@ export const help: SlashCommand = {
             4: other,
             5: settings
         }
-        let pageNumber = 0
-        console.log(Object.keys(pages).length)
-        let sent = await interaction[interaction.deferred ? 'editReply' : 'reply']({
-            embeds: [pages[0]],
-            components: [row]
-        });
 
-        // create collector
-        const collector = interaction.channel.createMessageComponentCollector({
-            filter: (i) => {
-                if (i.message.id != sent.id) return false
-                return ['nextPage', 'prevPage', 'wiki'].includes(i.customId);
-            },
-            time: 900_000,
-            componentType: ComponentType.Button
-        });
-
-        // collect response
-        collector.on('collect', async i => {
-            const isNotFirstPage = pageNumber > 0
-            const isNotLastPage = pageNumber < Object.keys(pages).length - 1
-
-            if (i.customId === 'nextPage' && isNotLastPage) {
-                // await i.deferUpdate()
-                pageNumber++
-                await i.update({embeds: [pages[pageNumber]], components: [row]});
-            }
-            if (i.customId === 'prevPage' && isNotFirstPage) {
-                // await i.deferUpdate()
-                pageNumber--
-                await i.update({embeds: [pages[pageNumber]], components: [row]});
-            }
-        });
-
-        collector.on('end', async () => {
-            await sent.edit({components: []});
-        })
-
-        // await interaction.editReply({embeds: [embed], files: [file]})
+        await handlePageChange(interaction, row, pages, 'help')
     }
 }
