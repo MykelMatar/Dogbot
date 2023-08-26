@@ -149,5 +149,5 @@ export enum UserInfo {
     IncorrectPrediction = 'IncorrectPrediction',
 }
 
-// export const embedColor = '#B8CAD1'
-export const embedColor = '#8570C1'
+export const embedColor = '#B8CAD1'
+// export const embedColor = '#8570C1'
