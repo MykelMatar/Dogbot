@@ -1,4 +1,4 @@
-import {CommandInteraction, EmbedBuilder, SlashCommandBuilder} from "discord.js";
+import {CommandInteraction, EmbedBuilder, GuildMember, SlashCommandBuilder} from "discord.js";
 import {
     CustomClient,
     embedColor,
@@ -17,11 +17,12 @@ export const predictionLeaderboard: SlashCommand = {
                 .setRequired(false)),
 
     async execute(client: CustomClient, interaction: CommandInteraction, guildData: MongoGuild) {
+        const member = interaction.member as GuildMember
 
         const userArray: PredictionLeaderboardUser[] = []
         for (const user of guildData.userData) {
             userArray.push({
-                name: user.username,
+                name: member.displayName,
                 correctPredictions: user.predictionStats.correctPredictions,
                 incorrectPredictions: user.predictionStats.incorrectPredictions,
                 points: user.predictionStats.points
