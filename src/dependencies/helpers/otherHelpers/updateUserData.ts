@@ -157,7 +157,7 @@ export default async function updateUserData(interaction: CommandInteraction | A
                         if (!isNaN(user.predictionStats.points)) {
                             user.predictionStats.points = defaultPredictionStats.points
                         }
-                        user.predictionStats.points = Math.max(user.predictionStats.points + pointsPerAccept, maxPoints);
+                        user.predictionStats.points = Math.min(user.predictionStats.points + pointsPerAccept, maxPoints);
                         break;
                     }
                     user.fetchStats = defaultFetchStats
@@ -170,7 +170,7 @@ export default async function updateUserData(interaction: CommandInteraction | A
                         if (!isNaN(user.predictionStats.points)) {
                             user.predictionStats.points = defaultPredictionStats.points
                         }
-                        user.predictionStats.points = Math.max(user.predictionStats.points + pointsPerReject, maxPoints);
+                        user.predictionStats.points = Math.min(user.predictionStats.points + pointsPerReject, maxPoints);
                         break;
                     }
                     user.fetchStats = defaultFetchStats
@@ -189,7 +189,7 @@ export default async function updateUserData(interaction: CommandInteraction | A
                         if (!isNaN(user.predictionStats.points)) {
                             user.predictionStats.points = defaultPredictionStats.points
                         }
-                        user.predictionStats.points = Math.max(user.predictionStats.points + pointsPerPerhaps, maxPoints);
+                        user.predictionStats.points = Math.min(user.predictionStats.points + pointsPerPerhaps, maxPoints);
                         break;
                     }
                     user.fetchStats = defaultFetchStats
