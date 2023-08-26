@@ -17,10 +17,10 @@ export const predictionLeaderboard: SlashCommand = {
                 .setRequired(false)),
 
     async execute(client: CustomClient, interaction: CommandInteraction, guildData: MongoGuild) {
-        const member = interaction.member as GuildMember
 
         const userArray: PredictionLeaderboardUser[] = []
         for (const user of guildData.userData) {
+            const member = await interaction.guild.members.fetch(user.id) as GuildMember
             userArray.push({
                 name: member.displayName,
                 correctPredictions: user.predictionStats.correctPredictions,
