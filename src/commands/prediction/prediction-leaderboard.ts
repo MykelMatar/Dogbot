@@ -31,9 +31,10 @@ export const predictionLeaderboard: SlashCommand = {
         if (pointRanking.length > 10) {
             pointRanking.splice(11)
         }
+        const definedPointRanking = pointRanking.filter((a) => a.points !== undefined)
 
         const displayedUser = [[], [], []]
-        pointRanking.forEach((user, index) => {
+        definedPointRanking.forEach((user) => {
             displayedUser[0].push(`**${user.name}**`)
             displayedUser[1].push(`*${user.points} points*`)
             displayedUser[2].push(`*${user.correctPredictions}:${user.incorrectPredictions}*`)

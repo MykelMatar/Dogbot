@@ -296,7 +296,7 @@ export const prediction: SlashCommand = {
 
                     let totalWinnings = 0
                     for (const [key, value] of betAmountMap.entries()) {
-                        const winnings = (value * winMultiplier).toFixed(0)
+                        const winnings = (value).toFixed(0)
                         totalWinnings += parseInt(winnings)
                     }
 
