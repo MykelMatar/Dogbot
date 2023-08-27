@@ -53,7 +53,7 @@ export const mcDeleteServer: SlashCommand = {
 
         const collector = createMcCommandCollector(interaction, sent, ['deleteSelectMenu'])
         const terminateBound = terminate.bind(null, client, collector)
-        await terminationListener(client, collector, terminateBound)
+        terminationListener(client, collector, terminateBound)
 
         let serverName;
         collector.on('collect', async i => {
@@ -81,7 +81,7 @@ export const mcDeleteServer: SlashCommand = {
         collector.on('end', async collected => {
             removeTerminationListener(terminateBound)
             if (!(await messageStillExists(sent))) return
-            
+
             if (collected.size === 0) {
                 await interaction.editReply({content: '*Request Timeout*', components: []});
                 log.error('Request Timeout')

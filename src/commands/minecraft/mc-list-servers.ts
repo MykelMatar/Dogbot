@@ -71,10 +71,10 @@ export const mcListServers: SlashCommand = {
                         .setLabel('Remove')
                         .setCustomId('listRemove')
                         .setStyle(ButtonStyle.Danger),
-                    new ButtonBuilder()
-                        .setLabel('Change')
-                        .setCustomId('listChange')
-                        .setStyle(ButtonStyle.Primary),
+                    // new ButtonBuilder()
+                    //     .setLabel('Change')
+                    //     .setCustomId('listChange')
+                    //     .setStyle(ButtonStyle.Primary),
                 );
         }
 
@@ -108,12 +108,12 @@ export const mcListServers: SlashCommand = {
 
         collector.on('collect', async i => {
             switch (i.customId) {
-                case 'listRemove':
-                    await client.commands.get('mc-delete-server').execute(client, interaction, guildData);
-                    break;
-                case 'listChange':
-                    await client.commands.get('mc-select-server').execute(client, interaction, guildData);
-                    break;
+                // case 'listRemove':
+                //     await client.commands.get('mc-delete-server').execute(client, i, guildData);
+                //     break;
+                // case 'listChange':
+                //     await client.commands.get('mc-select-server').execute(client, i, guildData);
+                //     break;
                 case 'listStatus':
                     i.deferUpdate()
 
@@ -123,20 +123,20 @@ export const mcListServers: SlashCommand = {
                     serverStatusList = await checkListServerStatus(MCServerData);
                     embed.addFields({name: 'Status', value: serverStatusList.join(' \n '), inline: true})
 
-                    row = new ActionRowBuilder<ButtonBuilder>()
-                        .addComponents(
-                            new ButtonBuilder()
-                                .setCustomId('listRemove')
-                                .setLabel('Remove')
-                                .setStyle(ButtonStyle.Danger),
-                            new ButtonBuilder()
-                                .setCustomId('listChange')
-                                .setLabel('Change')
-                                .setStyle(ButtonStyle.Primary),
-                        );
+                    // row = new ActionRowBuilder<ButtonBuilder>()
+                    //     .addComponents(
+                    //         new ButtonBuilder()
+                    //             .setCustomId('listRemove')
+                    //             .setLabel('Remove')
+                    //             .setStyle(ButtonStyle.Danger),
+                    //         new ButtonBuilder()
+                    //             .setCustomId('listChange')
+                    //             .setLabel('Change')
+                    //             .setStyle(ButtonStyle.Primary),
+                    //     );
 
                     if (!(await messageStillExists(sent, terminateBound))) return // highly unlikely but just in case
-                    await interaction.editReply({embeds: [embed], components: [row]})
+                    await interaction.editReply({embeds: [embed], components: []})
                     break;
                 default:
                     return;

@@ -24,7 +24,7 @@ export async function statusButtonCollector(client: CustomClient, interaction: C
         }
     });
     let terminateBound = terminate.bind(null, client, collector)
-    await terminationListener(client, collector, terminateBound)
+    terminationListener(client, collector, terminateBound)
 
     collector.on('collect', i => {
         i.update({content: 'Server Change Requested', components: []});
