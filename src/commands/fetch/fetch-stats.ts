@@ -32,7 +32,7 @@ export const fetchStats: SlashCommand = {
         const userId = user ? user.id : member.id
 
         let userData = guildData.userData.find(user => user.id === userId)
-        if (!userData.fetchStats || JSON.stringify(userData.fetchStats) == '{}') {
+        if (!userData || !userData.fetchStats || JSON.stringify(userData.fetchStats) == '{}') {
             await interaction.reply({
                 ephemeral: true,
                 content: 'User does not have any data. Data is created upon interacting with the fetch-gamers prompt'

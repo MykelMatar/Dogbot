@@ -102,7 +102,7 @@ export const mcListServers: SlashCommand = {
             },
         });
         const terminateBound = terminate.bind(null, client, collector)
-        await terminationListener(client, collector, terminateBound)
+        terminationListener(client, collector, terminateBound)
 
         let gettingStatus = false
 

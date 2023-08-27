@@ -31,7 +31,7 @@ export const predictionStats: SlashCommand = {
         const userId = user ? user.id : member.id
 
         let userData = guildData.userData.find(user => user.id === userId)
-        if (!userData.predictionStats || JSON.stringify(userData.predictionStats) == '{}') {
+        if (!userData || !userData.predictionStats || JSON.stringify(userData.predictionStats) == '{}') {
             await interaction.reply({
                 ephemeral: true,
                 content: 'User does not have any data. Data is created upon interacting with the prediction prompt'

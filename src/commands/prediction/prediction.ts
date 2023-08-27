@@ -42,7 +42,7 @@ export const prediction: SlashCommand = {
                 .setDescription('what you want to predict')
                 .setRequired(true)),
 
-    async execute(client: CustomClient, interaction: CommandInteraction, guildData: MongoGuild) {
+    async execute(client: CustomClient, interaction: CommandInteraction, guildData: MongoGuild, commandInstances: Set<string>) {
         const commandOptions = interaction.options as CommandInteractionOptionResolver
         const prompt = commandOptions.getString('prediction')
 
@@ -74,6 +74,18 @@ export const prediction: SlashCommand = {
                     .setLabel(`⚙️`)
                     .setCustomId('settings')
                     .setStyle(ButtonStyle.Secondary),
+            );
+
+        const row2 = new ActionRowBuilder<ButtonBuilder>()
+            .addComponents(
+                new ButtonBuilder()
+                    .setLabel(`Yes`)
+                    .setCustomId('predictYes')
+                    .setStyle(ButtonStyle.Success),
+                new ButtonBuilder()
+                    .setLabel(`No`)
+                    .setCustomId('predictNo')
+                    .setStyle(ButtonStyle.Danger),
             );
 
         await interaction.reply({content: '*Prediction Active*'})
@@ -254,7 +266,10 @@ export const prediction: SlashCommand = {
                 const winnerSelectionFilter = async (i) => {
                     if (i.message.id != sent.id) return false // prevent simultaneous prompts from affecting each other
                     if (i.user.id != interaction.user.id) {
-                        await interaction.channel.send(`Only the person who started the prediction can select the winner`)
+                        await i.reply({
+                            content: `Only the person who started the prediction can select the winner`,
+                            ephemeral: true
+                        })
                         return false
                     }
                     return ['predictChooseWinner'].includes(i.customId);
@@ -267,7 +282,7 @@ export const prediction: SlashCommand = {
 
                 await selectWinnerInteraction.reply({
                     content: 'Please select a winner (Only the person who created the prediction can choose).',
-                    components: [row]
+                    components: [row2]
                 });
 
                 // ask for winner
@@ -329,16 +344,18 @@ export const prediction: SlashCommand = {
                     if (winner === 'Yes') {
                         await updatePredictionResults(believerIds, winMultiplier, UserInfo.CorrectPrediction);
                         await updatePredictionResults(doubterIds, 1, UserInfo.IncorrectPrediction);
+                        commandInstances.delete(interaction.guild.id)
                     } else {
                         await updatePredictionResults(believerIds, 1, UserInfo.IncorrectPrediction);
                         await updatePredictionResults(doubterIds, winMultiplier, UserInfo.CorrectPrediction);
+                        commandInstances.delete(interaction.guild.id)
                     }
                 });
-
             } catch (e) {
                 if (!(await messageStillExists(sent, terminateBound))) return
                 sent.edit({components: []})
                 log.warn('Response Timeout')
+                commandInstances.delete(interaction.guild.id)
             }
         })
     }

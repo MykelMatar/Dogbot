@@ -19,7 +19,12 @@ export interface SlashCommand {
     data: Partial<SlashCommandBuilder>;
     cooldown?: number;
     autocomplete?: (interaction: AutocompleteInteraction) => Promise<void>;
-    execute: (client: CustomClient, interaction: CommandInteraction, guildData: MongoGuild) => Promise<void | Message>;
+    execute: (
+        client: CustomClient,
+        interaction: CommandInteraction | AutocompleteInteraction,
+        mongoGuild: MongoGuild,
+        commandInstance?: Set<string>
+    ) => Promise<void | Message>;
 }
 
 export interface Activity {

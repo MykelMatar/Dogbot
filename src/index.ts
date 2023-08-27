@@ -1,9 +1,10 @@
 import {ActivityType, Client, Collection, GatewayIntentBits} from "discord.js";
 import 'dotenv/config'
-import {NewClient} from "./dependencies/myTypes";
+import {CustomClient} from "./dependencies/myTypes";
 import log from "./dependencies/constants/logger";
+import AutoPoster from "topgg-autoposter";
 
-const client: NewClient = new Client({
+const client: CustomClient = new Client({
     intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMembers,
@@ -19,17 +20,23 @@ const client: NewClient = new Client({
             interval: 120
         }
     },
-}) as NewClient
+}) as CustomClient
 
 client.commands = new Collection();
-client.isTestBot = false; // set false if deploying Dogbot
+client.isTestBot = false;
 
 ['command_handler', 'event_handler'].forEach(handler => {
     require(`./handlers/${handler}`).default(client)
 });
 
+
 if (client.isTestBot) {
     client.login(process.env.BOT_TEST_TOKEN).catch(e => log.error(e))
 } else {
+    const poster = AutoPoster(process.env.TOPGG_TOKEN, client)
+    poster.on('posted', (stats) => {
+        console.log(`Posted to Top.gg | ${stats.serverCount} servers`);
+    });
+
     client.login(process.env.BOT_TOKEN).catch(e => log.error(e))
 }

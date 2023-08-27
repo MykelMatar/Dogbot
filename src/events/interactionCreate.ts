@@ -4,14 +4,36 @@ import guilds from "../dependencies/schemas/guild-schema";
 import log from "../dependencies/constants/logger";
 
 // const cooldowns = new Map()
+const runningCommands = new Map()
+const singleInstanceCommands = new Set(['prediction'])
 
 export async function interactionCreate(client: CustomClient, interaction: CommandInteraction | AutocompleteInteraction) {
     if (!interaction.isChatInputCommand() && !interaction.isAutocomplete()) return
 
-    interaction = interaction as CommandInteraction | AutocompleteInteraction; // idk why i need this but i do
+    // interaction = interaction as CommandInteraction | AutocompleteInteraction; // idk why i need this but i do
     const command: SlashCommand = client.commands.get(interaction.commandName)
     if (!command) return;
 
+    let commandInstances: Set<string>
+    if (singleInstanceCommands.has(command.data.name)) {
+        if (!runningCommands.has(command.data.name)) {
+            runningCommands.set(command.data.name, new Set())
+        }
+        commandInstances = runningCommands.get(command.data.name)
+        let guildHasCommandRunning = undefined
+        if (commandInstances.has(interaction.guild.id)) {
+            guildHasCommandRunning = commandInstances.has(interaction.guild.id)
+        }
+
+        if (guildHasCommandRunning && interaction.isChatInputCommand()) {
+            return interaction.reply({
+                ephemeral: true,
+                content: `Command already running`
+            })
+        }
+
+        commandInstances.add(interaction.guild.id)
+    }
     // cooldown logic for commands
     // if (!cooldowns.has(command.data.name)) {
     //     cooldowns.set(command.data.name, new Collection())
@@ -38,7 +60,7 @@ export async function interactionCreate(client: CustomClient, interaction: Comma
     // execute command
     if (interaction.isChatInputCommand()) {
         // global ephemeral interaction handling (for commands w/ optional 'hide' param)
-        const hideCommands: string[] = ['mc', 'get-stats', 'server-stats', 'help']
+        const hideCommands: string[] = ['mc', 'server-stats', 'help']
         let ephemeralSetting
 
         let hideOption = interaction.options.data.find(option => option.name === 'hide')
@@ -56,7 +78,7 @@ export async function interactionCreate(client: CustomClient, interaction: Comma
                 log.info(`${interaction.commandName} requested by ${interaction.member.user.username} in ${interaction.member.guild.name}`)
             }
             const guildData: MongoGuild = await guilds.findOne({guildId: interaction.guildId})
-            await command.execute(client, interaction, guildData);
+            await command.execute(client, interaction, guildData, commandInstances);
         } catch (error) {
             log.error(error)
             await interaction[interaction.replied ? 'editReply' : 'reply']({
