@@ -211,7 +211,7 @@ export const fetchGamers: SlashCommand = {
             },
         });
         const terminateBound = terminate.bind(null, client, fetchCollector)
-        await terminationListener(client, fetchCollector, terminateBound)
+        terminationListener(client, fetchCollector, terminateBound)
 
         fetchCollector.on('collect', async buttonInteraction => {
             if (!(await messageStillExists(fetchPrompt, terminateBound))) return
@@ -315,6 +315,8 @@ export const fetchGamers: SlashCommand = {
             }
 
             await summonGamers(interaction, fetchUserData, minGamers)
+
+            // TODO add role call? send a button or something so users can ready up and join the call
         });
     }
 }

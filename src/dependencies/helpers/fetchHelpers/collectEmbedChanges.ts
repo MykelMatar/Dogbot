@@ -67,7 +67,6 @@ export default async function(interaction: ButtonInteraction, fetchEmbed: EmbedB
 
     editCollector.on('collect', async editInteraction => {
         if (editInteraction.componentType == ComponentType.Button) {
-            editPrompt.delete()
             editCollector.stop()
             return
         }
@@ -205,7 +204,6 @@ export default async function(interaction: ButtonInteraction, fetchEmbed: EmbedB
     })
 
     editCollector.on('end', async () => {
-        await interaction.followUp({content: 'Response Timeout', ephemeral: true})
         editPrompt.delete()
     })
 }

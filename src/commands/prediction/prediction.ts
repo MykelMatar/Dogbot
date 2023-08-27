@@ -30,6 +30,7 @@ import log from "../../dependencies/constants/logger";
 import {updateProgressBars} from "../../dependencies/helpers/otherHelpers/updateProgressBars";
 import waitForUpdate from "../../dependencies/helpers/otherHelpers/waitForUpdate";
 import messageStillExists from "../../dependencies/helpers/otherHelpers/messageStillExists";
+import collectPredictionEmbedChanges from "../../dependencies/helpers/otherHelpers/collectPredictionEmbedChanges";
 
 export const prediction: SlashCommand = {
     data: new SlashCommandBuilder()
@@ -59,7 +60,6 @@ export const prediction: SlashCommand = {
             .setFooter({text: `This prediction will be active for 2 min`})
             .setColor(embedColor)
 
-        // TODO add settings button to edit fields (just like fetch-gamers)
         const row = new ActionRowBuilder<ButtonBuilder>()
             .addComponents(
                 new ButtonBuilder()
@@ -70,6 +70,10 @@ export const prediction: SlashCommand = {
                     .setLabel(`No`)
                     .setCustomId('predictNo')
                     .setStyle(ButtonStyle.Danger),
+                new ButtonBuilder()
+                    .setLabel(`⚙️`)
+                    .setCustomId('settings')
+                    .setStyle(ButtonStyle.Secondary),
             );
 
         await interaction.reply({content: '*Prediction Active*'})
@@ -99,15 +103,21 @@ export const prediction: SlashCommand = {
             time: 120_000,
             filter: (i) => {
                 if (i.message.id != sent.id) return false
-                return ['predictYes', 'predictNo'].includes(i.customId)
+                return ['predictYes', 'predictNo', 'settings'].includes(i.customId)
             }
         });
         const terminateBound = terminate.bind(null, client, collector)
-        await terminationListener(client, collector, terminateBound)
+        terminationListener(client, collector, terminateBound)
 
         // start collector
         collector.on('collect', async i => {
             if (!(await messageStillExists(sent, terminateBound))) return
+
+            if (i.customId === 'settings') {
+                await collectPredictionEmbedChanges(i, predictionEmbed, sent)
+                return
+            }
+
             if (pendingResponse.includes(i.user.id)) {
                 await i.reply({content: `Please wait 15s before trying again`, ephemeral: true})
                 return
