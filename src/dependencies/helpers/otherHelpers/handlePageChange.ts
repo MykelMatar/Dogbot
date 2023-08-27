@@ -18,7 +18,7 @@ export default async function(interaction: CommandInteraction, row: ActionRowBui
 
     const collector = interaction.channel.createMessageComponentCollector({
         filter: commandName === 'patch-notes' ? patchNotesFilter : helpFilter,
-        time: 900_000,
+        time: 800_000,
         componentType: ComponentType.Button
     });
 
