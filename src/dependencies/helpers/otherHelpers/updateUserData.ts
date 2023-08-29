@@ -140,7 +140,7 @@ export default async function updateUserData(interaction: CommandInteraction | A
             ]
 
             if (alternativePredictionPointEvents.includes(infoType)) {
-                if (!isNaN(user.predictionStats.points)) {
+                if (isNaN(user.predictionStats.points)) {
                     user.predictionStats.points = defaultPredictionStats.points
                 }
             }
@@ -154,9 +154,6 @@ export default async function updateUserData(interaction: CommandInteraction | A
                             user.fetchStats.fetchStreak++
                         }
                         user.fetchStats.fetchXP += XPPerAccept + (bonusXP * user.fetchStats.fetchStreak)
-                        if (!isNaN(user.predictionStats.points)) {
-                            user.predictionStats.points = defaultPredictionStats.points
-                        }
                         user.predictionStats.points = Math.min(user.predictionStats.points + pointsPerAccept, maxPoints);
                         break;
                     }
@@ -167,9 +164,6 @@ export default async function updateUserData(interaction: CommandInteraction | A
                         user.fetchStats.rejects++
                         user.fetchStats.fetchStreak = 0
                         user.fetchStats.fetchXP += XPPerReject
-                        if (!isNaN(user.predictionStats.points)) {
-                            user.predictionStats.points = defaultPredictionStats.points
-                        }
                         user.predictionStats.points = Math.min(user.predictionStats.points + pointsPerReject, maxPoints);
                         break;
                     }
@@ -186,9 +180,6 @@ export default async function updateUserData(interaction: CommandInteraction | A
                     if (!isNaN(user.fetchStats.perhaps)) {
                         user.fetchStats.fetchXP += XPPerPerhaps
                         user.fetchStats.fetchStreak = 0
-                        if (!isNaN(user.predictionStats.points)) {
-                            user.predictionStats.points = defaultPredictionStats.points
-                        }
                         user.predictionStats.points = Math.min(user.predictionStats.points + pointsPerPerhaps, maxPoints);
                         break;
                     }
