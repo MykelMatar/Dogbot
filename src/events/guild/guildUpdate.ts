@@ -4,7 +4,6 @@ import {CustomClient} from "../../dependencies/myTypes";
 import {Guild} from "discord.js";
 
 export async function guildUpdate(client: CustomClient, oldGuild: Guild, newGuild: Guild) {
-    log.info(`Guild ${oldGuild.id} has been changed`);
     guilds.findOneAndUpdate(
         {guildId: oldGuild.id},
         {$set: {guildId: newGuild.id}}, // not sure if id can ever change, but just in case
