@@ -1,4 +1,7 @@
-export async function updateProgressBars(interaction, embed, pollStats, numBars: number, isPrediction: boolean = false) {
+import {EmbedBuilder, Message} from "discord.js";
+import {PollStats} from "../../myTypes";
+
+export async function updateProgressBars(interaction: Message, embed: EmbedBuilder, numberOfVotes: Partial<PollStats>, numBars: number, isPrediction: boolean = false) {
     const fillChar = '▰'
     const emptyChar = '▱'
 
@@ -12,7 +15,7 @@ export async function updateProgressBars(interaction, embed, pollStats, numBars:
 
     const barFillAmounts: number[] = [];
     for (let i = 1; i <= numBars; i++) {
-        const fillAmount = (pollStats[`choice${i}`] / pollStats.total) * 10;
+        const fillAmount = (numberOfVotes[`choice${i}`] / numberOfVotes.total) * 10;
         barFillAmounts.push(fillAmount);
     }
 
@@ -38,7 +41,8 @@ export async function updateProgressBars(interaction, embed, pollStats, numBars:
 
     if (!isPrediction) {
         for (let i = 0; i < numBars; i++) {
-            embed.data.fields[i].value = `[${progressBars[`choice${i + 1}Bar`].join('')}] ${(barFillAmounts[i] * 10).toFixed(2)}%`
+            const numVotes = numberOfVotes[`choice` + (i + 1)] ? numberOfVotes[`choice${i + 1}`] : 0
+            embed.data.fields[i].value = `[${progressBars[`choice${i + 1}Bar`].join('')}] **${(barFillAmounts[i] * 10).toFixed(2)} %**\n*(${numVotes} votes)*`
         }
     } else {
         embed.data.fields[0].value = `[${progressBars[`choice${1}Bar`].join('')}] ${(barFillAmounts[0] * 10).toFixed(2)}%`
