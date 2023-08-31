@@ -139,7 +139,7 @@ export const poll: SlashCommand = {
             }
         });
         let terminateBound = terminate.bind(null, client, collector)
-        await terminationListener(client, collector, terminateBound)
+        terminationListener(client, collector, terminateBound)
 
         let numberOfVotes: PollStats = {
             choice1: 0,
@@ -172,7 +172,7 @@ export const poll: SlashCommand = {
             if (!(await messageStillExists(sent, terminateBound))) return
             await sent.edit({content: 'VOTING ENDED', components: []})
 
-            let newMessage = await interaction.channel.send({content: 'Results:'})
+            const newMessage = await interaction.channel.send({content: 'Results:'})
 
             let maxVotes = -Infinity;
             let maxChoices = [];
