@@ -1,13 +1,13 @@
-import {CustomClient, MinecraftServer} from "../dependencies/myTypes";
+import {CustomClient} from "../dependencies/myTypes";
 import {ActionRowBuilder, ButtonBuilder, ButtonStyle, Message} from "discord.js";
 import {popularMinecraftServers} from "../dependencies/constants/popularMinecraftServers";
 import log from "../dependencies/constants/logger";
 import guilds from "../dependencies/schemas/guild-schema";
-import {status, statusBedrock} from "minecraft-server-util";
 
 
 export async function messageCreate(client: CustomClient, message: Message) {
 
+    return; // keeps crashing and saying missing permissions
     let guildData = await guilds.findOne({guildId: message.guildId})
     if (!guildData?.settings?.autoDetectIP) return
 
@@ -46,56 +46,56 @@ export async function messageCreate(client: CustomClient, message: Message) {
         components: [row]
     })
 
-    try {
-        const yesId = row.components[0].data["custom_id"]
-        const noId = row.components[1].data["custom_id"]
-        const collectorFilter = i => {
-            if (i.message.id != detectionMessage.id) return false // prevent simultaneous prompts from affecting each other
-            return [yesId, noId].includes(i.customId);
-        };
-        const confirmation = await detectionMessage.awaitMessageComponent({filter: collectorFilter, time: 60000});
+    // try {
+    //     const yesId = row.components[0].data["custom_id"]
+    //     const noId = row.components[1].data["custom_id"]
+    //     const collectorFilter = i => {
+    //         if (i.message.id != detectionMessage.id) return false // prevent simultaneous prompts from affecting each other
+    //         return [yesId, noId].includes(i.customId);
+    //     };
+    //     const confirmation = await detectionMessage.awaitMessageComponent({filter: collectorFilter, time: 60000});
+    //
+    //     if (confirmation.customId !== yesId) return
+    //     log.info('adding server')
 
-        if (confirmation.customId !== yesId) return
-        log.info('adding server')
+    // let newServer: MinecraftServer = {
+    //     name: ip,
+    //     ip: ip,
+    //     port: 25565
+    // };
 
-        let newServer: MinecraftServer = {
-            name: ip,
-            ip: ip,
-            port: 25565
-        };
-
-        // make sure IP is a valid server IP by checking its status (server must be online for this to work)
-        let validServer = true
-        try {
-            await status(newServer.ip, newServer.port);
-        } catch {
-            try {
-                await statusBedrock(newServer.ip, newServer.port);
-            } catch {
-                validServer = false;
-                log.warn('Invalid server / server offline')
-                await message.channel.send(
-                    {content: "Could not retrieve server status. Double check IP and make sure server is online."}
-                );
-            }
-        }
-
-        if (!validServer) return;
-        if (serverList.length === 0) {
-            const {ip, port, name} = newServer;
-            guildData.mcServerData.selectedServer = {ip, port, name} // assuming you have variables named ip, port, and name that correspond to mcServer.ip, mcServer.port, and mcServer.name
-        }
-        serverList.push(newServer);
-
-        const saveData = guildData.save()
-        const sendConfirmation = message.channel.send({content: "Server added successfully"})
-        await Promise.all([saveData, sendConfirmation]);
-
-    } catch (e) {
-        log.error(e)
-    } finally {
-        detectionMessage.delete()
-    }
+    // make sure IP is a valid server IP by checking its status (server must be online for this to work)
+    //     let validServer = true
+    //     try {
+    //         await status(newServer.ip, newServer.port);
+    //     } catch {
+    //         try {
+    //             await statusBedrock(newServer.ip, newServer.port);
+    //         } catch {
+    //             validServer = false;
+    //             log.warn('Invalid server / server offline')
+    //             await message.channel.send(
+    //                 {content: "Could not retrieve server status. Double check IP and make sure server is online."}
+    //             );
+    //         }
+    //     }
+    //
+    //     if (!validServer) return;
+    //     if (serverList.length === 0) {
+    //         const {ip, port, name} = newServer;
+    //         guildData.mcServerData.selectedServer = {ip, port, name} // assuming you have variables named ip, port, and name that correspond to mcServer.ip, mcServer.port, and mcServer.name
+    //     }
+    //     serverList.push(newServer);
+    //
+    //     const saveData = guildData.save()
+    //     const sendConfirmation = message.channel.send({content: "Server added successfully"})
+    //     await Promise.all([saveData, sendConfirmation]);
+    //
+    // } catch (e) {
+    //     log.error(e)
+    // } finally {
+    //     detectionMessage.delete()
+    // }
 
 
 }
