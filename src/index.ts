@@ -33,10 +33,6 @@ client.isTestBot = false;
 if (client.isTestBot) {
     client.login(process.env.BOT_TEST_TOKEN).catch(e => log.error(e))
 } else {
-    const poster = AutoPoster(process.env.TOPGG_TOKEN, client)
-    poster.on('posted', (stats) => {
-        console.log(`Posted to Top.gg | ${stats.serverCount} servers`);
-    });
-
+    AutoPoster(process.env.TOPGG_TOKEN, client)
     client.login(process.env.BOT_TOKEN).catch(e => log.error(e))
 }
