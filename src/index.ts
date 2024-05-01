@@ -2,7 +2,7 @@ import {ActivityType, Client, Collection, GatewayIntentBits} from "discord.js";
 import 'dotenv/config'
 import {CustomClient} from "./dependencies/myTypes";
 import log from "./dependencies/constants/logger";
-import AutoPoster from "topgg-autoposter";
+// import AutoPoster from "topgg-autoposter";
 
 const client: CustomClient = new Client({
     intents: [
@@ -33,6 +33,6 @@ client.isTestBot = false;
 if (client.isTestBot) {
     client.login(process.env.BOT_TEST_TOKEN).catch(e => log.error(e))
 } else {
-    AutoPoster(process.env.TOPGG_TOKEN, client)
+    // AutoPoster(process.env.TOPGG_TOKEN, client)
     client.login(process.env.BOT_TOKEN).catch(e => log.error(e))
 }
