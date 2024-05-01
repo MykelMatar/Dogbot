@@ -1,10 +1,10 @@
-import {ActivityType} from "discord.js";
-import mongoose, {Error} from "mongoose";
-import {Activity, CustomClient} from "../../dependencies/myTypes";
+import { ActivityType } from "discord.js";
+import mongoose, { Error } from "mongoose";
 import log from "../../dependencies/constants/logger";
+import { Activity, CustomClient } from "../../dependencies/myTypes";
 
 export async function ready(client: CustomClient) {
-    await mongoose.connect(process.env.MONGO_URI, {keepAlive: true, dbName: 'Dogbot'})
+    await mongoose.connect(process.env.MONGO_URI, { dbName: 'Dogbot'})
         .then(() => {
             log.info('Connected to Mongo')
         }).catch(e => {
